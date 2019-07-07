@@ -1,0 +1,21 @@
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Cache
+__pycache__/
+
+# Checkpoints
+checkpoints/
+
+# Build
+build/
+
+# Build Configuration
+cli.spec

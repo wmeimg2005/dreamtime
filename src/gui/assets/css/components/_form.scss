@@ -1,0 +1,15 @@
+.field {
+  @apply mb-4;
+
+  .field-help {
+    @apply block text-xs text-gray-600;
+  }
+}
+
+.label {
+  @apply block font-bold;
+}
+
+.input {
+  @apply border border-gray-300 p-1 block;
+}

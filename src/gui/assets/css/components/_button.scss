@@ -1,0 +1,38 @@
+.button {
+  @apply border
+          border-gray-300
+          flex
+          items-center
+          justify-center
+          px-3
+          rounded;
+
+  height: 40px;
+  transition: all 0.1s ease-in-out;
+  outline: none !important;
+
+  &:hover {
+    @apply bg-gray-200;
+  }
+
+  &.is-primary {
+    @apply bg-primary text-white;
+
+    &:hover {
+      @apply bg-primary-600;
+    }
+  }
+
+  &.is-danger {
+    @apply bg-danger text-white;
+
+    &:hover {
+      @apply bg-danger;
+    }
+  }
+
+  &.is-xl {
+    @apply px-6 text-xl;
+    height: 50px;
+  }
+}

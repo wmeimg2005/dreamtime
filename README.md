@@ -1,10 +1,10 @@
 # Easy-DeepNude
 
-Easy-DeepNude offers a **CLI** and **GUI** version of the artificial intelligence project [DeepNude](https://github.com/deepinstruction/deepnude_official).
+Easy-DeepNude is a new implementation of the [DeepNude](https://github.com/deepinstruction/deepnude_official) project, the goal of Easy-DeepNude is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
 
-The CLI version allows you to process photos using only the console, use the `--help` argument to get more information about its use. **Note:** A cropping system is not included, to use the program properly crop the photo to be processed to dimensions *512x512*.
+- The CLI version allows you to transform photos using commands in a console, with this you can create automated systems such as *Bots, web pages or a new GUI*. Use the argument `--help` to get more information about usage, keep in mind that the CLI by itself **does not have** a cropping system so you will have to manually resize your photos to 512x512
 
-The GUI version allows you to process photos with a friendly interface, this version includes a cropping system so it is only necessary to have the photos you are going to process.
+- The GUI version is a new friendly interface that includes a cropping system, so you only have to tell the program which photo you want to transform and you will get results in a few clicks.
 
 ## Preview
 
@@ -20,7 +20,7 @@ I will try to help in any problem you have.
 
 ## Requirements
 
-* [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive) (If you are going to use GPU processing)
+* [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx) or [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive) (If you are going to use GPU processing. CUDA can be optional on the latest graphics cards)
 
 ## Download
 
@@ -35,12 +35,28 @@ If you are not a developer or are only interested in using the program, these ar
 * If you want to use only the console version, download the **CLI** and **CLI Checkpoints** zip files.
 * If you want to use the version with graphical interface download all 3 zip files.
 * Create a folder called "easydeepnude" (where you want), open it and inside place the zip files you have downloaded.
-* Unzip the **CLI.zip** and **GUI.zip** file (if you downloaded it) so that the `/cli/` and `/gui/` folders remain.
-* Unzip the contents of **checkpoints.zip** inside the `/cli/` folder so that in the end there is `/cli/checkpoints/`
-* Congratulations, if you use the CLI version you can now run the `/cli/cli.exe` file from a terminal, but if you use the GUI version open the program `/gui/EasyDeepNude.exe`
+* Unzip the **CLI.zip** and **GUI.zip** file (if you downloaded it) In the end you should have the folders `cli/` and `gui/`.
+* Unzip the contents of **checkpoints.zip** inside the `cli/` folder. At the end you must have the folder `cli/checkpoints` folder with 3 .lib files inside.
+* Congratulations, now you can use the console version when executing the `cli/cli.exe` file from... a console. If you want to use the graphical interface, you should only run the `gui/EasyDeepNude.exe` file
 
 # Development
 
 *Work in progress...*
 
-I need to make some adjustments so that everyone can use the code without problems.
+## Requirements
+
+* [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive)
+* [Python 3.6.8](https://www.python.org/downloads/release/python-368/)
+* [PyInstaller](https://www.pyinstaller.org/)
+* [NodeJS](https://nodejs.org/en/) (In theory any recent version works.)
+* [Yarn](https://yarnpkg.com/en/docs/install)
+
+## Preparation
+
+`The following instructions should be applied within the src/ folder`
+
+Install the necessary libraries and packages to compile the project by running the `install.bat` file
+
+Compile the project by running the `build.bat` file, this should generate the `dist/` folder with the projects ready for use. Run `dist/gui/win-unpacked/EasyDeepNude.exe` once and close it, now transfer all files from `dist/gui/win-unpacked/` to `dist/gui/`
+
+With this you should have a functional version

@@ -1,0 +1,42 @@
+{
+  "editor.tabSize": 2,
+
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": false,
+
+  "[python]": {
+    "editor.tabSize": 4
+  },
+
+  "emmet.includeLanguages": {
+    "vue": "html"
+  },
+
+  "html.format.enable": false,
+  "css.validate": false,
+  "scss.validate": false,
+
+  "eslint.autoFixOnSave": true,
+  "eslint.enable": true,
+  "eslint.packageManager": "yarn",
+  "eslint.run": "onType",
+  "eslint.validate": [
+    {
+      "language": "javascript"
+    },
+    {
+      "language": "vue",
+      "autoFix": true
+    }
+  ],
+
+  "prettier.disableLanguages": [],
+  "prettier.eslintIntegration": true,
+  "prettier.stylelintIntegration": true,
+  "vetur.validation.template": false,
+  "vetur.format.defaultFormatter.html": "none",
+  "vetur.format.defaultFormatter.js": "prettier-eslint",
+  "vetur.format.defaultFormatter.scss": "prettier",
+  "vetur.trace.server": "messages"
+}
