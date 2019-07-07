@@ -16,6 +16,18 @@ This is a very early version, although it has worked for me without problems it 
 
 I will try to help in any problem you have.
 
+# Backups & Community
+
+To avoid the loss of the project due to the censorship attempt, the project will be available in:
+
+- [Github](https://github.com/deep-man-yy/easydeepnude)
+- [Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)
+- [Gitlab](https://gitlab.com/deepmanyy/easydeepnude)
+
+You can join the project community, ask for help or ask the Bot to transform your photos in Telegram:
+
+https://t.me/easydeepnudegallery
+
 # Binaries
 
 ## Requirements
