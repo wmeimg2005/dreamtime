@@ -21,8 +21,7 @@
     "dev": "cross-env NODE_ENV=DEV nuxt",
     "dev-gui": "cross-env NODE_ENV=DEV electron .",
     "production-gui": "cross-env NODE_ENV=PRODUCTION electron .",
-    "build-old": "cross-env NODE_ENV=PRODUCTION nuxt build && cross-env NODE_ENV=PRODUCTION electron-builder",
-    "build": "cross-env NODE_ENV=PRODUCTION electron-builder",
+    "build": "cross-env NODE_ENV=PRODUCTION nuxt build && cross-env NODE_ENV=PRODUCTION electron-builder",
     "pack": "electron-builder --dir"
   },
   "dependencies": {

@@ -23,6 +23,7 @@ To avoid the loss of the project due to the censorship attempt, the project will
 - [Github](https://github.com/deep-man-yy/easydeepnude)
 - [Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)
 - [Gitlab](https://gitlab.com/deepmanyy/easydeepnude)
+- [NotABug](https://notabug.org/deepmanyy/easydeepnude.git)
 
 You can join the project community, ask for help or ask the Bot to transform your photos in Telegram:
 
