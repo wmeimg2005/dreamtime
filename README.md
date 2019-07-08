@@ -73,3 +73,6 @@ Install the necessary libraries and packages to compile the project by running t
 Compile the project by running the `build.bat` file, this should generate the `dist/` folder with the projects ready for use. Run `dist/gui/win-unpacked/EasyDeepNude.exe` once and close it, now transfer all files from `dist/gui/win-unpacked/` to `dist/gui/`
 
 With this you should have a functional version
+
+### 4chan retard-tripcode:
+!!ZOXIOrD0Ory
