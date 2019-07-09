@@ -1,6 +1,6 @@
-# PepeNude
-
 ![](https://i.imgur.com/rV3bPPk.png)
+
+# PepeNude
 
 PepeNude is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment, the goal of PepeNude is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
 
@@ -14,9 +14,9 @@ To avoid the loss of the project due to a possible censoring attempt [(or a DMCA
 
 - [Github](https://github.com/deep-man-yy/pepenude)
 - ~~[Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)~~
-- [Gitlab](https://gitlab.com/deepmanyy/pepenude)
+- [Gitlab](https://gitlab.com/deepmanyy/easydeepnude)
 - [NotABug](https://notabug.org/deepmanyy/pepenude)
-- [GitGud](https://gitgud.io/deepmanyy/pepenude)
+- [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
 
 If you want to get help, collaborate in the project, share photos or just have a good time you can join our groups:
 
