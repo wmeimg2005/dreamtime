@@ -1,6 +1,6 @@
 # PepeNude
 
-![](https://i.imgur.com/c5KnKFV.jpg)
+![](https://i.imgur.com/rV3bPPk.png)
 
 PepeNude is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment, the goal of PepeNude is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
 
@@ -61,6 +61,16 @@ If you are not a developer or are only interested in using the program, these ar
 * Unzip the contents of **checkpoints.zip** inside the `cli/` folder. At the end you must have the folder `cli/checkpoints` folder with 3 .lib files inside.
 * Congratulations, now you can use the console version when executing the `cli/cli.exe` file from... a console. If you want to use the graphical interface, you should only run the `gui/EasyDeepNude.exe` file
 
+## F.A.Q.
+
+Q: I can not download the files! Quota limit reached...
+
+A: [Try this](https://www.geekrar.com/fix-bypass-google-drive-download-limit-error/)
+
+Q: Why does the program ask for firewall permissions?
+
+A: For now the GUI needs to create a local server on your computer to render the interface of the program, basically the GUI is a web browser. Yes I am aware that this is "retarded" but it is temporary. No, it's not a virus, a botnet or anything like that, I'm not interested in your photos or your files.
+
 # Development
 
 *Work in progress...*
@@ -93,8 +103,8 @@ I will try to continue maintaining the project, but I do not get an income so it
 
 Email: `deepmanyy[at]msgsafe.io`
 
-4chan: !!ZOXIOrD0Ory
+4chan: `!!ZOXIOrD0Ory`
 
-Telegram: @DeepManYY
+Telegram: `@DeepManYY`
 
-Discord: DeepManyYY#5508
+Discord: `DeepManyYY#5508`
