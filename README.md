@@ -1,34 +1,38 @@
-# Easy-DeepNude
+# PepeNude
 
-Easy-DeepNude is a new implementation of the [DeepNude](https://github.com/deepinstruction/deepnude_official) project, the goal of Easy-DeepNude is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
+![](https://i.imgur.com/c5KnKFV.jpg)
 
-- The CLI version allows you to transform photos using commands in a console, with this you can create automated systems such as *Bots, web pages or a new GUI*. Use the argument `--help` to get more information about usage, keep in mind that the CLI by itself **does not have** a cropping system so you will have to manually resize your photos to 512x512
+PepeNude is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment, the goal of PepeNude is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
+
+- The CLI version allows you to transform photos using commands, with this you can create automated systems such as *bots, web pages or a new GUI*. Use the argument `--help` to get more information about usage, keep in mind that the CLI by itself **does not have** a cropping system so you will have to manually resize your photos to 512x512
 
 - The GUI version is a new friendly interface that includes a cropping system, so you only have to tell the program which photo you want to transform and you will get results in a few clicks.
 
-## Preview
+# Backups & Community
 
-https://i.imgur.com/Gj5n2ox.gif
+To avoid the loss of the project due to a possible censoring attempt [(or a DMCA)](https://github.com/deep-man-yy/pepenude/issues/9), the project will be hosted at:
+
+- [Github](https://github.com/deep-man-yy/pepenude)
+- ~~[Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)~~
+- [Gitlab](https://gitlab.com/deepmanyy/pepenude)
+- [NotABug](https://notabug.org/deepmanyy/pepenude)
+- [GitGud](https://gitgud.io/deepmanyy/pepenude)
+
+If you want to get help, collaborate in the project, share photos or just have a good time you can join our groups:
+
+- [Discord](https://discord.gg/RjBSaND)
+- [Telegram](https://t.me/easydeepnudegallery)
 
 # Alpha
 
-This is a very early version, although it has worked for me without problems it is possible that in your computer does not work ¯\_(ツ)_/¯
+![](https://i.imgur.com/LZo61bq.jpg)
+
+PepeNude is in an alpha version so it can be unstable or not work directly under certain conditions (which I often do not know)
 
 I will try to help in any problem you have.
 
-# Backups & Community
-
-To avoid the loss of the project due to the censorship attempt, the project will be available in:
-
-- [Github](https://github.com/deep-man-yy/easydeepnude)
-- [Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)
-- [Gitlab](https://gitlab.com/deepmanyy/easydeepnude)
-- [NotABug](https://notabug.org/deepmanyy/easydeepnude.git)
-- [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
-
-You can join the project community, ask for help or ask the Bot to transform your photos in Telegram:
-
-https://t.me/easydeepnudegallery
+Preview *(NSFW)*:
+https://i.imgur.com/Gj5n2ox.gif
 
 # Binaries
 
@@ -44,6 +48,10 @@ If you are not a developer or are only interested in using the program, these ar
 * [CLI Checkpoints](https://drive.google.com/open?id=1w6ZO47To4BGh67WjeFCTBZiGVMFrK_po): *The models used by the artificial intelligence. Yes, they are required.*
 * [GUI](https://drive.google.com/open?id=1NgAATqhh8GNwBHOvJOo0vvgtX_OvsOXF): *The graphical user interface so you do not have to use commands or manually crop the photo.*
 
+### Help, Google Drive says quota limit reached!
+
+[Try this](https://www.geekrar.com/fix-bypass-google-drive-download-limit-error/)
+
 ## Installation
 
 * If you want to use only the console version, download the **CLI** and **CLI Checkpoints** zip files.
@@ -56,6 +64,8 @@ If you are not a developer or are only interested in using the program, these ar
 # Development
 
 *Work in progress...*
+
+*Some things are not ready yet, you may have to take additional steps to make the project work*
 
 ## Requirements
 
@@ -75,12 +85,16 @@ Compile the project by running the `build.bat` file, this should generate the `d
 
 With this you should have a functional version
 
-## How can I contact you?
+# About the Author
 
-Email: deepmanyy@msgsafe.io
+I'm just a web developer who seemed curious what this program can achieve and I could not resist trying to make it as accessible as possible. I like the black humor and the satire, the consequences that this project may have are not of my interest and anyone can do whatever they want, as long as they are under [the terms of the license](LICENSE.md).
+
+I will try to continue maintaining the project, but I do not get an income so it is possible that it will be of low priority and the development will be slow (but safe)
+
+Email: `deepmanyy[at]msgsafe.io`
 
 4chan: !!ZOXIOrD0Ory
 
 Telegram: @DeepManYY
 
-Telegram group: https://t.me/easydeepnudegallery
+Discord: DeepManyYY#5508
