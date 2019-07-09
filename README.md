@@ -48,10 +48,6 @@ If you are not a developer or are only interested in using the program, these ar
 * [CLI Checkpoints](https://drive.google.com/open?id=1w6ZO47To4BGh67WjeFCTBZiGVMFrK_po): *The models used by the artificial intelligence. Yes, they are required.*
 * [GUI](https://drive.google.com/open?id=1NgAATqhh8GNwBHOvJOo0vvgtX_OvsOXF): *The graphical user interface so you do not have to use commands or manually crop the photo.*
 
-### Help, Google Drive says quota limit reached!
-
-[Try this](https://www.geekrar.com/fix-bypass-google-drive-download-limit-error/)
-
 ## Installation
 
 * If you want to use only the console version, download the **CLI** and **CLI Checkpoints** zip files.
