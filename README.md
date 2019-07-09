@@ -24,6 +24,7 @@ To avoid the loss of the project due to the censorship attempt, the project will
 - [Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)
 - [Gitlab](https://gitlab.com/deepmanyy/easydeepnude)
 - [NotABug](https://notabug.org/deepmanyy/easydeepnude.git)
+- [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
 
 You can join the project community, ask for help or ask the Bot to transform your photos in Telegram:
 
@@ -74,5 +75,12 @@ Compile the project by running the `build.bat` file, this should generate the `d
 
 With this you should have a functional version
 
-### 4chan retard-tripcode:
-!!ZOXIOrD0Ory
+## How can I contact you?
+
+Email: deepmanyy@msgsafe.io
+
+4chan: !!ZOXIOrD0Ory
+
+Telegram: @DeepManYY
+
+Telegram group: https://t.me/easydeepnudegallery
