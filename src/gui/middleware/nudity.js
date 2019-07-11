@@ -1,7 +1,13 @@
 import _ from 'lodash'
 
-export default function({ store, redirect }) {
-  if (_.isNil(store.state.nudity.filepath)) {
+export default function({ store, redirect, $nudity }) {
+  /*
+  if (!store.getters['nudity/isReady']) {
+    redirect('/')
+  }
+  */
+
+  if (_.isNil($nudity.modelPhoto)) {
     redirect('/')
   }
 }

@@ -6,6 +6,7 @@ import torch
 import io
 import os
 import functools
+from collections import OrderedDict
 
 
 class DataLoader:
@@ -62,14 +63,14 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class DeepModel(torch.nn.Module):
-    def initialize(self, opt, gpu_id):
+    def initialize(self, opt, gpu_ids):
 
         self.opt = opt
 
-        if gpu_id is None:
+        if gpu_ids is None:
             self.gpu_ids = []
         else:
-            self.gpu_ids = [gpu_id]
+            self.gpu_ids = gpu_ids
 
         self.netG = self.__define_G(
             opt.input_nc,
@@ -105,7 +106,18 @@ class DeepModel(torch.nn.Module):
 
         save_path = os.path.join(self.opt.checkpoints_dir)
 
-        network.load_state_dict(torch.load(save_path))
+        state_dict = torch.load(save_path)
+
+        if len(self.gpu_ids) > 0:
+            new_state_dict = OrderedDict()
+
+            for k, v in state_dict.items():
+                name = "module." + k  # add `module.`
+                new_state_dict[name] = v
+        else:
+            new_state_dict = state_dict
+
+        network.load_state_dict(new_state_dict)
 
     def __encode_input(
         self, label_map, inst_map=None, real_image=None, feat_map=None, infer=False
@@ -139,13 +151,27 @@ class DeepModel(torch.nn.Module):
         gpu_ids=[],
     ):
         norm_layer = self.__get_norm_layer(norm_type=norm)
+
+        # model
         netG = GlobalGenerator(
             input_nc, output_nc, ngf, n_downsample_global, n_blocks_global, norm_layer
         )
 
         if len(gpu_ids) > 0:
+            print(
+                "Using",
+                len(gpu_ids),
+                "of",
+                torch.cuda.device_count(),
+                "GPUs available.",
+            )
+
+            netG = torch.nn.DataParallel(netG, gpu_ids)
+
             netG.cuda(gpu_ids[0])
+
         netG.apply(self.__weights_init)
+
         return netG
 
     def __get_norm_layer(self, norm_type="instance"):
@@ -171,7 +197,9 @@ class GlobalGenerator(torch.nn.Module):
     ):
         assert n_blocks >= 0
         super(GlobalGenerator, self).__init__()
+
         activation = torch.nn.ReLU(True)
+        # activation = torch.nn.DataParallel(activation)
 
         model = [
             torch.nn.ReflectionPad2d(3),
@@ -222,7 +250,9 @@ class GlobalGenerator(torch.nn.Module):
             torch.nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0),
             torch.nn.Tanh(),
         ]
+
         self.model = torch.nn.Sequential(*model)
+        # self.model = torch.nn.DataParallel(self.model)
 
     def forward(self, input):
         return self.model(input)

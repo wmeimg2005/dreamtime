@@ -1,162 +1,135 @@
 <template>
-  <div class="nudity-settings placeholder-container">
-    <!-- Body -->
-    <div class="container-body" v-show="!isLoading">
-      <!-- Crop -->
-      <div class="settings-canvas">
-        <canvas ref="photoCanvas" />
-      </div>
+  <div class="nudity-settings">
+    <div v-if="!isLoading" class="content-body settings-fields">
+      <nudity-preview />
 
-      <div class="settings-panel">
-        <div class="panel-help">
-          <section>
-            <p class="help-title">Photo cropping</p>
-            <p
-              class="help-text"
-            >In order for photo processing to work, it will be necessary to cut out your photo to 512x512 dimensions. Use the tool above to move the photo so that the person is in the center of the highlighted area.</p>
-          </section>
+      <!-- Process with -->
+      <section>
+        <div class="field">
+          <label class="label">Process with:</label>
 
-          <section>
-            <p class="help-title">How to obtain better results?</p>
-
-            <p class="help-text">
-              <ul>
-                <li>Photos where the person's body is seen from the front.</li>
-                <li>Photos with little clothes.</li>
-              </ul>
-            </p>
-          </section>
-        </div>
-
-        <div class="panel-options">
           <div class="field">
-            <input type="checkbox" v-model="useCpu" />
-            Use CPU
-            <span class="field-help">Force the photo processing with CPU. (Slower) <strong>Select this option if you do not have an NVIDIA GPU</strong>.</span>
+            <input v-model="useCpu" type="checkbox" />
+            CPU
+            <p class="field-help">Force CPU processing. (Slower) Select this option if <strong>you do not have</strong> an NVIDIA GPU!</p>
           </div>
 
-          <div class="field" v-show="!useCpu">
-            <label class="label">GPU ID:</label>
-            <input type="number" v-model="gpuId" min="0" class="input" />
-            <span class="field-help">ID of the GPU to use for processing. You probably should not edit this option unless you have problems or have multiple GPUs.</span>
+          <div v-for="(gpu,index) in gpuList" :key="index" class="field">
+            <input v-model="useGpus" :value="index" type="checkbox" :disabled="useCpu" />
+            {{ gpu.Caption || gpu.Name || gpu.Description || gpu.VideoProcessor }}
+          </div>
+
+          <div class="field">
+            <input v-model="useCustomGpu" type="checkbox" :disabled="useCpu" />
+            Custom GPU ID
+            <p class="field-help">Select this option if you want to use a GPU that is not in the list.</p>
+          </div>
+
+          <div class="field">
+            <input v-if="useCustomGpu" v-model="customGpuId" class="input" type="number" min="0" />
           </div>
         </div>
+      </section>
+
+      <!-- waifu2x -->
+      <!-- WORK IN PROGRESS! -->
+      <section v-if="false">
+        <div v-if="!useCpu" class="field">
+          <label class="label">Use waifu2x:</label>
+          <input v-model="useWaifu" type="checkbox" /> Yes, why not?
+          <p class="field-help">waifu2x will try to resize your transformed photo to <strong>1024x1024</strong> with the least possible quality loss. Keep in mind that as its name indicates, the program is not designed to work with real people so there may be some minor changes in your photo.</p>
+        </div>
+      </section>
+
+      <div class="buttons">
+        <nuxt-link to="/nudity/crop" class="button is-danger">Back</nuxt-link>
+        <button class="button" @click.prevent="transform">Transform!</button>
       </div>
     </div>
 
-    <div class="container-body settings-loading" v-show="isLoading">
-      <img :src="fileCroppedData" class="loading-preview" />
-      <h2 class="loading-title">Processing...</h2>
-      <h3 class="loading-help" v-show="useCpu">May take a few minutes depending on the power of your CPU...</h3>
-      <h3 class="loading-help" v-show="!useCpu">May take a few seconds depending on the power of your GPU...</h3>
+    <!-- Loading -->
+    <div v-else class="settings-loading">
+      <nudity-preview />
 
-      <div class="loading-terminal">
-        <p v-for="(line, index) in terminalLines" :key="index" class="terminal-line">{{ line }}</p>
+      <h1 class="title">{{ $nudity.transformationDuration }}s</h1>
+
+      <h1 class="title">🧜‍ Loading...</h1>
+
+      <h3 class="subtitle">Transforming your photo with the power of your {{ deviceName }}!</h3>
+
+      <div class="settings-cli">
+        <p v-for="(line, index) in $nudity.modelPhoto.cliLines" :key="index" class="cli-line">{{ line }}</p>
       </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="container-footer" v-show="!isLoading">
-      <nuxt-link to="/" class="button is-danger is-xl">Back</nuxt-link>
-      <button type="button" class="button is-primary is-xl" @click.prevent="process">Process!</button>
-    </div>
-
-    <div class="container-footer" v-show="isLoading">
-      <button type="button" class="button is-danger is-xl">Cancel</button>
     </div>
   </div>
 </template>
 
 <script>
-import Cropper from 'cropperjs'
+import _ from 'lodash'
+import { mapState } from 'vuex'
 
 export default {
   middleware: 'nudity',
 
   data: () => ({
-    cropper: undefined,
     isLoading: false,
-    fileCroppedData: undefined,
 
     useCpu: false,
-    gpuId: 0,
-    terminalLines: []
+    useGpus: [],
+    gpuList: [],
+
+    useCustomGpu: false,
+    customGpuId: 0,
+
+    useWaifu: false // i feel dirty because of this variable name
   }),
 
-  mounted() {
-    this.boot()
+  computed: {
+    useGpusList() {
+      if (this.useCpu) {
+        return false
+      }
+
+      const list = this.useGpus
+
+      if (this.useCustomGpu) {
+        list.push(this.customGpuId)
+      }
+
+      return list
+    },
+
+    deviceName() {
+      return this.useCpu ? 'CPU' : 'GPU'
+    }
+  },
+
+  created() {
+    this.fetchGpusList()
   },
 
   methods: {
-    boot() {
-      this.createCropper()
-    },
+    async fetchGpusList() {
+      const gpus = await window.deepTools.getGpusList()
+      this.gpuList = _.filter(gpus, { AdapterCompatibility: 'NVIDIA' })
 
-    createCropper() {
-      this.cropper = new Cropper(this.$refs.photoCanvas, {
-        viewMode: 0,
-        dragMode: 'move',
-        cropBoxMovable: false,
-        cropBoxResizable: false,
-        toggleDragModeOnDblclick: false,
-        minCropBoxWidth: 512,
-        minCropBoxHeight: 512,
-        modal: true,
-        guides: false,
-        highlight: false,
-        autoCropArea: 0.1,
-        ready() {
-
-        }
-      })
-
-      this.cropper.replace(this.$store.state.nudity.fileData)
-    },
-
-    process() {
-      const canvas = this.cropper.getCroppedCanvas({
-        width: 512,
-        height: 512,
-        fillColor: 'black',
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high'
-      })
-
-      console.log(canvas.width, canvas.height)
-
-      this.fileCroppedData = canvas.toDataURL(this.$store.state.nudity.fileType)
-
-      this.$nextTick(() => {
-        this.isLoading = true
-
-        window.deepTools.saveCroppedPhoto(this.fileCroppedData)
-        const processing = window.deepTools.process(this.gpuId, this.useCpu)
-
-        processing.on('stdout', this.onTerminalLog.bind(this))
-        processing.once('stderr', this.onTerminalError.bind(this))
-        processing.once('ready', this.onTerminalReady.bind(this))
-      })
-    },
-
-    onTerminalLog(log) {
-      this.terminalLines.push(log)
-    },
-
-    onTerminalError(err) {
-      alert(`Oops! An error has occurred:\n\n${err}`)
-
-      this.isLoading = false
-      this.terminalLines = []
-    },
-
-    onTerminalReady(code) {
-      console.log(code)
-
-      if (code === 0) {
-        this.$router.push('/nudity/results')
+      if (this.gpuList.length === 0) {
+        this.useCpu = true
       } else {
+        this.useGpus.push(0)
+      }
+    },
+
+    async transform() {
+      this.isLoading = true
+
+      try {
+        await this.$nudity.transform(this.useGpusList, this.useWaifu)
+        this.$router.push('/nudity/results')
+      } catch (error) {
+        alert(error)
+      } finally {
         this.isLoading = false
-        this.terminalLines = []
       }
     }
   }
@@ -165,62 +138,32 @@ export default {
 
 <style lang="scss">
 .nudity-settings {
-  .container-body {
-    @apply flex flex-col;
-  }
-
-  .settings-canvas {
-    height: 512px;
-  }
-
-  .settings-panel {
-    @apply flex-1 flex overflow-hidden;
-
-    .panel-help {
-      @apply flex-1 p-5 border-r border-gray-300 overflow-y-auto;
-
-      section {
-        @apply mb-3;
-      }
-
-      .help-title {
-        @apply font-bold;
-      }
-
-      .help-text {
-        @apply text-sm text-gray-800;
-      }
-    }
-
-    .panel-options {
-      @apply flex-1 p-5 overflow-y-auto;
-    }
+  .settings-fields {
+    @apply overflow-hidden overflow-y-auto;
   }
 
   .settings-loading {
-    @apply justify-center items-center px-5;
+    @apply text-center;
 
-    .loading-preview {
+    .cnudity-preview {
       @apply mb-5;
-      width: 300px;
-      height: 300px;
     }
 
-    .loading-title {
+    .title {
       @apply font-bold text-3xl;
     }
 
-    .loading-help {
+    .subtitle {
       @apply text-gray-600 text-xl;
     }
+  }
 
-    .loading-terminal {
-      @apply mt-6 bg-black p-4 w-full font-mono overflow-y-auto;
-      height: 150px;
+  .settings-cli {
+    @apply mt-6 bg-black p-4 w-full font-mono overflow-y-auto;
+    height: 150px;
 
-      .terminal-line {
-        @apply block text-white;
-      }
+    .cli-line {
+      @apply block text-white;
     }
   }
 }

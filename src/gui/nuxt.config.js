@@ -51,7 +51,7 @@ module.exports = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
-    //'@nuxtjs/eslint-module',
+    // '@nuxtjs/eslint-module',
     '@nuxtjs/dotenv'
   ],
 
@@ -77,9 +77,21 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, { isClient }) {
-      if (isClient) {
-        //config.target = 'electron-renderer'
-      }
+      /*
+      config.module
+        .rule('raw')
+        .test(/\.txt$/)
+        .use('raw-loader')
+        .loader('raw-loader')
+        .end()
+
+      config.module
+        .rule('raw')
+        .test(/\.md$/)
+        .use('raw-loader')
+        .loader('raw-loader')
+        .end()
+      */
     }
   }
 }

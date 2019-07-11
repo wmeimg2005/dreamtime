@@ -54,7 +54,9 @@ class Options:
         # for setting inputs
         # if true, takes images in order to make batches, otherwise takes them randomly
         self.serial_batches = True
-        self.nThreads = 0  # threads for loading data (???)
+        self.nThreads = (
+            0
+        )  # threads for loading data. Keep this value at 0! see: https://github.com/pytorch/pytorch/issues/12831
         # Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.
         self.max_dataset_size = 1
 
@@ -95,7 +97,10 @@ class Options:
 # 	watermark image
 
 
-def process(cv_img, gpu_id):
+import sys
+
+
+def process(cv_img, gpu_ids):
 
     # InMemory cv2 images:
     dress = cv_img
@@ -107,7 +112,7 @@ def process(cv_img, gpu_id):
     nude = None
     watermark = None
 
-    print("GPU ID: " + str(gpu_id), flush=True)
+    print("GPU IDs: " + str(gpu_ids), flush=True)
 
     for index, phase in enumerate(phases):
         print("Executing phase: " + phase, flush=True)
@@ -137,7 +142,7 @@ def process(cv_img, gpu_id):
 
             # Create Model
             model = DeepModel()
-            model.initialize(opt, gpu_id)
+            model.initialize(opt, gpu_ids)
 
             # Run for every image:
             for i, data in enumerate(dataset):

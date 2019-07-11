@@ -1,33 +1,50 @@
 .button {
-  @apply border
-          border-gray-300
-          flex
+  @apply  inline-flex
           items-center
           justify-center
           px-3
-          rounded;
+          rounded
+          uppercase
+          text-primary
+          font-semibold;
 
   height: 40px;
-  transition: all 0.1s ease-in-out;
+  transition: all 0.2s ease-in-out;
   outline: none !important;
 
   &:hover {
-    @apply bg-gray-200;
+    @apply bg-primary-10;
   }
 
-  &.is-primary {
-    @apply bg-primary text-white;
+  &:active {
+    @apply bg-primary-20;
+  }
 
-    &:hover {
-      @apply bg-primary-600;
-    }
+  &.is-outlined {
+    @apply border border-primary;
   }
 
   &.is-danger {
-    @apply bg-danger text-white;
+    @apply text-danger;
 
     &:hover {
-      @apply bg-danger;
+      @apply bg-danger-10;
+    }
+
+    &:active {
+      @apply bg-danger-20;
+    }
+  }
+
+  &.is-success {
+    @apply text-success;
+
+    &:hover {
+      @apply bg-success-10;
+    }
+
+    &:active {
+      @apply bg-success-20;
     }
   }
 

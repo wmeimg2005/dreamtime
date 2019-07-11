@@ -2,36 +2,36 @@ import _ from 'lodash'
 
 // data
 export const state = () => ({
-  filepath: undefined,
-  fileType: undefined,
-  fileData: undefined,
-  fileCroppedData: undefined
+  model: undefined,
+  modelPhoto: undefined
 })
 
 // computed
 export const getters = {
-  // fileDataURL: state => window.deepTools.getFileAsDataURL(state.filepath)
+  isReady: state => !_.isNil(state.modelPhoto)
 }
 
 export const mutations = {
-  setFilepath(state, value) {
-    state.filepath = value
+  setModel(state, value) {
+    state.model = value
   },
 
-  setFileType(state, value) {
-    state.fileType = value
-  },
-
-  setFileData(state, value) {
-    state.fileData = value
-  },
-
-  setFileCroppedData(state, value) {
-    state.fileCroppedData = value
+  setModelPhoto(state, value) {
+    state.modelPhoto = value
   }
 }
 
 export const actions = {
+  start({ commit }, { model, photo }) {
+    commit('setModel', model)
+    commit('setModelPhoto', photo)
+  },
+
+  reset({ commit }) {
+    commit('setModel', undefined)
+    commit('setModelPhoto', undefined)
+  },
+
   setPhoto({ commit }, { filepath, fileType }) {
     commit('setFilepath', filepath)
     commit('setFileType', fileType)

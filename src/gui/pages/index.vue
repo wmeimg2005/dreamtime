@@ -1,85 +1,39 @@
 <template>
-  <div class="photoselection placeholder-container">
-    <div class="container-body">
-      <h1 class="app-title">{{ app.name }}</h1>
-      <h3 class="app-welcome">
-        Welcome to the
-        <strong>{{ app.status }}</strong> version.
+  <div class="home">
+    <app-title>
+      <h1 class="title">
+        Welcome to {{ app.name }} <sup>{{ app.status }}</sup>
+      </h1>
+
+      <h3 class="subtitle">
+        #freedom #opensource #rule34
       </h3>
-    </div>
+    </app-title>
 
-    <div class="container-footer">
-      <input
-        type="file"
-        ref="photo"
-        accept="image/jpeg, image/png"
-        v-show="false"
-        @change="onPhoto"
-      />
+    <div class="home-wip">
+      <!--
+      <p>
+        Go to the <nuxt-link to="/models">Models</nuxt-link> page to organize your nudes or...
+      </p>
+      -->
 
-      <button
-        type="button"
-        class="button is-primary is-xl"
-        @click.prevent="selectPhoto"
-      >Select photo</button>
+      <nudity-upload />
     </div>
   </div>
 </template>
 
 <script>
-import _ from 'lodash'
-
-export default {
-  data: () => ({
-    file: undefined
-  }),
-
-  methods: {
-    selectPhoto() {
-      this.$refs.photo.click()
-    },
-
-    onPhoto(event) {
-      const filepath = _.get(event.target, 'files[0].path')
-      const fileType = _.get(event.target, 'files[0].type')
-      const validate = window.deepTools.isValidPhoto(filepath)
-
-      this.$refs.photo.value = ''
-
-      if (validate !== true) {
-        alert(validate)
-        return
-      }
-
-      console.log({
-        file: event.target.files[0],
-        filepath,
-        fileType
-      })
-
-      this.$store.dispatch('nudity/setPhoto', {
-        filepath,
-        fileType
-      })
-
-      this.$router.push('/nudity/settings')
-    }
-  }
-}
+export default {}
 </script>
 
 <style lang="scss">
-.photoselection {
-  .container-body {
-    @apply flex flex-col items-center justify-center;
-  }
+.home {
+  .home-wip {
+    @apply flex flex-col justify-center items-center pt-20;
 
-  .app-title {
-    @apply text-3xl font-bold;
-  }
-
-  .app-welcome {
-    @apply text-xl text-gray-600;
+    a {
+      @apply text-primary underline;
+    }
   }
 }
 </style>

@@ -1,4 +1,5 @@
-const config = require('./nuxt.config')
+require('dotenv').config()
+
 const { remote } = require('electron')
 const fs = require('fs')
 const path = require('path')
@@ -6,8 +7,12 @@ const mime = require('mime-types')
 const { spawn } = require('child_process')
 const EventBus = require('js-event-bus')
 const _ = require('lodash')
+const gpuInfo = require('gpu-info')
+const config = require('./nuxt.config')
 
-const { app } = remote
+const debug = require('debug').default('app:preload')
+
+const { app, shell } = remote
 
 function getBase64Data(dataURL) {
   let encoded = dataURL.replace(/^data:(.*;base64,)?/, '')
@@ -19,12 +24,71 @@ function getBase64Data(dataURL) {
   return encoded
 }
 
-console.log(app.getPath('exe'))
-
 window.deepTools = {
-  isValidPhoto(filepath) {
-    const mimetype = mime.lookup(filepath)
-    const stats = fs.statSync(filepath)
+  /**
+   *
+   * @param {*} name
+   * @param  {...any} args
+   */
+  getPath(name, ...args) {
+    let folderPath
+
+    if (name === 'base') {
+      if (config.dev) {
+        folderPath = path.dirname(__dirname)
+      } else {
+        folderPath = path.dirname(path.dirname(app.getPath('exe')))
+      }
+    } else {
+      folderPath = app.getPath(name)
+    }
+
+    return path.join(folderPath, ...args)
+  },
+
+  /**
+   *
+   * @param {*} name
+   * @param  {...any} args
+   */
+  getBasePath(...args) {
+    return this.getPath('base', ...args)
+  },
+
+  /**
+   *
+   */
+  getGpusList() {
+    return gpuInfo()
+  },
+
+  /**
+   *
+   * @param {*} dirPath
+   */
+  shellOpenItem(dirPath) {
+    return shell.openItem(dirPath)
+  },
+
+  /**
+   *
+   * @param {*} path
+   */
+  shellOpenExternal(path) {
+    return shell.openExternal(path)
+  },
+
+  /**
+   *
+   * @param {*} filePath
+   */
+  getValidationErrorMessage(filePath) {
+    if (!fs.existsSync(filePath)) {
+      return 'Apparently the file does not exist anymore!'
+    }
+
+    const mimetype = mime.lookup(filePath)
+    const stats = fs.statSync(filePath)
     const filesize = stats.size / 1000000.0
 
     if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
@@ -35,9 +99,13 @@ window.deepTools = {
       return 'The selected file is big, this can generate problems. Maximum size: 5MB'
     }
 
-    return true
+    return null
   },
 
+  /**
+   *
+   * @param {*} filepath
+   */
   getFileAsDataURL(filepath) {
     const mimetype = mime.lookup(filepath)
     const data = fs.readFileSync(filepath, { encoding: 'base64' })
@@ -45,26 +113,108 @@ window.deepTools = {
     return `data:${mimetype};base64,${data}`
   },
 
-  getOutputAsDataURL() {
-    const outputPath = path.join(
-      path.dirname(app.getPath('temp')),
-      'output.png'
-    )
-    return this.getFileAsDataURL(outputPath)
+  /**
+   *
+   * @param {*} dataURL
+   * @param {*} absolutePath
+   */
+  saveDataURLFile(dataURL, absolutePath) {
+    const data = getBase64Data(dataURL)
+    return fs.writeFileSync(absolutePath, data, 'base64')
   },
 
-  saveCroppedPhoto(dataURL) {
-    const data = getBase64Data(dataURL)
+  /**
+   *
+   * @param {*} modelPhoto
+   * @param {*} useGpus
+   * @param {*} useWaifu TODO
+   */
+  transform(modelPhoto, useGpus = false, useWaifu = false) {
+    if (!useGpus) {
+      useWaifu = false
+    }
 
-    const inputPath = path.join(path.dirname(app.getPath('temp')), 'input.png')
+    const cliDirPath = this.getBasePath('cli')
+    const inputFilePath = modelPhoto.getCroppedFilePath()
+    const outputFilePath = modelPhoto.getOutputFilePath()
 
-    console.log({
-      exe: 'temp',
-      path: path.dirname(app.getPath('temp')),
-      inputPath
+    if (!fs.existsSync(cliDirPath)) {
+      throw new Error(
+        `A problem has occurred, we could not find the CLI folder!\n
+        This can be caused by a corrupt installation, make sure that the CLI folder exists in:\n\n
+        ${cliDirPath}`
+      )
+    }
+
+    if (!fs.existsSync(inputFilePath)) {
+      throw new Error(
+        `A problem has occurred, we could not find the cropped photo!\n
+        This may mean that ${process.env.APP_NAME} does not have permissions to write in the models folder, please make sure that the following folder exists:\n\n
+        ${inputFilePath}`
+      )
+    }
+
+    const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
+
+    if (config.dev) {
+      cliArgs.unshift('main.py')
+    }
+
+    if (!useGpus) {
+      cliArgs.push('--cpu')
+    } else {
+      for (const id of useGpus) {
+        cliArgs.push(`--gpu`)
+        cliArgs.push(id)
+      }
+    }
+
+    debug('The transformation process has begun!', {
+      cliDirPath,
+      inputFilePath,
+      outputFilePath,
+      cliArgs
     })
 
-    fs.writeFileSync(inputPath, data, 'base64')
+    const bus = new EventBus()
+
+    let child
+
+    try {
+      if (config.dev) {
+        child = spawn('python', cliArgs, {
+          cwd: cliDirPath
+        })
+      } else {
+        child = spawn('cli.exe', cliArgs, {
+          cwd: cliDirPath
+        })
+      }
+    } catch (error) {
+      throw new Error(
+        `A problem has occurred, we were unable to start the CLI for the transformation!\n
+        This can be caused by a corrupt installation, please make sure that cli.exe exists and works correctly (if you are a developer, make sure that main.py works)\n\n
+        The script has reported the following error, take a screenshot to get more information:\n\n
+        ${error}`
+      )
+    }
+
+    child.stdout.on('data', data => {
+      debug(`stdout: ${data}`)
+      bus.emit('stdout', null, data)
+    })
+
+    child.stderr.on('data', data => {
+      debug(`stderr: ${data}`)
+      bus.emit('stderr', null, data)
+    })
+
+    child.on('close', code => {
+      debug(`CLI process exited with code ${code}`)
+      bus.emit('ready', null, code)
+    })
+
+    return bus
   },
 
   process(gpuId, useCpu) {
@@ -76,17 +226,6 @@ window.deepTools = {
       path.dirname(path.dirname(app.getPath('exe'))),
       'cli'
     )
-
-    /*
-    if (config.dev) {
-
-    } else {
-      cliPath = path.join(
-        path.dirname(path.dirname(app.getPath('exe'))),
-        'cli'
-      )
-    }
-    */
 
     const inputPath = path.join(path.dirname(app.getPath('temp')), 'input.png')
 
@@ -109,13 +248,6 @@ window.deepTools = {
       args.push(`--gpu`)
       args.push(gpuId)
     }
-
-    console.log({
-      cliPath,
-      inputPath,
-      outputPath,
-      args
-    })
 
     const eventBus = new EventBus()
     let child

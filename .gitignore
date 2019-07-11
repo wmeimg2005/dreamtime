@@ -1,3 +1,6 @@
+# CI Builds
+builds/
+
 # Distribution
 dist/
 

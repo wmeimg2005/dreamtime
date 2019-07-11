@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { app, BrowserWindow } = require('electron')
 const { Nuxt } = require('nuxt')
 const http = require('http')
@@ -26,9 +27,9 @@ function createWindow() {
 
   // Create the browser window.
   const window = new BrowserWindow({
-    width: 700,
+    width: 1000,
     height: 800,
-    minWidth: 700,
+    minWidth: 1000,
     minHeight: 800,
     webPreferences: {
       preload: path.join(app.getAppPath(), 'preload.js')
@@ -71,4 +72,4 @@ function createWindow() {
 
 app.on('ready', createWindow)
 app.on('window-all-closed', () => app.quit())
-//app.on('activate', () => win === null && newWin())
+// app.on('activate', () => win === null && newWin())

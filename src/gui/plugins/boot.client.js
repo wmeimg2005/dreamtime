@@ -2,6 +2,7 @@ import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
 import BaseMixin from '~/mixins/BaseMixin'
+import nudity from '~/modules/nudity'
 
 const debug = require('debug').default('app:plugins:boot')
 
@@ -31,6 +32,11 @@ export default async ({ app, $axios, store, isDev }, inject) => {
 
   // axios - default headers
   $axios.setHeader('X-Requested-With', 'XMLHttpRequest')
+
+  // nudity process
+  window.$nudity = nudity
+  app.context.$nudity = nudity
+  inject('nudity', nudity)
 
   // Debug
   debug('The front-end is ready to render!', { app })
