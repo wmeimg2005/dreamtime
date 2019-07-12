@@ -4,9 +4,10 @@ import uuid from 'uuid/v4'
 const debug = require('debug').default('app:modules:models:model-photo')
 
 export default class ModelPhoto {
-  constructor(model, filePath) {
+  constructor(model, filePath, fileType) {
     this.model = model
     this.uuid = uuid()
+    this.sourceFileType = fileType
     this.sourceFilePath = filePath
     this.croppedFilePath = undefined
     this.outputFilePath = undefined
@@ -44,6 +45,10 @@ export default class ModelPhoto {
 
   getValidationErrorMessage() {
     return window.deepTools.getValidationErrorMessage(this.sourceFilePath)
+  }
+
+  getSourceType() {
+    return this.sourceFileType
   }
 
   getSourceAsDataURL() {
@@ -99,7 +104,28 @@ export default class ModelPhoto {
 
   transform(useGpus = false, useWaifu = false) {
     return new Promise((resolve, reject) => {
-      const child = window.deepTools.transform(this, useGpus, useWaifu)
+      const onSpawnError = error => {
+        reject(
+          new Error(
+            `We were unable to start the CLI for the transformation!\n
+        This can be caused by a corrupt installation, please make sure that cli.exe exists and works correctly (if you are a developer, make sure that main.py works)\n
+        The script has reported the following error, take a screenshot to get more information:\n
+        ${error}`
+          )
+        )
+      }
+
+      let child
+
+      try {
+        child = window.deepTools.transform(this, useGpus, useWaifu)
+      } catch (error) {
+        onSpawnError(error)
+      }
+
+      child.on('error', error => {
+        onSpawnError(error)
+      })
 
       child.on('stdout', output => {
         this.cliLines.push(output)
@@ -117,7 +143,7 @@ export default class ModelPhoto {
         } else {
           reject(
             new Error(
-              `A problem has occurred, the transformation has been interrupted by an CLI error.\n
+              `The transformation has been interrupted by an CLI error.\n
             This can be caused by:\n
             - A corrupt installation (commonly: The checkpoints folder was not found in cli/)\n
             - Incompatible system\n

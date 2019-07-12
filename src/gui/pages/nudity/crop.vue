@@ -28,40 +28,6 @@
         </p>
       </section>
     </div>
-
-    <!--
-    <div class="crop-columns">
-      <div class="column-options">
-        <div class="field">
-          <label class="label">Process with:</label>
-
-          <div class="field">
-            <input v-model="useCpu" v-tooltip="{ size: 'small', content: 'Force CPU processing. (Slower) Select this option if you do not have an NVIDIA GPU!'}" type="checkbox" />
-            CPU
-          </div>
-
-          <div v-for="(gpu,index) in gpus" :key="index" class="field">
-            <input v-model="gpuIds" :value="index" type="checkbox" :disabled="useCpu" />
-            {{ gpu.Caption || gpu.Name || gpu.Description || gpu.VideoProcessor }}
-          </div>
-
-          <div class="field">
-            <input v-model="useCustomGpu" v-tooltip="{ size: 'small', content: 'Select this option if you want to use a GPU that is not in the list.'}" type="checkbox" :disabled="useCpu" />
-            Custom GPU ID
-          </div>
-
-          <div class="field">
-            <input v-model="customGpuId" class="input" v-if="useCustomGpu" type="number" min="0" />
-          </div>
-
-          <div class="field">
-            <button class="button" @click.prevent="transform">Transform!</button>
-            <nuxt-link to="/" class="button is-danger">Cancel</nuxt-link>
-          </div>
-        </div>
-      </div>
-    </div>
-    -->
   </div>
 </template>
 
@@ -112,7 +78,9 @@ export default {
         imageSmoothingQuality: 'high'
       })
 
-      const canvasAsDataURL = canvas.toDataURL()
+      const canvasAsDataURL = canvas.toDataURL(
+        this.$nudity.modelPhoto.getSourceType()
+      )
 
       this.$nudity.modelPhoto.saveCroppedPhoto(canvasAsDataURL)
 

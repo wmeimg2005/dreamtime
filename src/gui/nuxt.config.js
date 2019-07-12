@@ -6,7 +6,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.APP_NAME} ${process.env.npm_package_version} [${process.env.APP_STATUS}]`,
+    title: `${process.env.APP_NAME} ${process.env.npm_package_version}`,
 
     meta: [
       { charset: 'utf-8' },
@@ -61,7 +61,17 @@ module.exports = {
    */
   axios: {},
 
-  dev: process.env.NODE_ENV === 'DEV',
+  /**
+   *
+   */
+  dev: process.env.NODE_ENV === 'dev',
+
+  /**
+   *
+   */
+  env: {
+    APP_NAME: process.env.APP_NAME
+  },
 
   /*
    ** Build configuration

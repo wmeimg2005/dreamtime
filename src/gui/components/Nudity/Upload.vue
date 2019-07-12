@@ -46,7 +46,7 @@ export default {
         return
       }
 
-      const modelPhoto = new ModelPhoto(null, file.path)
+      const modelPhoto = new ModelPhoto(null, file.path, file.type)
 
       const validationErrorMessage = modelPhoto.getValidationErrorMessage()
 

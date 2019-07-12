@@ -23,9 +23,9 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "yarn lint",
-    "dev": "cross-env NODE_ENV=DEV nuxt",
-    "dev-gui": "cross-env NODE_ENV=DEV electron .",
-    "build": "cross-env NODE_ENV=PRODUCTION electron-builder && node after-build.js",
+    "dev": "cross-env NODE_ENV=dev nuxt",
+    "dev-gui": "cross-env NODE_ENV=dev electron .",
+    "build": "cross-env NODE_ENV=production nuxt build && cross-env NODE_ENV=production electron-builder",
     "pack": "electron-builder --dir"
   },
   "dependencies": {

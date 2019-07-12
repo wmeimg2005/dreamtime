@@ -1,4 +1,3 @@
-require('dotenv').config()
 const { app, BrowserWindow } = require('electron')
 const { Nuxt } = require('nuxt')
 const http = require('http')
@@ -7,10 +6,10 @@ const config = require('./nuxt.config')
 
 config.rootDir = __dirname
 
+console.log('Starting in: ', config.dev ? process.env.NODE_ENV : 'Production')
+
 function startNuxtApp() {
   const nuxt = new Nuxt(config)
-
-  console.log(config.dev)
 
   if (!config.dev) {
     const server = http.createServer(nuxt.render)
@@ -32,7 +31,7 @@ function createWindow() {
     minWidth: 1000,
     minHeight: 800,
     webPreferences: {
-      preload: path.join(app.getAppPath(), 'preload.js')
+      preload: path.join(app.getAppPath(), 'deepTools.js')
     }
   })
 
@@ -52,8 +51,6 @@ function createWindow() {
     window.loadURL(url)
   } else {
     const pollServer = () => {
-      console.log('pollServer')
-
       http
         .get(url, res => {
           if (res.statusCode === 200) {

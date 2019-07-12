@@ -1,6 +1,4 @@
-#!/bin/bash
-
-cd ../gui
+Set-Location ../../gui
 
 #
 # GUI - NuxtJS Server
@@ -9,7 +7,7 @@ cd ../gui
 # and in case of making changes update them in real time.
 #
 
-start yarn dev
+Start-Process yarn dev
 
 #
 # GUI - Electron App
@@ -18,6 +16,4 @@ start yarn dev
 # the local server started previously.
 #
 
-start yarn dev-gui
-
-pause
+Start-Process yarn dev-gui

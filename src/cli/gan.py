@@ -108,7 +108,7 @@ class DeepModel(torch.nn.Module):
 
         state_dict = torch.load(save_path)
 
-        if len(self.gpu_ids) > 0:
+        if len(self.gpu_ids) > 1:
             new_state_dict = OrderedDict()
 
             for k, v in state_dict.items():
@@ -157,17 +157,18 @@ class DeepModel(torch.nn.Module):
             input_nc, output_nc, ngf, n_downsample_global, n_blocks_global, norm_layer
         )
 
-        if len(gpu_ids) > 0:
-            print(
-                "Using",
-                len(gpu_ids),
-                "of",
-                torch.cuda.device_count(),
-                "GPUs available.",
-            )
+        if len(gpu_ids) > 1:
+            # print(
+            #    "Using",
+            #    len(gpu_ids),
+            #    "of",
+            #    torch.cuda.device_count(),
+            #    "GPUs available.",
+            # )
 
             netG = torch.nn.DataParallel(netG, gpu_ids)
 
+        if len(gpu_ids) > 0:
             netG.cuda(gpu_ids[0])
 
         netG.apply(self.__weights_init)

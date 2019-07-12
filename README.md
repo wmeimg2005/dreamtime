@@ -21,7 +21,7 @@ To avoid the loss of the project and the code, it will be hosted at the followin
 
 - [Github](https://github.com/deep-man-yy/pepenude)
 - ~~[Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)~~
-- [Gitlab](https://gitlab.com/deepmanyy/easydeepnude)
+- ~~[Gitlab](https://gitlab.com/deepmanyy/easydeepnude)~~
 - [NotABug](https://notabug.org/deepmanyy/pepenude)
 - [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
 
@@ -40,34 +40,53 @@ https://i.imgur.com/Gj5n2ox.gif
 
 ---
 
-# Binaries - Ready to use
+# Binaries - For all people
+
+![](https://i.imgur.com/BS8EswI.png)
 
 ## Requirements
 
-- [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx) or [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive) (If you are going to use GPU processing. CUDA can be optional on the latest graphics cards)
+- Windows 10 / Ubuntu
+- OS 64 bits
+
+## CPU Processing Requirements
+
+- It is recommended to have 8 GB of RAM or more.
+
+## GPU Processing Requirements
+
+`If you do not have an NVIDIA or compatible graphics card you can use the application using CPU processing (but it is slower)`
+
+- NVIDIA Graphics card with CUDA compatibility
+- [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
+- [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive) *(CUDA can be optional on the latest graphics cards)*
 
 ## Download
 
-If you are not a developer or are only interested in using the program, these are the files you should download:
+Download PepeNude is very easy! 2 files and you are ready.
 
-- [CLI](https://drive.google.com/open?id=1kvXI4mSOu-teUYl8O2MH5mMLo_Vs0gCe): _The program responsible for transforming the photos. It is heavier than the original due to the implementation of GPU processing._
-- [CLI Checkpoints](https://drive.google.com/open?id=1w6ZO47To4BGh67WjeFCTBZiGVMFrK_po): _The models used by the artificial intelligence. Yes, they are required._
-- [GUI](https://drive.google.com/open?id=1NgAATqhh8GNwBHOvJOo0vvgtX_OvsOXF): _The graphical user interface so you do not have to use commands or manually crop the photo._
+*(⚠ Get ready to download ~3GB ⚠)*
+
+- [CLI & GUI](https://github.com/deep-man-yy/pepenude/releases): The command line interface (CLI) and the graphical user interface (GUI), here you will find everything you need, just download the .zip file that fits your operating system.
+- ⚠ [Checkpoints](https://mega.nz/#!3ih2jIgB!EcfD4_K_blnjfNfVmqhV4drrsN_xh4gaMsZzSZIw17s): This is the information that the transformation algorithm requires, if you do not have this file the application will not work. You only need to download it once, if you update PepeNude use this same file for checkpoints.
+
+## Download Mirrors
+
+- [CLI & GUI (MEGA)](https://mega.nz/#F!3qZhRKzY!jNndRT01kKjchCCxWbxH4Q)
+- [CLI & GUI (MediaFire)](http://www.mediafire.com/folder/lcaxa5rygajhp/AppVersions)
+- [Checkpoints (MEGA)](https://mega.nz/#!KrB1wYBa!eKGPAdCYYkU5I5Zxs_iNpjUMhU6APyHc8ozRWXW724o)
+- [Checkpoints (MediaFire)](http://www.mediafire.com/file/5pz0l10njlpc86b/checkpoints.zip/file)
 
 ## Installation
 
-- If you want to use only the console version, download the **CLI** and **CLI Checkpoints** zip files.
-- If you want to use the version with graphical interface download all 3 zip files.
-- Create a folder called "easydeepnude" (where you want), open it and inside place the zip files you have downloaded.
-- Unzip the **CLI.zip** and **GUI.zip** file (if you downloaded it) In the end you should have the folders `cli/` and `gui/`.
-- Unzip the contents of **checkpoints.zip** inside the `cli/` folder. At the end you must have the folder `cli/checkpoints` folder with 3 .lib files inside.
-- Congratulations, now you can use the console version when executing the `cli/cli.exe` file from... a console. If you want to use the graphical interface, you should only run the `gui/EasyDeepNude.exe` file
+- Once you have the 2 .zip files on your PC create a folder on your computer, it can be where you want it, call it `pepenude` and inside it place the files you have downloaded.
+- Extract the file that contains the CLI and the GUI, this should generate 2 folders: one called `cli` and another one called `gui`
+- Extract the other file `checkpoints.zip` and move the extracted folder `checkpoints` inside `cli`.
+- Ready! Now you can run `gui/PepeNude.exe` and transform all the photos you want. If you want to use the command line interface run the `cli/cli.exe` file from a console.
+- ℹ When you update PepeNude it will only be necessary to download the file that contains the CLI & GUI, you can reuse the checkpoints (unless we tell you otherwise)
+
 
 ## F.A.Q.
-
-Q: I can not download the files! Quota limit reached...
-
-A: [Try this](https://www.geekrar.com/fix-bypass-google-drive-download-limit-error/)
 
 Q: Why does the program ask for firewall permissions?
 
@@ -77,44 +96,60 @@ A: For now the GUI needs to create a local server on your computer to render the
 
 # About the Author
 
-I'm just a web developer who seemed curious of what this program can achieve and I could not resist trying to make it as accessible as possible. I like the _black humor and the satire_, the consequences that this project may have are not of my interest and anyone can do whatever they want, as long as they are under [the terms of the license](LICENSE.md).
+I am a web developer who found this application interesting and I could not resist making it as accessible as possible to the world.
 
-If you want to support the development of the project and obtain advantages please consider subscribing to my 💖[Patreon](https://www.patreon.com/deepmanyy).
+```
+I know that the project is not ethical and can generate unwanted results for many people, but the truth is that I am a lover of black humor, satire and I believe that anyone can do what they want, not all are equal and there will be people who give them a private or important use to this project.
+
+In the end what they do with that is not of my interest and I do not take responsibility for their misuse.
+
+The source code of this project must be open and free forever.
+```
+
+If you want to support the development of this project and obtain advantages please consider: 💖[Become a patron](https://www.patreon.com/deepmanyy).
 
 Email: `deepmanyy[at]msgsafe.io`
 
 4chan: `!!ZOXIOrD0Ory`
 
-Telegram: `@DeepManYY`
-
 Discord: `DeepManYY#5508`
 
 ---
 
-# Development - Only developers from here
+# Development - Only developers from here!
 
 ## Requirements
 
 - [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive)
 - [Python 3.6.8](https://www.python.org/downloads/release/python-368/)
-- [NodeJS 11+](https://nodejs.org/en/)
+- [NodeJS 10+](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/en/docs/install)
 
 ## What should I know?
 
 - [Python](https://www.codecademy.com/catalog/language/python): For the development of the CLI, the transformation algorithm and the neural network.
-- [HTML & CSS](https://www.codecademy.com/catalog/language/html-css), [JavaScript](https://www.codecademy.com/catalog/language/javascript): For the development of websites (The GUI is a website 😮)
+- [HTML & CSS](https://www.codecademy.com/catalog/language/html-css), [JavaScript](https://www.codecademy.com/catalog/language/javascript): For website development (The GUI is a website 😮)
 - [VueJS](https://vuejs.org/), [NuxtJS](https://nuxtjs.org/): The frameworks that have been used to build the GUI. _(VueJS is the best #changemymind)_
-- [Electron](https://electronjs.org/): The software used to "transform" the GUI, from a website to a desktop program.
+- [Electron](https://electronjs.org/): The software used to "transform" the GUI from a website to a desktop program.
 
 ## Setup
 
-### Windows
+```
+All the source code is inside the src/ folder, from now on all the instructions will be based on this folder.
+```
 
-`The following instructions should be applied within the src/ folder`
+### Quick Setup
 
-Install the necessary libraries and packages to compile the project by running the `install.bat` file
+Inside the folder `scripts/` you will find the scripts folders for each operating system that will allow you to install the requirements, compile the project and start a development environment all in one click.
 
-Compile the project by running the `build.bat` file, this should generate the `dist/` folder with the projects ready for use. Run `dist/gui/win-unpacked/EasyDeepNude.exe` once and close it, now transfer all files from `dist/gui/win-unpacked/` to `dist/gui/`
+⚠ If you use [Anaconda](https://www.anaconda.com/) or some other program that encapsulates Python or NodeJS in your own development environment it is very likely that these scripts fail, you will have to read the content and execute the commands manually.
 
-With this you should have a functional version
+⚠ The scripts for **macOS** are the same as those for Linux. [More information](src/scripts/mac/README.md).
+
+- install: This script will install all the necessary requirements for Python and NodeJS to compile the project. In theory you only need to run this script once.
+- build: This script will compile the project in the `dist/` folder (generate the binaries for CLI and GUI), once finished you can compress the `dist/` folder and share it with the world.
+- dev-start: This script will launch 2 consoles, one to start the NuxtJS server (which will compile all the CSS, JavaScript and Vue files) and other that will start Electron that will load the NuxtJS server. Any change you make in `gui/` will be reflected in real time.
+
+⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, YOU MUST NOT ACCESS THE WEB ADDRESS INDICATED BY THE CONSOLE, the application only works when it is opened from Electron.
+
+*Work in progress....*

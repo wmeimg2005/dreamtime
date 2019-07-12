@@ -40,6 +40,8 @@
     "object-shorthand": ["error", "always"],
     "quote-props": ["error", "as-needed"],
     "spaced-comment": "warn",
+    "import/no-webpack-loader-syntax": "warn",
+    "vue/no-v-html": "off",
     "vue/html-indent": ["warn", 2],
     "vue/html-self-closing": "off",
     "vue/singleline-html-element-content-newline": "off",

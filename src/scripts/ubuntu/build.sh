@@ -17,14 +17,16 @@ cd ../../cli
 
 pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist"
 
-cd ../../gui
+#
+
+cd ../gui
 
 #
 # GUI.
 # A wrapper of the CLI that offers a graphic interface so that its use is as simple as possible.
 #
 # Requirements:
-# * NodeJS 11+
+# * NodeJS 10+
 # * Yarn
 #
 
@@ -35,11 +37,23 @@ cd ../../gui
 yarn build
 
 #
+
+cd ../../dist
+
+# We need to move the generated folder to the final folder
+
+rm -r -f ./gui
+
+mv ./gui-unpacked/win-unpacked ./gui
+
+# We delete the generated folder
+
+rm -r -f ./gui-unpacked
+
+#
 # Success
 #
 
 echo "Build completed!"
 echo "It should have generated a folder called dist/, inside you will find the final project files that you can share with everyone!"
 echo "Enjoy and remember to respect the License!"
-
-pause

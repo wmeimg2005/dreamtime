@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const { remote } = require('electron')
 const fs = require('fs')
 const path = require('path')
@@ -10,10 +8,14 @@ const _ = require('lodash')
 const gpuInfo = require('gpu-info')
 const config = require('./nuxt.config')
 
-const debug = require('debug').default('app:preload')
+const debug = require('debug').default('app:deepTools')
 
 const { app, shell } = remote
 
+/**
+ *
+ * @param {*} dataURL
+ */
 function getBase64Data(dataURL) {
   let encoded = dataURL.replace(/^data:(.*;base64,)?/, '')
 
@@ -24,6 +26,9 @@ function getBase64Data(dataURL) {
   return encoded
 }
 
+/**
+ *
+ */
 window.deepTools = {
   /**
    *
@@ -125,6 +130,18 @@ window.deepTools = {
 
   /**
    *
+   * @param {*} absolutePath
+   */
+  fsExists(absolutePath) {
+    return fs.existsSync(absolutePath)
+  },
+
+  getCliDirPath() {
+    return this.getBasePath('cli')
+  },
+
+  /**
+   *
    * @param {*} modelPhoto
    * @param {*} useGpus
    * @param {*} useWaifu TODO
@@ -134,22 +151,22 @@ window.deepTools = {
       useWaifu = false
     }
 
-    const cliDirPath = this.getBasePath('cli')
+    const cliDirPath = this.getCliDirPath()
     const inputFilePath = modelPhoto.getCroppedFilePath()
     const outputFilePath = modelPhoto.getOutputFilePath()
 
     if (!fs.existsSync(cliDirPath)) {
       throw new Error(
-        `A problem has occurred, we could not find the CLI folder!\n
-        This can be caused by a corrupt installation, make sure that the CLI folder exists in:\n\n
+        `We could not find the CLI folder!\n
+        This can be caused by a corrupt installation, make sure that the CLI folder exists in:\n
         ${cliDirPath}`
       )
     }
 
     if (!fs.existsSync(inputFilePath)) {
       throw new Error(
-        `A problem has occurred, we could not find the cropped photo!\n
-        This may mean that ${process.env.APP_NAME} does not have permissions to write in the models folder, please make sure that the following folder exists:\n\n
+        `We could not find the cropped photo!\n
+        This may mean that ${config.env.APP_NAME} does not have permissions to write in the models folder, please make sure that the following folder exists:\n
         ${inputFilePath}`
       )
     }
@@ -180,24 +197,20 @@ window.deepTools = {
 
     let child
 
-    try {
-      if (config.dev) {
-        child = spawn('python', cliArgs, {
-          cwd: cliDirPath
-        })
-      } else {
-        child = spawn('cli.exe', cliArgs, {
-          cwd: cliDirPath
-        })
-      }
-    } catch (error) {
-      throw new Error(
-        `A problem has occurred, we were unable to start the CLI for the transformation!\n
-        This can be caused by a corrupt installation, please make sure that cli.exe exists and works correctly (if you are a developer, make sure that main.py works)\n\n
-        The script has reported the following error, take a screenshot to get more information:\n\n
-        ${error}`
-      )
+    if (config.dev) {
+      child = spawn('python', cliArgs, {
+        cwd: cliDirPath
+      })
+    } else {
+      child = spawn('cli.exe', cliArgs, {
+        cwd: cliDirPath
+      })
     }
+
+    child.on('error', error => {
+      debug(error)
+      bus.emit('error', null, error)
+    })
 
     child.stdout.on('data', data => {
       debug(`stdout: ${data}`)
@@ -215,68 +228,5 @@ window.deepTools = {
     })
 
     return bus
-  },
-
-  process(gpuId, useCpu) {
-    if (useCpu === true) {
-      gpuId = null
-    }
-
-    const cliPath = path.join(
-      path.dirname(path.dirname(app.getPath('exe'))),
-      'cli'
-    )
-
-    const inputPath = path.join(path.dirname(app.getPath('temp')), 'input.png')
-
-    const outputPath = path.join(
-      path.dirname(app.getPath('temp')),
-      'output.png'
-    )
-
-    const args = [`--input`, inputPath, `--output`, outputPath]
-
-    if (config.dev) {
-      args.unshift('main.py')
-    }
-
-    if (useCpu) {
-      args.push('--cpu')
-    }
-
-    if (!_.isNil(gpuId)) {
-      args.push(`--gpu`)
-      args.push(gpuId)
-    }
-
-    const eventBus = new EventBus()
-    let child
-
-    if (config.dev) {
-      child = spawn('python', args, {
-        cwd: cliPath
-      })
-    } else {
-      child = spawn('cli.exe', args, {
-        cwd: cliPath
-      })
-    }
-
-    child.stdout.on('data', data => {
-      console.log(`stdout: ${data}`)
-      eventBus.emit('stdout', null, data)
-    })
-
-    child.stderr.on('data', data => {
-      console.log(`stderr: ${data}`)
-      eventBus.emit('stderr', null, data)
-    })
-
-    child.on('close', code => {
-      console.log(`child process exited with code ${code}`)
-      eventBus.emit('ready', null, code)
-    })
-
-    return eventBus
   }
 }

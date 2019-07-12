@@ -14,21 +14,28 @@ Join the community of people who use the project either for entertainment or dev
 To avoid the loss of the project and the code, it will be hosted at the following sites:
 
 - [Github](https://github.com/deep-man-yy/pepenude)
-- [Gitlab](https://gitlab.com/deepmanyy/easydeepnude)
 - [NotABug](https://notabug.org/deepmanyy/pepenude)
 - [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
 
 Remember that you can follow the project or make a fork and create your own version! Read the [LICENSE](https://github.com/deep-man-yy/pepenude/blob/master/LICENSE.md) for more information.
 
-## Credits
-
-- **DeepManYY:** I am a web developer and I think it is interesting what PepeNude can achieve.
-- **deeppppp:** Be active in the development since its beginning and show great interest in the algorithm of the neural network.
-- **wisp101:** Be active in the development and provide help to other developers.
-
 ## Development Support
 
 Developing an application like PepeNude takes time! Any help is welcome:
 
-- **If you have extra $$$:** Consider subscribing to the project [Patreon](https://www.patreon.com/deepmanyy), you can donate a few dollars monthly and get additional benefits.
+- **If you have extra $$$:** Consider 💖[Become a patron](https://www.patreon.com/deepmanyy). Support economically the project monthly and obtain exclusive benefits.
 - **If you are a developer:** Consider making a fork of the project and make PR of any improvement you can do, also join our server in [Discord](https://discord.gg/RjBSaND) where we have channels exclusively for development.
+
+## Credits
+
+- **DeepManYY:** I am a web developer who found this application interesting and I could not resist making it as accessible as possible to the world.
+- **deeppppp:** Be a follower of PepeNude since its beginning, help the community and be active in the research and development of a new transformation algorithm.
+- **wisp101:** Be active in the development and provide help to other developers.
+- **d3pn3p:** Be active in the research and development of a new transformation algorithm.
+- **Invader21:** Be active in the research and development of a new transformation algorithm.
+
+## 💖 Patreons
+
+Thank you so much everyone! Your financial help helps the project to move forward more quickly and to make it open and free forever.
+
+- YG

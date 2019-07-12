@@ -1,6 +1,4 @@
-#!/bin/bash
-
-cd ../../cli
+﻿Set-Location ../../cli
 
 #
 # CLI.
@@ -12,14 +10,14 @@ cd ../../cli
 #
 
 # PyInstaller will begin to compile the script and package
-# everything necessary in a directory with the final binary
+# everything necessary in a directory with the final .exe
 # Relax and enjoy your coffee :)
 
 pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist"
 
 #
 
-cd ../gui
+Set-Location ../gui
 
 #
 # GUI.
@@ -30,30 +28,33 @@ cd ../gui
 # * Yarn
 #
 
-# Electron-build will begin to compile the NuxtJS project
-# and place everything necessary in a directory with the final binary
+# electron-build will begin to compile the NuxtJS project
 # Relax more and enjoy more your coffee :))
 
 yarn build
 
 #
 
-cd ../../dist
+Set-Location ../../dist
 
 # We need to move the generated folder to the final folder
 
-rm -r -f ./gui
+if ( Test-Path ./gui ) {
+  Remove-Item ./gui
+}
 
-mv ./gui-unpacked/win-unpacked ./gui
+Move-Item ./gui-unpacked/win-unpacked ./gui -Force
 
 # We delete the generated folder
 
-rm -r -f ./gui-unpacked
+Remove-Item –path ./gui-unpacked -recurse
 
 #
 # Success
 #
 
-echo "Build completed!"
-echo "It should have generated a folder called dist/, inside you will find the final project files that you can share with everyone!"
-echo "Enjoy and remember to respect the License!"
+Write-Output ("Build completed!")
+Write-Output ("It should have generated a folder called dist/, inside you will find the final project files that you can share with everyone!")
+Write-Output ("Enjoy and remember to respect the License!")
+
+cmd /c pause | out-null

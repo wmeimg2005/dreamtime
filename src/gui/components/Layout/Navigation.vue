@@ -28,10 +28,18 @@
         <nuxt-link to="/about" class="navbar-item">
           🎉 About
         </nuxt-link>
+      </nav>
+    </section>
 
-        <nuxt-link to="/about" class="navbar-item">
+    <section class="navbar-section">
+      <nav class="navbar-items">
+        <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shellOpenExternal('https://www.patreon.com/deepmanyy')">
           💖 Patreon
-        </nuxt-link>
+        </a>
+
+        <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shellOpenExternal('https://discord.gg/RjBSaND')">
+          🤟 Discord
+        </a>
       </nav>
     </section>
   </div>
