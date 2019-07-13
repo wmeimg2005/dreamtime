@@ -12,18 +12,17 @@ PepeNude is an application that allows you to use the power of your CPU or GPU t
 
 Join the community of people who use the project either for entertainment or development purposes, you can get valuable help or create interesting discussions to improve the future of PepeNude:
 
-- [Discord](https://discord.gg/RjBSaND) (More active)
-- [Telegram](https://t.me/easydeepnudegallery)
+- [Discord](http://bit.ly/32nnbdb)
 
 ## Backups
 
 To avoid the loss of the project and the code, it will be hosted at the following sites:
 
-- [Github](https://github.com/deep-man-yy/pepenude)
+- [Github](http://bit.ly/2GfuzxM) (Requires having a Github account)
 - ~~[Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)~~
 - ~~[Gitlab](https://gitlab.com/deepmanyy/easydeepnude)~~
-- [NotABug](https://notabug.org/deepmanyy/pepenude)
-- [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
+- [NotABug](http://bit.ly/2LrezwX)
+- [GitGud](http://bit.ly/2LRZyDM)
 
 Remember that you can follow the project or make a fork and create your own version! Read the [LICENSE](LICENSE.md) for more information.
 
@@ -37,22 +36,22 @@ I will try to help in any problem you have.
 
 ---
 
-# Binaries - For all people
+# 💜 Binaries
 
 ![](https://i.imgur.com/BS8EswI.png)
 
 ## Requirements
 
-- Windows 10 / Ubuntu
-- OS 64 bits
+- Windows 10 - 1809+ - 64 bits
+- Ubuntu 17+ - 64bits
+- **8 GB** of RAM or more.
 
-## CPU Processing Requirements
+> ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
 
-- It is recommended to have 8 GB of RAM or more.
 
 ## GPU Processing Requirements
 
-`If you do not have an NVIDIA or compatible graphics card you can use CPU processing.`
+> 👉 If you do not have an NVIDIA or compatible graphics card you can use CPU processing.
 
 - NVIDIA Graphics card with CUDA compatibility
 - [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
@@ -62,15 +61,15 @@ I will try to help in any problem you have.
 
 Download PepeNude is very easy! 2 files and you are ready. *(Get ready to download ~3GB)*
 
-- [CLI & GUI](https://github.com/deep-man-yy/pepenude/releases): The command line interface (CLI) and the graphical user interface (GUI), here you will find everything you need, just download the .zip file that fits your operating system.
-- ⚠ [Checkpoints](https://mega.nz/#!3ih2jIgB!EcfD4_K_blnjfNfVmqhV4drrsN_xh4gaMsZzSZIw17s): This is the information that the transformation algorithm requires, if you do not have this file the application will not work. You only need to download it once, if you update PepeNude use this same file for checkpoints.
+- [CLI & GUI](http://bit.ly/2Gcr9LU): The command line interface (CLI) and the graphical user interface (GUI), here you will find everything you need, just download the .zip file that fits your operating system.
+- 👉 [Checkpoints](http://bit.ly/2JBP88o): This is the information that the transformation algorithm **requires**, if you do not have this file the application will not work. You only need to download it once, if you update PepeNude use this same file for checkpoints. (unless we tell you otherwise)
 
 ## Download Mirrors
 
-- [CLI & GUI (MEGA)](https://mega.nz/#F!3qZhRKzY!jNndRT01kKjchCCxWbxH4Q)
-- [CLI & GUI (MediaFire)](http://www.mediafire.com/folder/lcaxa5rygajhp/AppVersions)
-- [Checkpoints (MEGA)](https://mega.nz/#!KrB1wYBa!eKGPAdCYYkU5I5Zxs_iNpjUMhU6APyHc8ozRWXW724o)
-- [Checkpoints (MediaFire)](http://www.mediafire.com/file/5pz0l10njlpc86b/checkpoints.zip/file)
+- [CLI & GUI (MEGA)](http://bit.ly/2YQAEI1)
+- [CLI & GUI (MediaFire)](http://bit.ly/2YQAHnb)
+- [Checkpoints (MEGA)](http://bit.ly/30GiSbh)
+- [Checkpoints (MediaFire)](http://bit.ly/2Y0V6sO)
 
 ## Installation
 
@@ -78,7 +77,8 @@ Download PepeNude is very easy! 2 files and you are ready. *(Get ready to downlo
 - Extract the file that contains the CLI and the GUI, this should generate 2 folders: one called `cli` and another one called `gui`
 - Extract the other file `checkpoints.zip` and move the extracted folder `checkpoints` inside `cli`.
 - Ready! Now you can run `gui/PepeNude.exe` and transform all the photos you want. If you want to use the command line interface run the `cli/cli.exe` file from a console.
-- ℹ When you update PepeNude it will only be necessary to download the file that contains the CLI & GUI, you can reuse the checkpoints (unless we tell you otherwise)
+
+> ℹ When you update PepeNude it will only be necessary to download the file that contains the `CLI & GUI`, you can reuse the checkpoints (unless we tell you otherwise)
 
 
 ## F.A.Q.
@@ -99,7 +99,7 @@ In the end what they do with that is not of my interest and I do not take respon
 
 The source code of this project must be open and free forever.
 
-If you want to support the development of this project and obtain advantages please consider: 💖[Become a patron](https://www.patreon.com/deepmanyy).
+> If you want to support the development of this project and obtain advantages please consider: 💖[Become a patron](http://bit.ly/2Y7Wqd8).
 
 Email: `deepmanyy[at]msgsafe.io`
 
@@ -109,7 +109,7 @@ Discord: `DeepManYY#5508`
 
 ---
 
-# Development - 🚧 You are entering an area only for developers!
+# 💻 Development > 🚧 Area only for developers!
 
 ## Requirements
 
@@ -127,9 +127,8 @@ Discord: `DeepManYY#5508`
 
 ## Setup
 
-```
-All the source code is inside the src/ folder, from now on all the instructions will be based on this folder.
-```
+
+> All the source code is inside the src/ folder, from now on all the instructions will be based on this folder.
 
 ### Quick Setup
 
@@ -139,10 +138,10 @@ Inside the folder `scripts/` you will find folders for the different supported o
 - **build**: This script will compile the project in the `dist/` folder (generate the binaries for CLI and GUI), once finished you can compress the `dist/` folder and share it with the world.
 - **dev-start**: This script will launch 2 processes, one to start the NuxtJS server (which will compile all the CSS, JavaScript and Vue files) and other that will start Electron that will load the NuxtJS server. Any change you make in `gui/` will be reflected in real time.
 
-⚠ If you use [Anaconda](https://www.anaconda.com/) or some other program that encapsulates Python or NodeJS in your own development environment it is very likely that these scripts fail, you will have to read the content and execute the commands manually.
+> ⚠ If you use [Anaconda](https://www.anaconda.com/) or some other program that encapsulates Python or NodeJS in their own development environment it is very likely that these scripts fail, you will have to read the content and execute the commands manually.
 
-⚠ The scripts for **macOS** are the same as those for Linux. [More information](src/scripts/mac/README.md).
+> ⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, **you must not access the web address indicated by the console**, the application only works when it is opened from Electron.
 
-⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, **you must not access the web address indicated by the console**, the application only works when it is opened from Electron.
+> 👉 The scripts for **macOS** are the same as those for Linux. [More information](src/scripts/mac/README.md).
 
 *Work in progress....*
