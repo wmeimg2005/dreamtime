@@ -202,9 +202,7 @@ window.deepTools = {
         cwd: cliDirPath
       })
     } else {
-      child = spawn('cli', cliArgs, {
-        cwd: cliDirPath
-      })
+      child = spawn(path.join(cliDirPath, 'cli'), cliArgs)
     }
 
     child.on('error', error => {
