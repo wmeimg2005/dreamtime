@@ -45,8 +45,7 @@ export default {
     },
 
     save() {
-      const now = moment().format('MM-DD-YYYY-HH-mm')
-      const filename = `${now}.png`
+      const filename = window.deepTools.getResultFilename(this.$nudity.modelPhoto.sourceFilePath)
       download(this.outputDataURL, filename, 'image/png')
     },
 
