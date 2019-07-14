@@ -120,19 +120,46 @@ export default {
     this.fetchGpusList()
   },
 
+  mounted() {
+
+    // Pull settings from local storage
+    if (localStorage.useCpu) {
+      this.useCpu = localStorage.useCpu
+    }
+    if (localStorage.useGpus) {
+      this.useGpus = localStorage.useGpus
+    }
+    if (localStorage.enablePubes) {
+      this.enablePubes = localStorage.enablePubes
+    }
+  },
+
   methods: {
     async fetchGpusList() {
-      const gpus = await window.deepTools.getGpusList()
-      this.gpuList = _.filter(gpus, { AdapterCompatibility: 'NVIDIA' })
+      try {
+        const gpus = await window.deepTools.getGpusList()
+        console.log("GPUs: " + gpus)
+        this.gpuList = _.filter(gpus, { AdapterCompatibility: 'NVIDIA' })
 
-      if (this.gpuList.length === 0) {
-        this.useCpu = true
-      } else {
-        this.useGpus.push(0)
+        if (this.gpuList.length === 0) {
+          this.useCpu = true
+        } else {
+          this.useGpus.push(0)
+        }
+      } catch (error) {
+        if (error.message == "platform unsupported") {
+          this.useCpu = true
+        }
       }
+
     },
 
     async transform() {
+      // Save settings in local storage
+      localStorage.useCpu = this.useCpu
+      localStorage.useGpus = this.useGpus
+      localStorage.enablePubes = this.enablePubes
+
       this.isLoading = true
 
       try {
