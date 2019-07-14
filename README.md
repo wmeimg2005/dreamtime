@@ -114,7 +114,7 @@ Discord: `DeepManYY#5508`
 ## Requirements
 
 - [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive)
-- [Python 3.6.8](https://www.python.org/downloads/release/python-368/)
+- [Python 3.6](https://www.python.org/downloads/release/python-368/)
 - [NodeJS 10+](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/en/docs/install)
 
@@ -134,7 +134,7 @@ Discord: `DeepManYY#5508`
 
 Inside the folder `scripts/` you will find folders for the different supported operating systems, within each folder there is a series of scripts that will allow you to prepare the project for its development.
 
-- **install**: This script will install all the necessary requirements for Python and NodeJS. In theory you only need to run this script once.
+- **setup**: This script will install all the necessary requirements for Python and NodeJS. In theory you only need to run this script once per version.
 - **build**: This script will compile the project in the `dist/` folder (generate the binaries for CLI and GUI), once finished you can compress the `dist/` folder and share it with the world.
 - **dev-start**: This script will launch 2 processes, one to start the NuxtJS server (which will compile all the CSS, JavaScript and Vue files) and other that will start Electron that will load the NuxtJS server. Any change you make in `gui/` will be reflected in real time.
 

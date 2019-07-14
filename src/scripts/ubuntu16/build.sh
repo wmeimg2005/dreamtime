@@ -7,7 +7,7 @@ cd ../../cli
 # The CLI is where the neural network is located.
 #
 # Requirements:
-# * Python3 and pip3 (I use 3.6.8)
+# * Python 3.6 and pip3
 # * CUDA 10.0
 #
 
@@ -23,7 +23,7 @@ cd ../gui
 
 #
 # GUI.
-# A wrapper of the CLI that offers a graphic interface so that its use is as simple as possible.
+# A wrapper of the CLI that offers a graphical interface so that its use is as simple as possible.
 #
 # Requirements:
 # * NodeJS 10+

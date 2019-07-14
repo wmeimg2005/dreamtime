@@ -1,32 +1,34 @@
-Set-Location ../../cli
+#!/bin/bash
+
+cd ../../cli
 
 #
 # CLI.
 # The CLI is where the neural network is located.
 #
 # Requirements:
-# * Python3 and pip3 (I use 3.6.8)
+# * Python 3.6 and pip3
 # * CUDA 10.0
 #
 
-# PyInstaller will allow us to compile and package everything in a simple .exe
-pip3 install pyinstaller
+# PyInstaller will allow us to compile and package everything in a simple binary
+python3 -m pip --no-cache-dir --user install pyinstaller
 
 # This command should resolve and install all the necessary packages
-pip3 install -r requirements-windows.txt
+python3 -m pip --no-cache-dir --user install -r requirements-ubuntu.txt
 
 # NOTES from wisp101:
 # Make sure pyinstaller is accessible from the cmdline as "pyinstaller".
 # Otherwise, track down its folder and add it to your path. I found mine in "~/.local/bin".
 
-Set-Location ../gui
+cd ../gui
 
 #
 # GUI.
-# A wrapper of the CLI that offers a graphic interface so that its use is as simple as possible.
+# A wrapper of the CLI that offers a graphical interface so that its use is as simple as possible.
 #
 # Requirements:
-# * NodeJS (In theory any recent version works.)
+# * NodeJS 10+
 # * Yarn
 #
 
@@ -44,6 +46,6 @@ yarn install --force --no-lockfile
 # Success
 #
 
-Write-Output "Installation completed!"
-Write-Output "- Now you can run the dev-start.bat script to start modifying the GUI and see the changes in real time."
-Write-Output "- Now you can run the build.bat script to compile the project and get an easy-to-use .exe"
+echo "Installation completed!"
+echo "- Now you can run the dev-start.bat script to start modifying the GUI and see the changes in real time."
+echo "- Now you can run the build.bat script to compile the project and get an easy-to-use binary"
