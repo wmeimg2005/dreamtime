@@ -12,10 +12,10 @@ cd ../../cli
 #
 
 # PyInstaller will allow us to compile and package everything in a simple binary
-python3 -m pip --no-cache-dir --user install pyinstaller
+python3 -m pip --no-cache-dir install pyinstaller --user
 
 # This command should resolve and install all the necessary packages
-python3 -m pip --no-cache-dir --user install -r requirements-ubuntu.txt
+python3 -m pip --no-cache-dir install -r requirements-ubuntu.txt --user
 
 # NOTES from wisp101:
 # Make sure pyinstaller is accessible from the cmdline as "pyinstaller".

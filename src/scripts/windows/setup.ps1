@@ -10,10 +10,10 @@ Set-Location ../../cli
 #
 
 # PyInstaller will allow us to compile and package everything in a simple .exe
-python3 -m pip --no-cache-dir --user install pyinstaller
+python3 -m pip --no-cache-dir install pyinstaller --user
 
 # This command should resolve and install all the necessary packages
-python3 -m pip --no-cache-dir --user install -r requirements-windows.txt
+python3 -m pip --no-cache-dir install -r requirements-windows.txt --user
 
 # NOTES from wisp101:
 # Make sure pyinstaller is accessible from the cmdline as "pyinstaller".
