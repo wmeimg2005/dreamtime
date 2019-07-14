@@ -122,14 +122,22 @@ export default {
 
   methods: {
     async fetchGpusList() {
-      const gpus = await window.deepTools.getGpusList()
-      this.gpuList = _.filter(gpus, { AdapterCompatibility: 'NVIDIA' })
+      try {
+        const gpus = await window.deepTools.getGpusList()
+        console.log("GPUs: " + gpus)
+        this.gpuList = _.filter(gpus, { AdapterCompatibility: 'NVIDIA' })
 
-      if (this.gpuList.length === 0) {
-        this.useCpu = true
-      } else {
-        this.useGpus.push(0)
+        if (this.gpuList.length === 0) {
+          this.useCpu = true
+        } else {
+          this.useGpus.push(0)
+        }
+      } catch (error) {
+        if (error.message == "platform unsupported") {
+          this.useCpu = true
+        }
       }
+
     },
 
     async transform() {
