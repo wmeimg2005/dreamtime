@@ -120,6 +120,20 @@ export default {
     this.fetchGpusList()
   },
 
+  mounted() {
+
+    // Pull settings from local storage
+    if (localStorage.useCpu) {
+      this.useCpu = localStorage.useCpu
+    }
+    if (localStorage.useGpus) {
+      this.useGpus = localStorage.useGpus
+    }
+    if (localStorage.enablePubes) {
+      this.enablePubes = localStorage.enablePubes
+    }
+  },
+
   methods: {
     async fetchGpusList() {
       try {
@@ -141,6 +155,11 @@ export default {
     },
 
     async transform() {
+      // Save settings in local storage
+      localStorage.useCpu = this.useCpu
+      localStorage.useGpus = this.useGpus
+      localStorage.enablePubes = this.enablePubes
+
       this.isLoading = true
 
       try {
