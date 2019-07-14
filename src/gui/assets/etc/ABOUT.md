@@ -29,8 +29,10 @@ Developing an application like PepeNude takes time! Any help is welcome:
 ## Credits
 
 - **DeepManYY:** I am a web developer who found this application interesting and I could not resist making it as accessible as possible to the world.
-- **deeppppp:** Be a follower of PepeNude since its beginning, help the community and be active in the research and development of a new transformation algorithm.
-- **wisp101:** Be active in the development and provide help to other developers.
+- **[1337Roy](https://github.com/1337Roy):** For his contribution to the source code to activate or deactivate pubic hair.
+- **[wisp101](https://github.com/wisp101):** Be active in the development and provide help to other developers.
+
+- **[deeppppp](https://github.com/deeppppp):** Be a follower of PepeNude since its beginning, help the community and be active in the research and development of a new transformation algorithm.
 - **d3pn3p:** Be active in the research and development of a new transformation algorithm.
 - **Invader21:** Be active in the research and development of a new transformation algorithm.
 
