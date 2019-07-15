@@ -8,3 +8,4 @@ opencv-python==4.1.0.25
 rsa==4.0
 torch==1.1.0
 torchvision==0.2.2.post3
+imageio==2.5.0

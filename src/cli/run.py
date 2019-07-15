@@ -5,6 +5,7 @@ import os
 from gan import DataLoader, DeepModel, tensor2im
 
 # OpenCv Transform:
+from multiprocessing.pool import ThreadPool
 from opencv_transform.mask_to_maskref import create_maskref
 from opencv_transform.maskdet_to_maskfin import create_maskfin
 from opencv_transform.dress_to_correct import create_correct
@@ -178,3 +179,20 @@ def process(cv_img, gpu_ids, enable_pubes):
             watermark = create_watermark(nude)
 
     return watermark
+
+
+# process(cv_img, mode)
+# return:
+# 	gif
+
+def process_gif(gif_imgs, gpu_ids, enable_pubes, tmp_dir):
+    def process_one_image(a):
+        print("Processing image : {}/{}".format(a[1] + 1, len(gif_imgs)))
+        img = cv2.resize(a[0], (512, 512))
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(os.path.join(tmp_dir, "output_{}.jpg".format(a[1])), process(img, gpu_ids, enable_pubes))
+
+    pool = ThreadPool(4)
+    pool.map(process_one_image, zip(gif_imgs, [i for i in range(len(gif_imgs))]))
+    pool.close()
+    pool.join()

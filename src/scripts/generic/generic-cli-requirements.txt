@@ -3,4 +3,5 @@ pillow==6.1.0
 opencv-python==4.1.0.25
 rsa==4.0
 torchvision==0.2.2.post3
+imageio=2.5.0
 %torch%
