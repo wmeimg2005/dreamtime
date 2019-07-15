@@ -31,8 +31,7 @@ Set-Location ../gui
 #
 
 # This command should resolve and install all the necessary packages
-# We will not generate a .lock file to avoid problems
-yarn install --force --no-lockfile
+yarn install
 
 # NOTES:
 # If you try to compile the program and you get an error message similar to:

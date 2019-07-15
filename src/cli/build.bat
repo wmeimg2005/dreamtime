@@ -1,1 +1,0 @@
-pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist"
