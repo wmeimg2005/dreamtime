@@ -127,6 +127,15 @@ window.deepTools = {
     const data = getBase64Data(dataURL)
     return fs.writeFileSync(absolutePath, data, 'base64')
   },
+  
+  /**
+   *
+   * @param {*} sourcePath
+   */
+  getResultFilename(sourcePath) {
+   const name = path.parse(sourcePath).name
+   return `${name}_result.png`
+  },
 
   /**
    *
