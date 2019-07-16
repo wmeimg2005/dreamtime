@@ -19,7 +19,7 @@ detected_py = get_python_version()
 log.debug("OS : {}".format(detected_os))
 log.debug("Python version : {}".format(detected_py))
 
-if detected_os == OS.UNKNOW:
+if detected_os == OS.UNKNOWN:
     log.fatal("Unknown OS !")
     exit(1)
 
@@ -41,16 +41,28 @@ if not check_pyinstaller():
     exit(1)
 
 ## Build Cli
-log.info('Building Cli')
-with cd("../../cli"):
-    try:
-        PyInstaller.__main__.run([
+def pyinstaller_args():
+    common = [
+            '--workpath=./build/',
+            '--specpath=.',
             '-y',
             '--onedir',
             '--name=cli',
             '--distpath=../../dist',
             'main.py',
-        ])
+        ]
+    if detected_os == OS.LINUX:
+        return common
+    if detected_os == OS.MAC:
+        return common
+    if detected_os == OS.WIN:
+        common.extend(['--add-binary=../third/msvcp/msvcp140.dll;.'])
+        return common
+
+log.info('Building Cli')
+with cd("../../cli"):
+    try:
+        PyInstaller.__main__.run(pyinstaller_args())
     except Exception as e:
         log.error(e)
         log.fatal("Cli building failed")

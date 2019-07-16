@@ -26,7 +26,7 @@ detected_py = get_python_version()
 log.debug("OS : {}".format(detected_os))
 log.debug("Python version : {}".format(detected_py))
 
-if detected_os == OS.UNKNOW:
+if detected_os == OS.UNKNOWN:
     log.fatal("Unknown OS !")
     exit(1)
 
@@ -78,10 +78,10 @@ def torch_version():
 
 
 log.info('Installing Cli dependencies')
-path = create_temporary_copy("generic-cli-requirements.txt", "cli-requierments.txt")
+path = create_temporary_copy("../../cli/requirements-generic.txt", "cli-requirements.txt")
 with fileinput.FileInput(path, inplace=True) as f:
     for l in f:
-        print(l.replace("%torch%", torch_version()), end='')
+        print(l.replace("torch==1.1.0", torch_version()), end='')
 r = subprocess.run([sys.executable, '-m', 'pip', 'install', '-r', path])
 os.remove(path)
 if r.returncode != 0:
@@ -92,7 +92,7 @@ log.info('Cli dependencies successfully installed')
 ## Gui dependencies
 log.info('Installing Gui Dependencies')
 with cd("../../gui"):
-    r = subprocess.run(['yarn', 'build'], shell=True) if detected_os == OS.WIN else subprocess.run(['yarn', 'build'])
+    r = subprocess.run(['yarn', 'install'], shell=True) if detected_os == OS.WIN else subprocess.run(['yarn', 'install'])
     if r.returncode != 0:
         log.fatal("Gui Dependencies installation failed")
         exit(1)

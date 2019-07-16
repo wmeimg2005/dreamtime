@@ -9,7 +9,7 @@ from sys import platform as _platform
 
 
 class OS(Enum):
-    UNKNOW = "unknown"
+    UNKNOWN = "unknown"
     LINUX = "linux"
     MAC = "mac"
     WIN = "win"
@@ -23,7 +23,7 @@ def get_os():
     elif _platform == "win32" or _platform == "win64":
         return OS.WIN
     else:
-        return OS.UNKNOW
+        return OS.UNKNOWN
 
 
 def get_python_version():

@@ -13,7 +13,7 @@
 # everything necessary in a directory with the final .exe
 # Relax and enjoy your coffee :)
 
-pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist"
+pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist" --add-binary "../third/msvcp/msvcp140.dll;."
 
 #
 
