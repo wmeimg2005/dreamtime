@@ -4,7 +4,7 @@
   "description": "PepeNude GUI",
   "author": "DeepManYY",
   "private": true,
-  "main": "main.js",
+  "main": "electron/main.js",
   "build": {
     "appId": "com.deepmanyy.pepenude",
     "productName": "PepeNude",
@@ -24,7 +24,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "yarn lint",
     "dev": "cross-env NODE_ENV=dev nuxt",
-    "dev-gui": "cross-env NODE_ENV=dev electron .",
+    "dev-gui": "cross-env NODE_ENV=dev DEBUG=app:* electron .",
     "build": "cross-env NODE_ENV=production nuxt build && cross-env NODE_ENV=production electron-builder",
     "pack": "electron-builder --dir"
   },
@@ -36,6 +36,7 @@
     "cropperjs": "^1.5.2",
     "debug": "^4.1.1",
     "downloadjs": "^1.4.7",
+    "electron-root-path": "^1.0.9",
     "gpu-info": "^0.0.1",
     "image-to-base64": "^2.0.1",
     "js-event-bus": "^1.0.0",

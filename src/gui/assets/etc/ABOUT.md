@@ -1,6 +1,6 @@
 ![](https://i.imgur.com/rV3bPPk.png)
 
-PepeNude is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment.
+DreamTime is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment.
 
 ## Community
 

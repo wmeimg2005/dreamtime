@@ -1,75 +1,75 @@
 <template>
   <div class="nudity-settings">
-    <div v-if="!isLoading" class="content-body settings-fields">
-      <nudity-preview />
+    <div class="content-body">
+      <nudity-preview class="mb-5" />
 
-      <!-- Process with -->
-      <section>
-        <div class="field">
-          <label class="label">Process with:</label>
-
+      <div v-if="!isLoading" class="settings-fields">
+        <!-- Process with -->
+        <section>
           <div class="field">
-            <input v-model="useCpu" type="checkbox" />
-            CPU
-            <p class="field-help">Force CPU processing. (Slower) Select this option if <strong>you do not have</strong> an NVIDIA GPU!</p>
-          </div>
+            <label class="label">Process Device:</label>
 
-          <div v-for="(gpu,index) in gpuList" :key="index" class="field">
-            <input v-model="useGpus" :value="index" type="checkbox" :disabled="useCpu" />
-            {{ gpu.Caption || gpu.Name || gpu.Description || gpu.VideoProcessor }}
-          </div>
+            <div class="field">
+              <input v-model="settings.useCpu" type="checkbox" />
+              CPU
+              <p class="field-help">Force CPU processing. (Slower) Select this option if <strong>you do not have</strong> an NVIDIA GPU!</p>
+            </div>
 
+            <div v-for="(gpu,index) in gpuList" :key="index" class="field">
+              <input v-model="settings.useGpus" :value="index" type="checkbox" :disabled="settings.useCpu" />
+              {{ gpu.Caption || gpu.Name || gpu.Description || gpu.VideoProcessor }}
+            </div>
+
+            <div class="field">
+              <input v-model="useCustomGpu" type="checkbox" :disabled="settings.useCpu" />
+              Custom GPU ID
+              <p class="field-help">Select this option if you want to use a GPU that is not in the list.</p>
+            </div>
+
+            <div class="field">
+              <input v-if="useCustomGpu" v-model="customGpuId" class="input" type="number" min="0" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Options -->
+        <section>
           <div class="field">
-            <input v-model="useCustomGpu" type="checkbox" :disabled="useCpu" />
-            Custom GPU ID
-            <p class="field-help">Select this option if you want to use a GPU that is not in the list.</p>
-          </div>
+            <label class="label">Options:</label>
 
-          <div class="field">
-            <input v-if="useCustomGpu" v-model="customGpuId" class="input" type="number" min="0" />
+            <div class="field">
+              <input v-model="settings.enablePubes" type="checkbox" />
+              Enable Pubic Hair
+            </div>
           </div>
+        </section>
+
+        <!-- TODO: waifu2x -->
+        <section v-if="false">
+          <div v-if="!settings.useCpu" class="field">
+            <label class="label">Use waifu2x:</label>
+            <input v-model="settings.useWaifu" type="checkbox" /> Yes, why not?
+            <p class="field-help">waifu2x will try to resize your transformed photo to <strong>1024x1024</strong> with the least possible quality loss. Keep in mind that as its name indicates, the program is not designed to work with real people so there may be some minor changes in your photo.</p>
+          </div>
+        </section>
+
+        <div class="buttons">
+          <nuxt-link to="/nudity/crop" class="button is-danger">Back</nuxt-link>
+          <button class="button" @click.prevent="transform">Transform!</button>
         </div>
-      </section>
-      <!-- Processing Options -->
-      <section>
-        <div class="field">
-          <label class="label">Processing Options:</label>
-
-          <div class="field">
-            <input v-model="enablePubes" type="checkbox" />
-            Enable Pubic Hair
-          </div>
-        </div>
-      </section>
-
-      <!-- waifu2x -->
-      <!-- WORK IN PROGRESS! -->
-      <section v-if="false">
-        <div v-if="!useCpu" class="field">
-          <label class="label">Use waifu2x:</label>
-          <input v-model="useWaifu" type="checkbox" /> Yes, why not?
-          <p class="field-help">waifu2x will try to resize your transformed photo to <strong>1024x1024</strong> with the least possible quality loss. Keep in mind that as its name indicates, the program is not designed to work with real people so there may be some minor changes in your photo.</p>
-        </div>
-      </section>
-
-      <div class="buttons">
-        <nuxt-link to="/nudity/crop" class="button is-danger">Back</nuxt-link>
-        <button class="button" @click.prevent="transform">Transform!</button>
       </div>
-    </div>
 
-    <!-- Loading -->
-    <div v-else class="settings-loading">
-      <nudity-preview />
+      <!-- Loading -->
+      <div v-else class="settings-loading">
+        <h1 class="title">{{ $nudity.transformationDuration }}s</h1>
 
-      <h1 class="title">{{ $nudity.transformationDuration }}s</h1>
+        <h1 class="title">🧜‍ Loading...</h1>
 
-      <h1 class="title">🧜‍ Loading...</h1>
+        <h3 class="subtitle">Transforming your photo with the power of your {{ deviceName }}!</h3>
 
-      <h3 class="subtitle">Transforming your photo with the power of your {{ deviceName }}!</h3>
-
-      <div class="settings-cli">
-        <p v-for="(line, index) in $nudity.modelPhoto.cliLines" :key="index" class="cli-line">{{ line }}</p>
+        <div class="settings-cli">
+          <p v-for="(line, index) in $nudity.modelPhoto.cliLines" :key="index" class="cli-line">{{ line }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -77,93 +77,113 @@
 
 <script>
 import _ from 'lodash'
-import { mapState } from 'vuex'
 
 export default {
   middleware: 'nudity',
 
   data: () => ({
+    // Indicates if the processing is running
     isLoading: false,
 
-    useCpu: false,
-    useGpus: [],
+    // List of GPUs detected in the system
     gpuList: [],
 
+    // Custom GPU ID
     useCustomGpu: false,
     customGpuId: 0,
 
-    useWaifu: false, // i feel dirty because of this variable name
-    enablePubes: false,
+    // Process Settings
+    settings: {
+      useCpu: false,
+      useGpus: [],
+      useWaifu: false, // weebs out 😡👉🚪
+      enablePubes: true
+    }
   }),
 
   computed: {
-    useGpusList() {
-      if (this.useCpu) {
-        return false
-      }
-
-      const list = this.useGpus
-
-      if (this.useCustomGpu) {
-        list.push(this.customGpuId)
-      }
-
-      return list
-    },
-
+    /**
+     *
+     */
     deviceName() {
       return this.useCpu ? 'CPU' : 'GPU'
     }
   },
 
-  created() {
-    this.fetchGpusList()
-  },
+  async created() {
+    await this.getGpusList()
 
-  mounted() {
-
-    // Pull settings from local storage
-    if (localStorage.useCpu) {
-      this.useCpu = localStorage.useCpu
-    }
-    if (localStorage.useGpus) {
-      this.useGpus = localStorage.useGpus
-    }
-    if (localStorage.enablePubes) {
-      this.enablePubes = localStorage.enablePubes
-    }
+    this.restoreSettings()
   },
 
   methods: {
-    async fetchGpusList() {
-      try {
-        const gpus = await window.deepTools.getGpusList()
-        console.log("GPUs: " + gpus)
-        this.gpuList = _.filter(gpus, { AdapterCompatibility: 'NVIDIA' })
+    getConfig(name, defaultValue) {
+      let settings = localStorage.getItem('process-settings')
 
-        if (this.gpuList.length === 0) {
-          this.useCpu = true
-        } else {
-          this.useGpus.push(0)
-        }
-      } catch (error) {
-        if (error.message == "platform unsupported") {
-          this.useCpu = true
-        }
+      if (_.isNil(settings)) {
+        settings = {}
+      } else {
+        settings = JSON.parse(settings)
       }
 
+      let value = _.get(settings, name)
+
+      if (_.isNil(value)) {
+        if (_.isFunction(defaultValue)) {
+          value = defaultValue.call(this)
+        } else {
+          value = defaultValue
+        }
+
+        this.setConfig(name, value)
+      }
+
+      return value
+    },
+
+    setConfig(name, value) {
+      let settings = localStorage.getItem('process-settings')
+
+      if (_.isNil(settings)) {
+        settings = {}
+      } else {
+        settings = JSON.parse(settings)
+      }
+
+      settings[name] = value
+      localStorage.setItem('process-settings', JSON.stringify(settings))
+    },
+
+    restoreSettings() {
+      this.settings = {
+        useCpu: this.getConfig('useCpu', this.gpuList.length === 0),
+        useGpus: this.getConfig('useGpus', () => {
+          return this.gpuList.length > 0 ? [0] : []
+        }),
+        useWaifu: this.getConfig('useWaifu', false),
+        enablePubes: this.getConfig('enablePubes', true)
+      }
+    },
+
+    saveSettings() {
+      localStorage.setItem('process-settings', JSON.stringify(this.settings))
+    },
+
+    async getGpusList() {
+      try {
+        const gpus = await window.deepTools.getGpusList()
+        this.gpuList = _.filter(gpus, { AdapterCompatibility: 'NVIDIA' })
+      } catch (error) {}
     },
 
     async transform() {
-      // Save settings in local storage
-      localStorage.useCpu = this.useCpu
-      localStorage.useGpus = this.useGpus
-      localStorage.enablePubes = this.enablePubes
+      // Save settings
+      this.saveSettings()
 
       this.isLoading = true
 
       try {
-        await this.$nudity.transform(this.useGpusList, this.useWaifu, this.enablePubes)
+        await this.$nudity.transform(this.settings)
         this.$router.push('/nudity/results')
       } catch (error) {
         alert(error)
@@ -178,15 +198,15 @@ export default {
 <style lang="scss">
 .nudity-settings {
   .settings-fields {
-    @apply overflow-hidden overflow-y-auto;
+    @apply overflow-hidden overflow-y-auto flex flex-wrap;
+
+    section {
+      @apply w-6/12 mb-3 px-3;
+    }
   }
 
   .settings-loading {
     @apply text-center;
-
-    .cnudity-preview {
-      @apply mb-5;
-    }
 
     .title {
       @apply font-bold text-3xl;
@@ -204,13 +224,6 @@ export default {
     .cli-line {
       @apply block text-white;
     }
-  }
-  section{
-    display: inline-block;
-    vertical-align: top;
-
-    width: 49%;
-    margin-bottom: 30px;
   }
 }
 </style>

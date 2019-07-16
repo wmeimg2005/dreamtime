@@ -39,19 +39,19 @@ export default {
   middleware: 'nudity',
 
   data: () => ({
+    // Instance of CropperJS
     cropper: undefined
   }),
 
   mounted() {
-    this.boot()
+    this.createCropper()
   },
 
   methods: {
-    boot() {
-      this.createCropper()
-    },
-
-    createCropper() {
+    /**
+     *
+     */
+    async createCropper() {
       this.cropper = new Cropper(this.$refs.photoCanvas, {
         viewMode: 0,
         dragMode: 'move',
@@ -60,29 +60,51 @@ export default {
         toggleDragModeOnDblclick: false,
         minCropBoxWidth: 512,
         minCropBoxHeight: 512,
+        maxCropBoxWidth: 512,
+        maxCropBoxHeight: 512,
+        aspectRatio: 1,
         modal: true,
         guides: false,
         highlight: false,
         autoCropArea: 0.1
       })
 
-      this.cropper.replace(this.$nudity.modelPhoto.getSourceAsDataURL())
+      const dataURL = await this.$nudity.modelPhoto
+        .getSourceFile()
+        .readAsDataURL()
+
+      this.cropper.replace(dataURL)
     },
 
-    saveCroppedPhoto() {
+    /**
+     *
+     */
+    async saveCroppedPhoto() {
+      /*
+      const data = this.cropper.getCanvasData()
+      console.log(data)
+      */
+
       const canvas = this.cropper.getCroppedCanvas({
         width: 512,
         height: 512,
+        minWidth: 512,
+        minHeight: 512,
+        maxWidth: 512,
+        maxHeight: 512,
         fillColor: 'black',
         imageSmoothingEnabled: true,
         imageSmoothingQuality: 'high'
       })
 
       const canvasAsDataURL = canvas.toDataURL(
-        this.$nudity.modelPhoto.getSourceType()
+        this.$nudity.modelPhoto.getSourceFile().getMimetype(),
+        1
       )
 
-      this.$nudity.modelPhoto.saveCroppedPhoto(canvasAsDataURL)
+      await this.$nudity.modelPhoto
+        .getCroppedFile()
+        .writeDataURL(canvasAsDataURL)
 
       this.$router.push('/nudity/settings')
     },

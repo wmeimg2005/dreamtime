@@ -55,13 +55,14 @@ export default {
 
   created() {
     this.cliDirPath = window.deepTools.getCliDirPath()
-    this.validCliDir = window.deepTools.fsExists(this.cliDirPath)
+    this.validCliDir = window.deepTools.fs.exists(this.cliDirPath)
 
     this.checkpointsDirPath = path.join(
       window.deepTools.getCliDirPath(),
       'checkpoints'
     )
-    this.validCheckpointsDir = window.deepTools.fsExists(
+
+    this.validCheckpointsDir = window.deepTools.fs.exists(
       this.checkpointsDirPath
     )
   }

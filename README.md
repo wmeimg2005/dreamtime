@@ -1,8 +1,8 @@
-![](https://i.imgur.com/rV3bPPk.png)
+![](assets/dream-time.png)
 
-# PepeNude
+# DreamTime
 
-PepeNude is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment, the goal of PepeNude is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
+DreamTime is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment, the goal of DreamTime is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
 
 - The CLI version allows you to transform photos using commands, with this you can create automated systems such as _bots, web pages or a new GUI_. Use the argument `--help` to get more information about usage, keep in mind that the CLI by itself **does not have** a cropping system so you will have to manually resize your photos to 512x512
 
@@ -10,7 +10,7 @@ PepeNude is an application that allows you to use the power of your CPU or GPU t
 
 ## Community
 
-Join the community of people who use the project either for entertainment or development purposes, you can get valuable help or create interesting discussions to improve the future of PepeNude:
+Join the community of people who use the project either for entertainment or development purposes, you can get valuable help or create interesting discussions to improve the future of DreamTime:
 
 - [Discord](http://bit.ly/32nnbdb)
 
@@ -30,7 +30,7 @@ Remember that you can follow the project or make a fork and create your own vers
 
 ![](https://i.imgur.com/LZo61bq.jpg)
 
-PepeNude is in an alpha version so it can be unstable or not work directly under certain conditions (which I often do not know)
+DreamTime is in an alpha version so it can be unstable or not work directly under certain conditions (which I often do not know)
 
 I will try to help in any problem you have.
 
@@ -59,10 +59,10 @@ I will try to help in any problem you have.
 
 ## Download
 
-Download PepeNude is very easy! 2 files and you are ready. *(Get ready to download ~3GB)*
+Download DreamTime is very easy! 2 files and you are ready. *(Get ready to download ~3GB)*
 
 - [CLI & GUI](http://bit.ly/2Gcr9LU): The command line interface (CLI) and the graphical user interface (GUI), here you will find everything you need, just download the .zip file that fits your operating system.
-- 👉 [Checkpoints](http://bit.ly/2JBP88o): This is the information that the transformation algorithm **requires**, if you do not have this file the application will not work. You only need to download it once, if you update PepeNude use this same file for checkpoints. (unless we tell you otherwise)
+- 👉 [Checkpoints](http://bit.ly/2JBP88o): This is the information that the transformation algorithm **requires**, if you do not have this file the application will not work. You only need to download it once, if you update DreamTime use this same file for checkpoints. (unless we tell you otherwise)
 
 ## Download Mirrors
 
@@ -73,12 +73,12 @@ Download PepeNude is very easy! 2 files and you are ready. *(Get ready to downlo
 
 ## Installation
 
-- Create a folder on your computer, it can be anywhere you want it, call it `pepenude` and inside it place the 2 zip files you have downloaded.
+- Create a folder on your computer, it can be anywhere you want it, call it `DreamTime` and inside it place the 2 zip files you have downloaded.
 - Extract the file that contains the CLI and the GUI, this should generate 2 folders: one called `cli` and another one called `gui`
 - Extract the other file `checkpoints.zip` and move the extracted folder `checkpoints` inside `cli`.
-- Ready! Now you can run `gui/PepeNude.exe` and transform all the photos you want. If you want to use the command line interface run the `cli/cli.exe` file from a console.
+- Ready! Now you can run `gui/DreamTime.exe` and transform all the photos you want. If you want to use the command line interface run the `cli/cli.exe` file from a console.
 
-> ℹ When you update PepeNude it will only be necessary to download the file that contains the `CLI & GUI`, you can reuse the checkpoints (unless we tell you otherwise)
+> ℹ When you update DreamTime it will only be necessary to download the file that contains the `CLI & GUI`, you can reuse the checkpoints (unless we tell you otherwise)
 
 
 ## F.A.Q.
@@ -143,5 +143,3 @@ Inside the folder `scripts/` you will find folders for the different supported o
 > ⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, **you must not access the web address indicated by the console**, the application only works when it is opened from Electron.
 
 > 👉 The scripts for **macOS** are the same as those for Linux. [More information](src/scripts/mac/README.md).
-
-*Work in progress....*

@@ -1,12 +1,10 @@
 import _ from 'lodash'
 
-export default function({ store, redirect, $nudity }) {
-  /*
-  if (!store.getters['nudity/isReady']) {
-    redirect('/')
-  }
-  */
-
+/**
+ * Pages that include this middleware will only be accessible
+ * if the user has selected a photo to transform.
+ */
+export default function({ redirect, $nudity }) {
   if (_.isNil($nudity.modelPhoto)) {
     redirect('/')
   }

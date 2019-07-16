@@ -6,44 +6,29 @@ const { spawn } = require('child_process')
 const EventBus = require('js-event-bus')
 const _ = require('lodash')
 const gpuInfo = require('gpu-info')
-const config = require('./nuxt.config')
-
-const debug = require('debug').default('app:deepTools')
+const { rootPath } = require('electron-root-path')
+const config = require('../../nuxt.config')
+const debug = require('debug').default('app:electron:deepTools')
 
 const { app, shell } = remote
 
 /**
- *
- * @param {*} dataURL
- */
-function getBase64Data(dataURL) {
-  let encoded = dataURL.replace(/^data:(.*;base64,)?/, '')
-
-  if (encoded.length % 4 > 0) {
-    encoded += '='.repeat(4 - (encoded.length % 4))
-  }
-
-  return encoded
-}
-
-/**
- *
+ * deepTools.
+ * Offers a communication channel between the GUI and NodeJS to interact with operating system tools
  */
 window.deepTools = {
   /**
+   * Returns an absolute path depending on the parameters
    *
-   * @param {*} name
-   * @param  {...any} args
+   * @param {string} name Name of the base path: https://electronjs.org/docs/all#appgetpathname
+   * @param {string} args Series of path segments to join into one path
    */
   getPath(name, ...args) {
     let folderPath
 
-    if (name === 'base') {
-      if (config.dev) {
-        folderPath = path.dirname(__dirname)
-      } else {
-        folderPath = path.dirname(path.dirname(app.getPath('exe')))
-      }
+    if (name === 'root') {
+      // The name "base" is reserved for the location where the gui/ and cli/ folders are located
+      folderPath = path.dirname(rootPath)
     } else {
       folderPath = app.getPath(name)
     }
@@ -52,16 +37,16 @@ window.deepTools = {
   },
 
   /**
+   * Alias for getPath('root', ...args)
    *
-   * @param {*} name
-   * @param  {...any} args
+   * @param  {string} args Series of path segments to join into one path
    */
-  getBasePath(...args) {
-    return this.getPath('base', ...args)
+  getRootPath(...args) {
+    return this.getPath('root', ...args)
   },
 
   /**
-   *
+   * Returns a list with information of the graphic cards installed in the computer.
    */
   getGpusList() {
     return gpuInfo()
@@ -69,84 +54,9 @@ window.deepTools = {
 
   /**
    *
-   * @param {*} dirPath
    */
-  shellOpenItem(dirPath) {
-    return shell.openItem(dirPath)
-  },
-
-  /**
-   *
-   * @param {*} path
-   */
-  shellOpenExternal(path) {
-    return shell.openExternal(path)
-  },
-
-  /**
-   *
-   * @param {*} filePath
-   */
-  getValidationErrorMessage(filePath) {
-    if (!fs.existsSync(filePath)) {
-      return 'Apparently the file does not exist anymore!'
-    }
-
-    const mimetype = mime.lookup(filePath)
-    const stats = fs.statSync(filePath)
-    const filesize = stats.size / 1000000.0
-
-    if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
-      return 'The selected file is not a valid photo. Only JPEG or PNG.'
-    }
-
-    if (filesize > 5) {
-      return 'The selected file is big, this can generate problems. Maximum size: 5MB'
-    }
-
-    return null
-  },
-
-  /**
-   *
-   * @param {*} filepath
-   */
-  getFileAsDataURL(filepath) {
-    const mimetype = mime.lookup(filepath)
-    const data = fs.readFileSync(filepath, { encoding: 'base64' })
-
-    return `data:${mimetype};base64,${data}`
-  },
-
-  /**
-   *
-   * @param {*} dataURL
-   * @param {*} absolutePath
-   */
-  saveDataURLFile(dataURL, absolutePath) {
-    const data = getBase64Data(dataURL)
-    return fs.writeFileSync(absolutePath, data, 'base64')
-  },
-  
-  /**
-   *
-   * @param {*} sourcePath
-   */
-  getResultFilename(sourcePath) {
-   const name = path.parse(sourcePath).name
-   return `${name}_result.png`
-  },
-
-  /**
-   *
-   * @param {*} absolutePath
-   */
-  fsExists(absolutePath) {
-    return fs.existsSync(absolutePath)
-  },
-
   getCliDirPath() {
-    return this.getBasePath('cli')
+    return this.getRootPath('cli')
   },
 
   /**
@@ -156,7 +66,12 @@ window.deepTools = {
    * @param {*} useWaifu TODO
    * @param {*} enablePubes
    */
-  transform(modelPhoto, useGpus = false, useWaifu = false, enablePubes = false) {
+  transform(
+    modelPhoto,
+    useGpus = false,
+    useWaifu = false,
+    enablePubes = false
+  ) {
     if (!useGpus) {
       useWaifu = false
     }
@@ -182,7 +97,7 @@ window.deepTools = {
     }
 
     const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
-    
+
     if (enablePubes) {
       cliArgs.push('--enablepubes')
     }
@@ -240,5 +155,15 @@ window.deepTools = {
     })
 
     return bus
-  }
+  },
+
+  /**
+   *
+   */
+  fs: require('./fs'),
+
+  /**
+   *
+   */
+  shell: require('./shell')
 }

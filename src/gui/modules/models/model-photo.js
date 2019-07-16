@@ -1,40 +1,99 @@
 import _ from 'lodash'
 import uuid from 'uuid/v4'
+import File from '../file'
 
 const debug = require('debug').default('app:modules:models:model-photo')
 
+/**
+ * Represents the photo to be processed of a Model.
+ */
 export default class ModelPhoto {
-  constructor(model, filePath, fileType) {
-    this.model = model
+  /**
+   *
+   * @param {Model|null} model Model to which it belongs
+   * @param {File} file Instance of the file
+   */
+  constructor(model, file) {
+    // Unique identification and model
     this.uuid = uuid()
-    this.sourceFileType = fileType
-    this.sourceFilePath = filePath
-    this.croppedFilePath = undefined
-    this.outputFilePath = undefined
+    this.model = model
 
+    // Source file, this is the photo that we want to transform
+    this.sourceFile = file
+
+    // Cropped file, this is the photo cropped to 512x512
+    this.croppedFile = File.fromPath(
+      window.deepTools.getPath('temp', `${this.uuid}.png`)
+    )
+
+    // Output file, this is the photo already transformed!
+    this.outputFile = File.fromPath(
+      this.getFolderPath(this.getOutputFileName())
+    )
+
+    // CLI messages
     this.cliLines = []
     this.cliError = ''
 
-    this.debug(`New instance of ModelPhoto for: ${filePath}`)
+    this.debug(`New instance of ModelPhoto`, {
+      sourceFile: this.sourceFile,
+      croppedFile: this.croppedFile,
+      outputFile: this.outputFile
+    })
   }
 
+  /**
+   *
+   * @param {*} message
+   * @param  {...any} args
+   */
   debug(message, ...args) {
     debug(`[${this.uuid}] ${message} `, ...args)
   }
 
+  /**
+   *
+   */
   isValid() {
     return _.isNil(this.getValidationErrorMessage())
   }
 
+  /**
+   * Returns the error message for an invalid file. null if there are no errors.
+   */
+  getValidationErrorMessage() {
+    const file = this.getSourceFile()
+
+    if (!file.exists) {
+      return 'Apparently the file does not exist anymore!'
+    }
+
+    if (
+      file.mimetype !== 'image/jpeg' &&
+      file.mimetype !== 'image/png' &&
+      file.mimetype !== 'image/gif'
+    ) {
+      return 'The selected file is not a valid photo. Only JPEG, PNG or GIF.'
+    }
+
+    if (file.size > 5) {
+      return 'The selected file is big, this can generate problems. Maximum size: 5MB'
+    }
+
+    return null
+  }
+
+  /**
+   *
+   */
   getFolderName() {
     return _.isNil(this.model) ? 'Uncategorized' : this.model.name
   }
 
-  getFolderPath() {
-    return window.deepTools.getPath('userData', 'models', this.getFolderName())
-  }
-
-  getStoragePath(...args) {
+  /**
+   *
+   */
+  getFolderPath(...args) {
     return window.deepTools.getPath(
       'userData',
       'models',
@@ -43,51 +102,32 @@ export default class ModelPhoto {
     )
   }
 
-  getValidationErrorMessage() {
-    return window.deepTools.getValidationErrorMessage(this.sourceFilePath)
+  /**
+   *
+   */
+  getSourceFile() {
+    return this.sourceFile
   }
 
-  getSourceType() {
-    return this.sourceFileType
+  /**
+   *
+   */
+  getCroppedFile() {
+    return this.croppedFile
   }
 
-  getSourceAsDataURL() {
-    return window.deepTools.getFileAsDataURL(this.sourceFilePath)
+  /**
+   *
+   */
+  getOutputFile() {
+    return this.outputFile
   }
 
-  getCroppedFilePath() {
-    return (
-      this.croppedFilePath ||
-      window.deepTools.getPath('temp', `${this.uuid}.png`)
-    )
-  }
-
-  getCroppedAsDataURL() {
-    return window.deepTools.getFileAsDataURL(this.croppedFilePath)
-  }
-
-  hasCroppedPhoto() {
-    return !_.isNil(this.croppedFilePath)
-  }
-
-  getOutputFilePath() {
-    return (
-      this.outputFilePath ||
-      window.deepTools.getPath(
-        'userData',
-        'models',
-        'Uncategorized',
-        `${this.uuid}.png`
-      )
-    )
-  }
-
-  getOutputAsDataURL() {
-    return window.deepTools.getFileAsDataURL(this.outputFilePath)
-  }
-
-  hasOutputPhoto() {
-    return !_.isNil(this.outputFilePath)
+  /**
+   *
+   */
+  getOutputFileName() {
+    return `${this.getSourceFile().getName()}_dreamtime.png`
   }
 
   saveCroppedPhoto(dataURL) {

@@ -3,25 +3,36 @@ const { Nuxt } = require('nuxt')
 const http = require('http')
 const path = require('path')
 const fs = require('fs')
-const config = require('./nuxt.config')
+const config = require('../nuxt.config')
+const debug = require('debug').default('app:electron:main')
 
+//
 config.rootDir = __dirname
 
-console.log('Starting in: ', config.dev ? process.env.NODE_ENV : 'Production')
+//
+debug('Starting in: ', config.dev ? process.env.NODE_ENV : 'production')
+debug(app.getAppPath())
 
 /**
- *
+ * Start the NuxtJS server with the interface
+ * TODO: Find a way to use the interface without opening a server!
  */
 function startNuxtApp() {
   const nuxt = new Nuxt(config)
 
   if (!config.dev) {
+    // If we are in production it is required to start the server.
     const server = http.createServer(nuxt.render)
     server.listen()
 
-    return `http://localhost:${server.address().port}`
+    const serverURL = `http://localhost:${server.address().port}`
+    debug(`Server started in ${serverURL}`)
+
+    return serverURL
   }
 
+  // In development we assume that the developer has started the server
+  // using the command `yarn dev`
   return `http://localhost:3000`
 }
 
@@ -53,10 +64,11 @@ function createModelsDir() {
 }
 
 /**
- *
+ * Create the Electron browser window that will serve as access to the interface.
  */
 function createWindow() {
-  const url = startNuxtApp()
+  // Start the server and get the address
+  const serverURL = startNuxtApp()
 
   // Create the browser window.
   const window = new BrowserWindow({
@@ -65,32 +77,29 @@ function createWindow() {
     minWidth: 1000,
     minHeight: 800,
     webPreferences: {
-      preload: path.join(app.getAppPath(), 'deepTools.js')
+      // This script offers us the necessary tools to communicate with the operating system.
+      // (interact with the filesystem, start processes, etc).
+      preload: path.join(app.getAppPath(), 'electron', 'deepTools', 'index.js')
     }
   })
 
   if (config.dev) {
-    const {
-      default: installExtension,
-      VUEJS_DEVTOOLS
-    } = require('electron-devtools-installer')
-
-    installExtension(VUEJS_DEVTOOLS.id)
-      .then(name => {
-        console.log(`Added Extension:  ${name}`)
-        window.webContents.openDevTools()
-      })
-      .catch(err => console.log('An error occurred: ', err))
-
-    window.loadURL(url)
+    window.loadURL(serverURL)
+    window.webContents.openDevTools()
   } else {
+    //
     const pollServer = () => {
+      debug('Requesting status from the server...')
+
       http
-        .get(url, res => {
-          if (res.statusCode === 200) {
-            console.log('ready')
-            window.loadURL(url)
+        .get(serverURL, response => {
+          if (response.statusCode === 200) {
+            debug('> Server ready, show time!')
+            window.loadURL(serverURL)
           } else {
+            debug(
+              `> The server reported the status code: ${response.statusCode}`
+            )
             setTimeout(pollServer, 300)
           }
         })
@@ -101,6 +110,7 @@ function createWindow() {
   }
 }
 
+//
 createModelsDir()
 
 app.on('ready', createWindow)
