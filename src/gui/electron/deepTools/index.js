@@ -7,6 +7,7 @@ const EventBus = require('js-event-bus')
 const _ = require('lodash')
 const gpuInfo = require('gpu-info')
 const { rootPath } = require('electron-root-path')
+// const Caman = require('caman').Caman
 const config = require('../../nuxt.config')
 const debug = require('debug').default('app:electron:deepTools')
 
@@ -66,19 +67,18 @@ window.deepTools = {
    * @param {*} useWaifu TODO
    * @param {*} enablePubes
    */
-  transform(
-    modelPhoto,
-    useGpus = false,
-    useWaifu = false,
-    enablePubes = false
-  ) {
-    if (!useGpus) {
-      useWaifu = false
+  transform(modelPhoto, settings) {
+    if (settings.useCpu) {
+      settings.useGpus = false
+    }
+
+    if (!settings.useGpus) {
+      settings.useWaifu = false
     }
 
     const cliDirPath = this.getCliDirPath()
-    const inputFilePath = modelPhoto.getCroppedFilePath()
-    const outputFilePath = modelPhoto.getOutputFilePath()
+    const inputFilePath = modelPhoto.getCroppedFile().getPath()
+    const outputFilePath = modelPhoto.getOutputFile().getPath()
 
     if (!fs.existsSync(cliDirPath)) {
       throw new Error(
@@ -98,7 +98,7 @@ window.deepTools = {
 
     const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
 
-    if (enablePubes) {
+    if (settings.enablePubes) {
       cliArgs.push('--enablepubes')
     }
 
@@ -106,10 +106,10 @@ window.deepTools = {
       cliArgs.unshift('main.py')
     }
 
-    if (!useGpus) {
+    if (!settings.useGpus) {
       cliArgs.push('--cpu')
     } else {
-      for (const id of useGpus) {
+      for (const id of settings.useGpus) {
         cliArgs.push(`--gpu`)
         cliArgs.push(id)
       }

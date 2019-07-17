@@ -1,7 +1,7 @@
 <template>
   <div class="nudity-settings">
     <div class="content-body">
-      <nudity-preview class="mb-5" />
+      <nudity-preview class="mb-5" type="cropped" />
 
       <div v-if="!isLoading" class="settings-fields">
         <!-- Process with -->
@@ -21,13 +21,13 @@
             </div>
 
             <div class="field">
-              <input v-model="useCustomGpu" type="checkbox" :disabled="settings.useCpu" />
+              <input v-model="settings.useCustomGpu" type="checkbox" :disabled="settings.useCpu" />
               Custom GPU ID
               <p class="field-help">Select this option if you want to use a GPU that is not in the list.</p>
             </div>
 
             <div class="field">
-              <input v-if="useCustomGpu" v-model="customGpuId" class="input" type="number" min="0" />
+              <input v-if="settings.useCustomGpu" v-model="settings.customGpuId" class="input" type="number" min="0" />
             </div>
           </div>
         </section>
@@ -55,19 +55,19 @@
 
         <div class="buttons">
           <nuxt-link to="/nudity/crop" class="button is-danger">Back</nuxt-link>
-          <button class="button" @click.prevent="transform">Transform!</button>
+          <button class="button" @click.prevent="transform">Nudify!</button>
         </div>
       </div>
 
       <!-- Loading -->
       <div v-else class="settings-loading">
-        <h1 class="title">{{ $nudity.transformationDuration }}s</h1>
+        <h1 class="title">{{ $nudity.transformation.duration }}s</h1>
 
         <h1 class="title">🧜‍ Loading...</h1>
 
         <h3 class="subtitle">Transforming your photo with the power of your {{ deviceName }}!</h3>
 
-        <div class="settings-cli">
+        <div ref="cli" class="settings-cli">
           <p v-for="(line, index) in $nudity.modelPhoto.cliLines" :key="index" class="cli-line">{{ line }}</p>
         </div>
       </div>
@@ -77,6 +77,7 @@
 
 <script>
 import _ from 'lodash'
+import moment from 'moment'
 
 export default {
   middleware: 'nudity',
@@ -88,16 +89,15 @@ export default {
     // List of GPUs detected in the system
     gpuList: [],
 
-    // Custom GPU ID
-    useCustomGpu: false,
-    customGpuId: 0,
-
     // Process Settings
     settings: {
       useCpu: false,
       useGpus: [],
       useWaifu: false, // weebs out 😡👉🚪
-      enablePubes: true
+      enablePubes: true,
+
+      useCustomGpu: false,
+      customGpuId: 0
     }
   }),
 
@@ -106,7 +106,15 @@ export default {
      *
      */
     deviceName() {
-      return this.useCpu ? 'CPU' : 'GPU'
+      return this.settings.useCpu ? 'CPU' : 'GPU'
+    }
+  },
+
+  watch: {
+    '$nudity.modelPhoto.cliLines'() {
+      this.$nextTick(() => {
+        this.$refs.cli.scrollTo(0, this.$refs.cli.scrollHeight)
+      })
     }
   },
 
@@ -161,7 +169,9 @@ export default {
           return this.gpuList.length > 0 ? [0] : []
         }),
         useWaifu: this.getConfig('useWaifu', false),
-        enablePubes: this.getConfig('enablePubes', true)
+        enablePubes: this.getConfig('enablePubes', true),
+        useCustomGpu: this.getConfig('useCustomGpu', false),
+        customGpuId: this.getConfig('customGpuId', 0)
       }
     },
 
@@ -179,6 +189,10 @@ export default {
     async transform() {
       // Save settings
       this.saveSettings()
+
+      if (this.settings.useCustomGpu) {
+        this.settings.useGpus.push(this.customGpuId)
+      }
 
       this.isLoading = true
 

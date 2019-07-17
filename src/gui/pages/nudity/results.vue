@@ -2,7 +2,7 @@
   <div class="nudity-results">
     <app-title>
       <h1 class="title">
-        📷 Transformation in {{ $nudity.transformationDuration }}s
+        📷 Transformation in {{ $nudity.transformation.duration }}s
       </h1>
 
       <h3 class="subtitle">
@@ -11,12 +11,12 @@
     </app-title>
 
     <div class="content-body">
-      <nudity-preview :width="412" :height="412" />
+      <nudity-preview :width="412" :height="412" type="output" />
 
       <div class="buttons">
-        <button type="button is-success" class="button" @click.prevent="save">Save</button>
+        <button type="button" class="button is-success" @click.prevent="save">Save</button>
         <br /><br />
-        <button type="button is-primary" class="button" @click.prevent="openDirectory">Open directory</button>
+        <button type="button" class="button is-primary" @click.prevent="openDirectory">Open folder</button>
         <nuxt-link to="/" class="button is-danger">Another one</nuxt-link>
       </div>
     </div>
@@ -31,26 +31,21 @@ import moment from 'moment'
 export default {
   middleware: 'nudity',
 
-  data: () => ({
-    outputDataURL: undefined
-  }),
-
-  created() {
-    this.boot()
-  },
+  data: () => ({}),
 
   methods: {
-    boot() {
-      this.outputDataURL = this.$nudity.modelPhoto.getOutputAsDataURL()
-    },
-
     save() {
-      const filename = window.deepTools.getResultFilename(this.$nudity.modelPhoto.sourceFilePath)
-      download(this.outputDataURL, filename, 'image/png')
+      const outputDataURL = this.$nudity.modelPhoto
+        .getOutputFile()
+        .readAsDataURL()
+
+      const filename = this.$nudity.modelPhoto.getOutputFileName()
+
+      download(outputDataURL, filename, 'image/png')
     },
 
     openDirectory() {
-      window.deepTools.shellOpenItem(this.$nudity.modelPhoto.getFolderPath())
+      window.deepTools.shell.openItem(this.$nudity.modelPhoto.getFolderPath())
     }
   }
 }

@@ -15,6 +15,11 @@ export default {
     height: {
       type: Number,
       default: 312
+    },
+
+    type: {
+      type: String,
+      default: 'output'
     }
   },
 
@@ -32,11 +37,11 @@ export default {
         return require('~/assets/images/d1hpv9d-e1c2c577-d272-41b0-bd73-a89209108efd.jpg')
       }
 
-      if (this.$nudity.modelPhoto.getOutputFile().exists()) {
+      if (this.type === 'output') {
         return this.$nudity.modelPhoto.getOutputFile().readAsDataURL()
       }
 
-      if (this.$nudity.modelPhoto.getCroppedFile().exists()) {
+      if (this.type === 'cropped') {
         return this.$nudity.modelPhoto.getCroppedFile().readAsDataURL()
       }
 

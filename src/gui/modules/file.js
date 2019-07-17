@@ -31,6 +31,10 @@ export default class File {
    * @param {*} path
    */
   update(path) {
+    if (_.isNil(path)) {
+      path = this.getPath()
+    }
+
     const info = window.deepTools.fs.getInfo(path)
 
     this.name = info.name

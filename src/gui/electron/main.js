@@ -11,7 +11,6 @@ config.rootDir = __dirname
 
 //
 debug('Starting in: ', config.dev ? process.env.NODE_ENV : 'production')
-debug(app.getAppPath())
 
 /**
  * Start the NuxtJS server with the interface
@@ -84,15 +83,20 @@ function createWindow() {
   })
 
   if (config.dev) {
-    window.loadURL(serverURL)
     window.webContents.openDevTools()
-  } else {
-    //
-    const pollServer = () => {
-      debug('Requesting status from the server...')
+  }
 
-      http
-        .get(serverURL, response => {
+  //
+  const pollServer = () => {
+    debug('Requesting status from the server...')
+
+    http
+      .get(
+        serverURL,
+        {
+          agent: false
+        },
+        response => {
           if (response.statusCode === 200) {
             debug('> Server ready, show time!')
             window.loadURL(serverURL)
@@ -102,12 +106,15 @@ function createWindow() {
             )
             setTimeout(pollServer, 300)
           }
-        })
-        .on('error', pollServer)
-    }
-
-    pollServer()
+        }
+      )
+      .on('error', error => {
+        debug(`> ${error}`)
+        setTimeout(pollServer, 300)
+      })
   }
+
+  pollServer()
 }
 
 //

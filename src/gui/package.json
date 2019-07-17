@@ -1,13 +1,13 @@
 {
-  "name": "pepenude-gui",
-  "version": "0.1.0-alpha",
-  "description": "PepeNude GUI",
+  "name": "dreamtime-gui",
+  "version": "0.1.1-alpha",
+  "description": "",
   "author": "DeepManYY",
   "private": true,
   "main": "electron/main.js",
   "build": {
-    "appId": "com.deepmanyy.pepenude",
-    "productName": "PepeNude",
+    "appId": "com.deepmanyy.dreamtime",
+    "productName": "DreamTime",
     "directories": {
       "output": "../../dist/gui-unpacked"
     },
@@ -17,7 +17,8 @@
     },
     "linux": {
       "target": "dir",
-      "icon": "app.ico"
+      "icon": "app.ico",
+      "executableName": "DreamTime"
     }
   },
   "scripts": {

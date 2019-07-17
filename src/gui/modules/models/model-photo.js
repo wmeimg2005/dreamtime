@@ -130,19 +130,11 @@ export default class ModelPhoto {
     return `${this.getSourceFile().getName()}_dreamtime.png`
   }
 
-  saveCroppedPhoto(dataURL) {
-    const filePath = this.getCroppedFilePath()
-
-    this.debug(`Saving a resized photo in: ${filePath}`)
-
-    window.deepTools.saveDataURLFile(dataURL, filePath)
-
-    this.debug(`Resized photo saved successfully!`)
-
-    this.croppedFilePath = filePath
-  }
-
-  transform(useGpus = false, useWaifu = false, enablePubes) {
+  /**
+   *
+   * @param {object} settings
+   */
+  transform(settings) {
     return new Promise((resolve, reject) => {
       const onSpawnError = error => {
         reject(
@@ -158,7 +150,7 @@ export default class ModelPhoto {
       let child
 
       try {
-        child = window.deepTools.transform(this, useGpus, useWaifu, enablePubes)
+        child = window.deepTools.transform(this, settings)
       } catch (error) {
         onSpawnError(error)
       }
@@ -178,19 +170,19 @@ export default class ModelPhoto {
 
       child.on('ready', code => {
         if (code === 0) {
-          this.outputFilePath = this.getOutputFilePath()
+          this.outputFile.update()
           resolve()
         } else {
           reject(
             new Error(
               `The transformation has been interrupted by an CLI error.\n
-            This can be caused by:\n
-            - A corrupt installation (commonly: The checkpoints folder was not found in cli/)\n
-            - Incompatible system\n
-            - If you are using GPU: The NVIDIA graphics card could not be found\n
-            - If you are using CPU: Insufficient RAM. Buy more RAM!\n
-            The CLI has reported the following error, take a screenshot to get more information:\n
-            ${this.cliError}`
+              This can be caused by:\n
+              - A corrupt installation (commonly: The checkpoints folder was not found in cli/)\n
+              - Incompatible system\n
+              - If you are using GPU: The NVIDIA graphics card could not be found\n
+              - If you are using CPU: Insufficient RAM. Buy more RAM!\n
+              The CLI has reported the following error, take a screenshot to get more information:\n
+              ${this.cliError}`
             )
           )
 

@@ -72,7 +72,8 @@ export default {
 <style lang="scss">
 .home {
   .home-wip {
-    @apply flex flex-col justify-center items-center pt-20;
+    @apply flex flex-col justify-center items-center;
+    min-height: 50vh;
 
     a {
       @apply text-primary underline;
