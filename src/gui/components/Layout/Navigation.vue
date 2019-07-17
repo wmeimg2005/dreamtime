@@ -25,19 +25,23 @@
         </nuxt-link>
         -->
 
+        <nuxt-link to="/update" class="navbar-item">
+          🌎 Updates
+        </nuxt-link>
+
         <nuxt-link to="/about" class="navbar-item">
-          🎉 About
+          ❓ About
         </nuxt-link>
       </nav>
     </section>
 
     <section class="navbar-section">
       <nav class="navbar-items">
-        <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shellOpenExternal('https://www.patreon.com/deepmanyy')">
+        <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shell.openExternal('https://www.patreon.com/deepmanyy')">
           💖 Patreon
         </a>
 
-        <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shellOpenExternal('https://discord.gg/RjBSaND')">
+        <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shell.openExternal('https://discord.gg/RjBSaND')">
           🤟 Discord
         </a>
       </nav>

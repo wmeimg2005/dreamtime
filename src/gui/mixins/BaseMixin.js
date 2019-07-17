@@ -24,7 +24,7 @@ export default {
   data: () => ({
     app: {
       name: process.env.APP_NAME,
-      version: process.env.npm_package_version,
+      version: process.env.APP_VERSION,
       status: process.env.APP_STATUS
     },
 

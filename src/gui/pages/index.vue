@@ -2,7 +2,7 @@
   <div class="home">
     <app-title>
       <h1 class="title">
-        Welcome to {{ app.name }} <sup>{{ app.status }}</sup>
+        🏠 Welcome to {{ app.name }} <sup>v{{ app.version }}</sup>
       </h1>
 
       <h3 class="subtitle">
@@ -10,13 +10,13 @@
       </h3>
     </app-title>
 
-    <div class="home-wip">
-      <!--
-      <p>
-        Go to the <nuxt-link to="/models">Models</nuxt-link> page to organize your nudes or...
-      </p>
-      -->
+    <div class="content-body">
+      <div class="notification is-transparent">
+        {{ app.name }} is a free project and we believe that anyone should be free to use it, all we ask is that you do not use {{ app.name }} for malicious purposes, just do not hurt the feelings of other people and everything will be fine. 💁‍♂️
+      </div>
+    </div>
 
+    <div class="home-wip">
       <!-- Quick Upload -->
       <nudity-upload v-if="validCliDir && validCheckpointsDir" />
 
@@ -73,7 +73,6 @@ export default {
 .home {
   .home-wip {
     @apply flex flex-col justify-center items-center;
-    min-height: 50vh;
 
     a {
       @apply text-primary underline;

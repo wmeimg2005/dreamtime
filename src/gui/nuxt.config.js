@@ -6,7 +6,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.APP_NAME} ${process.env.npm_package_version}`,
+    title: `${process.env.APP_NAME} v${process.env.npm_package_version}`,
 
     meta: [
       { charset: 'utf-8' },
@@ -70,7 +70,8 @@ module.exports = {
    *
    */
   env: {
-    APP_NAME: process.env.APP_NAME
+    APP_NAME: process.env.APP_NAME,
+    APP_VERSION: process.env.npm_package_version
   },
 
   /*

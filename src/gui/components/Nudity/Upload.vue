@@ -16,7 +16,7 @@
       v-show="false"
       ref="photo"
       type="file"
-      accept="image/jpeg, image/png, image/gif"
+      accept="image/jpeg, image/png"
       @change="onPhotoSelected" />
 
     <!-- Action button -->
@@ -140,7 +140,7 @@ export default {
       rounded
       mx-5
       border-transparent
-      border
+      border-2
       border-dashed
       mb-5;
 

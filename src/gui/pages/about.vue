@@ -2,7 +2,7 @@
   <div class="about">
     <app-title>
       <h1 class="title">
-        About {{ app.name }}
+        ❓ About {{ app.name }}
       </h1>
 
       <h3 class="subtitle">
@@ -10,7 +10,7 @@
       </h3>
     </app-title>
 
-    <div ref="body" class="content-body" v-html="aboutHtml">
+    <div ref="body" class="content-body markdown-content" v-html="aboutHtml">
     </div>
   </div>
 </template>
@@ -41,7 +41,7 @@ export default {
   methods: {
     openLink(e) {
       e.preventDefault()
-      window.deepTools.shellOpenExternal(e.target.href)
+      window.deepTools.shell.openExternal(e.target.href)
     }
   }
 }
@@ -50,30 +50,5 @@ export default {
 
 <style lang="scss">
 .about {
-  .content-body {
-    h2 {
-      @apply text-2xl font-bold mb-2 mt-6;
-    }
-
-    p {
-      @apply my-2;
-    }
-
-    ul {
-      @apply list-disc ml-4;
-
-      li {
-        @apply mt-1;
-      }
-    }
-
-    a {
-      @apply text-primary;
-
-      &:hover {
-        @apply underline;
-      }
-    }
-  }
 }
 </style>
