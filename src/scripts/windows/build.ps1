@@ -40,14 +40,14 @@ Set-Location ../../dist
 # We need to move the generated folder to the final folder
 
 if ( Test-Path ./gui ) {
-  Remove-Item ./gui
+  Remove-Item ./gui -recurse -Force
 }
 
 Move-Item ./gui-unpacked/win-unpacked ./gui -Force
 
 # We delete the generated folder
 
-Remove-Item –path ./gui-unpacked -recurse
+Remove-Item –path ./gui-unpacked -recurse -Force
 
 #
 # Success

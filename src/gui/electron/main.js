@@ -7,7 +7,7 @@ const config = require('../nuxt.config')
 const debug = require('debug').default('app:electron:main')
 
 //
-config.rootDir = __dirname
+config.rootDir = path.dirname(__dirname)
 
 //
 debug('Starting in: ', config.dev ? process.env.NODE_ENV : 'production')

@@ -29,7 +29,11 @@ window.deepTools = {
 
     if (name === 'root') {
       // The name "base" is reserved for the location where the gui/ and cli/ folders are located
-      folderPath = path.dirname(rootPath)
+      if (config.dev) {
+        folderPath = path.dirname(rootPath)
+      } else {
+        folderPath = path.dirname(path.dirname(path.dirname(rootPath)))
+      }
     } else {
       folderPath = app.getPath(name)
     }
