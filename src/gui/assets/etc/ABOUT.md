@@ -37,7 +37,7 @@ Thank you so much everyone! Your financial help helps the project to move forwar
 The source code of DreamTime will always remain open and you can always download it for free!
 
 - [GitHub](https://github.com/private-dreamnet/dreamtime)
-- [NotABug](https://notabug.org/deepmanyy/pepenude)
-- [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
+- [NotABug](https://notabug.org/DreamNet/DreamTime)
+- [GitGud](https://gitgud.io/dreamnet/dreamtime)
 
 Remember that you can follow the project or make a fork and create your own version! Read the [LICENSE](https://github.com/private-dreamnet/dreamtime/blob/master/LICENSE.md) for more information.
