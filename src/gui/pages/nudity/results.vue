@@ -34,8 +34,8 @@ export default {
   data: () => ({}),
 
   methods: {
-    save() {
-      const outputDataURL = this.$nudity.modelPhoto
+    async save() {
+      const outputDataURL = await this.$nudity.modelPhoto
         .getOutputFile()
         .readAsDataURL()
 

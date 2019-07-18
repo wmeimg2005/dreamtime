@@ -1,6 +1,6 @@
 ![](https://i.imgur.com/juhuGPt.png)
 
-DreamTime allows you to use the power of your CPU or GPU to transform photos that give you free entertainment, something you could only dream about.
+DreamTime allows you to use the power of your CPU or GPU to transform photos that give you free entertainment, something that in the past you could only dream...
 
 ## Community
 
@@ -12,7 +12,7 @@ Join the community of people who use the project either for entertainment or dev
 
 Developing an application like DreamTime takes time! Any help is welcome:
 
-- **If you have extra $$$:** Consider 💖[Become a patron](https://www.patreon.com/deepmanyy). Support economically the project monthly and obtain exclusive benefits.
+- **If you have extra \$\$\$:** Consider 💖[Become a patron](https://www.patreon.com/deepmanyy). Support economically the project monthly and obtain exclusive benefits.
 - **If you are a developer:** Consider making a fork of the project and make PR of any improvement you can do, also join our server in [Discord](https://discord.gg/RjBSaND) where we have channels exclusively for development.
 
 ## Credits
@@ -34,7 +34,7 @@ Thank you so much everyone! Your financial help helps the project to move forwar
 
 ## Source Code
 
-The source code of DreamTime will always remain open and you can always download it for free.
+The source code of DreamTime will always remain open and you can always download it for free!
 
 - [GitHub](https://github.com/private-dreamnet/dreamtime)
 - [NotABug](https://notabug.org/deepmanyy/pepenude)

@@ -13,7 +13,7 @@
         </p>
 
         <p class="help-text">
-          🐭 Move the photo by dragging it with the mouse, you can zoom in or out the photo using the mouse wheel.
+          🐭 Move the photo by dragging it with the mouse, you can zoom in or out using the mouse wheel.
         </p>
 
         <div class="buttons">

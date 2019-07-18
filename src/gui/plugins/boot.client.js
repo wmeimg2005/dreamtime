@@ -22,9 +22,7 @@ tippy.setDefaults({
   arrowType: 'round'
 })
 
-if (!process.static) {
-  localStorage.debug = 'app:*'
-}
+localStorage.debug = 'app:*'
 
 export default async ({ app, $axios, store, isDev }, inject) => {
   // isDev inject

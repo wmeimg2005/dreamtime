@@ -2,9 +2,11 @@
 
 # DreamTime
 
-DreamTime is an application that allows you to use the power of your CPU or GPU to transform photos of people and get free entertainment, the goal of DreamTime is to offer a **CLI** to process photos from the console and a new **GUI** (Graphical user interface) to use the program easily.
+DreamTime allows you to use the power of your CPU or GPU to transform photos that give you free entertainment, something that in the past you could only dream...
 
-- The CLI version allows you to transform photos using commands, with this you can create automated systems such as _bots, web pages or a new GUI_. Use the argument `--help` to get more information about usage, keep in mind that the CLI by itself **does not have** a cropping system so you will have to manually resize your photos to 512x512
+DreamTime offers a version in CLI (Command Line Interface) and one in GUI (Graphical User Interface):
+
+- The CLI version allows you to transform photos using commands, with this you can create automated systems such as _bots, web pages or even a new GUI_. Use the argument `--help` to get more information about usage, keep in mind that the CLI by itself **does not have** a cropping system so you will have to manually resize your photos to 512x512
 
 - The GUI version is a new friendly interface that includes a cropping system, so you only have to tell the program which photo you want to transform and you will get results in a few clicks.
 
@@ -14,40 +16,47 @@ Join the community of people who use the project either for entertainment or dev
 
 - [Discord](http://bit.ly/32nnbdb)
 
-## Backups
+## Support
 
-To avoid the loss of the project and the code, it will be hosted at the following sites:
+Developing an application like DreamTime takes time! Any help is welcome:
 
-- [Github](http://bit.ly/2GfuzxM) (Requires having a Github account)
-- ~~[Bitbucket](https://bitbucket.org/deepmanyy/easydeepnude/src)~~
-- ~~[Gitlab](https://gitlab.com/deepmanyy/easydeepnude)~~
-- [NotABug](http://bit.ly/2LrezwX)
-- [GitGud](http://bit.ly/2LRZyDM)
+- **If you have extra \$\$\$:** Consider 💖[Become a patron](https://www.patreon.com/deepmanyy). Support economically the project monthly and obtain exclusive benefits.
+- **If you are a developer:** Consider making a fork of the project and make PR of any improvement you can do, also join our server in [Discord](https://discord.gg/RjBSaND) where we have channels exclusively for development.
 
-Remember that you can follow the project or make a fork and create your own version! Read the [LICENSE](LICENSE.md) for more information.
+## Source Code
+
+The source code of DreamTime will always remain open and you can always download it for free!
+
+- [GitHub](https://github.com/private-dreamnet/dreamtime)
+- [NotABug](https://notabug.org/deepmanyy/pepenude)
+- [GitGud](https://gitgud.io/deepmanyy/easydeepnude)
+
+Remember that you can follow the project or make a fork and create your own version! Read the [LICENSE](https://github.com/private-dreamnet/dreamtime/blob/master/LICENSE.md) for more information.
 
 # Alpha
 
 ![](https://i.imgur.com/LZo61bq.jpg)
 
-DreamTime is in an alpha version so it can be unstable or not work directly under certain conditions (which I often do not know)
+We have had great progress during the last week in alpha, however from time to time users have reported problems in very specific conditions that we still do not understand.
 
-I will try to help in any problem you have.
+Join the Discord server for help.
 
 ---
 
 # 💜 Binaries
 
-![](https://i.imgur.com/BS8EswI.png)
+![](https://i.imgur.com/kro3wkP.png)
 
 ## Requirements
 
-- Windows 10 - 1809+ - 64 bits
-- Ubuntu 17+ - 64bits
+- 64 bits OS
+- Windows 10 1803+
+- Windows 8
+- Windows 7 SP1
+- Ubuntu 16.04+
 - **8 GB** of RAM or more.
 
 > ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
-
 
 ## GPU Processing Requirements
 
@@ -55,11 +64,10 @@ I will try to help in any problem you have.
 
 - NVIDIA Graphics card with CUDA compatibility
 - [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
-- [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive) *(CUDA can be optional on the latest graphics cards)*
 
 ## Download
 
-Download DreamTime is very easy! 2 files and you are ready. *(Get ready to download ~3GB)*
+Download DreamTime is very easy! 2 files and you are ready. _(Get ready to download ~3GB)_
 
 - [CLI & GUI](http://bit.ly/2Gcr9LU): The command line interface (CLI) and the graphical user interface (GUI), here you will find everything you need, just download the .zip file that fits your operating system.
 - 👉 [Checkpoints](http://bit.ly/2JBP88o): This is the information that the transformation algorithm **requires**, if you do not have this file the application will not work. You only need to download it once, if you update DreamTime use this same file for checkpoints. (unless we tell you otherwise)
@@ -80,12 +88,15 @@ Download DreamTime is very easy! 2 files and you are ready. *(Get ready to downl
 
 > ℹ When you update DreamTime it will only be necessary to download the file that contains the `CLI & GUI`, you can reuse the checkpoints (unless we tell you otherwise)
 
-
 ## F.A.Q.
 
-Q: Why does the program ask for firewall permissions?
+**Q: Why does the program ask for firewall permissions?**
 
 A: For now the GUI needs to create a local server on your computer to render the interface of the program, basically the GUI is a web browser. Yes I am aware that this method is "retarded" but it is temporary. No, it's not a virus, a botnet or anything like that, I'm not interested in your photos or your files.
+
+**Q: When I open the program, only a white page appears!**
+
+A: This can be caused by some program that interrupts the connection between the GUI and the interface server (see the question above), a VPN, Firewall or Antivirus can be the reason.
 
 ---
 
@@ -95,11 +106,9 @@ I am a web developer who found this application interesting and I could not resi
 
 I know that the project is not ethical and can generate unwanted results for many people, but the truth is that I am a lover of black humor, satire and I believe that anyone can do what they want, not all are equal and there will be people who give them a private or important use to this project.
 
-In the end what they do with that is not of my interest and I do not take responsibility for their misuse.
+I suggest everyone use DreamTime only for private entertainment purposes, I advise against using it with malicious motives such as hurting people as this will also hurt the community interested in developing this project more thoroughly.
 
 The source code of this project must be open and free forever.
-
-> If you want to support the development of this project and obtain advantages please consider: 💖[Become a patron](http://bit.ly/2Y7Wqd8).
 
 Email: `deepmanyy[at]msgsafe.io`
 
@@ -126,7 +135,6 @@ Discord: `DeepManYY#5508`
 - [Electron](https://electronjs.org/): The software used to "transform" the GUI from a website to a desktop program.
 
 ## Setup
-
 
 > All the source code is inside the src/ folder, from now on all the instructions will be based on this folder.
 
