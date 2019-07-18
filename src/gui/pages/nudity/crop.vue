@@ -98,7 +98,7 @@ export default {
         minHeight: 512,
         maxWidth: 512,
         maxHeight: 512,
-        fillColor: 'transparent',
+        fillColor: 'white',
         imageSmoothingEnabled: true,
         imageSmoothingQuality: 'high'
       })

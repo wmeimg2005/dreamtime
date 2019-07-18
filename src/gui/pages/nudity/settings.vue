@@ -191,7 +191,7 @@ export default {
       this.saveSettings()
 
       if (this.settings.useCustomGpu) {
-        this.settings.useGpus.push(this.customGpuId)
+        this.settings.useGpus.push(this.settings.customGpuId)
       }
 
       this.isLoading = true
