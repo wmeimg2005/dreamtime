@@ -160,7 +160,7 @@ export default class ModelPhoto {
       })
 
       child.on('stdout', output => {
-        this.cliLines.push(output)
+        this.cliLines.push(...output.toString().trim().split('\n'))
       })
 
       child.on('stderr', output => {
