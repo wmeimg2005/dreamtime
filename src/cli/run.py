@@ -192,7 +192,12 @@ def process_gif(gif_imgs, gpu_ids, enable_pubes, tmp_dir):
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite(os.path.join(tmp_dir, "output_{}.jpg".format(a[1])), process(img, gpu_ids, enable_pubes))
 
-    pool = ThreadPool(4)
-    pool.map(process_one_image, zip(gif_imgs, [i for i in range(len(gif_imgs))]))
-    pool.close()
-    pool.join()
+    print(gpu_ids)
+    if gpu_ids is None: # Only multithreading with CPU because threads cause crashes with GPU
+        pool = ThreadPool(4)
+        pool.map(process_one_image, zip(gif_imgs, range(len(gif_imgs))))
+        pool.close()
+        pool.join()
+    else:
+        for x in zip(gif_imgs, range(len(gif_imgs))):
+            process_one_image(x)
