@@ -72,7 +72,8 @@ export default {
         modal: true,
         guides: false,
         highlight: false,
-        autoCropArea: 0.1
+        autoCropArea: 0.1,
+        wheelZoomRatio: 0.03
       })
 
       const dataURL = await this.$nudity.modelPhoto
