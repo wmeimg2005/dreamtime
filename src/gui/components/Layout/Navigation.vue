@@ -36,7 +36,7 @@
           <span>About</span>
         </nuxt-link>
 
-        <nuxt-link to="/settings" class="navbar-item">
+        <nuxt-link to="/settings/processing" class="navbar-item">
           <span class="icon">🔧</span>
           <span>Settings</span>
         </nuxt-link>
@@ -106,7 +106,8 @@ export default {
         width: 22px;
       }
 
-      &:hover {
+      &:hover,
+      &.nuxt-link-exact-active {
         @apply text-black bg-gray-100 border-primary;
       }
     }

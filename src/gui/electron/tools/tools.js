@@ -1,40 +1,19 @@
-const { remote } = require('electron')
 const fs = require('fs')
 const path = require('path')
-const mime = require('mime-types')
 const { spawn } = require('child_process')
 const EventBus = require('js-event-bus')
-const _ = require('lodash')
 const gpuInfo = require('gpu-info')
 const { rootPath } = require('electron-root-path')
+const debug = require('debug').default('app:electron:tools:tools')
 // const Caman = require('caman').Caman
+const { app } = require('./electron')
 const config = require('../../nuxt.config')
-const debug = require('debug').default('app:electron:deepTools')
-
-const { app, shell } = remote
-
-window.config = (name, value) => {
-  const settingsPath = window.deepTools.getRootPath('gui', 'settings.json')
-
-  let settings = JSON.parse(fs.readFileSync(settingsPath))
-
-  if (_.isNil(value)) {
-    return _.get(settings, name)
-  }
-
-  if (_.isFunction(value)) {
-    value = value.call()
-  }
-
-  settings = _.set(settings, name, value)
-  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2))
-}
 
 /**
  * deepTools.
  * Offers a communication channel between the GUI and NodeJS to interact with operating system tools
  */
-window.deepTools = {
+module.exports = {
   /**
    * Returns an absolute path depending on the parameters
    *

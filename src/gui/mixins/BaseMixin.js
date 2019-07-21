@@ -30,6 +30,8 @@ export default {
 
     $nudity: nudity,
 
-    $deepTools: window.deepTools
+    $deepTools: window.deepTools,
+
+    $tools: window.tools
   })
 }

@@ -20,6 +20,11 @@
     @apply bg-primary-20;
   }
 
+  &.is-active,
+  &.nuxt-link-exact-active {
+    @apply text-white bg-primary;
+  }
+
   &.is-outlined {
     @apply border border-primary;
   }

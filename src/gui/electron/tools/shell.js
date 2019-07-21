@@ -1,6 +1,4 @@
-const { remote } = require('electron')
-
-const { app, shell } = remote
+const { shell } = require('./electron')
 
 module.exports = {
   /**

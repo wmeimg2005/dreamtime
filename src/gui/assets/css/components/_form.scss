@@ -19,3 +19,7 @@
     @apply border-gray-600 text-black;
   }
 }
+
+select.input {
+  @apply bg-gray-100 cursor-pointer;
+}

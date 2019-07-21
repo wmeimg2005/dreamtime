@@ -22,12 +22,10 @@ tippy.setDefaults({
   arrowType: 'round'
 })
 
+//
 localStorage.debug = 'app:*'
 
 export default async ({ app, $axios, store, isDev }, inject) => {
-  // isDev inject
-  window.$isDev = isDev
-
   // axios - default headers
   $axios.setHeader('X-Requested-With', 'XMLHttpRequest')
 

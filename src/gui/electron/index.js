@@ -3,25 +3,28 @@ const http = require('http')
 const path = require('path')
 const fs = require('fs')
 const debug = require('debug').default('app:electron:main')
+const Sentry = require('./tools/sentry')
 const config = require('../nuxt.config')
 
-//
+// We indicate to NuxtJS the root directory of the project
 config.rootDir = path.dirname(__dirname)
 
-//
-debug('Starting in: ', config.dev ? process.env.NODE_ENV : 'production')
+// debug
+debug('Starting in:', config.dev ? process.env.NODE_ENV : 'production')
 
 class DreamApp {
   /**
-   *
+   * Start the magic!
    */
   static start() {
+    Sentry.init()
+
     this.setup()
     this.createWindow()
   }
 
   /**
-   *
+   * Prepare the application for use
    */
   static setup() {
     this.createModelsDir()
@@ -29,7 +32,7 @@ class DreamApp {
   }
 
   /**
-   *
+   * Create the program window and load the interface
    */
   static createWindow() {
     // Create the browser window.
@@ -40,32 +43,30 @@ class DreamApp {
       minHeight: 800,
       webPreferences: {
         // This script offers us the necessary tools to communicate with the operating system.
-        // (interact with the filesystem, start processes, etc).
-        preload: path.join(
-          app.getAppPath(),
-          'electron',
-          'deepTools',
-          'index.js'
-        )
+        // (filesystem, start processes, etc).
+        preload: path.join(app.getAppPath(), 'electron', 'tools', 'index.js')
       }
     })
 
+    // Disable the default Electron menu
     this.window.setMenu(null)
 
-    // Start the server and get the address
+    // Get the interface location
     this.loadURL = this.getNuxtAppLocation()
 
     if (config.dev) {
-      //
+      // We are in development,
+      // we load the DevTools and wait for the NuxtJS server to load.
       this.window.webContents.openDevTools()
       this.pollServer()
     } else {
+      // We are in production, only load the interface!
       this.window.loadFile(this.loadURL)
     }
   }
 
   /**
-   *
+   * Wait until the NuxtJS server is ready.
    */
   static pollServer() {
     debug(`Requesting status from the server: ${this.loadURL}`)
@@ -86,7 +87,7 @@ class DreamApp {
   }
 
   /**
-   *
+   * Returns the location of the interface
    */
   static getNuxtAppLocation() {
     if (!config.dev) {
@@ -97,7 +98,7 @@ class DreamApp {
   }
 
   /**
-   *
+   * Create the model folder to save the processed photos
    */
   static createModelsDir() {
     const modelsPath = path.join(
@@ -124,24 +125,28 @@ class DreamApp {
   }
 
   /**
-   *
+   * Create the user settings file
    */
   static createSettings() {
     const configPath = path.join(config.rootDir, 'settings.json')
 
     const defaultSettings = {
       process: {
-        useCpu: false,
-        useGpus: [],
-        useWaifu: false
+        device: 'CPU',
+        gpus: [],
+        useWaifu: false,
+        useRestoration: true
       },
 
       preferences: {
         enablePubes: true,
         boobsSize: 'medium',
         pubicHairSize: 'medium',
-        useCustomMask: false,
-        useRestoration: true
+        useCustomMask: false
+      },
+
+      telemetry: {
+        enabled: true
       }
     }
 
@@ -151,15 +156,34 @@ class DreamApp {
   }
 }
 
+/**
+ *
+ */
+function quit() {
+  if (!Sentry.can()) {
+    app.quit()
+    return
+  }
+
+  const client = Sentry.getCurrentHub().getClient()
+
+  if (client) {
+    client.close(2000).then(() => {
+      app.exit()
+    })
+  }
+}
+
 app.on('ready', () => {
   try {
     DreamApp.start()
   } catch (error) {
     console.error(error)
-    app.quit()
+    Sentry.captureException(error)
+    quit()
   }
 })
 
-app.on('window-all-closed', () => app.quit())
+app.on('window-all-closed', () => quit())
 
 // app.on('activate', () => win === null && newWin())

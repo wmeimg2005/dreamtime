@@ -70,5 +70,9 @@
     ],
     "nuxt/no-globals-in-created": "off"
   },
-  "globals": {}
+  "globals": {
+    "config": false,
+    "tools": false,
+    "settings": false
+  }
 }

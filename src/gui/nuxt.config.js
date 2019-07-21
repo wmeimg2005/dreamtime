@@ -1,3 +1,4 @@
+const SentryWebpackPlugin = require('@sentry/webpack-plugin')
 require('dotenv').config()
 
 module.exports = {
@@ -78,7 +79,8 @@ module.exports = {
    */
   env: {
     APP_NAME: process.env.APP_NAME,
-    APP_VERSION: process.env.npm_package_version
+    APP_VERSION: process.env.npm_package_version,
+    SENTRY_DSN: process.env.SENTRY_DSN
   },
 
   /*
@@ -94,7 +96,18 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, { isDev, isClient }) {
+    extend(config, { isDev }) {
+      if (!isDev) {
+        config.plugins.push(
+          new SentryWebpackPlugin({
+            include: '.',
+            ignoreFile: '.sentrycliignore',
+            ignore: ['node_modules', 'nuxt.config.js'],
+            configFile: 'sentry.properties'
+          })
+        )
+      }
+
       if (!isDev) {
         // relative links, please.
         config.output.publicPath = './_nuxt/'

@@ -7,6 +7,7 @@ module.exports = {
           '-apple-system',
           'BlinkMacSystemFont',
           'Nunito',
+          'Nunito Sans',
           'system-ui',
           'Helvetica Neue',
           'Arial',
