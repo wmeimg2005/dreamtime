@@ -48,8 +48,37 @@
     }
   }
 
+  &.is-sm {
+    @apply px-3 text-sm;
+    height: 30px;
+  }
+
   &.is-xl {
     @apply px-6 text-xl;
     height: 50px;
+  }
+}
+
+.buttons {
+  @apply flex items-center flex-wrap justify-start;
+
+  &.is-center {
+    @apply justify-center;
+  }
+
+  &.is-right {
+    @apply justify-end;
+  }
+
+  &.is-group {
+    .button {
+      &:not(:last-child) {
+        @apply rounded-r-none;
+      }
+
+      &:not(:first-child) {
+        @apply rounded-l-none border-l-0;
+      }
+    }
   }
 }

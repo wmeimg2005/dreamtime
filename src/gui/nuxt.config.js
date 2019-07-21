@@ -2,6 +2,22 @@ require('dotenv').config()
 
 module.exports = {
   mode: 'spa',
+
+  /**
+   *
+   */
+  router: {
+    mode: 'hash'
+  },
+
+  /**
+   * Dev-Server settings
+   */
+  server: {
+    port: process.env.SERVER_PORT,
+    host: process.env.SERVER_HOST
+  },
+
   /*
    ** Headers of the page
    */
@@ -13,16 +29,7 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { 'http-equiv': 'Content-Security-Policy', content: "'unsafe-inline'" }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {
-        rel: 'stylesheet',
-        href: 'https://use.fontawesome.com/releases/v5.8.1/css/all.css',
-        integrity:
-          'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf',
-        crossorigin: 'anonymous'
-      }
-    ]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
 
   /*
@@ -87,22 +94,11 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, { isClient }) {
-      /*
-      config.module
-        .rule('raw')
-        .test(/\.txt$/)
-        .use('raw-loader')
-        .loader('raw-loader')
-        .end()
-
-      config.module
-        .rule('raw')
-        .test(/\.md$/)
-        .use('raw-loader')
-        .loader('raw-loader')
-        .end()
-      */
+    extend(config, { isDev, isClient }) {
+      if (!isDev) {
+        // relative links, please.
+        config.output.publicPath = './_nuxt/'
+      }
     }
   }
 }

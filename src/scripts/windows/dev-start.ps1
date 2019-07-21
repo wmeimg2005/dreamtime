@@ -7,7 +7,7 @@ Set-Location ../../gui
 # and in case of making changes update them in real time.
 #
 
-Start-Process yarn dev
+Start-Process yarn start:dev:gui
 
 #
 # GUI - Electron App
@@ -16,4 +16,4 @@ Start-Process yarn dev
 # the local server started previously.
 #
 
-Start-Process yarn dev-gui
+Start-Process yarn start:dev:electron

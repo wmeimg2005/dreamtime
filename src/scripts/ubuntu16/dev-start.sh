@@ -9,7 +9,7 @@ cd ../../gui
 # and in case of making changes update them in real time.
 #
 
-sh yarn dev
+sh yarn start:dev:gui
 
 #
 # GUI - Electron App
@@ -18,4 +18,4 @@ sh yarn dev
 # the local server started previously.
 #
 
-sh yarn dev-gui
+sh yarn start:dev:electron

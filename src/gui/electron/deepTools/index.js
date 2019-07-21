@@ -13,6 +13,23 @@ const debug = require('debug').default('app:electron:deepTools')
 
 const { app, shell } = remote
 
+window.config = (name, value) => {
+  const settingsPath = window.deepTools.getRootPath('gui', 'settings.json')
+
+  let settings = JSON.parse(fs.readFileSync(settingsPath))
+
+  if (_.isNil(value)) {
+    return _.get(settings, name)
+  }
+
+  if (_.isFunction(value)) {
+    value = value.call()
+  }
+
+  settings = _.set(settings, name, value)
+  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2))
+}
+
 /**
  * deepTools.
  * Offers a communication channel between the GUI and NodeJS to interact with operating system tools
@@ -28,7 +45,7 @@ window.deepTools = {
     let folderPath
 
     if (name === 'root') {
-      // The name "base" is reserved for the location where the gui/ and cli/ folders are located
+      // The name "root" is reserved for the location where the gui/ and cli/ folders are located
       if (config.dev) {
         folderPath = path.dirname(rootPath)
       } else {

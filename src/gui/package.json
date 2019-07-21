@@ -1,10 +1,11 @@
 {
-  "name": "dreamtime-gui",
-  "version": "0.1.2",
-  "description": "",
-  "author": "DeepManYY",
+  "name": "dream-time-gui",
+  "version": "0.2.0",
+  "main": "electron/index.js",
+  "repository": "https://github.com/private-dreamnet/dreamtime",
+  "author": "DeepManYY <deepmanyy@msgsafe.io>",
+  "license": "GPL-3.0",
   "private": true,
-  "main": "electron/main.js",
   "build": {
     "appId": "com.deepmanyy.dreamtime",
     "productName": "DreamTime",
@@ -24,9 +25,13 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "yarn lint",
-    "dev": "cross-env NODE_ENV=dev nuxt",
-    "dev-gui": "cross-env NODE_ENV=dev DEBUG=app:* electron .",
-    "build": "cross-env NODE_ENV=production nuxt build && cross-env NODE_ENV=production electron-builder",
+    "postinstall": "patch-package",
+    "start:dev:gui": "cross-env NODE_ENV=dev nuxt",
+    "start:dev:electron": "cross-env NODE_ENV=dev DEBUG=app:* electron .",
+    "start:production:electron": "cross-env NODE_ENV=production DEBUG=app:* electron .",
+    "build:gui": "cross-env NODE_ENV=production nuxt build",
+    "build:electron": "cross-env NODE_ENV=production electron-builder",
+    "build": "yarn build:gui && yarn build:electron",
     "pack": "electron-builder --dir"
   },
   "dependencies": {
@@ -48,6 +53,8 @@
     "mime-types": "^2.1.24",
     "moment": "^2.24.0",
     "nuxt": "^2.0.0",
+    "patch-package": "^6.1.2",
+    "postinstall-postinstall": "^2.0.0",
     "queue": "^6.0.1",
     "randomcolor": "^0.5.4",
     "raw-loader": "^3.0.0",
@@ -81,6 +88,7 @@
     "eslint-plugin-vue": "^5.2.3",
     "node-sass": "^4.12.0",
     "nodemon": "^1.18.9",
+    "nuxtjs-electron": "^0.1.10",
     "prettier": "^1.16.4",
     "sass-loader": "^7.1.0",
     "tailwindcss": "^1.0.0"

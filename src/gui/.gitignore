@@ -89,3 +89,6 @@ sw.*
 
 # lock file
 *.lock
+
+# settings
+settings.json

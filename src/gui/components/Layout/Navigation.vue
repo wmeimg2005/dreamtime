@@ -10,7 +10,8 @@
     <section class="navbar-section">
       <nav class="navbar-items">
         <nuxt-link to="/" class="navbar-item">
-          🏠 Home
+          <span class="icon">🏠</span>
+          <span>Home</span>
         </nuxt-link>
 
         <!--
@@ -26,11 +27,18 @@
         -->
 
         <nuxt-link to="/update" class="navbar-item">
-          🌎 Updates
+          <span class="icon">🌎</span>
+          <span>Updates</span>
         </nuxt-link>
 
         <nuxt-link to="/about" class="navbar-item">
-          ❓ About
+          <span class="icon">❓</span>
+          <span>About</span>
+        </nuxt-link>
+
+        <nuxt-link to="/settings" class="navbar-item">
+          <span class="icon">🔧</span>
+          <span>Settings</span>
         </nuxt-link>
       </nav>
     </section>
@@ -38,11 +46,13 @@
     <section class="navbar-section">
       <nav class="navbar-items">
         <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shell.openExternal('https://www.patreon.com/deepmanyy')">
-          💖 Patreon
+          <span class="icon">💖</span>
+          <span>Patreon</span>
         </a>
 
         <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shell.openExternal('https://discord.gg/RjBSaND')">
-          🤟 Discord
+          <span class="icon">🤟</span>
+          <span>Discord</span>
         </a>
       </nav>
     </section>
@@ -57,11 +67,11 @@ export default {
     greetings() {
       const hours = moment().hours()
 
-      if (hours >= 7 && hours <= 12) {
+      if (hours >= 6 && hours <= 11) {
         return 'Good morning ☕'
       }
 
-      if (hours >= 13 && hours <= 19) {
+      if (hours >= 12 && hours <= 19) {
         return 'Good afternoon 🌞'
       }
 
@@ -87,11 +97,17 @@ export default {
 
   .navbar-items {
     .navbar-item {
-      @apply flex items-center border-l-4 border-transparent pl-4;
+      @apply flex items-center text-gray-700 border-l-4 border-transparent pl-4;
       height: 50px;
+      transition: all 0.15s ease-in-out;
+
+      .icon {
+        @apply text-center mr-2;
+        width: 22px;
+      }
 
       &:hover {
-        @apply bg-gray-100 border-primary;
+        @apply text-black bg-gray-100 border-primary;
       }
     }
   }
