@@ -1,4 +1,6 @@
 const fs = require('fs')
+const _ = require('lodash')
+const isRenderer = require('is-electron-renderer')
 const tools = require('./tools')
 
 /**
@@ -17,7 +19,57 @@ const settings = {
    */
   init() {
     this._path = tools.getRootPath('gui', 'settings.json')
+    this._data = {}
+
+    this.ensure()
     this.load()
+  },
+
+  /**
+   *
+   */
+  get() {
+    return this._data
+  },
+
+  /**
+   *
+   * @param {*} settings
+   */
+  set(settings) {
+    this._data = settings
+    this.save()
+  },
+
+  /**
+   *
+   */
+  ensure() {
+    if (fs.existsSync(this._path)) {
+      return
+    }
+
+    const defaultSettings = {
+      processing: {
+        device: 'CPU',
+        gpus: [0],
+        useWaifu: false,
+        useRestoration: true
+      },
+
+      preferences: {
+        enablePubes: true,
+        boobsSize: 'medium',
+        pubicHairSize: 'medium',
+        useCustomMask: false
+      },
+
+      telemetry: {
+        enabled: true
+      }
+    }
+
+    fs.writeFileSync(this._path, JSON.stringify(defaultSettings, null, 2))
   },
 
   /**
@@ -37,28 +89,27 @@ const settings = {
   }
 }
 
-//
-settings.init()
-
 module.exports = new Proxy(settings, {
   get: (obj, prop) => {
-    if (prop in obj._data) {
-      return obj._data[prop]
-    }
-
     if (prop in obj) {
       return obj[prop]
+    }
+
+    if (prop in obj._data) {
+      return obj._data[prop]
     }
 
     return undefined
   },
 
   set: (obj, prop, value) => {
-    if (prop in obj._data) {
-      obj._data[prop] = value
-      obj.save()
+    if (!_.isNil(obj._data)) {
+      if (prop in obj._data) {
+        obj._data[prop] = value
+        obj.save()
 
-      return true
+        return true
+      }
     }
 
     obj[prop] = value

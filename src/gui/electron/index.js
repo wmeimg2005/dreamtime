@@ -4,6 +4,7 @@ const path = require('path')
 const fs = require('fs')
 const debug = require('debug').default('app:electron:main')
 const Sentry = require('./tools/sentry')
+const settings = require('./tools/settings')
 const config = require('../nuxt.config')
 
 // We indicate to NuxtJS the root directory of the project
@@ -17,8 +18,6 @@ class DreamApp {
    * Start the magic!
    */
   static start() {
-    Sentry.init()
-
     this.setup()
     this.createWindow()
   }
@@ -27,8 +26,10 @@ class DreamApp {
    * Prepare the application for use
    */
   static setup() {
+    settings.init()
+    Sentry.init()
+
     this.createModelsDir()
-    this.createSettings()
   }
 
   /**
@@ -121,37 +122,6 @@ class DreamApp {
           )
         }
       )
-    }
-  }
-
-  /**
-   * Create the user settings file
-   */
-  static createSettings() {
-    const configPath = path.join(config.rootDir, 'settings.json')
-
-    const defaultSettings = {
-      process: {
-        device: 'CPU',
-        gpus: [],
-        useWaifu: false,
-        useRestoration: true
-      },
-
-      preferences: {
-        enablePubes: true,
-        boobsSize: 'medium',
-        pubicHairSize: 'medium',
-        useCustomMask: false
-      },
-
-      telemetry: {
-        enabled: true
-      }
-    }
-
-    if (!fs.existsSync(configPath)) {
-      fs.writeFileSync(configPath, JSON.stringify(defaultSettings, null, 2))
     }
   }
 }

@@ -73,6 +73,7 @@
   "globals": {
     "config": false,
     "tools": false,
-    "settings": false
+    "settings": false,
+    "sentry": false
   }
 }

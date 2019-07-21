@@ -17,13 +17,30 @@
         <nuxt-link to="/settings/telemetry" class="button is-outlined is-sm">Telemetry</nuxt-link>
       </div>
 
-      <nuxt-child />
+      <nuxt-child v-model="settings" />
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data: () => ({
+    settings: {}
+  }),
+
+  watch: {
+    settings: {
+      handler: value => {
+        settings.set(value)
+      },
+      deep: true
+    }
+  },
+
+  created() {
+    this.settings = settings.get()
+  }
+}
 </script>
 
 <style lang="scss">

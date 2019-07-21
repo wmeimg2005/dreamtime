@@ -41,7 +41,7 @@ export default {
 
   .inline-field-right {
     @apply flex items-center justify-end;
-    min-width: 200px;
+    width: 250px;
   }
 
   .inline-field-label {
