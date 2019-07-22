@@ -12,10 +12,10 @@ cd ../../cli
 #
 
 # PyInstaller will allow us to compile and package everything in a simple binary
-pip3 --no-cache-dir install pyinstaller
+python3 -m pip --no-cache-dir install pyinstaller --user
 
 # This command should resolve and install all the necessary packages
-pip3 --no-cache-dir install -r requirements-ubuntu.txt
+python3 -m pip --no-cache-dir install -r requirements-mac.txt --user
 
 # NOTES from wisp101:
 # Make sure pyinstaller is accessible from the cmdline as "pyinstaller".
@@ -34,7 +34,7 @@ cd ../gui
 
 # This command should resolve and install all the necessary packages
 # We will not generate a .lock file to avoid problems
-yarn install --force --no-lockfile
+yarn install
 
 # NOTES:
 # If you try to compile the program and you get an error message similar to:

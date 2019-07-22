@@ -28,6 +28,15 @@
           <option :value="false">Disabled</option>
         </select>
       </form-inline-field>
+
+      <form-inline-field
+        label="waifu2x"
+        hint="waifu2x will try to resize your transformed photo to 1024x1024 with the least possible quality loss.">
+        <select v-model="currentValue.processing.useWaifu" class="input">
+          <option :value="true">Enabled</option>
+          <option :value="false">Disabled</option>
+        </select>
+      </form-inline-field>
     </section>
   </div>
 </template>

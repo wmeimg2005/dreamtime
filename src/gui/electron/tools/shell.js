@@ -1,4 +1,4 @@
-const { shell } = require('./electron')
+const { shell, dialog } = require('../modules/electron')
 
 module.exports = {
   /**
@@ -19,5 +19,9 @@ module.exports = {
    */
   openExternal(url) {
     return shell.openExternal(url)
+  },
+
+  showOpenDialog(...args) {
+    return dialog.showOpenDialog(...args)
   }
 }

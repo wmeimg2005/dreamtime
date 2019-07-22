@@ -1,7 +1,9 @@
 const fs = require('fs')
 const _ = require('lodash')
-const isRenderer = require('is-electron-renderer')
-const tools = require('./tools')
+const uuid = require('uuid/v4')
+const debug = require('debug').default('app:electron:modules:settings')
+
+const tools = require('../tools')
 
 /**
  * User settings.
@@ -50,18 +52,27 @@ const settings = {
     }
 
     const defaultSettings = {
+      user: uuid(),
+
       processing: {
-        device: 'CPU',
+        device: 'GPU',
         gpus: [0],
-        useWaifu: false,
+        useWaifu: false, // weebs out 😡👉🚪
         useRestoration: true
       },
 
       preferences: {
+        executions: 1,
         enablePubes: true,
         boobsSize: 'medium',
         pubicHairSize: 'medium',
         useCustomMask: false
+      },
+
+      folders: {
+        cropped: tools.getPath('temp'),
+        models: tools.getPath('userData', 'models'),
+        masks: tools.getPath('userData', 'masks')
       },
 
       telemetry: {
@@ -77,6 +88,8 @@ const settings = {
    */
   async load() {
     this._data = JSON.parse(fs.readFileSync(this._path))
+
+    debug('User Settings loaded!', this._data)
   },
 
   /**
@@ -88,6 +101,8 @@ const settings = {
     fs.writeFileSync(this._path, data)
   }
 }
+
+settings.init()
 
 module.exports = new Proxy(settings, {
   get: (obj, prop) => {

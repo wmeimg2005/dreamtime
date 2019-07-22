@@ -7,7 +7,7 @@ cd ../../cli
 # The CLI is where the neural network is located.
 #
 # Requirements:
-# * Python3 and pip3 (I use 3.6.8)
+# * Python 3.6 and pip3
 # * CUDA 10.0
 #
 
@@ -44,11 +44,7 @@ cd ../../dist
 
 rm -r -f "./gui"
 
-mv ./gui-unpacked/linux-unpacked ./gui
-
-# We delete the generated folder
-
-rm -r -f ./gui-unpacked
+mv ./gui-unpacked ./gui
 
 #
 # Success

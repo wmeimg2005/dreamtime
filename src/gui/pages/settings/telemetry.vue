@@ -3,7 +3,7 @@
     <section class="settings-fields-section">
       <form-inline-field
         label="Telemetry"
-        hint="Send anonymous information about the program that will help us to continue improving it. This includes: Errors, graphics card information, number of people using the program.">
+        hint="Send anonymous information about the program that will help us to continue improving it. This includes: Errors, GPU information, performance and number of people using the application.">
         <select v-model="currentValue.telemetry.enabled" class="input">
           <option :value="false">Disabled</option>
           <option :value="true">Enabled</option>

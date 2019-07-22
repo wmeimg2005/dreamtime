@@ -62,39 +62,6 @@ class Nudity {
   reset() {
     this.model = undefined
     this.modelPhoto = undefined
-    this.transformation = {
-      duration: 0,
-      start: undefined
-    }
-
-    this.transformationDuration = 0
-    this.transformationStart = undefined
-  }
-
-  /**
-   *
-   * @param {object} settings
-   */
-  async transform(settings) {
-    this.transformation.start = moment()
-
-    const durationFunc = () => {
-      this.transformation.duration = moment().diff(
-        this.transformation.start,
-        'seconds'
-      )
-    }
-
-    const durationInterval = setInterval(durationFunc, 1000)
-    durationFunc()
-
-    try {
-      await this.modelPhoto.transform(settings)
-    } catch (error) {
-      throw error
-    } finally {
-      clearInterval(durationInterval)
-    }
   }
 }
 

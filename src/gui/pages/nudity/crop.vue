@@ -1,15 +1,11 @@
 <template>
   <div class="nudity-crop">
-    <div class="crop-canvas">
-      <canvas ref="photoCanvas" />
-    </div>
-
     <div class="crop-help">
       <section>
         <p class="help-title">📷 Photo cropping</p>
 
         <p class="help-text">
-          It is necessary to resize your photo to 512x512, use the tool above to place the portion of the photo you want to transform into the marked box.
+          It is necessary to resize your photo to 512x512, use the tool below to place the portion of the photo you want to transform into the marked box.
         </p>
 
         <p class="help-text">
@@ -18,7 +14,8 @@
 
         <div class="buttons">
           <nuxt-link to="/" class="button is-danger">Cancel</nuxt-link>
-          <button class="button" @click.prevent="next">Next</button>
+          <button class="button" @click.prevent="crop('settings')">Preferences</button>
+          <button class="button is-success" @click.prevent="crop('nudify')">Nudify!</button>
         </div>
       </section>
 
@@ -33,6 +30,10 @@
           </ul>
         </p>
       </section>
+    </div>
+
+    <div class="crop-canvas">
+      <canvas ref="photoCanvas" />
     </div>
   </div>
 </template>
@@ -112,12 +113,18 @@ export default {
       await this.$nudity.modelPhoto
         .getCroppedFile()
         .writeDataURL(canvasAsDataURL)
-
-      this.$router.push('/nudity/settings')
     },
 
-    next() {
-      this.saveCroppedPhoto()
+    async crop(next) {
+      await this.saveCroppedPhoto()
+
+      if (next === 'settings') {
+        this.$router.push('/nudity/settings')
+      }
+
+      if (next === 'nudify') {
+        this.$router.push('/nudity/loading')
+      }
     }
   }
 }

@@ -27,10 +27,16 @@ module.exports = {
 
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { 'http-equiv': 'Content-Security-Policy', content: "'unsafe-inline'" }
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+
+    scripts: [
+      {
+        src: 'https://www.gstatic.com/firebasejs/6.3.1/firebase-app.js'
+      }
+    ]
   },
 
   /*
@@ -80,7 +86,19 @@ module.exports = {
   env: {
     APP_NAME: process.env.APP_NAME,
     APP_VERSION: process.env.npm_package_version,
-    SENTRY_DSN: process.env.SENTRY_DSN
+
+    SENTRY_DSN: process.env.SENTRY_DSN,
+
+    FIREBASE_KEY: process.env.FIREBASE_KEY,
+    FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+    FIREBASE_SENDER_ID: process.env.FIREBASE_SENDER_ID,
+    FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+
+    BULLET_TRAIN_KEY: process.env.BULLET_TRAIN_KEY,
+
+    GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID
   },
 
   /*

@@ -28,7 +28,7 @@
 
 <script>
 import _ from 'lodash'
-import { ModelPhoto } from '~/modules/models'
+import { Photo } from '~/modules/models'
 import { File } from '~/modules'
 
 export default {
@@ -63,10 +63,10 @@ export default {
       const file = File.fromPath(inputFile.path)
 
       // Create a photo for the model ("null" model for now)
-      const modelPhoto = new ModelPhoto(null, file)
+      const photo = new Photo(null, file)
 
       // Get any error message from the file
-      const validationErrorMessage = modelPhoto.getValidationErrorMessage()
+      const validationErrorMessage = photo.getValidationErrorMessage()
 
       if (!_.isNil(validationErrorMessage)) {
         alert(validationErrorMessage)
@@ -74,7 +74,7 @@ export default {
       }
 
       // Start the transformation process!
-      this.$nudity.start(modelPhoto)
+      this.$nudity.start(photo)
 
       // It's time to crop the photo
       this.$router.push('/nudity/crop')

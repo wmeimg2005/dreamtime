@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import tippy from 'tippy.js'
-import nudity from '~/modules/nudity'
+import { app, nudity } from '~/modules'
 
 export default {
   directives: {
@@ -22,16 +22,12 @@ export default {
   filters: {},
 
   data: () => ({
-    app: {
-      name: process.env.APP_NAME,
-      version: process.env.APP_VERSION,
-      status: process.env.APP_STATUS
-    },
+    app,
 
     $nudity: nudity,
 
     $deepTools: window.deepTools,
 
-    $tools: window.tools
+    $tools: window.$tools
   })
 }

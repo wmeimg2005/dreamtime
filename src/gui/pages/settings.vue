@@ -14,6 +14,8 @@
       <div class="buttons is-group is-center">
         <nuxt-link to="/settings/processing" class="button is-outlined is-sm">Processing</nuxt-link>
         <nuxt-link to="/settings/preferences" class="button is-outlined is-sm">Preferences</nuxt-link>
+        <nuxt-link to="/settings/folders" class="button is-outlined is-sm">Folders</nuxt-link>
+        <nuxt-link to="/settings/theme" class="button is-outlined is-sm">Theme</nuxt-link>
         <nuxt-link to="/settings/telemetry" class="button is-outlined is-sm">Telemetry</nuxt-link>
       </div>
 
@@ -31,14 +33,14 @@ export default {
   watch: {
     settings: {
       handler: value => {
-        settings.set(value)
+        $settings.set(value)
       },
       deep: true
     }
   },
 
   created() {
-    this.settings = settings.get()
+    this.settings = $settings.get()
   }
 }
 </script>

@@ -3,9 +3,9 @@ const http = require('http')
 const path = require('path')
 const fs = require('fs')
 const debug = require('debug').default('app:electron:main')
-const Sentry = require('./tools/sentry')
-const settings = require('./tools/settings')
 const config = require('../nuxt.config')
+const { sentry } = require('./telemetry')
+// const { settings } = require('./modules')
 
 // We indicate to NuxtJS the root directory of the project
 config.rootDir = path.dirname(__dirname)
@@ -26,9 +26,6 @@ class DreamApp {
    * Prepare the application for use
    */
   static setup() {
-    settings.init()
-    Sentry.init()
-
     this.createModelsDir()
   }
 
@@ -45,7 +42,7 @@ class DreamApp {
       webPreferences: {
         // This script offers us the necessary tools to communicate with the operating system.
         // (filesystem, start processes, etc).
-        preload: path.join(app.getAppPath(), 'electron', 'tools', 'index.js')
+        preload: path.join(app.getAppPath(), 'electron', 'preload.js')
       }
     })
 
@@ -130,12 +127,12 @@ class DreamApp {
  *
  */
 function quit() {
-  if (!Sentry.can()) {
+  if (!sentry.can()) {
     app.quit()
     return
   }
 
-  const client = Sentry.getCurrentHub().getClient()
+  const client = sentry.getCurrentHub().getClient()
 
   if (client) {
     client.close(2000).then(() => {
@@ -149,7 +146,7 @@ app.on('ready', () => {
     DreamApp.start()
   } catch (error) {
     console.error(error)
-    Sentry.captureException(error)
+    sentry.captureException(error)
     quit()
   }
 })

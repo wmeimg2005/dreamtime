@@ -4,6 +4,12 @@
 
     <section class="settings-fields-section">
       <form-inline-field
+        label="Number of executions"
+        hint="The transformation process will be repeated this number of times and you can select the one that has the best result.">
+        <input v-model="currentValue.preferences.executions" type="number" min="1" class="input" />
+      </form-inline-field>
+
+      <form-inline-field
         label="Boobs Size"
         hint="The algorithm will try to create the indicated size">
         <select v-model="currentValue.preferences.boobsSize" class="input">

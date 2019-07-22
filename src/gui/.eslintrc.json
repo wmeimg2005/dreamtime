@@ -71,9 +71,10 @@
     "nuxt/no-globals-in-created": "off"
   },
   "globals": {
-    "config": false,
-    "tools": false,
-    "settings": false,
-    "sentry": false
+    "$settings": false,
+    "$bullet": false,
+    "$sentry": false,
+    "$nucleus": false,
+    "$tools": false
   }
 }

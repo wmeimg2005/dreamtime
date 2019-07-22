@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import uuid from 'uuid/v4'
+import moment from 'moment'
 import File from '../file'
 
 const debug = require('debug').default('app:modules:models:model-photo')
@@ -7,7 +8,7 @@ const debug = require('debug').default('app:modules:models:model-photo')
 /**
  * Represents the photo to be processed of a Model.
  */
-export default class ModelPhoto {
+export default class Photo {
   /**
    *
    * @param {Model|null} model Model to which it belongs
@@ -30,6 +31,13 @@ export default class ModelPhoto {
     this.outputFile = File.fromPath(
       this.getFolderPath(this.getOutputFileName())
     )
+
+    // Transformation Info
+    this.transformation = {
+      duration: 0,
+      start: undefined,
+      preferences: _.clone($settings.preferences)
+    }
 
     // CLI messages
     this.cliLines = []
@@ -136,6 +144,15 @@ export default class ModelPhoto {
    */
   transform(settings) {
     return new Promise((resolve, reject) => {
+      this.transformation.start = moment()
+
+      const durationFunc = () => {
+        this.transformation.duration = moment().diff(
+          this.transformation.start,
+          'seconds'
+        )
+      }
+
       const onSpawnError = error => {
         reject(
           new Error(
@@ -147,12 +164,17 @@ export default class ModelPhoto {
         )
       }
 
+      const durationInterval = setInterval(durationFunc, 1000)
+      durationFunc()
+
       let child
 
       try {
         child = window.deepTools.transform(this, settings)
       } catch (error) {
+        clearInterval(durationInterval)
         onSpawnError(error)
+        return
       }
 
       child.on('error', error => {
@@ -160,7 +182,12 @@ export default class ModelPhoto {
       })
 
       child.on('stdout', output => {
-        this.cliLines.push(...output.toString().trim().split('\n'))
+        this.cliLines.push(
+          ...output
+            .toString()
+            .trim()
+            .split('\n')
+        )
       })
 
       child.on('stderr', output => {
@@ -169,6 +196,8 @@ export default class ModelPhoto {
       })
 
       child.on('ready', code => {
+        clearInterval(durationInterval)
+
         if (code === 0) {
           this.outputFile.update()
           resolve()

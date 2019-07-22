@@ -1,11 +1,170 @@
-window.settings = require('./settings')
+const fs = require('fs')
+const path = require('path')
+const { spawn } = require('child_process')
+const EventBus = require('js-event-bus')
+const gpuInfo = require('gpu-info')
+const { rootPath } = require('electron-root-path')
+const debug = require('debug').default('app:electron:tools:tools')
+// const Caman = require('caman').Caman
 
-window.settings.init()
+const { app } = require('../modules/electron')
+const config = require('../../nuxt.config')
 
-window.sentry = require('./sentry')
+/**
+ * deepTools.
+ * Offers a communication channel between the GUI and NodeJS to interact with operating system tools
+ */
+module.exports = {
+  /**
+   * Returns an absolute path depending on the parameters
+   *
+   * @param {string} name Name of the base path: https://electronjs.org/docs/all#appgetpathname
+   * @param {string} args Series of path segments to join into one path
+   */
+  getPath(name, ...args) {
+    let folderPath
 
-window.sentry.init()
+    if (name === 'root') {
+      // The name "root" is reserved for the location where the gui/ and cli/ folders are located
+      if (config.dev) {
+        folderPath = path.dirname(rootPath)
+      } else {
+        folderPath = path.dirname(path.dirname(path.dirname(rootPath)))
+      }
+    } else {
+      folderPath = app.getPath(name)
+    }
 
-window.tools = require('./tools')
+    return path.join(folderPath, ...args)
+  },
 
-window.deepTools = window.tools
+  /**
+   * Alias for getPath('root', ...args)
+   *
+   * @param  {string} args Series of path segments to join into one path
+   */
+  getRootPath(...args) {
+    return this.getPath('root', ...args)
+  },
+
+  /**
+   * Returns a list with information of the graphic cards installed in the computer.
+   */
+  getGpusList() {
+    return gpuInfo()
+  },
+
+  /**
+   *
+   */
+  getCliDirPath() {
+    return this.getRootPath('cli')
+  },
+
+  /**
+   *
+   * @param {*} modelPhoto
+   * @param {*} useGpus
+   * @param {*} useWaifu TODO
+   * @param {*} enablePubes
+   */
+  transform(modelPhoto, settings) {
+    if (settings.useCpu) {
+      settings.useGpus = false
+    }
+
+    if (!settings.useGpus) {
+      settings.useWaifu = false
+    }
+
+    const cliDirPath = this.getCliDirPath()
+    const inputFilePath = modelPhoto.getCroppedFile().getPath()
+    const outputFilePath = modelPhoto.getOutputFile().getPath()
+
+    if (!fs.existsSync(cliDirPath)) {
+      throw new Error(
+        `We could not find the CLI folder!\n
+        This can be caused by a corrupt installation, make sure that the CLI folder exists in:\n
+        ${cliDirPath}`
+      )
+    }
+
+    if (!fs.existsSync(inputFilePath)) {
+      throw new Error(
+        `We could not find the cropped photo!\n
+        This may mean that ${config.env.APP_NAME} does not have permissions to write in the models folder, please make sure that the following folder exists:\n
+        ${inputFilePath}`
+      )
+    }
+
+    const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
+
+    if (settings.enablePubes) {
+      cliArgs.push('--enablepubes')
+    }
+
+    if (config.dev) {
+      cliArgs.unshift('main.py')
+    }
+
+    if (!settings.useGpus) {
+      cliArgs.push('--cpu')
+    } else {
+      for (const id of settings.useGpus) {
+        cliArgs.push(`--gpu`)
+        cliArgs.push(id)
+      }
+    }
+
+    debug('The transformation process has begun!', {
+      cliDirPath,
+      inputFilePath,
+      outputFilePath,
+      cliArgs
+    })
+
+    const bus = new EventBus()
+
+    let child
+
+    if (config.dev) {
+      child = spawn('python', cliArgs, {
+        cwd: cliDirPath
+      })
+    } else {
+      child = spawn(path.join(cliDirPath, 'cli'), cliArgs)
+    }
+
+    child.on('error', error => {
+      debug(error)
+      bus.emit('error', null, error)
+    })
+
+    child.stdout.on('data', data => {
+      debug(`stdout: ${data}`)
+      bus.emit('stdout', null, data)
+    })
+
+    child.stderr.on('data', data => {
+      debug(`stderr: ${data}`)
+      bus.emit('stderr', null, data)
+    })
+
+    child.on('close', code => {
+      debug(`CLI process exited with code ${code}`)
+      bus.emit('ready', null, code)
+    })
+
+    return bus
+  },
+
+  /**
+   *
+   */
+  fs: require('./fs'),
+
+  /**
+   *
+   */
+  shell: require('./shell')
+}

@@ -1,38 +1,29 @@
-class Platform {
-  constructor() {
-    this._fetchGpuDevices()
-  }
+import _ from 'lodash'
 
-  async _fetchGpuDevices() {
+export default {
+  init() {
+    this.fetchGpuDevices()
+  },
+
+  async fetchGpuDevices() {
     try {
-      this.gpuDevices = await tools.getGpusList()
+      const devices = await $tools.getGpusList()
 
-      /*
-      sentry.addBreadcrumb({
-        category: 'stats',
-        message: 'GPU Devices',
-        level: 'info',
-        data: {
-          devices: this.gpuDevices
-        }
-      })
-      */
-
-      sentry.captureEvent({
+      $sentry.captureEvent({
         message: 'GPU Devices',
         level: 'info',
         extra: {
-          devices: this.gpuDevices
+          devices
         }
       })
+
+      this.gpuDevices = _.filter(devices, { AdapterCompatibility: 'NVIDIA' })
     } catch (error) {
       this.gpuDevices = []
     }
-  }
+  },
 
   getGpuDevices() {
     return this.gpuDevices
   }
 }
-
-export default new Platform()
