@@ -3,6 +3,7 @@ import uuid from 'uuid/v4'
 import moment from 'moment'
 import path from 'path'
 import File from '../file'
+import PhotoJob from './photo-job'
 
 const debug = require('debug').default('app:modules:models:model-photo')
 
@@ -124,91 +125,26 @@ export default class Photo {
   /**
    *
    */
-  getOutputFile() {
-    return this.outputFile
-  }
+  async start() {
+    this.transformation.start = moment()
 
-  /**
-   *
-   * @param {object} settings
-   */
-  transform(settings) {
-    return new Promise((resolve, reject) => {
-      this.transformation.start = moment()
+    const durationFunc = () => {
+      this.transformation.duration = moment().diff(
+        this.transformation.start,
+        'seconds'
+      )
+    }
 
-      const durationFunc = () => {
-        this.transformation.duration = moment().diff(
-          this.transformation.start,
-          'seconds'
-        )
-      }
+    const durationInterval = setInterval(durationFunc, 1000)
+    durationFunc()
 
-      const onSpawnError = error => {
-        reject(
-          new Error(
-            `We were unable to start the CLI for the transformation!\n
-        This can be caused by a corrupt installation, please make sure that cli.exe exists and works correctly (if you are a developer, make sure that main.py works)\n
-        The script has reported the following error, take a screenshot to get more information:\n
-        ${error}`
-          )
-        )
-      }
+    for (let it = 0; it < this.preferences.executions; it += 1) {
+      const job = new PhotoJob(it, this)
+      this.outputs.push(job)
 
-      const durationInterval = setInterval(durationFunc, 1000)
-      durationFunc()
+      await job.transform()
+    }
 
-      let child
-
-      try {
-        child = window.deepTools.transform(this, settings)
-      } catch (error) {
-        clearInterval(durationInterval)
-        onSpawnError(error)
-        return
-      }
-
-      child.on('error', error => {
-        onSpawnError(error)
-      })
-
-      child.on('stdout', output => {
-        this.cliLines.push(
-          ...output
-            .toString()
-            .trim()
-            .split('\n')
-        )
-      })
-
-      child.on('stderr', output => {
-        this.cliLines.push(output)
-        this.cliError += `${output}\n`
-      })
-
-      child.on('ready', code => {
-        clearInterval(durationInterval)
-
-        if (code === 0) {
-          this.outputFile.update()
-          resolve()
-        } else {
-          reject(
-            new Error(
-              `The transformation has been interrupted by an CLI error.\n
-              This can be caused by:\n
-              - A corrupt installation (commonly: The checkpoints folder was not found in cli/)\n
-              - Incompatible system\n
-              - If you are using GPU: The NVIDIA graphics card could not be found\n
-              - If you are using CPU: Insufficient RAM. Buy more RAM!\n
-              The CLI has reported the following error, take a screenshot to get more information:\n
-              ${this.cliError}`
-            )
-          )
-
-          this.cliLines = []
-          this.cliError = ''
-        }
-      })
-    })
+    clearInterval(durationInterval)
   }
 }

@@ -105,10 +105,17 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    /**
+     *
+     */
     postcss: {
       plugins: {
         tailwindcss: './tailwind.config.js'
       }
+    },
+
+    terser: {
+      sourceMap: true
     },
 
     /*
