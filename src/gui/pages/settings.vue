@@ -15,7 +15,7 @@
         <nuxt-link to="/settings/processing" class="button is-outlined is-sm">Processing</nuxt-link>
         <nuxt-link to="/settings/preferences" class="button is-outlined is-sm">Preferences</nuxt-link>
         <nuxt-link to="/settings/folders" class="button is-outlined is-sm">Folders</nuxt-link>
-        <nuxt-link to="/settings/theme" class="button is-outlined is-sm">Theme</nuxt-link>
+        <!--<nuxt-link to="/settings/theme" class="button is-outlined is-sm">Theme</nuxt-link>-->
         <nuxt-link to="/settings/telemetry" class="button is-outlined is-sm">Telemetry</nuxt-link>
       </div>
 

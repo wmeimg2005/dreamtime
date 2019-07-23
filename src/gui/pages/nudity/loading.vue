@@ -11,6 +11,7 @@
     </app-title>
 
     <div class="content-body">
+
     </div>
   </div>
 </template>

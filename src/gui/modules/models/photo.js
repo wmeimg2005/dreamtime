@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import uuid from 'uuid/v4'
 import moment from 'moment'
+import path from 'path'
 import File from '../file'
 
 const debug = require('debug').default('app:modules:models:model-photo')
@@ -19,34 +20,35 @@ export default class Photo {
     this.uuid = uuid()
     this.model = model
 
+    //
+    this.outputs = []
+
     // Source file, this is the photo that we want to transform
     this.sourceFile = file
 
     // Cropped file, this is the photo cropped to 512x512
     this.croppedFile = File.fromPath(
-      window.deepTools.getPath('temp', `${this.uuid}.png`)
+      path.join($settings.folders.cropped, `${this.uuid}.png`)
     )
 
-    // Output file, this is the photo already transformed!
-    this.outputFile = File.fromPath(
-      this.getFolderPath(this.getOutputFileName())
-    )
+    // Transformation Preferences
+    this.preferences = _.clone($settings.preferences)
 
     // Transformation Info
     this.transformation = {
       duration: 0,
-      start: undefined,
-      preferences: _.clone($settings.preferences)
+      start: undefined
     }
 
     // CLI messages
     this.cliLines = []
     this.cliError = ''
 
-    this.debug(`New instance of ModelPhoto`, {
+    this.debug(`New instance of Photo`, {
+      uuid: this.uuid,
+      model: this.model,
       sourceFile: this.sourceFile,
-      croppedFile: this.croppedFile,
-      outputFile: this.outputFile
+      croppedFile: this.croppedFile
     })
   }
 
@@ -102,12 +104,7 @@ export default class Photo {
    *
    */
   getFolderPath(...args) {
-    return window.deepTools.getPath(
-      'userData',
-      'models',
-      this.getFolderName(),
-      ...args
-    )
+    return path.join($settings.folders.models, this.getFolderName(), ...args)
   }
 
   /**
@@ -129,13 +126,6 @@ export default class Photo {
    */
   getOutputFile() {
     return this.outputFile
-  }
-
-  /**
-   *
-   */
-  getOutputFileName() {
-    return `${this.getSourceFile().getName()}_dreamtime.png`
   }
 
   /**

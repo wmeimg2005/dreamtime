@@ -20,7 +20,11 @@ Join the community of people who use the project either for entertainment or dev
 
 Developing an application like DreamTime takes time! Any help is welcome:
 
-- **If you have extra \$\$\$:** Consider 💖[Become a patron](https://www.patreon.com/deepmanyy). Support economically the project monthly and obtain exclusive benefits.
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/R6R2ZSG3)
+
+[![patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/deepmanyy)
+
+
 - **If you are a developer:** Consider making a fork of the project and make PR of any improvement you can do, also join our server in [Discord](https://discord.gg/RjBSaND) where we have channels exclusively for development.
 
 ## Source Code
