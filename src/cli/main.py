@@ -2,14 +2,19 @@ import shutil
 import sys
 import argparse
 import tempfile
-
 import cv2
 import time
-
 import os
+import imageio
+import sentry_sdk
+import rook
+
 from run import process, process_gif
 from multiprocessing import freeze_support
-import imageio
+from dotenv import load_dotenv
+
+#
+load_dotenv()
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -40,10 +45,7 @@ parser.add_argument(
     help="generates pubic hair on output image",
 )
 parser.add_argument(
-    "--gif",
-    action="store_true",
-    default=False,
-    help="Run the processing on a gif",
+    "--gif", action="store_true", default=False, help="Run the processing on a gif"
 )
 args = parser.parse_args()
 
@@ -82,8 +84,13 @@ def main():
         tmp_dir = tempfile.mkdtemp()
         process_gif(gif_imgs, gpu_ids, args.enablepubes, tmp_dir)
         print("Creating gif")
-        imageio.mimsave(args.output if args.output != "output.png" else "output.gif",
-                        [imageio.imread(os.path.join(tmp_dir, "output_{}.jpg".format(i))) for i in range(nums)])
+        imageio.mimsave(
+            args.output if args.output != "output.png" else "output.gif",
+            [
+                imageio.imread(os.path.join(tmp_dir, "output_{}.jpg".format(i)))
+                for i in range(nums)
+            ],
+        )
         shutil.rmtree(tmp_dir)
 
     end = time.time()
@@ -96,6 +103,22 @@ def main():
     sys.exit()
 
 
+def start_sentry():
+    dsn = os.getenv("SENTRY_DSN")
+
+    if dsn:
+        sentry_sdk.init(dsn=dsn)
+
+
+def start_rook():
+    token = os.getenv("ROOKOUT_TOKEN")
+
+    if token:
+        rook.start(token=token)
+
+
 if __name__ == "__main__":
     freeze_support()
+    start_sentry()
+    start_rook()
     main()

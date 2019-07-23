@@ -11,6 +11,9 @@ pids
 # Cache
 __pycache__/
 
+# dotenv environment variables file
+.env
+
 # Checkpoints
 checkpoints/
 

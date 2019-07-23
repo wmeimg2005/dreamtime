@@ -1,4 +1,5 @@
 const rookout = require('rookout')
+const isRenderer = require('is-electron-renderer')
 const debug = require('debug').default('app:electron:telemetry:rookout')
 
 const { settings } = require('../modules')
@@ -19,7 +20,7 @@ const instance = {
   },
 
   can() {
-    return process.env.ROOKOUT_TOKEN
+    return process.env.ROOKOUT_TOKEN && !isRenderer
   }
 }
 

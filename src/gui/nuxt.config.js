@@ -114,6 +114,9 @@ module.exports = {
       }
     },
 
+    /**
+     *
+     */
     terser: {
       sourceMap: true
     },
