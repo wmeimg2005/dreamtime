@@ -1,4 +1,4 @@
 [submodule "src/cli"]
-	path = src/dreampower
+	path = src/cli
 	url = https://github.com/private-dreamnet/dreampower.git
 	branch = master
