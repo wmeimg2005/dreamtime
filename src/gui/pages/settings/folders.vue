@@ -2,22 +2,29 @@
   <div class="settings-fields">
     <section class="settings-fields-section">
       <form-inline-field
+        label="CLI"
+        hint="Path where the CLI is located. This is the most important program.">
+        <input v-model="currentValue.folders.cli" class="input" />
+        <button type="button" class="button" @click.prevent="changeCLI">📂</button>
+      </form-inline-field>
+
+      <form-inline-field
         label="Models"
-        hint="Location where the transformed photos of the models will be saved.">
+        hint="Path where the transformed photos of the models will be saved.">
         <input v-model="currentValue.folders.models" class="input" />
         <button type="button" class="button" @click.prevent="changeModels">📂</button>
       </form-inline-field>
 
       <form-inline-field
         label="Cropped"
-        hint="Location where the cropped photos will be saved. We recommend selecting a temporary folder.">
+        hint="Path where the cropped photos will be saved. We recommend selecting a temporary folder.">
         <input v-model="currentValue.folders.cropped" class="input" />
         <button type="button" class="button" @click.prevent="changeCropped">📂</button>
       </form-inline-field>
 
       <form-inline-field
         label="Masks"
-        hint="Location where the algorithm masks photos will be saved.">
+        hint="Path where the algorithm masks photos will be saved.">
         <input v-model="currentValue.folders.masks" class="input" />
         <button type="button" class="button" @click.prevent="changeMasks">📂</button>
       </form-inline-field>
@@ -68,6 +75,11 @@ export default {
     changeMasks() {
       const dir = this.showOpenDialog(this.currentValue.folders.masks)
       this.currentValue.folders.masks = dir
+    },
+
+    changeCLI() {
+      const dir = this.showOpenDialog(this.currentValue.folders.cli)
+      this.currentValue.folders.cli = dir
     }
   }
 }

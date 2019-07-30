@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
 export default {
-  init() {
-    this.fetchGpuDevices()
+  async init() {
+    await this.fetchGpuDevices()
   },
 
   async fetchGpuDevices() {

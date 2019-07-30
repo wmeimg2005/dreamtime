@@ -1,17 +1,21 @@
 <template>
   <div class="layout-navbar">
     <!-- Welcome! -->
-    <section class="navbar-section">
-      <h3 class="section-title">
+    <div class="navbar-header">
+      <h1 class="header-title">
+        {{ app.name }}
+      </h1>
+
+      <h3 class="header-greetings">
         {{ greetings }}
       </h3>
-    </section>
+    </div>
 
     <section class="navbar-section">
       <nav class="navbar-items">
         <nuxt-link to="/" class="navbar-item">
-          <span class="icon">🏠</span>
-          <span>Home</span>
+          <span class="icon">📷</span>
+          <span>Nudify</span>
         </nuxt-link>
 
         <!--
@@ -54,6 +58,11 @@
           <span class="icon">🤟</span>
           <span>Discord</span>
         </a>
+
+        <a href="#" class="navbar-item" @click.prevent="test">
+          <span class="icon">🐛</span>
+          <span>I am a bug!</span>
+        </a>
       </nav>
     </section>
   </div>
@@ -77,15 +86,64 @@ export default {
 
       return 'Good night 🌛'
     }
+  },
+
+  methods: {
+    test() {
+      $tools.testError()
+      $rollbar.error(new Error('wow, error'))
+      throw new Error('wow, error')
+    }
   }
 }
 </script>
 
-
 <style lang="scss">
+@keyframes bgAnim {
+  0%{background-position: 0% 0%}
+  50%{background-position: 100% 0%}
+  100%{background-position: 0% 0%}
+}
+
 .layout-navbar {
-  @apply py-6 shadow h-screen;
+  @apply pb-6 shadow h-screen bg-dark;
   width: 200px;
+
+  .navbar-header {
+    @apply mb-5 text-gray-300 flex flex-col items-center justify-center;
+    animation: 20s ease-in-out infinite bgAnim;
+    height: 90px;
+
+    background: rgb(99, 66, 245);
+
+    background: linear-gradient(
+      40deg,
+      rgba(99, 66, 245, 1) 0%,
+      rgba(239, 125, 199, 1) 100%,
+    );
+
+    background-size: 200% 100%;
+
+    /*
+    clip-path: polygon(
+      50% 0%,
+      100% 0,
+      100% 85%,
+      75% 100%,
+      25% 100%,
+      0 85%,
+      0 0
+    );
+    */
+
+    .header-title {
+      @apply text-white text-xl font-bold;
+    }
+
+    .header-greetings {
+      @apply text-sm;
+    }
+  }
 
   .navbar-section {
     @apply mb-5;
@@ -97,18 +155,24 @@ export default {
 
   .navbar-items {
     .navbar-item {
-      @apply flex items-center text-gray-700 border-l-4 border-transparent pl-4;
+      @apply border-l-4 border-transparent pl-4 font-semibold flex items-center;
       height: 50px;
       transition: all 0.15s ease-in-out;
 
       .icon {
         @apply text-center mr-2;
+        filter: grayscale(100%);
         width: 22px;
+        transition: all 0.15s ease-in-out;
       }
 
       &:hover,
       &.nuxt-link-exact-active {
-        @apply text-black bg-gray-100 border-primary;
+        @apply text-primary border-primary;
+
+        .icon {
+          filter: unset;
+        }
       }
     }
   }

@@ -136,7 +136,7 @@ export default {
     @apply flex
       items-center
       justify-center
-      bg-gray-100
+      bg-dark-400
       rounded
       mx-5
       border-transparent

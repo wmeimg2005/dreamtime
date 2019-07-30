@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { markdown } from 'markdown'
+import { markdown } from 'electron-utils/browser'
 
 export default {
   data: () => ({

@@ -1,4 +1,4 @@
-const { shell, dialog } = require('../modules/electron')
+const { api } = require('electron-utils')
 
 module.exports = {
   /**
@@ -8,7 +8,7 @@ module.exports = {
    * @param {string} fullPath
    */
   openItem(fullPath) {
-    return shell.openItem(fullPath)
+    return api.shell.openItem(fullPath)
   },
 
   /**
@@ -18,10 +18,14 @@ module.exports = {
    * @param {string} url
    */
   openExternal(url) {
-    return shell.openExternal(url)
+    return api.shell.openExternal(url)
   },
 
+  /**
+   *
+   * @param  {...any} args
+   */
   showOpenDialog(...args) {
-    return dialog.showOpenDialog(...args)
+    return api.dialog.showOpenDialog(...args)
   }
 }

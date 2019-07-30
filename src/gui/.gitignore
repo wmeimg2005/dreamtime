@@ -90,3 +90,4 @@ sw.*
 
 # settings
 settings.json
+/nucleus.json

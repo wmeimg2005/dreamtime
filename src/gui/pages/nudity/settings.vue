@@ -44,7 +44,7 @@
 
         <div class="buttons">
           <nuxt-link to="/nudity/crop" class="button is-danger">Back</nuxt-link>
-          <nuxt-link to="/nudity/loading" class="button is-success">Nudify!</nuxt-link>
+          <nuxt-link to="/nudity/results" class="button is-success">Nudify!</nuxt-link>
         </div>
       </div>
 

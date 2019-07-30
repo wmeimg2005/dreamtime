@@ -37,6 +37,15 @@
           <option :value="false">Disabled</option>
         </select>
       </form-inline-field>
+
+      <form-inline-field
+        label="Use Python"
+        hint="Use Python instead of the CLI executable. Enable this only if you know what are you doing.">
+        <select v-model="currentValue.processing.usePython" class="input">
+          <option :value="true">Enabled</option>
+          <option :value="false">Disabled</option>
+        </select>
+      </form-inline-field>
     </section>
   </div>
 </template>

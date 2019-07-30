@@ -71,10 +71,13 @@
     "nuxt/no-globals-in-created": "off"
   },
   "globals": {
+    "$utils": false,
     "$settings": false,
     "$bullet": false,
     "$sentry": false,
+    "$rollbar": false,
     "$nucleus": false,
-    "$tools": false
+    "$tools": false,
+    "AppError": false
   }
 }

@@ -2,7 +2,7 @@
   <div class="home">
     <app-title>
       <h1 class="title">
-        🏠 Welcome to {{ app.name }} <sup>v{{ app.version }}</sup>
+        📷 Welcome to private entertainment
       </h1>
 
       <h3 class="subtitle">
@@ -12,7 +12,7 @@
 
     <div class="content-body">
       <div class="notification is-transparent">
-        {{ app.name }} is a free project and we believe that anyone should be free to use it, all we ask is that you do not use {{ app.name }} for malicious purposes, just do not hurt the feelings of other people and everything will be fine. 💁‍♂️
+        <strong>Remember!</strong> {{ app.name }} is an free and open-source project, <strong class="text-primary">do not pay for similar programs</strong>! The technology behind {{ app.name }} must be free and open for everyone, the only thing we ask you in return is that you use the program privately, for demonstration or education reasons. Do not hurt other people.
       </div>
     </div>
 

@@ -50,7 +50,7 @@
 import axios from 'axios'
 import _ from 'lodash'
 import compareVersions from 'compare-versions'
-import { markdown } from 'markdown'
+import { markdown } from 'electron-utils/browser'
 
 const hostURL = 'https://api.github.com/repos/private-dreamnet/dreamtime'
 

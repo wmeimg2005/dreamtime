@@ -1,19 +1,24 @@
-const { settings, bullet } = require('./modules')
-const { sentry, nucleus } = require('./telemetry')
+const utils = require('electron-utils')
+const { AppError, settings, nucleus, rollbar } = require('./modules')
+const tools = require('./tools')
+
+// Electron Utils
+window.$utils = utils
+
+// Custom Error
+window.AppError = AppError
 
 // User Settings
 window.$settings = settings
 
-// Application Settings
-window.$bullet = bullet
-
-// Sentry (Error reporting)
-window.$sentry = sentry
-
-// Nucleus (Analytics)
+// Nucleus (Analytics & App Settings)
 window.$nucleus = nucleus
 
-// Tools
-window.$tools = require('./tools')
+// Rollbar (Error reporting)
+window.$rollbar = rollbar
 
+// Tools
+window.$tools = tools
+
+// Tools (Legacy)
 window.deepTools = window.$tools

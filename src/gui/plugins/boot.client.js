@@ -25,13 +25,32 @@ tippy.setDefaults({
   arrowType: 'round'
 })
 
-app.init()
+//
+Vue.config.errorHandler = (err, vm, info) => {
+  $rollbar.error(err)
+}
 
-platform.init()
+export default async ({ app, router }, inject) => {
+  debug('Enviroment', {
+    env: process.env.NODE_ENV,
+    rootPath: $utils.getRootPath(),
+    isStatic: $utils.pack.isStatic()
+  })
 
-export default async ({ app, $axios, router }, inject) => {
+  $settings.init()
+
+  await $nucleus.init()
+
+  $rollbar.init()
+
+  //
+  // app.init()
+
+  //
+  await platform.init()
+
   // axios - default headers
-  $axios.setHeader('X-Requested-With', 'XMLHttpRequest')
+  // $axios.setHeader('X-Requested-With', 'XMLHttpRequest')
 
   // nudity process
   window.$nudity = nudity
@@ -46,12 +65,6 @@ export default async ({ app, $axios, router }, inject) => {
   // User settings
   app.context.$settings = $settings
   inject('settings', $settings)
-
-  /* if ($settings.telemetry.enabled) {
-    app.router.afterEach(to => {
-      $analytics.pageview(to.path).send()
-    })
-  } */
 
   // Debug
   debug('The front-end is ready to render!', { app })

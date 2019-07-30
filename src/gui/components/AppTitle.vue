@@ -6,8 +6,8 @@
 
 <style lang="scss">
 .app-title {
-  @apply flex flex-col justify-center border-b border-gray-300 px-4 py-2;
-  min-height: 90px;
+  @apply px-4 py-2 bg-dark shadow flex flex-col justify-center;
+  height: 90px;
 
   .title {
     @apply font-bold text-xl;

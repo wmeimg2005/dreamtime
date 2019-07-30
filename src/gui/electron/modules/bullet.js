@@ -1,4 +1,4 @@
-const client = require('bullet-train-nodejs')
+const bullet = require('bullet-train-nodejs')
 const _ = require('lodash')
 const debug = require('debug').default('app:electron:modules:bullet')
 
@@ -14,10 +14,12 @@ const instance = {
     if (!_.isNil(settings.user)) {
       // Anonymous User.
       // In the future this could help us to experiment new features only in a group of users.
-      // client.identify(settings.user)
+      // bullet.identify(settings.user)
     }
 
-    client.init(config)
+    bullet.init(config)
+
+    bullet.getValue()
     debug('Bullet Train initialized!', config)
   }
 }
@@ -30,8 +32,8 @@ module.exports = new Proxy(instance, {
       return obj[prop]
     }
 
-    if (prop in client) {
-      return client[prop]
+    if (prop in bullet) {
+      return bullet[prop]
     }
 
     return undefined

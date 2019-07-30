@@ -1,11 +1,12 @@
 import _ from 'lodash'
-import uuid from 'uuid/v4'
+import { uuid } from 'electron-utils/browser'
 import moment from 'moment'
 import path from 'path'
 import File from '../file'
+import Timer from '../timer'
 import PhotoJob from './photo-job'
 
-const debug = require('debug').default('app:modules:models:model-photo')
+const debug = require('debug').default('app:modules:models:photo')
 
 /**
  * Represents the photo to be processed of a Model.
@@ -32,20 +33,16 @@ export default class Photo {
       path.join($settings.folders.cropped, `${this.uuid}.png`)
     )
 
+    //
+    this.isLoading = false
+
     // Transformation Preferences
     this.preferences = _.clone($settings.preferences)
 
-    // Transformation Info
-    this.transformation = {
-      duration: 0,
-      start: undefined
-    }
+    // Transformation Timers
+    this.timer = new Timer()
 
-    // CLI messages
-    this.cliLines = []
-    this.cliError = ''
-
-    this.debug(`New instance of Photo`, {
+    this.debug(`New Photo instance`, {
       uuid: this.uuid,
       model: this.model,
       sourceFile: this.sourceFile,
@@ -111,6 +108,13 @@ export default class Photo {
   /**
    *
    */
+  getPreferences() {
+    return this.preferences
+  }
+
+  /**
+   *
+   */
   getSourceFile() {
     return this.sourceFile
   }
@@ -126,25 +130,22 @@ export default class Photo {
    *
    */
   async start() {
-    this.transformation.start = moment()
+    this.isLoading = true
+    console.log(this.timer)
+    this.timer.start()
 
-    const durationFunc = () => {
-      this.transformation.duration = moment().diff(
-        this.transformation.start,
-        'seconds'
-      )
+    try {
+      for (let it = 1; it <= this.preferences.executions; it += 1) {
+        const job = new PhotoJob(it, this)
+        this.outputs.push(job)
+
+        // await job.transform()
+      }
+
+      this.timer.stop()
+    } catch (error) {
+      this.timer.stop()
+      throw error
     }
-
-    const durationInterval = setInterval(durationFunc, 1000)
-    durationFunc()
-
-    for (let it = 0; it < this.preferences.executions; it += 1) {
-      const job = new PhotoJob(it, this)
-      this.outputs.push(job)
-
-      await job.transform()
-    }
-
-    clearInterval(durationInterval)
   }
 }

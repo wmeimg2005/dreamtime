@@ -1,4 +1,4 @@
-const SentryWebpackPlugin = require('@sentry/webpack-plugin')
+const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
 require('dotenv').config()
 
 module.exports = {
@@ -30,12 +30,16 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
 
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [
+      /* { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' } */
+    ],
 
     scripts: [
+      /*
       {
         src: 'https://www.gstatic.com/firebasejs/6.3.1/firebase-app.js'
       }
+      */
     ]
   },
 
@@ -62,8 +66,6 @@ module.exports = {
    ** Nuxt.js modules
    */
   modules: [
-    // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios',
     '@nuxtjs/pwa',
     // '@nuxtjs/eslint-module',
     '@nuxtjs/dotenv'
@@ -118,14 +120,45 @@ module.exports = {
      *
      */
     terser: {
-      sourceMap: true
+      parallel: true,
+      cache: false,
+      sourceMap: true,
+      extractComments: {
+        filename: 'LICENSES'
+      },
+      terserOptions: {
+        output: {
+          comments: /^\**!|@preserve|@license|@cc_on/
+        }
+      }
     },
 
     /*
      ** You can extend webpack config here
      */
-    extend(config, { isDev }) {
+    extend(config, { isClient, isDev }) {
+      console.log({
+        isClient,
+        isDev
+      })
+
+      config.output.futureEmitAssets = false
+      config.devtool = isClient ? 'source-map' : 'inline-source-map'
+
       if (!isDev) {
+        /*
+        config.plugins.push(
+          new RollbarSourceMapPlugin({
+            accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+            version: process.env.npm_package_version,
+            publicPath: source => {
+              console.log(source)
+              return `@/${source}`
+            }
+          })
+        )
+        */
+        /*
         config.plugins.push(
           new SentryWebpackPlugin({
             include: '.',
@@ -134,6 +167,7 @@ module.exports = {
             configFile: 'sentry.properties'
           })
         )
+        */
       }
 
       if (!isDev) {

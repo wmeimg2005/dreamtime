@@ -1,31 +1,86 @@
+/*
+ * DreamTime.
+ * Copyright (C) 2019. Ivan Bravo Bravo <ivan@dreamnet.tech>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License 3.0 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Author: Ivan Bravo Bravo (ivan@dreamnet.tech)
+ * File Created: 23rd July 2019 3:10:35 pm
+ * Last Modified: 29th July 2019 10:12:27 pm
+ * Modified By: Ivan Bravo Bravo (ivan@dreamnet.tech>)
+ */
+
 const { app, BrowserWindow } = require('electron')
 const http = require('http')
 const path = require('path')
 const fs = require('fs')
-const debug = require('debug').default('app:electron:main')
+const debug = require('debug').default('app:electron')
+const { getRootPath, pack } = require('electron-utils')
+const { settings, nucleus, rollbar } = require('./modules')
+
 const config = require('../nuxt.config')
-const { sentry } = require('./telemetry')
-// const { settings } = require('./modules')
 
 // We indicate to NuxtJS the root directory of the project
 config.rootDir = path.dirname(__dirname)
 
+// Copyright.
+// DO NOT DELETE OR ALTER THIS SECTION!
+console.log(`
+    DreamTime.
+    Copyright (C) 2019. Ivan Bravo Bravo <ivan@dreamnet.tech>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License 3.0 as published by
+    the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+`)
+
 // debug
-debug('Starting in:', config.dev ? process.env.NODE_ENV : 'production')
+debug('Starting...')
+
+debug({
+  env: process.env.NODE_ENV,
+  root: getRootPath(),
+  isStatic: pack.isStatic()
+})
 
 class DreamApp {
   /**
    * Start the magic!
    */
-  static start() {
-    this.setup()
+  static async start() {
+    await this.setup()
+
     this.createWindow()
   }
 
   /**
    * Prepare the application for use
    */
-  static setup() {
+  static async setup() {
+    settings.init()
+
+    await nucleus.init()
+
+    rollbar.init()
+
     this.createModelsDir()
   }
 
@@ -35,10 +90,10 @@ class DreamApp {
   static createWindow() {
     // Create the browser window.
     this.window = new BrowserWindow({
-      width: 1000,
-      height: 800,
-      minWidth: 1000,
-      minHeight: 800,
+      width: 1200,
+      height: 700,
+      minWidth: 1200,
+      minHeight: 700,
       webPreferences: {
         // This script offers us the necessary tools to communicate with the operating system.
         // (filesystem, start processes, etc).
@@ -123,34 +178,17 @@ class DreamApp {
   }
 }
 
-/**
- *
- */
-function quit() {
-  if (!sentry.can()) {
-    app.quit()
-    return
-  }
-
-  const client = sentry.getCurrentHub().getClient()
-
-  if (client) {
-    client.close(2000).then(() => {
-      app.exit()
-    })
-  }
-}
-
 app.on('ready', () => {
   try {
     DreamApp.start()
   } catch (error) {
     console.error(error)
-    sentry.captureException(error)
-    quit()
+    app.quit()
   }
 })
 
-app.on('window-all-closed', () => quit())
+app.on('window-all-closed', () => {
+  app.quit()
+})
 
 // app.on('activate', () => win === null && newWin())

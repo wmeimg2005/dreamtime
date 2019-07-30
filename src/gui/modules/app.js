@@ -10,6 +10,6 @@ export default {
     this.name = process.env.APP_NAME
     this.version = process.env.APP_VERSION
     this.status = process.env.APP_STATUS
-    this.settings = window.$bullet
+    this.settings = $nucleus
   }
 }

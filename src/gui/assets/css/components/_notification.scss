@@ -1,11 +1,11 @@
 .notification {
-  @apply mb-3 p-3 bg-gray-200 border border-transparent;
+  @apply mb-3 p-3 bg-dark-900 border-2 border-transparent rounded;
 
   &.is-danger {
     @apply bg-danger-25;
   }
 
   &.is-transparent {
-    @apply bg-transparent border-gray-200;
+    @apply bg-transparent border-dark-400;
   }
 }

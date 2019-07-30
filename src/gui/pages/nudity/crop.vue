@@ -123,7 +123,7 @@ export default {
       }
 
       if (next === 'nudify') {
-        this.$router.push('/nudity/loading')
+        this.$router.push('/nudity/results')
       }
     }
   }

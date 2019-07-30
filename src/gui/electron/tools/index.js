@@ -3,11 +3,12 @@ const path = require('path')
 const { spawn } = require('child_process')
 const EventBus = require('js-event-bus')
 const gpuInfo = require('gpu-info')
-const { rootPath } = require('electron-root-path')
-const debug = require('debug').default('app:electron:tools:tools')
+const { getRootPath, api } = require('electron-utils')
+const debug = require('debug').default('app:electron:tools')
 // const Caman = require('caman').Caman
 
-const { app } = require('../modules/electron')
+const settings = require('../modules/settings')
+const AppError = require('../modules/error')
 const config = require('../../nuxt.config')
 
 /**
@@ -25,14 +26,18 @@ module.exports = {
     let folderPath
 
     if (name === 'root') {
-      // The name "root" is reserved for the location where the gui/ and cli/ folders are located
-      if (config.dev) {
-        folderPath = path.dirname(rootPath)
+      const rootPath = getRootPath()
+      folderPath = path.resolve(rootPath, '../')
+
+      // The name "root" is reserved for the location
+      // where the gui and cli folders are located
+      /* if (config.dev) {
+        folderPath = path.resolve(rootPath, '../')
       } else {
-        folderPath = path.dirname(path.dirname(path.dirname(rootPath)))
-      }
+        folderPath = path.resolve(rootPath, '../../../')
+      } */
     } else {
-      folderPath = app.getPath(name)
+      folderPath = api.app.getPath(name)
     }
 
     return path.join(folderPath, ...args)
@@ -61,56 +66,58 @@ module.exports = {
     return this.getRootPath('cli')
   },
 
+  testError() {
+    window.$rollbar.error(Error('tools error!'))
+  },
+
   /**
    *
-   * @param {*} modelPhoto
-   * @param {*} useGpus
-   * @param {*} useWaifu TODO
-   * @param {*} enablePubes
+   * @param {*} job
    */
-  transform(modelPhoto, settings) {
-    if (settings.useCpu) {
-      settings.useGpus = false
-    }
+  transform(job) {
+    const cliDirPath = settings.folders.cli
+    const preferences = job.getPhoto().getPreferences()
 
-    if (!settings.useGpus) {
-      settings.useWaifu = false
-    }
+    const inputFilePath = job
+      .getPhoto()
+      .getCroppedFile()
+      .getPath()
 
-    const cliDirPath = this.getCliDirPath()
-    const inputFilePath = modelPhoto.getCroppedFile().getPath()
-    const outputFilePath = modelPhoto.getOutputFile().getPath()
+    const outputFilePath = job.getFile().getPath()
 
     if (!fs.existsSync(cliDirPath)) {
-      throw new Error(
-        `We could not find the CLI folder!\n
-        This can be caused by a corrupt installation, make sure that the CLI folder exists in:\n
+      throw new AppError(
+        `The CLI folder could not be found!\n
+        This can be caused by a corrupt installation, make sure that the folder exists in:\n
         ${cliDirPath}`
       )
     }
 
     if (!fs.existsSync(inputFilePath)) {
-      throw new Error(
-        `We could not find the cropped photo!\n
-        This may mean that ${config.env.APP_NAME} does not have permissions to write in the models folder, please make sure that the following folder exists:\n
+      throw new AppError(
+        `The cropped photo was not found!\n
+        This may be caused because the program does not have permissions to write to the directory or has been automatically deleted, please make sure that the following file exists:\n
         ${inputFilePath}`
       )
     }
 
     const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
 
-    if (settings.enablePubes) {
+    // TODO: Preferences
+    if (preferences.pubicHairSize !== 0) {
       cliArgs.push('--enablepubes')
     }
 
-    if (config.dev) {
+    if (settings.processing.usePython) {
+      // Use the script in Python instead of the executable
       cliArgs.unshift('main.py')
     }
 
-    if (!settings.useGpus) {
+    if (settings.processing.device === 'CPU') {
+      // CPU slow Processing
       cliArgs.push('--cpu')
     } else {
-      for (const id of settings.useGpus) {
+      for (const id of settings.processing.gpus) {
         cliArgs.push(`--gpu`)
         cliArgs.push(id)
       }
@@ -120,14 +127,15 @@ module.exports = {
       cliDirPath,
       inputFilePath,
       outputFilePath,
-      cliArgs
+      cliArgs,
+      job
     })
 
     const bus = new EventBus()
 
     let child
 
-    if (config.dev) {
+    if (settings.processing.usePython) {
       child = spawn('python', cliArgs, {
         cwd: cliDirPath
       })
