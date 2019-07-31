@@ -3,7 +3,8 @@ const path = require('path')
 const { spawn } = require('child_process')
 const EventBus = require('js-event-bus')
 const gpuInfo = require('gpu-info')
-const { getRootPath, api } = require('electron-utils')
+const utils = require('electron-utils')
+
 const debug = require('debug').default('app:electron:tools')
 // const Caman = require('caman').Caman
 
@@ -23,21 +24,18 @@ module.exports = {
    * @param {string} args Series of path segments to join into one path
    */
   getPath(name, ...args) {
+    const { app } = utils.api
     let folderPath
 
     if (name === 'root') {
-      const rootPath = getRootPath()
-      folderPath = path.resolve(rootPath, '../')
-
-      // The name "root" is reserved for the location
-      // where the gui and cli folders are located
-      /* if (config.dev) {
+      if (utils.is.development) {
+        const rootPath = utils.getRootPath()
         folderPath = path.resolve(rootPath, '../')
       } else {
-        folderPath = path.resolve(rootPath, '../../../')
-      } */
+        folderPath = path.resolve(app.getPath('exe'), '../')
+      }
     } else {
-      folderPath = api.app.getPath(name)
+      folderPath = app.getPath(name)
     }
 
     return path.join(folderPath, ...args)
@@ -174,5 +172,10 @@ module.exports = {
   /**
    *
    */
-  shell: require('./shell')
+  shell: require('./shell'),
+
+  /**
+   *
+   */
+  utils
 }

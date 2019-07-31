@@ -46,7 +46,7 @@ export default {
 
   created() {
     // Restarts the information of a previous process
-    this.$_nudify.reset()
+    this.$nudify.reset()
   },
 
   methods: {
@@ -74,7 +74,7 @@ export default {
       }
 
       // Start the transformation process!
-      this.$_nudify.start(photo)
+      this.$nudify.start(photo)
 
       // It's time to crop the photo
       this.$router.push('/nudity/crop')

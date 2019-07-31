@@ -27,25 +27,17 @@ tippy.setDefaults({
   arrowType: 'round'
 })
 
-Vue.config.errorHandler = (err, vm, info) => {
-  // Report Vue.js Errors
-  if ($rollbar.can()) {
-    $rollbar.error(err)
-  }
-}
-
-export default async ({ app, router }, inject) => {
+export default async ({ app, isDev }, inject) => {
   // Environment Information
   debug('Enviroment', {
     env: process.env.NODE_ENV,
-    rootPath: $utils.getRootPath(),
-    isStatic: $utils.pack.isStatic()
+    rootPath: $tools.utils.getRootPath(),
+    isStatic: $tools.utils.pack.isStatic()
   })
 
   // User settings
   $settings.init()
-  app.context.$_settings = $settings
-  inject('_settings', $settings)
+  inject('settings', $settings)
 
   // Analytics & App settings
   await $nucleus.init()
@@ -55,19 +47,26 @@ export default async ({ app, router }, inject) => {
 
   // DreamTime information
   dream.init()
-  window.$_dream = dream
-  app.context.$_dream = dream
-  inject('_dream', dream)
+  window.$dream = dream
+  app.context.$dream = dream
+  inject('dream', dream)
 
   // Platform information
   await platform.init()
-  app.context.$_platform = platform
-  inject('_platform', platform)
+  app.context.$platform = platform
+  inject('platform', platform)
 
   // Nudify process
   nudify.init()
-  app.context.$_nudify = nudify
-  inject('_nudify', nudify)
+  app.context.$nudify = nudify
+  inject('nudify', nudify)
+
+  Vue.config.errorHandler = (err, vm, info) => {
+    // Report Vue.js Errors
+    if ($rollbar.can()) {
+      $rollbar.error(err)
+    }
+  }
 
   // axios - default headers
   // $axios.setHeader('X-Requested-With', 'XMLHttpRequest')

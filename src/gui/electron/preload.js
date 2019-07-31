@@ -1,9 +1,5 @@
-const utils = require('electron-utils')
 const { AppError, settings, nucleus, rollbar } = require('./modules')
 const tools = require('./tools')
-
-// Electron Utils
-window.$utils = utils
 
 // Custom Error
 window.AppError = AppError
@@ -12,9 +8,11 @@ window.AppError = AppError
 window.$settings = settings
 
 // Analytics & App settings
+// https://nucleus.sh/docs/gettingstarted
 window.$nucleus = nucleus
 
 // Error reporting
+// https://docs.rollbar.com/docs/nodejs
 window.$rollbar = rollbar
 
 // Tools

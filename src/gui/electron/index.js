@@ -1,31 +1,22 @@
 /*
- * DreamTime.
- * Copyright (C) 2019. Ivan Bravo Bravo <ivan@dreamnet.tech>
+ * DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License 3.0 as published by
  * the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * Author: Ivan Bravo Bravo (ivan@dreamnet.tech)
- * File Created: 23rd July 2019 3:10:35 pm
- * Last Modified: 29th July 2019 10:12:27 pm
- * Modified By: Ivan Bravo Bravo (ivan@dreamnet.tech>)
  */
 
 const { app, BrowserWindow } = require('electron')
 const http = require('http')
 const path = require('path')
 const fs = require('fs')
+const contextMenu = require('electron-context-menu')
+const utils = require('electron-utils')
+
 const debug = require('debug').default('app:electron')
-const { getRootPath, pack } = require('electron-utils')
 const { settings, nucleus, rollbar } = require('./modules')
 
 const config = require('../nuxt.config')
@@ -36,20 +27,14 @@ config.rootDir = path.dirname(__dirname)
 // Copyright.
 // DO NOT DELETE OR ALTER THIS SECTION!
 console.log(`
-    DreamTime.
-    Copyright (C) 2019. Ivan Bravo Bravo <ivan@dreamnet.tech>
+  DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License 3.0 as published by
-    the Free Software Foundation.
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License 3.0 as published by
+  the Free Software Foundation.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>
 `)
 
 // debug
@@ -57,8 +42,8 @@ debug('Starting...')
 
 debug({
   env: process.env.NODE_ENV,
-  root: getRootPath(),
-  isStatic: pack.isStatic()
+  root: utils.getRootPath(),
+  isStatic: utils.pack.isStatic()
 })
 
 class DreamApp {
@@ -75,6 +60,8 @@ class DreamApp {
    * Prepare the application for use
    */
   static async setup() {
+    utils.enforceMacOSAppLocation()
+
     settings.init()
 
     await nucleus.init()
@@ -82,6 +69,10 @@ class DreamApp {
     rollbar.init()
 
     this.createModelsDir()
+
+    contextMenu({
+      showSaveImageAs: true
+    })
   }
 
   /**
@@ -101,7 +92,7 @@ class DreamApp {
       }
     })
 
-    // Disable the default Electron menu
+    // Disable the default menu
     this.window.setMenu(null)
 
     // Get the interface location

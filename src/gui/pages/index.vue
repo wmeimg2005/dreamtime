@@ -11,10 +11,7 @@
     </app-title>
 
     <div class="content-body">
-      <div class="notification is-transparent">
-        <strong>Remember!</strong> {{ $_dream.name }} is an free and open-source project, <strong class="text-primary">do not pay for similar programs</strong>! The technology behind {{ $_dream.name }} must be free and open for everyone, the only thing we ask you in return is that you use the program privately, for demonstration or education reasons. Do not hurt other people.
-      </div>
-    </div>
+</div>
 
     <div class="home-wip">
       <!-- Quick Upload -->

@@ -16,8 +16,9 @@ module.exports = {
       },
 
       colors: {
-        text: {
-          default: '#8b8ca0'
+        generic: {
+          default: '#797786',
+          600: '#a09caf'
         },
 
         dark: {
@@ -25,12 +26,23 @@ module.exports = {
           200: '#676473',
           300: '#545161',
           400: '#413E50',
-          500: '#2F2B3F',
+          default: '#2f2b3f',
           600: '#2B283A',
           700: '#272434',
           800: '#231f2f',
-          900: '#1E1C29',
-          default: '#2F2B3F'
+          900: '#1E1C29'
+        },
+
+        blue: {
+          default: '#2eb9e7'
+        },
+
+        violet: {
+          default: '#7020ea'
+        },
+
+        pink: {
+          default: '#ef98d0'
         },
 
         danger: {

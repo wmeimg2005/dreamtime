@@ -10,6 +10,13 @@
   </div>
 </template>
 
+<script>
+export default {
+  middleware: ['checks']
+}
+</script>
+
+
 <style lang="scss">
 .layout {
   @apply flex h-screen;

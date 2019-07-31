@@ -2,6 +2,8 @@ import _ from 'lodash'
 import path from 'path'
 import filesize from 'filesize'
 
+const debug = require('debug').default('app:modules:platform')
+
 /**
  *
  */
@@ -12,14 +14,22 @@ export default {
   async init() {
     this.gpuDevices = []
 
-    this.isValid = {
+    this.requirements = {
       cli: false,
-      checkpoints: false
+      checkpoints: false,
+      windowsMedia: false
     }
 
     await this._fetchGpuDevices()
+
     this._checkCli()
     this._checkCheckpoints()
+    await this._checkWindowsMedia()
+
+    debug('Platform initialized!', {
+      gpuDevices: this.gpuDevices,
+      requirements: this.requirements
+    })
   },
 
   /**
@@ -29,16 +39,15 @@ export default {
     try {
       const devices = await $tools.getGpusList()
 
-      $sentry.captureEvent({
-        message: 'GPU Devices',
-        level: 'info',
-        extra: {
+      $rollbar.log('GPU Devices', {
+        custom: {
           devices
         }
       })
 
       this.gpuDevices = _.filter(devices, { AdapterCompatibility: 'NVIDIA' })
     } catch (error) {
+      console.warn(error)
       this.gpuDevices = []
     }
   },
@@ -54,7 +63,7 @@ export default {
    * Verify if the CLI directory is valid
    */
   _checkCli() {
-    this.isValid.cli = false
+    this.requirements.cli = false
 
     const dirPath = $settings.folders.cli
 
@@ -73,7 +82,7 @@ export default {
 
     for (const bin of binaries) {
       if ($tools.fs.exists(path.join(dirPath, bin))) {
-        this.isValid.cli = true
+        this.requirements.cli = true
         break
       }
     }
@@ -87,7 +96,7 @@ export default {
    * Developer: Are you kidding me? Fucking fuck! What the fucking shit? God damnit.
    */
   _checkCheckpoints() {
-    this.isValid.checkpoints = false
+    this.requirements.checkpoints = false
 
     const dirPath = path.join($settings.folders.cli, 'checkpoints')
 
@@ -117,6 +126,19 @@ export default {
     }
 
     // Con-fucking-grats!
-    this.isValid.checkpoints = true
+    this.requirements.checkpoints = true
+  },
+
+  /**
+   *
+   */
+  async _checkWindowsMedia() {
+    if (!$tools.utils.is.windows) {
+      // Not running in Windows ¯\_(ツ)_/¯
+      this.requirements.windowsMedia = true
+      return
+    }
+
+    this.requirements.windowsMedia = await $tools.shell.hasWindowsMedia()
   }
 }

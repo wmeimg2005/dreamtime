@@ -66,6 +66,7 @@ const settings = {
     }
 
     const defaultSettings = {
+      welcome: true,
       user: uuid(),
 
       processing: {
