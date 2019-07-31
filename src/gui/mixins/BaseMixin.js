@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import tippy from 'tippy.js'
-import { app, nudity } from '~/modules'
+import { dream, nudify } from '~/modules'
 
 export default {
   directives: {
@@ -22,12 +22,10 @@ export default {
   filters: {},
 
   data: () => ({
-    app,
+    // $_dream: dream,
 
-    $nudity: nudity,
+    $_nudify: nudify,
 
-    $deepTools: window.deepTools,
-
-    $tools: window.$tools
+    $_tools: window.$tools
   })
 }

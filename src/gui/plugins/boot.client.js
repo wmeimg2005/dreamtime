@@ -2,12 +2,14 @@ import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
 import BaseMixin from '~/mixins/BaseMixin'
-import { app, platform, nudity } from '~/modules'
+import { dream, platform, nudify } from '~/modules'
 
 const debug = require('debug').default('app:plugins:boot')
 
-//
-localStorage.debug = 'app:*'
+if (process.env.NODE_ENV === 'dev') {
+  // Development stuff
+  localStorage.debug = 'app:*'
+}
 
 // Lift off!
 debug('Preparing front-end...')
@@ -18,53 +20,57 @@ Vue.mixin(BaseMixin)
 // MomentJS
 moment.locale('en')
 
-// Tippy default settings
+// Tippy settings
 tippy.setDefaults({
   delay: 100,
   arrow: true,
   arrowType: 'round'
 })
 
-//
 Vue.config.errorHandler = (err, vm, info) => {
-  $rollbar.error(err)
+  // Report Vue.js Errors
+  if ($rollbar.can()) {
+    $rollbar.error(err)
+  }
 }
 
 export default async ({ app, router }, inject) => {
+  // Environment Information
   debug('Enviroment', {
     env: process.env.NODE_ENV,
     rootPath: $utils.getRootPath(),
     isStatic: $utils.pack.isStatic()
   })
 
+  // User settings
   $settings.init()
+  app.context.$_settings = $settings
+  inject('_settings', $settings)
 
+  // Analytics & App settings
   await $nucleus.init()
 
+  // Error reporting
   $rollbar.init()
 
-  //
-  // app.init()
+  // DreamTime information
+  dream.init()
+  window.$_dream = dream
+  app.context.$_dream = dream
+  inject('_dream', dream)
 
-  //
+  // Platform information
   await platform.init()
+  app.context.$_platform = platform
+  inject('_platform', platform)
+
+  // Nudify process
+  nudify.init()
+  app.context.$_nudify = nudify
+  inject('_nudify', nudify)
 
   // axios - default headers
   // $axios.setHeader('X-Requested-With', 'XMLHttpRequest')
-
-  // nudity process
-  window.$nudity = nudity
-  app.context.$nudity = nudity
-  inject('nudity', nudity)
-
-  // Platform info
-  window.$platform = platform
-  app.context.$platform = platform
-  inject('platform', platform)
-
-  // User settings
-  app.context.$settings = $settings
-  inject('settings', $settings)
 
   // Debug
   debug('The front-end is ready to render!', { app })

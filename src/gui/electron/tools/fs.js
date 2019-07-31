@@ -45,7 +45,7 @@ module.exports = {
 
   /**
    *
-  * @param {*} path
+   * @param {*} path
    */
   async read(path, encoding = 'base64') {
     return fs.readFileSync(path, { encoding })
@@ -67,5 +67,12 @@ module.exports = {
    */
   exists(filePath) {
     return fs.existsSync(filePath)
+  },
+
+  /**
+   * @param {string} filePath
+   */
+  statSync(filePath) {
+    return fs.statSync(filePath)
   }
 }

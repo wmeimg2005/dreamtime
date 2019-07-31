@@ -8,13 +8,13 @@ window.$utils = utils
 // Custom Error
 window.AppError = AppError
 
-// User Settings
+// User settings
 window.$settings = settings
 
-// Nucleus (Analytics & App Settings)
+// Analytics & App settings
 window.$nucleus = nucleus
 
-// Rollbar (Error reporting)
+// Error reporting
 window.$rollbar = rollbar
 
 // Tools

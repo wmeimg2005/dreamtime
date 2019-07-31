@@ -3,7 +3,7 @@
     <!-- Welcome! -->
     <div class="navbar-header">
       <h1 class="header-title">
-        {{ app.name }}
+        {{ $_dream.name }}
       </h1>
 
       <h3 class="header-greetings">
@@ -100,9 +100,15 @@ export default {
 
 <style lang="scss">
 @keyframes bgAnim {
-  0%{background-position: 0% 0%}
-  50%{background-position: 100% 0%}
-  100%{background-position: 0% 0%}
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
 }
 
 .layout-navbar {
@@ -119,7 +125,7 @@ export default {
     background: linear-gradient(
       40deg,
       rgba(99, 66, 245, 1) 0%,
-      rgba(239, 125, 199, 1) 100%,
+      rgba(239, 125, 199, 1) 100%
     );
 
     background-size: 200% 100%;
@@ -157,13 +163,13 @@ export default {
     .navbar-item {
       @apply border-l-4 border-transparent pl-4 font-semibold flex items-center;
       height: 50px;
-      transition: all 0.15s ease-in-out;
+      transition: all 0.1s ease-in-out;
 
       .icon {
         @apply text-center mr-2;
         filter: grayscale(100%);
         width: 22px;
-        transition: all 0.15s ease-in-out;
+        transition: all 0.1s ease-in-out;
       }
 
       &:hover,
