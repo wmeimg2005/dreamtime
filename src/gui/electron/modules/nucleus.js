@@ -1,4 +1,5 @@
 const Nucleus = require('electron-nucleus')
+const axios = require('axios')
 const debug = require('debug').default('app:electron:modules:nucleus')
 
 const settings = require('./settings')
@@ -15,32 +16,44 @@ const nucleus = {
   /**
    * Initialize the service, this is called automatically
    */
-  init() {
-    return new Promise((resolve, reject) => {
-      if (!this.can()) {
-        // Can't start the service
-        resolve()
-        return
-      }
+  async init() {
+    if (!this.can()) {
+      // Can't start the service
+      return
+    }
 
-      // Nucleus Configuration
-      const config = {
-        disableTracking: settings.telemetry.enabled === false,
-        disableErrorReports: true,
-        userId: settings.user,
-        version: process.env.npm_package_version
-      }
+    // Nucleus Configuration
+    const config = {
+      disableTracking: settings.telemetry.enabled === false,
+      disableErrorReports: true,
+      userId: settings.user,
+      version: process.env.npm_package_version,
+      persist: false
+    }
 
-      // Create the Nucleus instance
-      this._nucleus = Nucleus(this.getAppId(), config)
+    // Create the Nucleus instance
+    this._nucleus = Nucleus(this.getAppId(), config)
 
-      // Get global application settings
-      this._nucleus.getCustomData((error, payload) => {
+    // Get global application settings
+    /* this._nucleus.getCustomData((error, payload) => {
         this._settings = payload
 
-        debug('Nucleus initialized!', config)
+        debug('Nucleus initialized!', {
+          config,
+          settings: this._settings
+        })
+
         resolve()
-      })
+      }) */
+
+    // Get global application settings
+    this._settings = (await axios.get(
+      `https://nucleus.sh/app/${this.getAppId()}/customdata`
+    )).data
+
+    debug('Nucleus initialized!', {
+      config,
+      settings: this._settings
     })
   },
 

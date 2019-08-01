@@ -2,7 +2,7 @@ import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
 import BaseMixin from '~/mixins/BaseMixin'
-import { dream, platform, nudify } from '~/modules'
+import { dream, platform, updater, nudify } from '~/modules'
 
 const debug = require('debug').default('app:plugins:boot')
 
@@ -39,8 +39,10 @@ export default async ({ app, isDev }, inject) => {
   $settings.init()
   inject('settings', $settings)
 
-  // Analytics & App settings
+  // Analytics
+  // App settings
   await $nucleus.init()
+  inject('nucleus', $nucleus)
 
   // Error reporting
   $rollbar.init()
@@ -50,6 +52,11 @@ export default async ({ app, isDev }, inject) => {
   window.$dream = dream
   app.context.$dream = dream
   inject('dream', dream)
+
+  // Updates information
+  updater.init()
+  app.context.$updater = updater
+  inject('updater', updater)
 
   // Platform information
   await platform.init()
