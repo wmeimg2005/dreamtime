@@ -166,11 +166,11 @@ export default {
       })
 
       const canvasAsDataURL = canvas.toDataURL(
-        this.$nudity.getPhoto.getSourceFile().getMimetype(),
+        this.$nudify.getPhoto().getSourceFile().getMimetype(),
         1
       )
 
-      await this.$nudity.getPhoto()
+      await this.$nudify.getPhoto()
         .getCroppedFile()
         .writeDataURL(canvasAsDataURL)
     },
