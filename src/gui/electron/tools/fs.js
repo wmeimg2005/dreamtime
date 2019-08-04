@@ -61,6 +61,14 @@ module.exports = {
   /**
    *
    * @param {*} path
+   */
+  readJSON(path, encoding = 'UTF-8'){
+    return JSON.parse(fs.readFileSync(path, { encoding }))
+  },
+
+  /**
+   *
+   * @param {*} path
    * @param {*} dataURL
    */
   async writeDataURL(path, dataURL) {
