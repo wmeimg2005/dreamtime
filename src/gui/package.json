@@ -1,5 +1,5 @@
 {
-  "name": "dreamtime-gui",
+  "name": "dreamtime",
   "version": "1.0.0",
   "main": "electron/index.js",
   "author": "Iván Bravo Bravo <ivan@dreamnet.tech>",
@@ -50,7 +50,6 @@
     "debug": "^4.1.1",
     "deferred": "^0.7.11",
     "electron-context-menu": "^0.13.0",
-    "electron-dl": "^1.14.0",
     "electron-nucleus": "^2.1.0",
     "electron-utils": "^3.0.0",
     "filesize": "^4.1.2",
@@ -62,6 +61,7 @@
     "mime-types": "^2.1.24",
     "moment": "^2.24.0",
     "nuxt": "^2.0.0",
+    "patch-package": "^6.1.2",
     "postinstall-postinstall": "^2.0.0",
     "queue": "^6.0.1",
     "randomcolor": "^0.5.4",
@@ -71,7 +71,8 @@
     "rookout": "^0.1.67",
     "supports-color": "^7.0.0",
     "sweetalert": "^2.1.2",
-    "tippy.js": "^4.3.4"
+    "tippy.js": "^4.3.4",
+    "unzipper": "^0.10.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",

@@ -20,7 +20,7 @@ const settings = {
    * Initialize the settings
    */
   init() {
-    this._path = tools.getRootPath('gui', 'settings.json')
+    this._path = tools.paths.getRoot('settings.json')
     this._settings = {}
 
     this.ensure()
@@ -86,10 +86,10 @@ const settings = {
       },
 
       folders: {
-        cropped: tools.getPath('temp'),
-        models: tools.getPath('userData', 'models'),
-        masks: tools.getPath('userData', 'masks'),
-        cli: tools.getRootPath('cli')
+        cropped: tools.paths.get('temp'),
+        models: tools.paths.get('userData', 'models'),
+        masks: tools.paths.get('userData', 'masks'),
+        cli: tools.paths.getRoot('cli')
       },
 
       telemetry: {

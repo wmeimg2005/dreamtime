@@ -17,6 +17,7 @@ import { platform } from '~/modules'
  */
 export default function({ route, redirect }) {
   if ($settings.welcome) {
+    // First time execution!
     if (route.path !== '/system/welcome') {
       redirect('/system/welcome')
     }
@@ -25,6 +26,7 @@ export default function({ route, redirect }) {
   }
 
   if (!platform.requirements.cli) {
+    // DreamPower is missing
     if (route.path !== '/system/settings') {
       redirect('/system/settings')
     }
@@ -33,17 +35,18 @@ export default function({ route, redirect }) {
   }
 
   if (!platform.requirements.checkpoints) {
-    if (route.path !== '/system/updater') {
-      redirect('/system/updater')
+    // Checkpoints are missing
+    if (route.path !== '/system/about') {
+      redirect('/system/about#checkpoints')
     }
 
     return
   }
 
   if (!platform.requirements.windowsMedia) {
-    console.log('windows media', platform.requirements.windowsMedia)
-    if (route.path !== '/system/requirements') {
-      redirect('/system/requirements')
+    // Windows Media Pack is missing
+    if (route.path !== '/system/about') {
+      redirect('/system/about#wmp')
     }
 
     // return

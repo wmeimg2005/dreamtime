@@ -6,9 +6,9 @@
     <ul class="welcome-list">
       <li>💘 We (DreamNet) are very grateful that you use our application, we will continue working to improve it!</li>
       <li>🥇 {{ $dream.name }} is a free and open-source project. <b>Do not pay for it!</b></li>
-      <li>📷 The intention of this program is to allow its users to generate photos for private entertainment as well as to demonstrate and educate people about the technology.</li>
+      <li>📷 The intention of this program is to allow its users to generate photos for private entertainment as well as to demonstrate and educate people about this technology.</li>
       <li>🛑 Do not use our project to hurt people or generate problems. We totally reject this behavior, don't be a jerk and give us the opportunity to improve this technology.</li>
-      <li>📃 {{ $dream.name }} and DreamPower is licensed under the GNU General Public License v3.0. TL;DR: You can share and modify the program but always in the same way as DreamTime (open-source).</li>
+      <li>📃 {{ $dream.name }} and DreamPower are licensed under the GNU General Public License v3.0. TL;DR: You can share and modify the program but always as open-source.</li>
     </ul>
 
     <div class="welcome-buttons">

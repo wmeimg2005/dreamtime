@@ -1,14 +1,14 @@
 <template>
   <div class="settings-fields">
-    <section class="settings-fields-section">
-      <form-inline-field
+    <section class="box box-section">
+      <box-section-item
         label="Telemetry"
-        hint="Send anonymous information about the program that will help us to continue improving it. This includes: Errors, GPU information, performance and number of people using the application.">
+        description="Send anonymous information about the program that will help us to continue improving it. This includes: Errors, GPU information and performance.">
         <select v-model="currentValue.telemetry.enabled" class="input">
           <option :value="false">Disabled</option>
           <option :value="true">Enabled</option>
         </select>
-      </form-inline-field>
+      </box-section-item>
     </section>
   </div>
 </template>

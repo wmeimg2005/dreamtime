@@ -6,17 +6,17 @@
       </h1>
 
       <h3 class="subtitle">
-        Customize the way {{ app.name }} works.
+        Customize the way {{ $dream.name }} works.
       </h3>
     </app-title>
 
     <div class="content-body">
       <div class="buttons is-group is-center">
-        <nuxt-link to="/settings/processing" class="button is-outlined is-sm">Processing</nuxt-link>
-        <nuxt-link to="/settings/preferences" class="button is-outlined is-sm">Preferences</nuxt-link>
-        <nuxt-link to="/settings/folders" class="button is-outlined is-sm">Folders</nuxt-link>
+        <nuxt-link to="/system/settings/processing" class="button is-outlined is-sm">Processing</nuxt-link>
+        <nuxt-link to="/system/settings/preferences" class="button is-outlined is-sm">Preferences</nuxt-link>
+        <nuxt-link to="/system/settings/folders" class="button is-outlined is-sm">Folders</nuxt-link>
         <!--<nuxt-link to="/settings/theme" class="button is-outlined is-sm">Theme</nuxt-link>-->
-        <nuxt-link to="/settings/telemetry" class="button is-outlined is-sm">Telemetry</nuxt-link>
+        <nuxt-link to="/system/settings/telemetry" class="button is-outlined is-sm">Telemetry</nuxt-link>
       </div>
 
       <nuxt-child v-model="settings" />
@@ -48,7 +48,7 @@ export default {
 <style lang="scss">
 .settings {
   .buttons {
-    @apply border-b border-gray-200 pb-6;
+    @apply border-b border-dark-400 pb-6;
   }
 
   .settings-fields {

@@ -2,42 +2,42 @@
   <div class="settings-fields">
     <p class="notification">These are the default preferences, you can change them before each transformation.</p>
 
-    <section class="settings-fields-section">
-      <form-inline-field
+    <section class="box box-section">
+      <box-section-item
         label="Number of executions"
-        hint="The transformation process will be repeated this number of times and you can select the one that has the best result.">
+        description="The transformation process will be repeated this number of times and you can select the one that has the best result.">
         <input v-model="currentValue.preferences.executions" type="number" min="1" class="input" />
-      </form-inline-field>
+      </box-section-item>
 
-      <form-inline-field
+      <box-section-item
         label="Boobs Size"
-        hint="The algorithm will try to create the indicated size">
+        description="The algorithm will try to create the indicated size">
         <select v-model="currentValue.preferences.boobsSize" class="input">
           <option value="small">Small</option>
           <option value="medium">Medium</option>
           <option value="big">Big</option>
         </select>
-      </form-inline-field>
+      </box-section-item>
 
-      <form-inline-field
+      <box-section-item
         label="Pubic Hair Size"
-        hint="The algorithm will try to create the indicated size">
+        description="The algorithm will try to create the indicated size">
         <select v-model="currentValue.preferences.pubicHairSize" class="input">
           <option value="none">None</option>
           <option value="small">Small</option>
           <option value="medium">Medium</option>
           <option value="big">Big</option>
         </select>
-      </form-inline-field>
+      </box-section-item>
 
-      <form-inline-field
+      <box-section-item
         label="Use Custom Mask"
-        hint="(Advanced) You can edit the masks of the photo before processing.">
+        description="(Advanced) You can edit the masks of the photo before processing.">
         <select v-model="currentValue.preferences.useCustomMask" class="input">
           <option :value="false">Disabled</option>
           <option :value="true">Enabled</option>
         </select>
-      </form-inline-field>
+      </box-section-item>
     </section>
   </div>
 </template>

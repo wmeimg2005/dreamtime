@@ -1,6 +1,8 @@
 const _ = require('lodash')
-const { api, is } = require('electron-utils')
+const { api, is, activeWindow } = require('electron-utils')
 const regedit = require('regedit')
+
+// const { download } = require('electron-dl')
 
 module.exports = {
   /**
@@ -29,6 +31,13 @@ module.exports = {
    */
   showOpenDialog(...args) {
     return api.dialog.showOpenDialog(...args)
+  },
+
+  /**
+   *
+   */
+  showMessageBox(...args) {
+    return api.dialog.showMessageBox(...args)
   },
 
   /**

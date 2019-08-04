@@ -70,9 +70,11 @@ export default async ({ app, isDev }, inject) => {
 
   Vue.config.errorHandler = (err, vm, info) => {
     // Report Vue.js Errors
-    if ($rollbar.can()) {
+    if ($rollbar.isEnabled) {
       $rollbar.error(err)
     }
+
+    throw err
   }
 
   // axios - default headers

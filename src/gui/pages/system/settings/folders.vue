@@ -1,33 +1,33 @@
 <template>
   <div class="settings-fields">
-    <section class="settings-fields-section">
-      <form-inline-field
-        label="CLI"
-        hint="Path where the CLI is located. This is the most important program.">
+    <section class="box box-section">
+      <box-section-item
+        label="DreamPower"
+        description="Path where DreamPower is located (also known as CLI)">
         <input v-model="currentValue.folders.cli" class="input" />
         <button type="button" class="button" @click.prevent="changeCLI">📂</button>
-      </form-inline-field>
+      </box-section-item>
 
-      <form-inline-field
+      <box-section-item
         label="Models"
-        hint="Path where the transformed photos of the models will be saved.">
+        description="Path where the transformed photos of the models will be saved.">
         <input v-model="currentValue.folders.models" class="input" />
         <button type="button" class="button" @click.prevent="changeModels">📂</button>
-      </form-inline-field>
+      </box-section-item>
 
-      <form-inline-field
+      <box-section-item
         label="Cropped"
-        hint="Path where the cropped photos will be saved. We recommend selecting a temporary folder.">
+        description="Path where the cropped photos will be saved. We recommend selecting a temporary folder.">
         <input v-model="currentValue.folders.cropped" class="input" />
         <button type="button" class="button" @click.prevent="changeCropped">📂</button>
-      </form-inline-field>
+      </box-section-item>
 
-      <form-inline-field
+      <box-section-item
         label="Masks"
-        hint="Path where the algorithm masks photos will be saved.">
+        description="Path where the algorithm masks photos will be saved.">
         <input v-model="currentValue.folders.masks" class="input" />
         <button type="button" class="button" @click.prevent="changeMasks">📂</button>
-      </form-inline-field>
+      </box-section-item>
     </section>
   </div>
 </template>

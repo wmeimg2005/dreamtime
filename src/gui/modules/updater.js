@@ -12,26 +12,13 @@
 import _ from 'lodash'
 import axios from 'axios'
 import compareVersions from 'compare-versions'
+import Deferred from 'deferred'
 import dream from './dream'
 
+import DreamTime from './update/dreamtime'
+import Checkpoints from './update/checkpoints'
+
 const debug = require('debug').default('app:modules:updater')
-
-// Repository API
-// For now changing this is useless unless the new API offers the same response as Github
-const BASE_URL = 'https://api.github.com/repos/'
-
-// Unknown Information
-const DEFAULT_PAYLOAD = {
-  available: false,
-
-  current: {
-    tag_name: '0.0.0'
-  },
-
-  latest: {
-    tag_name: '0.0.0'
-  }
-}
 
 /**
  * Responsible for obtaining information about the current version,
@@ -42,86 +29,17 @@ export default {
    *
    */
   async init() {
-    // Indicates if the releases information is available
-    this.available = false
+    // Software
+    this.dreamtime = new DreamTime()
+    this.checkpoints = new Checkpoints()
 
-    if (!$nucleus.can() || !_.get($nucleus, 'updater.dreampower')) {
-      console.warn(
-        'Updater: Nucleus is not available! Unable to get the latest version.'
-      )
-      return
-    }
+    // Information of the current and most recent version
+    await this.dreamtime.fetch()
+    await this.checkpoints.fetch()
 
-    // Unknown Information
-    this.dreampower = DEFAULT_PAYLOAD
-    this.dreamtime = DEFAULT_PAYLOAD
-
-    //
-    this.http = axios.create({
-      baseURL: BASE_URL
+    debug('Updater initialized!', {
+      dreamtime: this.dreamtime,
+      checkpoints: this.checkpoints
     })
-
-    try {
-      // DreamTime
-      await this._fetchDreamTime()
-
-      // DreamPower
-      await this._fetchDreamPower()
-
-      this.available = true
-
-      debug('Updater initialized!', {
-        dreampower: this.dreampower,
-        dreamtime: this.dreamtime
-      })
-    } catch (err) {
-      console.warn('Updater: There was a problem: ', err)
-    }
-  },
-
-  /**
-   * Fetch version information from a Github Repository
-   *
-   * @param {string} repository
-   */
-  async _fetchFromGithub(repository) {
-    const response = await this.http.get(`${repository}/releases`)
-
-    // Stable versions only
-    const releases = _.filter(response.data, {
-      draft: false,
-      prerelease: false
-    })
-
-    if (releases.length === 0) {
-      return DEFAULT_PAYLOAD
-    }
-
-    const latest = releases[0]
-    const current = _.find(releases, { tag_name: `v${dream.version}` })
-
-    return {
-      latest,
-      current,
-      available: compareVersions(latest.tag_name, dream.version) === 1
-    }
-  },
-
-  /**
-   * Fetch version information about DreamPower (checkpoints)
-   */
-  async _fetchDreamPower() {
-    this.dreampower = await this._fetchFromGithub(
-      $nucleus.updater.dreampower // Application settings (nucleus.sh)
-    )
-  },
-
-  /**
-   * Fetch version information about DreamTime
-   */
-  async _fetchDreamTime() {
-    this.dreamtime = await this._fetchFromGithub(
-      $nucleus.updater.dreampower // Application settings (nucleus.sh)
-    )
   }
 }

@@ -37,10 +37,24 @@ export default {
     this._checkCheckpoints()
     await this._checkWindowsMedia()
 
+    this.isLimited = this.getIsLimited()
+
+    window.addEventListener('online', () => {
+      this.isLimited = this.getIsLimited()
+    })
+
+    window.addEventListener('offline', () => {
+      this.isLimited = this.getIsLimited()
+    })
+
     debug('Platform initialized!', {
       gpuDevices: this.gpuDevices,
       requirements: this.requirements
     })
+  },
+
+  getIsLimited() {
+    return !navigator.onLine || !$nucleus.isEnabled
   },
 
   /**
@@ -109,7 +123,7 @@ export default {
   _checkCheckpoints() {
     this.requirements.checkpoints = false
 
-    const dirPath = path.join($settings.folders.cli, 'checkpoints')
+    const dirPath = $tools.paths.getCheckpoints()
 
     if (!$tools.fs.exists(dirPath)) {
       // I guess it's the first time execution...
@@ -127,7 +141,7 @@ export default {
         return
       }
 
-      const stats = $tools.fs.statSync(modelPath)
+      const stats = $tools.fs.stats(modelPath)
       const size = filesize(stats.size, { exponent: 2, output: 'object' })
 
       if (size.value < 690) {

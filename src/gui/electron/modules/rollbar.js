@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const { Rollbar } = require('electron-utils')
 const debug = require('debug').default('app:electron:modules:rollbar')
 
@@ -5,6 +6,10 @@ const settings = require('./settings')
 const nucleus = require('./nucleus')
 
 const instance = {
+  isEnabled: false,
+
+  _rollbar: undefined,
+
   init() {
     if (!this.can()) {
       return
@@ -32,13 +37,22 @@ const instance = {
       }
     }
 
-    this._rollbar = new Rollbar(config)
+    try {
+      this._rollbar = new Rollbar(config)
 
-    debug('Rollbar initialized!', config)
+      this.isEnabled = true
+
+      debug('Rollbar initialized!', config)
+    } catch (err) {
+      console.warn('Error at connecting to Rollbar', err)
+    }
   },
 
   getAccessToken() {
-    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys.rollbar_access_token
+    return (
+      process.env.ROLLBAR_ACCESS_TOKEN ||
+      _.get(nucleus, 'keys.rollbar_access_token')
+    )
   },
 
   can() {
@@ -52,14 +66,12 @@ module.exports = new Proxy(instance, {
       return obj[prop]
     }
 
-    if (prop in obj._rollbar) {
-      if (obj.can()) {
+    if (obj._rollbar && prop in obj._rollbar) {
+      if (obj.isEnabled) {
         return obj._rollbar[prop]
       }
-
-      return () => {}
     }
 
-    return undefined
+    return () => {}
   }
 })

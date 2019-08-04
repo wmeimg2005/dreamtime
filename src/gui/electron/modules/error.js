@@ -6,7 +6,7 @@ class AppError extends Error {
   constructor(message, error) {
     super(message)
 
-    if ($rollbar.can()) {
+    if ($rollbar.isEnabled) {
       const response = $rollbar.error(this)
 
       if (response.uuid) {

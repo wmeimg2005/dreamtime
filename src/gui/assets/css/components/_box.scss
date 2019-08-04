@@ -16,3 +16,41 @@
     @apply mb-5;
   }
 }
+
+.box-section {
+  @apply px-0 py-1;
+
+  .box-section-item {
+    @apply flex py-3 px-5;
+
+    &:not(:last-child) {
+      @apply border-b border-dark-400;
+    }
+
+    .item-icon {
+      @apply mr-4 flex items-center justify-center text-2xl;
+      width: 42px;
+    }
+
+    .item-text {
+      @apply flex-1 flex flex-col justify-center;
+
+      .item-label {
+        @apply text-generic-600 font-semibold;
+        transition: all 0.1s ease-in-out;
+      }
+
+      .item-description {
+        @apply text-sm;
+
+        a {
+          @apply underline;
+        }
+      }
+    }
+
+    .item-extra {
+      @apply flex items-center;
+    }
+  }
+}

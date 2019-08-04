@@ -12,6 +12,10 @@
 import Vue from 'vue'
 import Title from './AppTitle'
 import ExternalLink from './AppExternalLink'
+import Update from './AppUpdate'
+import SectionItem from './BoxSectionItem'
 
 Vue.component('app-title', Title)
 Vue.component('app-external-link', ExternalLink)
+Vue.component('app-update', Update)
+Vue.component('box-section-item', SectionItem)

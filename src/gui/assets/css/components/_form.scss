@@ -11,15 +11,15 @@
 }
 
 .input {
-  @apply border border-gray-400 rounded py-1 px-3 w-full text-gray-700;
+  @apply border border-dark-300 bg-dark-400 rounded py-1 px-3 w-full text-generic-600;
   outline: none !important;
   transition: all .2s ease-in-out;
 
   &:hover, &:focus {
-    @apply border-gray-600 text-black;
+    @apply border-dark-200 text-white;
   }
 }
 
 select.input {
-  @apply bg-gray-100 cursor-pointer;
+  @apply cursor-pointer;
 }

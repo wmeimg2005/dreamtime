@@ -18,10 +18,9 @@ const utils = require('electron-utils')
 
 const debug = require('debug').default('app:electron')
 const { settings, nucleus, rollbar } = require('./modules')
-
 const config = require('../nuxt.config')
 
-// We indicate to NuxtJS the root directory of the project
+// Indicate to NuxtJS the root directory of the project
 config.rootDir = path.dirname(__dirname)
 
 // Copyright.
@@ -60,16 +59,24 @@ class DreamApp {
    * Prepare the application for use
    */
   static async setup() {
+    // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
     utils.enforceMacOSAppLocation()
 
+    // User settings
     settings.init()
 
+    // Analytics & App settings
+    // https://nucleus.sh/docs/gettingstarted
     await nucleus.init()
 
+    // Error reporting
+    // https://docs.rollbar.com/docs/nodejs
     rollbar.init()
 
+    //
     this.createModelsDir()
 
+    //
     contextMenu({
       showSaveImageAs: true
     })
@@ -86,8 +93,7 @@ class DreamApp {
       minWidth: 1200,
       minHeight: 700,
       webPreferences: {
-        // This script offers us the necessary tools to communicate with the operating system.
-        // (filesystem, start processes, etc).
+        // Script that offers secure communication to the NodeJS API
         preload: path.join(app.getAppPath(), 'electron', 'preload.js')
       }
     })
@@ -99,12 +105,12 @@ class DreamApp {
     this.loadURL = this.getNuxtAppLocation()
 
     if (config.dev) {
-      // We are in development,
-      // we load the DevTools and wait for the NuxtJS server to load.
+      // Development,
+      // Load the DevTools and wait for the NuxtJS server to load.
       this.window.webContents.openDevTools()
       this.pollServer()
     } else {
-      // We are in production, only load the interface!
+      // Production, load the static interface!
       this.window.loadFile(this.loadURL)
     }
   }
@@ -115,7 +121,7 @@ class DreamApp {
   static pollServer() {
     debug(`Requesting status from the server: ${this.loadURL}`)
 
-    const response = http
+    http
       .get(this.loadURL, response => {
         if (response.statusCode === 200) {
           debug('> Server ready, show time!')
@@ -125,7 +131,7 @@ class DreamApp {
           setTimeout(this.pollServer.bind(this), 300)
         }
       })
-      .on('error', error => {
+      .on('error', () => {
         setTimeout(this.pollServer.bind(this), 300)
       })
   }
@@ -173,7 +179,9 @@ app.on('ready', () => {
   try {
     DreamApp.start()
   } catch (error) {
+    rollbar.error(error)
     console.error(error)
+
     app.quit()
   }
 })
@@ -182,4 +190,6 @@ app.on('window-all-closed', () => {
   app.quit()
 })
 
-// app.on('activate', () => win === null && newWin())
+app.on('activate', () => {
+  DreamApp.createWindow()
+})

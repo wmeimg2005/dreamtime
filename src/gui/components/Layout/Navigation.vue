@@ -32,44 +32,26 @@
           </nuxt-link>
           -->
 
-          <nuxt-link to="/system/updater" class="navbar-item">
-            <span class="icon">🌎</span>
-            <span>Updater</span>
-          </nuxt-link>
-
-          <nuxt-link to="/about" class="navbar-item">
-            <span class="icon">❓</span>
+          <nuxt-link to="/system/about" class="navbar-item">
+            <span class="icon">🌌</span>
             <span>About</span>
           </nuxt-link>
 
-          <nuxt-link to="/settings/processing" class="navbar-item">
+          <nuxt-link to="/system/settings/processing" class="navbar-item">
             <span class="icon">🔧</span>
             <span>Settings</span>
           </nuxt-link>
         </nav>
       </section>
 
-      <!-- Services Navigation -->
-      <section class="navbar-section">
-        <nav class="navbar-items">
-          <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shell.openExternal('https://www.patreon.com/deepmanyy')">
-            <span class="icon">💖</span>
-            <span>Patreon</span>
-          </a>
-
-          <a href="#" class="navbar-item" @click.prevent="$data.$deepTools.shell.openExternal('https://discord.gg/RjBSaND')">
-            <span class="icon">🤟</span>
-            <span>Discord</span>
-          </a>
-        </nav>
-      </section>
-
       <!-- Developer Navigation -->
       <section v-if="isDev" class="navbar-section">
-        <a href="#" class="navbar-item" @click.prevent="testBug">
-          <span class="icon">🐛</span>
-          <span>I am a error!</span>
-        </a>
+        <nav class="navbar-items">
+          <a href="#" class="navbar-item" @click.prevent="testBug">
+            <span class="icon">🐛</span>
+            <span>I am a error!</span>
+          </a>
+        </nav>
       </section>
     </div>
   </div>

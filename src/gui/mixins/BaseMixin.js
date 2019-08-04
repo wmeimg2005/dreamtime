@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import tippy from 'tippy.js'
-import { dream, nudify } from '~/modules'
+import { updater, nudify } from '~/modules'
 
 export default {
   directives: {
@@ -24,8 +24,8 @@ export default {
   data: () => ({
     // $_dream: dream,
 
-    $_nudify: nudify,
+    $nudify: nudify,
 
-    $_tools: window.$tools
+    $updater: updater
   })
 }

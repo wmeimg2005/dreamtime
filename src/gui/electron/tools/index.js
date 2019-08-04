@@ -18,36 +18,10 @@ const config = require('../../nuxt.config')
  */
 module.exports = {
   /**
-   * Returns an absolute path depending on the parameters
    *
-   * @param {string} name Name of the base path: https://electronjs.org/docs/all#appgetpathname
-   * @param {string} args Series of path segments to join into one path
    */
-  getPath(name, ...args) {
-    const { app } = utils.api
-    let folderPath
-
-    if (name === 'root') {
-      if (utils.is.development) {
-        const rootPath = utils.getRootPath()
-        folderPath = path.resolve(rootPath, '../')
-      } else {
-        folderPath = path.resolve(app.getPath('exe'), '../')
-      }
-    } else {
-      folderPath = app.getPath(name)
-    }
-
-    return path.join(folderPath, ...args)
-  },
-
-  /**
-   * Alias for getPath('root', ...args)
-   *
-   * @param  {string} args Series of path segments to join into one path
-   */
-  getRootPath(...args) {
-    return this.getPath('root', ...args)
+  testError() {
+    window.$rollbar.error(Error('tools error!'))
   },
 
   /**
@@ -55,17 +29,6 @@ module.exports = {
    */
   getGpusList() {
     return gpuInfo()
-  },
-
-  /**
-   *
-   */
-  getCliDirPath() {
-    return this.getRootPath('cli')
-  },
-
-  testError() {
-    window.$rollbar.error(Error('tools error!'))
   },
 
   /**
@@ -164,15 +127,14 @@ module.exports = {
     return bus
   },
 
-  /**
-   *
-   */
+  //
   fs: require('./fs'),
 
-  /**
-   *
-   */
+  //
   shell: require('./shell'),
+
+  //
+  paths: require('./paths'),
 
   /**
    *

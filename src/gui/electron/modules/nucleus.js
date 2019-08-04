@@ -9,6 +9,8 @@ const settings = require('./settings')
  * Service that provides us with analytical information and global application settings
  */
 const nucleus = {
+  isEnabled: false,
+
   _nucleus: undefined,
 
   _settings: {},
@@ -31,30 +33,24 @@ const nucleus = {
       persist: false
     }
 
-    // Create the Nucleus instance
-    this._nucleus = Nucleus(this.getAppId(), config)
+    try {
+      // Create the Nucleus instance
+      this._nucleus = Nucleus(this.getAppId(), config)
 
-    // Get global application settings
-    /* this._nucleus.getCustomData((error, payload) => {
-        this._settings = payload
+      // Get global application settings
+      this._settings = (await axios.get(
+        `https://nucleus.sh/app/${this.getAppId()}/customdata`
+      )).data
 
-        debug('Nucleus initialized!', {
-          config,
-          settings: this._settings
-        })
+      this.isEnabled = true
 
-        resolve()
-      }) */
-
-    // Get global application settings
-    this._settings = (await axios.get(
-      `https://nucleus.sh/app/${this.getAppId()}/customdata`
-    )).data
-
-    debug('Nucleus initialized!', {
-      config,
-      settings: this._settings
-    })
+      debug('Nucleus initialized!', {
+        config,
+        settings: this._settings
+      })
+    } catch (err) {
+      console.warn('Error at connecting to Nucleus', err)
+    }
   },
 
   /**
@@ -83,13 +79,11 @@ module.exports = new Proxy(nucleus, {
     }
 
     if (obj._nucleus && prop in obj._nucleus) {
-      if (obj.can()) {
+      if (obj.isEnabled) {
         return obj._nucleus[prop]
       }
-
-      return () => {}
     }
 
-    return undefined
+    return () => {}
   }
 })
