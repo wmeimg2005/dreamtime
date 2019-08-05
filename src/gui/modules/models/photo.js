@@ -78,12 +78,11 @@ export default class Photo {
       }
     })
 
-    this.queue.on('task_failed', (jobId, job, error, stats) => {
+    this.queue.on('task_failed', (jobId, error, data) => {
       console.log({
         jobId,
-        job,
         error,
-        stats
+        data
       })
     })
 

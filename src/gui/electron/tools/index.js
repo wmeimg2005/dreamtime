@@ -58,10 +58,20 @@ module.exports = {
 
     const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
 
-    // TODO: Preferences
-    if (preferences.pubicHairSize !== 0) {
-      cliArgs.push('--enablepubes')
-    }
+    cliArgs.push('--bsize')
+    cliArgs.push(preferences.boobsSize)
+
+    cliArgs.push('--asize')
+    cliArgs.push(preferences.areolaSize)
+
+    cliArgs.push('--nsize')
+    cliArgs.push(preferences.nippleSize)
+
+    cliArgs.push('--vsize')
+    cliArgs.push(preferences.vaginaSize)
+
+    cliArgs.push('--hsize')
+    cliArgs.push(preferences.pubicHairSize)
 
     if ($settings.processing.usePython) {
       // Use the Python script instead of the executable

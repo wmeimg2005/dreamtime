@@ -17,7 +17,7 @@
   }
 
   .box-title {
-    @apply font-bold text-generic-600 mb-2;
+    @apply font-bold text-generic-300 text-lg mb-2;
   }
 }
 
@@ -40,7 +40,7 @@
       @apply flex-1 flex flex-col justify-center;
 
       .item-label {
-        @apply text-generic-600 font-semibold;
+        @apply text-generic-300 font-semibold;
         transition: all 0.1s ease-in-out;
       }
 
@@ -55,6 +55,7 @@
 
     .item-extra {
       @apply flex items-center;
+      min-width: 200px;
     }
   }
 }

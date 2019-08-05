@@ -78,10 +78,13 @@ const settings = {
       },
 
       preferences: {
+        boobsSize: '1',
+        areolaSize: '1',
+        nippleSize: '1',
+        vaginaSize: '0.75',
+        pubicHairSize: '1',
+
         executions: 1,
-        enablePubes: true,
-        boobsSize: 'medium',
-        pubicHairSize: 'medium',
         useCustomMask: false
       },
 

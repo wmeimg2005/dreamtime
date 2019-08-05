@@ -36,8 +36,8 @@ export default {
    *
    * @param {*} value
    */
-  getPhoto(value) {
-    this.photo = value
+  getPhoto() {
+    return this.photo
   },
 
   /**
