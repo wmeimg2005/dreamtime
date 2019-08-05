@@ -1,8 +1,15 @@
 <template>
   <div class="nudity-crop">
     <div class="crop-help">
-      <section>
-        <p class="help-title">📷 Photo cropping</p>
+      <section class="box">
+        <div class="buttons">
+          <nuxt-link to="/" class="button is-danger">Cancel</nuxt-link>
+          <button class="button is-success" @click.prevent="crop('nudify')">Nudify!</button>
+        </div>
+      </section>
+
+      <section class="box">
+        <p class="box-title">📷 Photo cropping</p>
 
         <p class="help-text">
           It is necessary to resize your photo to 512x512, use the tool below to place the portion of the photo you want to transform into the marked box.
@@ -11,16 +18,10 @@
         <p class="help-text">
           🐭 Move the photo by dragging it with the mouse, you can zoom in or out using the mouse wheel.
         </p>
-
-        <div class="buttons">
-          <nuxt-link to="/" class="button is-danger">Cancel</nuxt-link>
-          <button class="button" @click.prevent="crop('settings')">Preferences</button>
-          <button class="button is-success" @click.prevent="crop('nudify')">Nudify!</button>
-        </div>
       </section>
 
-      <section>
-        <p class="help-title">🕵️‍️ How to obtain better results?</p>
+      <section class="box">
+        <p class="box-title">🕵️‍️ How to obtain better results?</p>
         <p class="help-text">
           <ul>
             <li>Only one person should appear in the photo.</li>
@@ -50,6 +51,12 @@ export default {
     cropper: undefined
   }),
 
+  computed: {
+    photo() {
+      return this.$nudify.photo
+    }
+  },
+
   mounted() {
     this.createCropper()
   },
@@ -77,9 +84,7 @@ export default {
         wheelZoomRatio: 0.03
       })
 
-      const dataURL = await this.$nudity.modelPhoto
-        .getSourceFile()
-        .readAsDataURL()
+      const dataURL = await this.photo.getSourceFile().readAsDataURL()
 
       this.cropper.replace(dataURL)
     },
@@ -106,13 +111,11 @@ export default {
       })
 
       const canvasAsDataURL = canvas.toDataURL(
-        this.$nudity.modelPhoto.getSourceFile().getMimetype(),
+        this.photo.getSourceFile().getMimetype(),
         1
       )
 
-      await this.$nudity.modelPhoto
-        .getCroppedFile()
-        .writeDataURL(canvasAsDataURL)
+      await this.photo.getCroppedFile().writeDataURL(canvasAsDataURL)
     },
 
     async crop(next) {
@@ -132,25 +135,30 @@ export default {
 
 <style lang="scss">
 .nudity-crop {
-  @apply flex flex-col h-full;
+  @apply flex h-full;
 
   .crop-canvas {
-    height: 512px;
+    @apply flex-1 h-full;
   }
 
   .crop-help {
-    @apply flex-1 flex overflow-hidden p-5 overflow-y-auto;
+    @apply flex-1 flex flex-col overflow-hidden p-3 overflow-y-auto;
 
     section {
-      @apply flex-1 p-2;
+      .buttons {
+        @apply flex justify-center;
+
+        .button {
+          @apply flex-1;
+        }
+      }
     }
 
     .help-title {
-      @apply font-bold;
     }
 
     .help-text {
-      @apply text-sm text-gray-800 mb-3;
+      @apply text-sm mb-3;
 
       ul {
         @apply list-disc ml-5;

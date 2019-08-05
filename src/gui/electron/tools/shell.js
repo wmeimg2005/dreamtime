@@ -35,6 +35,14 @@ module.exports = {
 
   /**
    *
+   * @param  {...any} args
+   */
+  showSaveDialogSync(...args) {
+    return api.dialog.showSaveDialog(...args)
+  },
+
+  /**
+   *
    */
   showMessageBox(...args) {
     return api.dialog.showMessageBox(...args)

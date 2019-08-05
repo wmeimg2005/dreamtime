@@ -70,6 +70,22 @@ module.exports = {
 
   /**
    *
+   * @param {*} path
+   * @param {*} targetPath
+   */
+  async copy(path, targetPath) {
+    return fs.copyFileSync(path, targetPath)
+  },
+
+  /**
+   *
+   */
+  async unlink(path) {
+    return fs.unlinkSync(path)
+  },
+
+  /**
+   *
    * @param {string} filePath
    */
   exists(filePath) {

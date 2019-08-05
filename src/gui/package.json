@@ -43,6 +43,8 @@
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
     "aws-sdk": "^2.503.0",
+    "better-queue": "^3.8.10",
+    "better-queue-memory": "^1.0.3",
     "bullet-train-nodejs": "^0.1.2",
     "clipboard": "^2.0.4",
     "compare-versions": "^3.5.0",

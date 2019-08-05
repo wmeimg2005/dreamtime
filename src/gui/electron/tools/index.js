@@ -8,8 +8,8 @@ const utils = require('electron-utils')
 const debug = require('debug').default('app:electron:tools')
 // const Caman = require('caman').Caman
 
-const settings = require('../modules/settings')
 const AppError = require('../modules/error')
+const paths = require('./paths')
 const config = require('../../nuxt.config')
 
 /**
@@ -21,7 +21,7 @@ module.exports = {
    *
    */
   testError() {
-    window.$rollbar.error(Error('tools error!'))
+    $rollbar.error(Error('tools error!'))
   },
 
   /**
@@ -36,23 +36,17 @@ module.exports = {
    * @param {*} job
    */
   transform(job) {
-    const cliDirPath = settings.folders.cli
+    // Independent preferences for the photo
     const preferences = job.getPhoto().getPreferences()
 
+    // Cropped photo
     const inputFilePath = job
       .getPhoto()
       .getCroppedFile()
       .getPath()
 
+    // Final photo
     const outputFilePath = job.getFile().getPath()
-
-    if (!fs.existsSync(cliDirPath)) {
-      throw new AppError(
-        `The CLI folder could not be found!\n
-        This can be caused by a corrupt installation, make sure that the folder exists in:\n
-        ${cliDirPath}`
-      )
-    }
 
     if (!fs.existsSync(inputFilePath)) {
       throw new AppError(
@@ -69,57 +63,55 @@ module.exports = {
       cliArgs.push('--enablepubes')
     }
 
-    if (settings.processing.usePython) {
-      // Use the script in Python instead of the executable
+    if ($settings.processing.usePython) {
+      // Use the Python script instead of the executable
       cliArgs.unshift('main.py')
     }
 
-    if (settings.processing.device === 'CPU') {
-      // CPU slow Processing
+    if ($settings.processing.device === 'CPU') {
       cliArgs.push('--cpu')
     } else {
-      for (const id of settings.processing.gpus) {
+      for (const id of $settings.processing.gpus) {
         cliArgs.push(`--gpu`)
         cliArgs.push(id)
       }
     }
 
     debug('The transformation process has begun!', {
-      cliDirPath,
       inputFilePath,
       outputFilePath,
       cliArgs,
       job
     })
 
+    let process
     const bus = new EventBus()
 
-    let child
-
-    if (settings.processing.usePython) {
-      child = spawn('python', cliArgs, {
-        cwd: cliDirPath
+    if ($settings.processing.usePython) {
+      // Use the Python script instead of the executable
+      process = spawn('python', cliArgs, {
+        cwd: paths.getCli()
       })
     } else {
-      child = spawn(path.join(cliDirPath, 'cli'), cliArgs)
+      process = spawn(paths.getCli('dreampower'), cliArgs)
     }
 
-    child.on('error', error => {
+    process.on('error', error => {
       debug(error)
       bus.emit('error', null, error)
     })
 
-    child.stdout.on('data', data => {
+    process.stdout.on('data', data => {
       debug(`stdout: ${data}`)
       bus.emit('stdout', null, data)
     })
 
-    child.stderr.on('data', data => {
+    process.stderr.on('data', data => {
       debug(`stderr: ${data}`)
       bus.emit('stderr', null, data)
     })
 
-    child.on('close', code => {
+    process.on('close', code => {
       debug(`CLI process exited with code ${code}`)
       bus.emit('ready', null, code)
     })
@@ -134,7 +126,7 @@ module.exports = {
   shell: require('./shell'),
 
   //
-  paths: require('./paths'),
+  paths,
 
   /**
    *

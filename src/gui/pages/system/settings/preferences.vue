@@ -5,7 +5,7 @@
     <section class="box box-section">
       <box-section-item
         label="Number of executions"
-        description="The transformation process will be repeated this number of times and you can select the one that has the best result.">
+        description="Because the photo transformation can be different each time here you can configure how many times your photo will be processed. In the end you can save the one you like best.">
         <input v-model="currentValue.preferences.executions" type="number" min="1" class="input" />
       </box-section-item>
 

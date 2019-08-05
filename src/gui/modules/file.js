@@ -14,7 +14,7 @@ export default class File {
    * @param {*} dataURL
    */
   static async fromDataURL(path, dataURL) {
-    await window.deepTools.fs.write(path, dataURL)
+    await $tools.fs.write(path, dataURL)
     return new this(path)
   }
 
@@ -35,7 +35,7 @@ export default class File {
       path = this.getPath()
     }
 
-    const info = window.deepTools.fs.getInfo(path)
+    const info = $tools.fs.getInfo(path)
 
     this.name = info.name
     this.ext = info.ext
@@ -99,12 +99,23 @@ export default class File {
   /**
    *
    */
+  remove() {
+    if (!this.exists()) {
+      return
+    }
+
+    $tools.fs.unlink(this.getPath())
+  }
+
+  /**
+   *
+   */
   async readAsDataURL() {
     if (!this.exists()) {
       return undefined
     }
 
-    const data = await window.deepTools.fs.read(this.getPath())
+    const data = await $tools.fs.read(this.getPath(), 'base64')
     return `data:${this.getMimetype()};base64,${data}`
   }
 
@@ -112,7 +123,15 @@ export default class File {
    *
    */
   async writeDataURL(dataURL) {
-    await window.deepTools.fs.writeDataURL(this.getPath(), dataURL)
+    await $tools.fs.writeDataURL(this.getPath(), dataURL)
     this.update(this.getPath())
+  }
+
+  /**
+   *
+   * @param {*} targetPath
+   */
+  async copy(targetPath) {
+    await $tools.fs.copy(this.getPath(), targetPath)
   }
 }
