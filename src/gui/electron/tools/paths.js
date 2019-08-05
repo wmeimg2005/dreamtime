@@ -64,11 +64,13 @@ module.exports = {
    * @param  {...any} args
    */
   getCli(...args) {
-    if (!fs.existsSync($settings.folders.cli)) {
-      return path.join(this.getRoot('cli'), ...args)
+    let folder = $settings.folders.cli
+
+    if (!fs.existsSync(folder)) {
+      folder = this.getRoot('cli')
     }
 
-    return path.join($settings.folders.cli, ...args)
+    return path.join(folder, ...args)
   },
 
   /**
@@ -77,5 +79,43 @@ module.exports = {
    */
   getCheckpoints(...args) {
     return this.getCli('checkpoints', ...args)
+  },
+
+  getCropped(...args) {
+    let folder = $settings.folders.cropped
+
+    if (!fs.existsSync(folder)) {
+      folder = this.get('temp')
+    }
+
+    return path.join(folder, ...args)
+  },
+
+  getModels(...args) {
+    let folder = $settings.folders.models
+
+    if (!fs.existsSync(folder)) {
+      folder = this.get('userData', 'models')
+    }
+
+    if (!fs.existsSync(folder)) {
+      folder = this.get('temp')
+    }
+
+    return path.join(folder, ...args)
+  },
+
+  getMasks(...args) {
+    let folder = $settings.folders.masks
+
+    if (!fs.existsSync(folder)) {
+      folder = this.get('userData', 'masks')
+    }
+
+    if (!fs.existsSync(folder)) {
+      folder = this.get('temp')
+    }
+
+    return path.join(folder, ...args)
   }
 }

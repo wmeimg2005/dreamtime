@@ -10,10 +10,14 @@
  */
 
 .box {
-  @apply bg-dark rounded p-5 shadow;
+  @apply bg-dark rounded px-5 py-3 shadow mb-5;
 
-  &:not(:last-child) {
-    @apply mb-5;
+  &.is-transparent {
+    @apply bg-transparent rounded-none shadow-none;
+  }
+
+  .box-title {
+    @apply font-bold text-generic-600 mb-2;
   }
 }
 

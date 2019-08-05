@@ -4,10 +4,8 @@ class AppError extends Error {
    * @param {*} message
    */
   constructor(message, error) {
-    super(message)
-
     if ($rollbar.isEnabled) {
-      const response = $rollbar.error(this)
+      const response = $rollbar.error(error || new Error(message))
 
       if (response.uuid) {
         message += `
@@ -23,6 +21,8 @@ class AppError extends Error {
           \nFor help, take a screenshot and report the following to one of our developers in the Discord server:\n
           ${error}`
     }
+
+    super(message)
   }
 }
 

@@ -1,8 +1,15 @@
 <template>
   <div class="nudity-crop">
     <div class="crop-help">
-      <section>
-        <p class="help-title">📷 Photo cropping</p>
+      <section class="box">
+        <div class="buttons">
+          <nuxt-link to="/" class="button is-danger">Cancel</nuxt-link>
+          <button class="button is-success" @click.prevent="crop('nudify')">Nudify!</button>
+        </div>
+      </section>
+
+      <section class="box">
+        <p class="box-title">📷 Photo cropping</p>
 
         <p class="help-text">
           It is necessary to resize your photo to 512x512, use the tool below to place the portion of the photo you want to transform into the marked box.
@@ -11,12 +18,10 @@
         <p class="help-text">
           🐭 Move the photo by dragging it with the mouse, you can zoom in or out using the mouse wheel.
         </p>
-
-
       </section>
 
-      <section>
-        <p class="help-title">🕵️‍️ How to obtain better results?</p>
+      <section class="box">
+        <p class="box-title">🕵️‍️ How to obtain better results?</p>
         <p class="help-text">
           <ul>
             <li>Only one person should appear in the photo.</li>
@@ -26,62 +31,64 @@
           </ul>
         </p>
       </section>
-    </div>
-    <div class="preferences-container" v-bind:class="{open: this.preferencesOpen}">
-      <section class="settings-fields-section">
-        <form-inline-field label="Boob Size">
-          <div class="slider-container">
-            <input type="range" class="slider" in=0.3 max=2 step=0.1 v-model="preferences.boobsSize"></input>
-            <span class="min">0.3</span>
-            <span class="max">2.0</span>
-          </div>
+      
+      <div class="preferences-container" v-bind:class="{open: this.preferencesOpen}">
+        <section class="settings-fields-section">
+          <form-inline-field label="Boob Size">
+            <div class="slider-container">
+              <input type="range" class="slider" in=0.3 max=2 step=0.1 v-model="preferences.boobsSize"></input>
+              <span class="min">0.3</span>
+              <span class="max">2.0</span>
+            </div>
 
-        </form-inline-field>
+          </form-inline-field>
 
-        <form-inline-field label="Areola Size">
-          <div class="slider-container">
-            <input type="range" class="slider" in=0.3 max=2 step=0.1 v-model="preferences.areolaSize"></input>
-            <span class="min">0.3</span>
-            <span class="max">2.0</span>
-          </div>
+          <form-inline-field label="Areola Size">
+            <div class="slider-container">
+              <input type="range" class="slider" in=0.3 max=2 step=0.1 v-model="preferences.areolaSize"></input>
+              <span class="min">0.3</span>
+              <span class="max">2.0</span>
+            </div>
 
-        </form-inline-field>
+          </form-inline-field>
 
-        <form-inline-field label="Nipple Size">
-          <div class="slider-container">
-            <input type="range" class="slider" in=0.3 max=2 step=0.1 v-model="preferences.nippleSize"></input>
-            <span class="min">0.3</span>
-            <span class="max">2.0</span>
-          </div>
+          <form-inline-field label="Nipple Size">
+            <div class="slider-container">
+              <input type="range" class="slider" in=0.3 max=2 step=0.1 v-model="preferences.nippleSize"></input>
+              <span class="min">0.3</span>
+              <span class="max">2.0</span>
+            </div>
 
-        </form-inline-field>
+          </form-inline-field>
 
-        <form-inline-field label="Vagina Size">
-          <div class="slider-container">
-            <input type="range" class="slider" in=0.3 max=1.5 step=0.1 v-model="preferences.vaginaSize"></input>
-            <span class="min">0.3</span>
-            <span class="max">1.5</span>
-          </div>
-        </form-inline-field>
+          <form-inline-field label="Vagina Size">
+            <div class="slider-container">
+              <input type="range" class="slider" in=0.3 max=1.5 step=0.1 v-model="preferences.vaginaSize"></input>
+              <span class="min">0.3</span>
+              <span class="max">1.5</span>
+            </div>
+          </form-inline-field>
 
-        <form-inline-field label="Pubic Hair">
-          <div class="slider-container">
-            <input type="range" class="slider" in=0 max=2 step=0.1 v-model="preferences.pubicHairSize"></input>
-            <span class="min">None</span>
-            <span class="max">2.0</span>
-          </div>
-        </form-inline-field>
-      </section>
-    </div>
-    <div class="menu">
-      <div class="settings">
-        <button class="button" @click="toggleSettings()">Generation Settings</button>
+          <form-inline-field label="Pubic Hair">
+            <div class="slider-container">
+              <input type="range" class="slider" in=0 max=2 step=0.1 v-model="preferences.pubicHairSize"></input>
+              <span class="min">None</span>
+              <span class="max">2.0</span>
+            </div>
+          </form-inline-field>
+        </section>
       </div>
-      <div class="buttons">
-        <nuxt-link to="/" class="button is-danger">Cancel</nuxt-link>
-        <button class="button is-success" @click.prevent="crop('nudify')">Nudify!</button>
-       </div>
+      <div class="menu">
+        <div class="settings">
+          <button class="button" @click="toggleSettings()">Generation Settings</button>
+        </div>
+        <div class="buttons">
+          <nuxt-link to="/" class="button is-danger">Cancel</nuxt-link>
+          <button class="button is-success" @click.prevent="crop('nudify')">Nudify!</button>
+         </div>
+      </div>
     </div>
+    
     <div class="crop-canvas">
       <canvas ref="photoCanvas" />
     </div>
@@ -101,6 +108,12 @@ export default {
     preferencesOpen: false,
     preferences: {}
   }),
+
+  computed: {
+    photo() {
+      return this.$nudify.photo
+    }
+  },
 
   mounted() {
     this.createCropper()
@@ -137,9 +150,7 @@ export default {
         wheelZoomRatio: 0.03
       })
 
-      const dataURL = this.$nudify.getPhoto()
-        .getSourceFile()
-        .readAsDataURL()
+      const dataURL = await this.photo.getSourceFile().readAsDataURL()
 
       this.cropper.replace(dataURL)
     },
@@ -190,6 +201,7 @@ export default {
 
 <style lang="scss">
 .nudity-crop {
+
   @apply flex flex-col h-full;
 .menu {
     display: flex;
@@ -221,19 +233,25 @@ export default {
     display: inline-block;
     margin-left: auto;
   }
+
   .crop-canvas {
-    height: 512px;
+    @apply flex-1 h-full;
   }
 
   .crop-help {
     @apply flex-1 flex overflow-hidden p-5 overflow-y-hidden;
 
     section {
-      @apply flex-1 p-2;
+      .buttons {
+        @apply flex justify-center;
+
+        .button {
+          @apply flex-1;
+        }
+      }
     }
 
     .help-title {
-      @apply font-bold;
     }
 
     .help-text {

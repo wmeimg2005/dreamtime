@@ -148,10 +148,10 @@ export default {
     transition: all 0.1s linear;
 
     &.is-dragging {
-      @apply bg-gray-200 border-gray-500;
+      @apply bg-dark-700 border-white;
 
       .dropzone-hint {
-        @apply opacity-25;
+        @apply text-white;
       }
     }
 
@@ -162,10 +162,10 @@ export default {
   }
 
   &.is-dragging {
-    @apply border-gray-400 border-dotted;
+    @apply border-white border-dotted;
 
     .dragging-overlay {
-      display: block;
+      //display: block;
     }
   }
 
