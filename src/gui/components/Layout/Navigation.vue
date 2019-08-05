@@ -15,22 +15,10 @@
       <!-- App Navigation -->
       <section class="navbar-section">
         <nav class="navbar-items">
-          <nuxt-link to="/" class="navbar-item">
+          <nuxt-link v-if="$platform.requirements.all" to="/" class="navbar-item">
             <span class="icon">📷</span>
             <span>Nudify</span>
           </nuxt-link>
-
-          <!--
-          <nuxt-link to="/models" class="navbar-item">
-            🎭 Models
-          </nuxt-link>
-          -->
-
-          <!--
-          <nuxt-link to="/nudity/transform" class="navbar-item">
-            ⚡ Quick transform
-          </nuxt-link>
-          -->
 
           <nuxt-link to="/system/about" class="navbar-item">
             <span class="icon">🌌</span>

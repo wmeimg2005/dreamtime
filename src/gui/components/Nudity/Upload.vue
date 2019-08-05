@@ -28,6 +28,7 @@
 
 <script>
 import _ from 'lodash'
+import swal from 'sweetalert'
 import { Photo } from '~/modules/models'
 import { File } from '~/modules'
 
@@ -53,15 +54,51 @@ export default {
     /**
      * File selected, start a new transformation process
      */
-    start(inputFile) {
+    startFromFile(inputFile) {
       if (_.isNil(inputFile)) {
-        alert('It seems that you have not selected a photo!')
+        swal('Upload failed', 'It seems that you have not selected a photo!', 'info')
         return
       }
 
-      // New instance of the file
+      // New File instance
       const file = File.fromPath(inputFile.path)
 
+      this.start(file)
+    },
+
+    async startFromURL(url) {
+      if (_.isNil(url)) {
+        swal('Upload failed', 'This does not seem like a valid URL', 'info')
+        return
+      }
+
+      swal({
+        title: 'Loading...',
+        text: 'We are downloading the photo and preparing it!',
+        button: false,
+        closeOnClickOutside: false,
+        closeOnEsc: false
+      })
+
+      try {
+        // New File instance
+        const file = await File.fromURL(url)
+
+        swal.close()
+
+        this.start(file)
+      } catch (err) {
+        swal({
+          icon: 'error',
+          title: 'Upload failed',
+          text: `An error has occurred downloading the photo or saving it in the temporary folder, please make sure you are connected to the Internet and that ${$dream.name} has permissions to save files.`
+        })
+
+        $rollbar.warn(err)
+      }
+    },
+
+    start(file) {
       // Create a photo for the model ("null" model for now)
       const photo = new Photo(null, file)
 
@@ -69,7 +106,7 @@ export default {
       const validationErrorMessage = photo.getValidationErrorMessage()
 
       if (!_.isNil(validationErrorMessage)) {
-        alert(validationErrorMessage)
+        swal('Upload failed', validationErrorMessage, 'error')
         return
       }
 
@@ -88,7 +125,7 @@ export default {
         return
       }
 
-      this.start(files[0])
+      this.startFromFile(files[0])
       event.target.value = ''
     },
 
@@ -111,16 +148,16 @@ export default {
     onDrop(event) {
       event.preventDefault()
       event.stopPropagation()
-
       this.isDraggingFile = false
 
       const { files } = event.dataTransfer
+      const externalURL = event.dataTransfer.getData('url')
 
-      if (files.length === 0) {
-        return
+      if (files.length > 0) {
+        this.startFromFile(files[0])
+      } else if (externalURL.length > 0) {
+        this.startFromURL(externalURL)
       }
-
-      this.start(files[0])
     }
   }
 }

@@ -22,8 +22,8 @@
       </section>
 
       <!-- Requirements -->
-      <section class="box box-section">
-        <box-section-item label="Requirements" :description="`You need to meet all the requirements below to use ${$dream.name}.`" />
+      <section v-if="!$platform.requirements.all" class="box box-section">
+        <box-section-item icon="❗" label="Requirements" :description="`You need to meet all the requirements below to use ${$dream.name}.`" />
 
         <box-section-item
           label="DreamPower"

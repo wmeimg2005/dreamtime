@@ -23,19 +23,16 @@ export default {
    *
    */
   async init() {
-    this.gpuDevices = []
+    this.gpuDevices = await this.getGpuDevices()
 
     this.requirements = {
-      cli: false,
-      checkpoints: false,
-      windowsMedia: false
+      all: false,
+      cli: this.hasCli(),
+      checkpoints: this.hasCheckpoints(),
+      windowsMedia: await this.hasWindowsMedia()
     }
 
-    await this._fetchGpuDevices()
-
-    this._checkCli()
-    this._checkCheckpoints()
-    await this._checkWindowsMedia()
+    this.requirements.all = this.requirements.cli && this.requirements.checkpoints && this.requirements.windowsMedia
 
     this.isLimited = this.getIsLimited()
 
@@ -49,7 +46,8 @@ export default {
 
     debug('Platform initialized!', {
       gpuDevices: this.gpuDevices,
-      requirements: this.requirements
+      requirements: this.requirements,
+      isLimited: this.isLimited
     })
   },
 
@@ -60,7 +58,7 @@ export default {
   /**
    *
    */
-  async _fetchGpuDevices() {
+  async getGpuDevices() {
     try {
       const devices = await $tools.getGpusList()
 
@@ -70,36 +68,27 @@ export default {
         }
       })
 
-      this.gpuDevices = _.filter(devices, { AdapterCompatibility: 'NVIDIA' })
+      return _.filter(devices, { AdapterCompatibility: 'NVIDIA' })
     } catch (error) {
       console.warn(error)
-      this.gpuDevices = []
+      return []
     }
-  },
-
-  /**
-   *
-   */
-  getGpuDevices() {
-    return this.gpuDevices
   },
 
   /**
    * Verify if the CLI directory is valid
    */
-  _checkCli() {
-    this.requirements.cli = false
-
+  hasCli() {
     const dirPath = $settings.folders.cli
 
     if (!_.isString(dirPath)) {
       // And in some extraordinary way,
       // the user managed to change the setting to something invalid :Pepega:
-      return
+      return false
     }
 
     if (!$tools.fs.exists(dirPath)) {
-      return
+      return false
     }
 
     // One of these files must exist
@@ -107,8 +96,7 @@ export default {
 
     for (const bin of binaries) {
       if ($tools.fs.exists(path.join(dirPath, bin))) {
-        this.requirements.cli = true
-        break
+        return true
       }
     }
   },
@@ -118,16 +106,14 @@ export default {
    * You better be valid.....
    *
    * User: Where I download the checkpoints?
-   * Developer: Are you kidding me? Fucking fuck! What the fucking shit? God damnit.
+   * Developer: Are you kidding me? Fucking fuck! What the fucking shit
    */
-  _checkCheckpoints() {
-    this.requirements.checkpoints = false
-
+  hasCheckpoints() {
     const dirPath = $tools.paths.getCheckpoints()
 
     if (!$tools.fs.exists(dirPath)) {
       // I guess it's the first time execution...
-      return
+      return false
     }
 
     // All these files must exist
@@ -138,7 +124,7 @@ export default {
 
       if (!$tools.fs.exists(modelPath)) {
         // dude... wtf
-        return
+        return false
       }
 
       const stats = $tools.fs.stats(modelPath)
@@ -146,24 +132,30 @@ export default {
 
       if (size.value < 690) {
         // almost... you almost had it
-        return
+        return false
       }
     }
 
     // Con-fucking-grats!
-    this.requirements.checkpoints = true
+    return true
   },
 
   /**
    *
    */
-  async _checkWindowsMedia() {
+  async hasWindowsMedia() {
     if (!$tools.utils.is.windows) {
-      // Not running in Windows ¯\_(ツ)_/¯
-      this.requirements.windowsMedia = true
-      return
+      // Not running Windows ¯\_(ツ)_/¯
+      return true
     }
 
-    this.requirements.windowsMedia = await $tools.shell.hasWindowsMedia()
+    const version = window.navigator.appVersion.split("NT")[1].split(";")[0].trim()
+
+    if (parseInt(version) < 10) {
+      // Not running Windows 10 ¯\_(ツ)_/¯
+      return true
+    }
+
+    return await $tools.shell.hasWindowsMedia()
   }
 }

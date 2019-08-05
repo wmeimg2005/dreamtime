@@ -62,7 +62,7 @@ module.exports = {
    *
    * @param {*} path
    */
-  readJSON(path, encoding = 'UTF-8'){
+  readJSON(path, encoding = 'UTF-8') {
     return JSON.parse(fs.readFileSync(path, { encoding }))
   },
 
@@ -165,44 +165,67 @@ module.exports = {
     options = {
       showSaveAs: false,
       directory: api.app.getPath('downloads'),
+      fileName: undefined,
       ...options
     }
 
     axios
       .request({
         url,
-        timeout: 3000,
+        timeout: 5000,
         responseType: 'stream',
         maxContentLength: -1
       })
       .then(response => {
-        console.log(response)
-
-        const fileName = path.basename(url)
+        const fileName = options.fileName || path.basename(url)
         const filePath = path.join(options.directory, fileName)
-
-        const deleteFile = () => {
-          if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath)
-          }
-        }
-
-        deleteFile()
-
-        const output = fs.createWriteStream(filePath)
-
         const contentLength = response.data.headers['content-length'] || -1
         const mbTotal = filesize(contentLength, {
           exponent: 2,
           output: 'object'
         }).value
 
+        debug('Downloading file and placing it in a writeStream', {
+          url,
+          fileName,
+          filePath,
+          contentLength,
+          mbTotal,
+          exists: fs.existsSync(filePath)
+        })
+
+        const output = fs.createWriteStream(filePath)
         const stream = response.data
+
+        const deleteFile = () => {
+          if (fs.existsSync(filePath)) {
+            debug(`Deleting file ${filePath}`)
+            fs.unlinkSync(filePath)
+          }
+        }
+
+        const cancel = err => {
+          stream.destroy(err)
+          deleteFile()
+        }
+
+        const cancelByError = err => {
+          stream.destroy(err)
+          deleteFile()
+          bus.emit('error', null, err)
+        }
+
+        deleteFile()
 
         stream.socket.setTimeout(3000)
 
+        output.on('error', err => {
+          cancelByError(err)
+        })
+
         stream.on('data', chunk => {
           output.write(Buffer.from(chunk))
+          debug('data')
 
           if (contentLength > 0) {
             const progress = output.bytesWritten / contentLength
@@ -236,38 +259,40 @@ module.exports = {
         })
 
         stream.on('error', err => {
-          deleteFile()
-          bus.emit('error', null, err)
+          cancelByError(err)
         })
 
         stream.socket.on('error', err => {
-          deleteFile()
-          bus.emit('error', null, err)
+          cancelByError(err)
         })
 
         stream.socket.on('timeout', () => {
-          deleteFile()
-          bus.emit('error', null, new Error('Timeout'))
+          cancelByError(new Error('Timeout'))
         })
 
         bus.on('cancel', () => {
           debug('Download canceled!')
-          stream.destroy(new Error('Canceled'))
-          deleteFile()
+          cancel(new Error('Canceled'))
         })
       })
       .catch(err => {
         bus.emit('error', null, err)
       })
 
-    /*
-      .catch(err => {
-        console.warn(``, err)
-        rollbar.warn(err)
-        bus.emit('error', null, err)
-      })
-      */
-
     return bus
+  },
+
+  downloadAsync(url, options = {}) {
+    return new Promise((resolve, reject) => {
+      const bus = this.download(url, options)
+
+      bus.on('end', filePath => {
+        resolve(filePath)
+      })
+
+      bus.on('error', err => {
+        reject(err)
+      })
+    })
   }
 }
