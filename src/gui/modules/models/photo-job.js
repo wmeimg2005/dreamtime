@@ -1,4 +1,4 @@
-import randomstring from 'randomstring'
+import _ from 'lodash'
 import moment from 'moment'
 import File from '../file'
 import Timer from '../timer'
@@ -75,9 +75,13 @@ export default class PhotoJob {
   getFileName() {
     const now = moment().unix()
 
-    return `${this.photo.getSourceFile().getName()}-${
-      this.id
-    }-${now}-dreamtime.png`
+    // Original name normalized to avoid problems
+    const originalName = _.truncate(
+      _.deburr(this.photo.getSourceFile().getName()),
+      { length: 30, omission: '' }
+    )
+
+    return `${originalName}-${this.id}-${now}-dreamtime.png`
   }
 
   /**

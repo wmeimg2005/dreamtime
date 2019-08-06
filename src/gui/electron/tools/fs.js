@@ -225,7 +225,6 @@ module.exports = {
 
         stream.on('data', chunk => {
           output.write(Buffer.from(chunk))
-          debug('data')
 
           if (contentLength > 0) {
             const progress = output.bytesWritten / contentLength

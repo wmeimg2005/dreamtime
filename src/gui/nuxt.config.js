@@ -1,4 +1,3 @@
-const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
 require('dotenv').config()
 
 module.exports = {
@@ -133,6 +132,7 @@ module.exports = {
       config.devtool = isClient ? 'source-map' : 'inline-source-map'
 
       if (!isDev) {
+        // const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
         /*
         config.plugins.push(
           new RollbarSourceMapPlugin({
