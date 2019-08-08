@@ -36,7 +36,7 @@ export default {
   }),
 
   created() {
-    this.gpuDevices = this.$platform.getGpuDevices()
+    this.gpuDevices = this.$platform.gpuDevices
   }
 }
 </script>

@@ -29,7 +29,7 @@ const nucleus = {
       disableTracking: settings.telemetry.enabled === false,
       disableErrorReports: true,
       userId: settings.user,
-      version: process.env.npm_package_version,
+      version: process.env.APP_VERSION,
       persist: false
     }
 

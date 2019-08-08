@@ -19,11 +19,11 @@ const settings = {
   /**
    * Initialize the settings
    */
-  init() {
+  async init() {
     this._path = tools.paths.getRoot('settings.json')
     this._settings = {}
 
-    this.ensure()
+    await this.ensure()
     this.load()
   },
 
@@ -59,20 +59,22 @@ const settings = {
   /**
    * Make sure the settings file exists
    */
-  ensure() {
+  async ensure() {
     if (fs.existsSync(this._path)) {
       // Exists
       return
     }
+
+    const hasGPU = (await tools.getGpusList()).length > 0
 
     const defaultSettings = {
       welcome: true,
       user: uuid(),
 
       processing: {
-        device: 'GPU',
+        device: hasGPU ? 'GPU' : 'CPU',
         gpus: [0],
-        usePython: process.env.NODE_ENV === 'dev'
+        usePython: process.env.NODE_ENV === 'development'
       },
 
       preferences: {

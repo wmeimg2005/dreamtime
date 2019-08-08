@@ -22,7 +22,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.APP_NAME} v${process.env.npm_package_version}`,
+    title: `${process.env.APP_NAME} v${process.env.APP_VERSION}`,
 
     meta: [
       { charset: 'utf-8' },
@@ -79,14 +79,14 @@ module.exports = {
   /**
    *
    */
-  dev: process.env.NODE_ENV === 'dev',
+  dev: process.env.NODE_ENV === 'development',
 
   /**
    *
    */
   env: {
     APP_NAME: process.env.APP_NAME,
-    APP_VERSION: process.env.npm_package_version,
+    APP_VERSION: process.env.APP_VERSION,
     NUCLEUS_APPID: process.env.NUCLEUS_APPID
   },
 

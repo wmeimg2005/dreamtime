@@ -41,7 +41,7 @@ export default async ({ app, isDev }, inject) => {
   })
 
   // User settings
-  $settings.init()
+  await $settings.init()
   inject('settings', $settings)
 
   // Analytics

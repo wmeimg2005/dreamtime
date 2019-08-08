@@ -2,11 +2,11 @@
   <div class="nudify-results">
     <app-title>
       <h1 class="title">
-        🧜‍♀️ Loading... {{ photo.timer.duration }}s
+        🧜‍♀️ Transforming... {{ photo.timer.duration }}s
       </h1>
 
       <h3 class="subtitle">
-        Your photo is being transformed with the power of your {{ deviceName }}!
+        Your photo is being transformed with the power of your {{ deviceName }}.
       </h3>
     </app-title>
 
@@ -22,7 +22,7 @@
         </div>
 
         <div v-if="!photo.isLoading" class="box stats-item stats-actions">
-          <p>Transformation completed, now what?</p>
+          <p>Transformation completed</p>
 
           <div class="buttons">
             <button type="button" class="button is-success" @click.prevent="togglePreferences">

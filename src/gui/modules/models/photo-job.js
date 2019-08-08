@@ -134,7 +134,7 @@ export default class PhotoJob {
         reject(
           new AppError(
             `Unable to start the CLI!\n
-            This can be caused by a corrupt installation, please make sure that the cli executable exists and works correctly.`,
+            This can be caused by a corrupt installation, please make sure that the cli executable exists and works correctly. If you are not a developer please make sure you have the option "Use Python" disabled.`,
             error
           )
         )
@@ -191,10 +191,12 @@ export default class PhotoJob {
 
           reject(
             new AppError(
-              `The process has been interrupted by an CLI error. This can be caused by:\n
+              `The process has been interrupted by an error. This can be caused by:\n
               - A corrupt installation
-              - Insufficient RAM. Buy more RAM!
-              - If you are using Custom GPU ID: The NVIDIA graphics card could not be found`,
+              - Insufficient RAM. Buy more RAM! (8 GB recommended)
+              - If you are using GPU: The graphics card was not found, it is not compatible (minimum: 3.5 CUDA compute capability) or the drivers are outdated.
+              - Check the console for more information.
+              `,
               new Error(this.cli.error)
             )
           )

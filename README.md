@@ -4,9 +4,11 @@
 
 DreamTime is a friendly user interface that allows you to use [DreamPower](https://github.com/private-dreamnet/dreampower) to transform photos of people into free and **private** entertainment, something that in the past you could only dream of...
 
+![](assets/preview.png)
+
 ## Community
 
-Join the social networks of DreamNet, the community interested in developing this technology. You can also join just to talk about anything, make friends or get help:
+Join the social networks of DreamNet, the community interested in developing this technology. You can also join just to talk, make friends or get help:
 
 - [Keybase](https://keybase.io/team/dreamnet) (Our primary communication channel, here you will find the developers)
 - [Twitter](https://twitter.com/DreamNetCom)
@@ -23,7 +25,7 @@ Developing DreamNet applications is time consuming! Help us accelerate developme
 
 ## Source Code
 
-This technology was going to arrive sooner or later and we want to keep it open and free for everyone. Help us in our goal of developing more applications with this technology and bringing it to every possible taste.
+This technology was going to arrive sooner or later and we want to keep it open and free for everyone. Help us in our goal of developing more applications with this technology.
 
 - [GitHub](https://github.com/private-dreamnet/dreamtime)
 - [NotABug](https://notabug.org/DreamNet/DreamTime)
@@ -35,8 +37,6 @@ If you want to share or modify this Software please do it for the same purpose a
 
 # 💜 Binaries
 
-![](assets/preview.png)
-
 ## Requirements
 
 - 64 bits OS
@@ -46,9 +46,11 @@ If you want to share or modify this Software please do it for the same purpose a
 
 > ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
 
+> 🤷‍♂️ We cannot offer a build for **macOS** because we don't have a Mac to compile the project (FeelsPoorMan). Sorry! We are trying to provide all the necessary information so that macOS users can compile their own version.
+
 ## GPU Processing Requirements
 
-- NVIDIA Graphics card with CUDA compatibility
+- NVIDIA Graphics card with minimum [3.5 CUDA compute capability](https://developer.nvidia.com/cuda-gpus)
 - [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
 
 > 👉 If you do not have an NVIDIA or compatible graphics card you can use CPU processing.
@@ -65,7 +67,9 @@ _Work In Progress_
 
 **Q: Why does the program ask for firewall permissions?**
 
-A: For now the GUI needs to create a local server on your computer to render the interface of the program, basically the GUI is a web browser. Yes I am aware that this method is "retarded" but it is temporary. No, it's not a virus, a botnet or anything like that, I'm not interested in your photos or your files.
+A: We use [Rollbar](https://rollbar.com/) and [Nucleus](https://nucleus.sh/) to obtain telemetry information of the program mainly for automatic error reporting and to obtain real-time application information.
+
+We do not store any personal information or photos that have been processed with the program, everything is kept securely on your computer, if you prefer you can use the program in offline mode or disable telemetry.
 
 ---
 
@@ -74,16 +78,17 @@ A: For now the GUI needs to create a local server on your computer to render the
 ## Requirements
 
 - [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive)
-- [Python 3.6](https://www.python.org/downloads/release/python-368/)
+- [Python 3.6.2+](https://www.python.org/downloads/release/python-368/)
 - [NodeJS 10+](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/en/docs/install)
 
 ## What should I know?
 
-- [Python](https://www.codecademy.com/catalog/language/python): For the development of the CLI, the transformation algorithm and the neural network.
-- [HTML & CSS](https://www.codecademy.com/catalog/language/html-css), [JavaScript](https://www.codecademy.com/catalog/language/javascript): For website development (The GUI is a website 😮)
-- [VueJS](https://vuejs.org/), [NuxtJS](https://nuxtjs.org/): The frameworks that have been used to build the GUI. _(VueJS is the best #changemymind)_
-- [Electron](https://electronjs.org/): The software used to "transform" the GUI from a website to a desktop program.
+- [HTML, CSS](https://www.codecademy.com/catalog/language/html-css), [JavaScript](https://www.codecademy.com/catalog/language/javascript): For website development (DreamTime is a website 😮)
+- [SCSS](https://sass-lang.com/): CSS Preprocessor
+- [TailwindCSS](https://tailwindcss.com/): CSS Framework
+- [VueJS](https://vuejs.org/), [NuxtJS](https://nuxtjs.org/): The JavaScript frameworks. _(VueJS is the best #changemymind)_
+- [Electron](https://electronjs.org/): The software used to "transform" DreamTime from a website to a desktop program.
 
 ## Setup
 
@@ -99,6 +104,4 @@ Inside the folder `scripts/` you will find folders for the different supported o
 
 > ⚠ If you use [Anaconda](https://www.anaconda.com/) or some other program that encapsulates Python or NodeJS in their own development environment it is very likely that these scripts fail, you will have to read the content and execute the commands manually.
 
-> ⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, **you must not access the web address indicated by the console**, the application only works when it is opened from Electron.
-
-> 👉 The scripts for **macOS** are the same as those for Linux. [More information](src/scripts/mac/README.md).
+> ⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, **you must not access the URL indicated by the console**, the application only works when it is opened from Electron.

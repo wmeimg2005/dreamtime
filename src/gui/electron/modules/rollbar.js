@@ -20,17 +20,18 @@ const instance = {
       captureUncaught: true,
       captureUnhandledRejections: true,
       captureIp: 'anonymize',
-      verbose: true,
+      verbose: process.env.NODE_ENV === 'development',
       nodeSourceMaps: true,
       payload: {
-        environment: process.env.NODE_ENV,
+        environment:
+          process.env.NODE_ENV !== 'development' ? 'production' : 'development',
         person: {
           id: settings.user
         },
         client: {
           javascript: {
             source_map_enabled: true,
-            code_version: process.env.npm_package_version,
+            code_version: process.env.APP_VERSION,
             guess_uncaught_frames: true
           }
         }

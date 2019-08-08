@@ -13,12 +13,10 @@
     <div class="about-body">
       <!-- Limited! -->
       <section v-if="$platform.isLimited" class="box box-section">
-        <div class="about-item">
-          <div class="about-item-label">
-            <p class="item-label-title">It seems that you are offline</p>
-            <p class="item-label-subtitle">It's okay! You can use {{ $dream.name }} offline, but while you are disconnected we cannot offer you more information about the project, updates or report errors automatically. Connect to the Internet or if you are a developer, set the Nucleus API key and restart the program.</p>
-          </div>
-        </div>
+        <box-section-item
+          label="It seems that you are offline"
+          :description="`It's okay! You can use ${$dream.name} offline, but while you are disconnected we cannot offer you more information about the project, updates or report errors automatically. Connect to the Internet or if you are a developer, set the Nucleus API key and restart the program.`">
+        </box-section-item>
       </section>
 
       <!-- Requirements -->
@@ -130,6 +128,44 @@
           :icon="item.icon"
           :href="item.href" />
       </section>
+
+      <!-- Contributors -->
+      <section class="box box-section is-contributors">
+        <box-section-item
+          icon="😍"
+          label="Contributors"
+          description="People who have helped us in the project either economically or solving problems in the community.">
+        </box-section-item>
+
+        <box-section-item
+          v-for="(item, index) in contributors"
+          :key="index"
+          :label="item.name"
+          :description="item.description"
+          :icon="item.icon"
+          :class="item.role" />
+      </section>
+
+      <!-- Developers -->
+      <section class="box box-section is-contributors">
+        <box-section-item
+          icon="👨‍💻"
+          label="Developers"
+          description="Developers and important people in our projects.">
+        </box-section-item>
+
+        <box-section-item
+          v-for="(item, index) in developers"
+          :key="index"
+          :label="item.name"
+          :description="item.description"
+          :icon="item.icon"
+          :class="item.role">
+          <div class="buttons">
+            <app-external-link v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" class="button is-sm">{{ link.name }}</app-external-link>
+          </div>
+        </box-section-item>
+      </section>
     </div>
   </div>
 </template>
@@ -165,6 +201,14 @@ export default {
 
     dreamNetNavigation() {
       return $nucleus.isEnabled ? $nucleus.about.dreamnet.navigation : []
+    },
+
+    contributors() {
+      return $nucleus.isEnabled ? $nucleus.about.contributors : []
+    },
+
+    developers() {
+      return $nucleus.isEnabled ? $nucleus.about.developers : []
     }
   },
 
@@ -203,6 +247,35 @@ export default {
 .about {
   .about-body {
     @apply p-5;
+  }
+
+  .is-contributors {
+    max-height: 400px;
+    overflow-y: auto;
+
+    .is-gold {
+      .item-label {
+        @apply font-bold;
+        color: #d5ad6d; /*if no support for background-clip*/
+
+        background: -webkit-linear-gradient(transparent, transparent),
+          -webkit-linear-gradient(top, rgba(213, 173, 109, 1) 0%, rgba(
+                  213,
+                  173,
+                  109,
+                  1
+                )
+                26%, rgba(226, 186, 120, 1) 35%, rgba(163, 126, 67, 1) 45%, rgba(
+                  145,
+                  112,
+                  59,
+                  1
+                )
+                61%, rgba(213, 173, 109, 1) 100%);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
   }
 }
 </style>

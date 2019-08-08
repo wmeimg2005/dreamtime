@@ -16,6 +16,7 @@ const fs = require('fs')
 const contextMenu = require('electron-context-menu')
 const utils = require('electron-utils')
 
+const AppError = require('./modules/error')
 const { settings, nucleus, rollbar } = require('./modules')
 const paths = require('./tools/paths')
 const config = require('../nuxt.config')
@@ -68,7 +69,7 @@ class DreamApp {
     utils.enforceMacOSAppLocation()
 
     // User settings
-    settings.init()
+    await settings.init()
 
     // Analytics & App settings
     // https://nucleus.sh/docs/gettingstarted
@@ -115,7 +116,6 @@ class DreamApp {
       this.window.webContents.openDevTools()
       this.pollServer()
     } else {
-      this.window.webContents.openDevTools() // todo
       // Production, load the static interface!
       this.window.loadFile(this.loadURL)
     }
@@ -159,11 +159,7 @@ class DreamApp {
    * Create the model folder to save the processed photos
    */
   static createModelsDir() {
-    const modelsPath = path.join(
-      app.getPath('userData'),
-      'models',
-      'Uncategorized'
-    )
+    const modelsPath = paths.getModels('Uncategorized')
 
     if (!fs.existsSync(modelsPath)) {
       fs.mkdirSync(
@@ -172,10 +168,11 @@ class DreamApp {
           recursive: true
         },
         error => {
-          throw new Error(
-            `An error occurred trying to create the directory to save the models,
+          throw new AppError(
+            `Trying to create the directory to save the models,
           please make sure that the application has permissions to create the directory:\n
-          ${modelsPath}`
+          ${modelsPath}`,
+            error
           )
         }
       )

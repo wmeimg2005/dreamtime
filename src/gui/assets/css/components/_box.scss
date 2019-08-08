@@ -34,6 +34,10 @@
     .item-icon {
       @apply mr-4 flex items-center justify-center text-2xl;
       width: 42px;
+
+      img {
+        @apply rounded-full;
+      }
     }
 
     .item-text {

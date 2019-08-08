@@ -64,14 +64,7 @@ export default {
   async getGpuDevices() {
     try {
       const devices = await $tools.getGpusList()
-
-      $rollbar.log('GPU Devices', {
-        custom: {
-          devices
-        }
-      })
-
-      return _.filter(devices, { AdapterCompatibility: 'NVIDIA' })
+      return devices
     } catch (error) {
       console.warn(error)
       return []
@@ -102,6 +95,8 @@ export default {
         return true
       }
     }
+
+    return false
   },
 
   /**
@@ -157,7 +152,7 @@ export default {
       .split(';')[0]
       .trim()
 
-    if (parseInt(version) < 10) {
+    if (_.toInteger(version) < 10) {
       // Not running Windows 10 ¯\_(ツ)_/¯
       return true
     }

@@ -1,5 +1,5 @@
+const _ = require('lodash')
 const fs = require('fs')
-const path = require('path')
 const { spawn } = require('child_process')
 const EventBus = require('js-event-bus')
 const gpuInfo = require('gpu-info')
@@ -7,41 +7,11 @@ const utils = require('electron-utils')
 
 const debug = require('debug').default('app:electron:tools')
 const { Image } = require('image-js')
-const copyImage = require('image-js/lib/image/internal/copy').default
 // const { Caman } = require('caman')
 
 const AppError = require('../modules/error')
 const paths = require('./paths')
 const config = require('../../nuxt.config')
-
-Image.prototype.copyImage = function ci(fromImage, x, y) {
-  const fromWidth = fromImage.width
-  const fromHeight = fromImage.height
-  const toWidth = this.width
-  const { channels } = fromImage
-  const { data } = this
-
-  for (let i = 0; i < fromWidth; i++) {
-    for (let j = 0; j < fromHeight; j++) {
-      for (let k = 0; k < channels; k++) {
-        const source = (j * fromWidth + i) * channels + k
-        const target = ((y + j) * toWidth + x + i) * channels + k
-        data[target] = fromImage.data[source]
-        /*
-        console.log({
-          target,
-          source
-        })
-        */
-      }
-    }
-  }
-
-  console.log({
-    data2: this.data,
-    data
-  })
-}
 
 /**
  * deepTools.
@@ -58,8 +28,9 @@ module.exports = {
   /**
    * Returns a list with information of the graphic cards installed in the computer.
    */
-  getGpusList() {
-    return gpuInfo()
+  async getGpusList() {
+    const devices = await gpuInfo()
+    return _.filter(devices, { AdapterCompatibility: 'NVIDIA' })
   },
 
   /**
