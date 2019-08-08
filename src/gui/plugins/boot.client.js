@@ -31,8 +31,13 @@ export default async ({ app, isDev }, inject) => {
   // Environment Information
   debug('Enviroment', {
     env: process.env.NODE_ENV,
-    rootPath: $tools.utils.getRootPath(),
-    isStatic: $tools.utils.pack.isStatic()
+    isStatic: $tools.utils.pack.isStatic(),
+    paths: {
+      getRootPath: $tools.utils.getRootPath(),
+      appPath: $tools.utils.api.app.getAppPath(),
+      exePath: $tools.utils.api.app.getPath('exe'),
+      rootPath: $tools.paths.getRoot()
+    }
   })
 
   // User settings
@@ -47,6 +52,13 @@ export default async ({ app, isDev }, inject) => {
   // Error reporting
   $rollbar.init()
 
+  //---
+
+  // Platform information
+  await platform.init()
+  app.context.$platform = platform
+  inject('platform', platform)
+
   // DreamTime information
   dream.init()
   window.$dream = dream
@@ -58,10 +70,7 @@ export default async ({ app, isDev }, inject) => {
   app.context.$updater = updater
   inject('updater', updater)
 
-  // Platform information
-  await platform.init()
-  app.context.$platform = platform
-  inject('platform', platform)
+  //---
 
   // Nudify process
   nudify.init()

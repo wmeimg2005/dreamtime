@@ -25,7 +25,7 @@ export default {
     // $_dream: dream,
 
     $nudify: nudify,
-
-    $updater: updater
+    $updater: updater,
+    $settings
   })
 }

@@ -5,7 +5,7 @@ const debug = require('debug').default('app:modules:file')
 
 export default class File {
   constructor(path) {
-    this.update(path)
+    this.reload(path)
   }
 
   /**
@@ -42,6 +42,10 @@ export default class File {
    * @param {*} path
    */
   update(path) {
+    this.reload(path)
+  }
+
+  reload(path) {
     if (_.isNil(path)) {
       path = this.getPath()
     }
@@ -54,8 +58,6 @@ export default class File {
     this.mimetype = info.mimetype
     this.size = info.size
     this._exists = info.exists
-
-    // debug(`[${path}]`, { file: this })
   }
 
   /**
@@ -135,7 +137,7 @@ export default class File {
    */
   async writeDataURL(dataURL) {
     await $tools.fs.writeDataURL(this.getPath(), dataURL)
-    this.update(this.getPath())
+    this.reload()
   }
 
   /**

@@ -3,28 +3,29 @@
     <section class="box box-section">
       <box-section-item
         label="DreamPower"
-        description="Path where DreamPower is located (also known as CLI)">
+        description="Location of DreamPower (also known as CLI)">
         <input v-model="currentValue.folders.cli" class="input" />
         <button type="button" class="button" @click.prevent="changeCLI">📂</button>
       </box-section-item>
 
       <box-section-item
         label="Models"
-        description="Path where the transformed photos of the models will be saved.">
+        description="Location where the transformed photos will be saved.">
         <input v-model="currentValue.folders.models" class="input" />
         <button type="button" class="button" @click.prevent="changeModels">📂</button>
       </box-section-item>
 
       <box-section-item
         label="Cropped"
-        description="Path where the cropped photos will be saved. We recommend selecting a temporary folder.">
+        description="Location where the cropped photos will be saved. We recommend selecting a temporary folder.">
         <input v-model="currentValue.folders.cropped" class="input" />
         <button type="button" class="button" @click.prevent="changeCropped">📂</button>
       </box-section-item>
 
       <box-section-item
+        v-if="false"
         label="Masks"
-        description="Path where the algorithm masks photos will be saved.">
+        description="Location where the algorithm masks photos will be saved.">
         <input v-model="currentValue.folders.masks" class="input" />
         <button type="button" class="button" @click.prevent="changeMasks">📂</button>
       </box-section-item>

@@ -8,7 +8,7 @@
             <span v-if="!isPreferencesVisible">Preferences</span>
             <span v-else>Information</span>
           </button>
-          <button class="button is-success" @click.prevent="crop('nudify')">Nudify!</button>
+          <button class="button is-success" @click.prevent="crop">Nudify!</button>
         </div>
       </section>
 
@@ -114,10 +114,17 @@ export default {
      *
      */
     async saveCroppedPhoto() {
-      /*
-      const data = this.cropper.getCanvasData()
+      /**
+       * height: 480
+        left: 0
+        naturalHeight: 300
+        naturalWidth: 300
+        top: 80.5
+        width: 480
+
+        const data = this.cropper.getData()
       console.log(data)
-      */
+       */
 
       const canvas = this.cropper.getCroppedCanvas({
         width: 512,
@@ -131,25 +138,20 @@ export default {
         imageSmoothingQuality: 'high'
       })
 
-      const canvasAsDataURL = canvas.toDataURL(
-        this.$nudify
-          .getPhoto()
-          .getSourceFile()
-          .getMimetype(),
-        1
-      )
-
-      await this.$nudify
-        .getPhoto()
-        .getCroppedFile()
-        .writeDataURL(canvasAsDataURL)
+      await $tools.crop(this.photo, canvas)
     },
 
-    async crop(next) {
+    /**
+     *
+     */
+    async crop() {
       await this.saveCroppedPhoto()
       this.$router.push('/nudity/results')
     },
 
+    /**
+     *
+     */
     togglePreferences() {
       this.isPreferencesVisible = !this.isPreferencesVisible
     }

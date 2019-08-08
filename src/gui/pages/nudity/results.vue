@@ -11,11 +11,8 @@
     </app-title>
 
     <div class="content-body">
+      <!-- Stats -->
       <div class="nudify-results-stats">
-        <div class="box stats-item flex-1">
-          <p>Test</p>
-        </div>
-
         <div class="stats-item">
           <app-photo :src="sourceDataURL">Original</app-photo>
         </div>
@@ -23,10 +20,41 @@
         <div class="stats-item">
           <app-photo :src="croppedDataURL">Cropped</app-photo>
         </div>
+
+        <div v-if="!photo.isLoading" class="box stats-item stats-actions">
+          <p>Transformation completed, now what?</p>
+
+          <div class="buttons">
+            <button type="button" class="button is-success" @click.prevent="togglePreferences">
+              <span v-if="!isPreferencesVisible">Change Preferences</span>
+              <span v-else>Results</span>
+            </button>
+            <button type="button" class="button is-danger" @click.prevent="rerun">Rerun all</button>
+          </div>
+
+          <div class="buttons">
+            <button type="button" class="button is-sm" @click.prevent="openFolder">Open Folder</button>
+            <nuxt-link to="/" class="button is-sm">Another photo</nuxt-link>
+          </div>
+        </div>
+
+        <div v-else class="box stats-item stats-actions">
+          <p>Relax, this will take a moment...</p>
+
+          <div class="buttons">
+            <button type="button" class="button is-danger" @click.prevent="cancel">Cancel</button>
+          </div>
+        </div>
       </div>
 
-      <nudity-job v-for="(job, index) in photo.jobs" :key="index" :job="job" />
+      <div v-show="!isPreferencesVisible" class="box">
+        <nudity-job v-for="(job, index) in photo.jobs" :key="index" :job="job" />
+      </div>
+
+      <!-- Preferences -->
+      <settings-preferences v-show="isPreferencesVisible" v-model="photo.preferences" />
     </div>
+  </div>
   </div>
 </template>
 
@@ -35,6 +63,8 @@ export default {
   middleware: 'nudity',
 
   data: () => ({
+    isPreferencesVisible: false,
+
     sourceDataURL: undefined,
     croppedDataURL: undefined
   }),
@@ -59,23 +89,50 @@ export default {
     }
   },
 
-  watch: {
-    /*
-    '$nudify.modelPhoto.cliLines'() {
-      this.$nextTick(() => {
-        this.$refs.cli.scrollTo(0, this.$refs.cli.scrollHeight)
-      })
-    }
-    */
-  },
-
   async created() {
     this.sourceDataURL = await this.photo.getSourceFile().readAsDataURL()
     this.croppedDataURL = await this.photo.getCroppedFile().readAsDataURL()
   },
 
   mounted() {
-    this.$nudify.photo.start()
+    if (process.env.NODE_ENV === 'production') {
+      this.photo.start()
+    }
+  },
+
+  beforeDestroy() {
+    this.photo.cancel()
+  },
+
+  methods: {
+    /**
+     *
+     */
+    rerun() {
+      this.isPreferencesVisible = false
+      this.photo.rerun()
+    },
+
+    /**
+     *
+     */
+    cancel() {
+      this.photo.cancel()
+    },
+
+    /**
+     *
+     */
+    openFolder() {
+      $tools.shell.openItem(this.photo.getFolderPath())
+    },
+
+    /**
+     *
+     */
+    togglePreferences() {
+      this.isPreferencesVisible = !this.isPreferencesVisible
+    }
   }
 }
 </script>
@@ -90,6 +147,14 @@ export default {
 
       &:not(:last-child) {
         @apply mr-5;
+      }
+    }
+
+    .stats-actions {
+      @apply flex-1 flex flex-col justify-center items-center;
+
+      .buttons {
+        @apply mt-3;
       }
     }
 

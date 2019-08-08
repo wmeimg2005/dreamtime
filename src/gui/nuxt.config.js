@@ -86,7 +86,8 @@ module.exports = {
    */
   env: {
     APP_NAME: process.env.APP_NAME,
-    APP_VERSION: process.env.npm_package_version
+    APP_VERSION: process.env.npm_package_version,
+    NUCLEUS_APPID: process.env.NUCLEUS_APPID
   },
 
   /*

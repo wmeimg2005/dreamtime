@@ -250,6 +250,12 @@ export default class {
         // eslint-disable-next-line no-await-in-loop
         filePath = await this._downloadFrom(url)
 
+        if (_.isNil(filePath)) {
+          // Apparently the download has been canceled
+          this._resetUpdating()
+          return false
+        }
+
         // Download completed, now install
         this._setUpdating('Installing...', 0)
 
@@ -258,11 +264,6 @@ export default class {
 
         return true
       } catch (err) {
-        if (!this.updating.active) {
-          // Apparently the download has been canceled
-          return false
-        }
-
         $rollbar.warn(err, { url, provider: this })
         console.warn(`Error downloading/installing from the URL: ${url}`, err)
 
@@ -324,7 +325,6 @@ export default class {
       return
     }
 
-    this._resetUpdating()
     this.downloadBus.emit('cancel')
   }
 

@@ -5,8 +5,9 @@
           px-3
           rounded
           uppercase
-          text-primary
           font-semibold;
+
+  @apply text-primary;
 
   height: 40px;
   transition: all 0.2s ease-in-out;

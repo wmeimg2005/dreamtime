@@ -72,8 +72,6 @@ const settings = {
       processing: {
         device: 'GPU',
         gpus: [0],
-        useWaifu: false, // weebs out 😡👉🚪
-        useRestoration: true,
         usePython: process.env.NODE_ENV === 'dev'
       },
 
@@ -85,6 +83,8 @@ const settings = {
         pubicHairSize: '1',
 
         executions: 1,
+        useWaifu: false, // weebs out 😡👉🚪
+        useRestoration: true,
         useCustomMask: false
       },
 

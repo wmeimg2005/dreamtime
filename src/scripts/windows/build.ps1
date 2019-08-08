@@ -13,7 +13,7 @@
 # everything necessary in a directory with the final .exe
 # Relax and enjoy your coffee :)
 
-pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist" --add-binary "../third/msvcp/msvcp140.dll;."
+pyinstaller main.py -y --onedir --name "dreampower" --distpath "../../dist" --add-binary "../third/msvcp/msvcp140.dll;."
 
 #
 
@@ -43,11 +43,16 @@ if ( Test-Path ./gui ) {
   Remove-Item ./gui -recurse -Force
 }
 
+if ( Test-Path ./cli ) {
+  Remove-Item ./cli -recurse -Force
+}
+
 Move-Item ./gui-unpacked/win-unpacked ./gui -Force
+Move-Item ./dreampower ./cli -Force
 
 # We delete the generated folder
 
-Remove-Item –path ./gui-unpacked -recurse -Force
+#Remove-Item –path ./gui-unpacked -recurse -Force
 
 #
 # Success

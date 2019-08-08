@@ -37,6 +37,7 @@
     "no-debugger": "warn",
     "no-restricted-globals": "warn",
     "no-unreachable": "warn",
+    "no-lone-blocks": "off",
     "object-shorthand": ["error", "always"],
     "quote-props": ["error", "as-needed"],
     "spaced-comment": "warn",
@@ -71,10 +72,8 @@
     "nuxt/no-globals-in-created": "off"
   },
   "globals": {
-    "$utils": false,
+    "$dream": false,
     "$settings": false,
-    "$bullet": false,
-    "$sentry": false,
     "$rollbar": false,
     "$nucleus": false,
     "$tools": false,

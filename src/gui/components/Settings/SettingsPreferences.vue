@@ -1,6 +1,6 @@
 <template>
   <section class="box box-section">
-    <box-section-item label="Boob Size">
+    <box-section-item label="Boob Size" :description="`Current value: ${currentValue.boobsSize}`">
       <div class="slider-container">
         <input
           v-model="currentValue.boobsSize"
@@ -14,7 +14,7 @@
       </div>
     </box-section-item>
 
-    <box-section-item label="Areola Size">
+    <box-section-item label="Areola Size" :description="`Current value: ${currentValue.areolaSize}`">
       <div class="slider-container">
         <input
           v-model="currentValue.areolaSize"
@@ -28,7 +28,7 @@
       </div>
     </box-section-item>
 
-    <box-section-item label="Nipple Size">
+    <box-section-item label="Nipple Size" :description="`Current value: ${currentValue.nippleSize}`">
       <div class="slider-container">
         <input
           v-model="currentValue.nippleSize"
@@ -42,7 +42,7 @@
       </div>
     </box-section-item>
 
-    <box-section-item label="Vagina Size">
+    <box-section-item label="Vagina Size" :description="`Current value: ${currentValue.vaginaSize}`">
       <div class="slider-container">
         <input
           v-model="currentValue.vaginaSize"
@@ -56,7 +56,7 @@
       </div>
     </box-section-item>
 
-    <box-section-item label="Pubic Hair">
+    <box-section-item label="Pubic Hair" :description="`Current value: ${currentValue.pubicHairSize}`">
       <div class="slider-container">
         <input
           v-model="currentValue.pubicHairSize"
@@ -72,11 +72,26 @@
 
     <box-section-item
       label="Number of executions"
-      description="Because the transformation can be different each time here you can set how many times your photo will be processed. In the end you can save the one you like best.">
+      description="The transformation can be different each time, here you can set how many times your photo will be processed. In the end you can save the one you like best.">
       <input v-model="currentValue.executions" type="number" min="1" class="input" />
     </box-section-item>
 
+    <box-section-item v-if="false" label="Photo restoration" description="Restore the cropped photo to the original photo.">
+      <select v-model="currentValue.useRestoration" class="input">
+        <option :value="true">Enabled</option>
+        <option :value="false">Disabled</option>
+      </select>
+    </box-section-item>
+
+    <box-section-item v-if="false" label="waifu2x" description="waifu2x will try to resize your transformed photo to 1024x1024 with the least possible quality loss.">
+      <select v-model="currentValue.useWaifu" class="input">
+        <option :value="true">Enabled</option>
+        <option :value="false">Disabled</option>
+      </select>
+    </box-section-item>
+
     <box-section-item
+      v-if="false"
       label="Use Custom Mask"
       hint="(Advanced) You can edit the masks of the photo before processing.">
       <select v-model="currentValue.useCustomMask" class="input">

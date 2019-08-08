@@ -16,8 +16,8 @@ const fs = require('fs')
 const contextMenu = require('electron-context-menu')
 const utils = require('electron-utils')
 
-const debug = require('debug').default('app:electron')
 const { settings, nucleus, rollbar } = require('./modules')
+const paths = require('./tools/paths')
 const config = require('../nuxt.config')
 
 // Indicate to NuxtJS the root directory of the project
@@ -36,12 +36,17 @@ console.log(`
   along with this program. If not, see <https://www.gnu.org/licenses/>
 `)
 
-// debug
-debug('Starting...')
+// Debug
+console.log('Starting...')
 
-debug({
+console.log({
   env: process.env.NODE_ENV,
-  root: utils.getRootPath(),
+  paths: {
+    getRootPath: utils.getRootPath(),
+    appPath: app.getAppPath(),
+    exePath: app.getPath('exe'),
+    rootPath: paths.getRoot()
+  },
   isStatic: utils.pack.isStatic()
 })
 
@@ -110,6 +115,7 @@ class DreamApp {
       this.window.webContents.openDevTools()
       this.pollServer()
     } else {
+      this.window.webContents.openDevTools() // todo
       // Production, load the static interface!
       this.window.loadFile(this.loadURL)
     }
@@ -119,15 +125,17 @@ class DreamApp {
    * Wait until the NuxtJS server is ready.
    */
   static pollServer() {
-    debug(`Requesting status from the server: ${this.loadURL}`)
+    console.log(`Requesting status from the server: ${this.loadURL}`)
 
     http
       .get(this.loadURL, response => {
         if (response.statusCode === 200) {
-          debug('> Server ready, show time!')
+          console.log('> Server ready, show time!')
           this.window.loadURL(this.loadURL)
         } else {
-          debug(`> The server reported the status code: ${response.statusCode}`)
+          console.log(
+            `> The server reported the status code: ${response.statusCode}`
+          )
           setTimeout(this.pollServer.bind(this), 300)
         }
       })

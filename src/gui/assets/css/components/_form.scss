@@ -11,12 +11,16 @@
 }
 
 .input {
-  @apply border border-dark-300 bg-dark-400 rounded py-1 px-3 w-full text-generic-600;
+  @apply border border-dark-800 bg-dark-600 rounded py-1 px-3 w-full text-generic-300 shadow-inner;
   outline: none !important;
   transition: all .2s ease-in-out;
 
   &:hover, &:focus {
-    @apply border-dark-200 text-white;
+    @apply text-generic-100;
+  }
+
+  &::placeholder {
+    @apply text-generic-400;
   }
 }
 

@@ -44,7 +44,7 @@ export default class extends Base {
   }
 
   getCurrentVersion() {
-    if (!platform.requirements.checkpoints) {
+    if (!platform.requirements.checkpoints || !platform.requirements.cli) {
       return '0.0.0'
     }
 

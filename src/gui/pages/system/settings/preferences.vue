@@ -1,6 +1,6 @@
 <template>
   <div class="settings-fields">
-    <p class="notification">These are the default preferences, you can change them before each transformation.</p>
+    <p class="notification">These are the global preferences, they are applied by default and you can change them independently in each photo.</p>
 
     <settings-preferences v-model="currentValue.preferences" />
   </div>
@@ -15,7 +15,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-p {
-  @apply mb-5;
-}
 </style>

@@ -9,11 +9,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line
 import _ from 'lodash'
-import axios from 'axios'
-import compareVersions from 'compare-versions'
-import Deferred from 'deferred'
-import dream from './dream'
 
 import DreamTime from './update/dreamtime'
 import Checkpoints from './update/checkpoints'

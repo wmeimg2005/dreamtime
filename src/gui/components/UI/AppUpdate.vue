@@ -72,6 +72,10 @@ export default {
     }
   },
 
+  beforeDestroy() {
+    this.updater.cancel()
+  },
+
   methods: {
     openDownload() {
       $tools.shell.openItem($tools.paths.get('downloads'))

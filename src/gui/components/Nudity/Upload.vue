@@ -19,10 +19,20 @@
       accept="image/jpeg, image/png"
       @change="onPhotoSelected" />
 
-    <!-- Action button -->
-    <button class="button" @click.prevent="$refs.photo.click()">
-      📂 or open a photo...
-    </button>
+    <div class="box py-5">
+      <div class="upload-url">
+        <input v-model="webAddress" type="url" class="input" placeholder="or enter a web address..." />
+
+        <button class="button" @click="onURL">
+          Go!
+        </button>
+      </div>
+
+      <!-- Action button -->
+      <button class="button" @click.prevent="$refs.photo.click()">
+        📂 or open a photo...
+      </button>
+    </div>
   </div>
 </template>
 
@@ -41,6 +51,8 @@ export default {
   },
 
   data: () => ({
+    webAddress: '',
+
     // Indicates if the user is dragging a file in the window (we apply the drag style)
     isDraggingFile: false
   }),
@@ -56,7 +68,11 @@ export default {
      */
     startFromFile(inputFile) {
       if (_.isNil(inputFile)) {
-        swal('Upload failed', 'It seems that you have not selected a photo!', 'info')
+        swal(
+          'Upload failed',
+          'It seems that you have not selected a photo!',
+          'info'
+        )
         return
       }
 
@@ -66,6 +82,9 @@ export default {
       this.start(file)
     },
 
+    /**
+     *
+     */
     async startFromURL(url) {
       if (_.isNil(url)) {
         swal('Upload failed', 'This does not seem like a valid URL', 'info')
@@ -91,13 +110,18 @@ export default {
         swal({
           icon: 'error',
           title: 'Upload failed',
-          text: `An error has occurred downloading the photo or saving it in the temporary folder, please make sure you are connected to the Internet and that ${$dream.name} has permissions to save files.`
+          text: `An error has occurred downloading the photo or saving it in the temporary folder, please make sure you are connected to the Internet and that ${
+            $dream.name
+          } has permissions to save files.`
         })
 
         $rollbar.warn(err)
       }
     },
 
+    /**
+     *
+     */
     start(file) {
       // Create a photo for the model ("null" model for now)
       const photo = new Photo(null, file)
@@ -117,11 +141,13 @@ export default {
       this.$router.push('/nudity/crop')
     },
 
+    /**
+     *
+     */
     onPhotoSelected(event) {
       const { files } = event.target
 
       if (files.length === 0) {
-        alert('It seems that you have not selected a photo!')
         return
       }
 
@@ -129,15 +155,36 @@ export default {
       event.target.value = ''
     },
 
+    /**
+     *
+     */
+    onURL() {
+      if (_.isNil(this.webAddress) || this.webAddress.length === 0) {
+        swal('Upload failed', 'Please enter a valid web address', 'error')
+        return
+      }
+
+      this.startFromURL(this.webAddress)
+    },
+
+    /**
+     *
+     */
     onDragEnter(event) {
       event.dataTransfer.dropEffect = 'copy'
       this.isDraggingFile = true
     },
 
+    /**
+     *
+     */
     onDragLeave() {
       this.isDraggingFile = false
     },
 
+    /**
+     *
+     */
     onDragOver(event) {
       event.preventDefault()
       event.stopPropagation()
@@ -145,6 +192,9 @@ export default {
       this.isDraggingFile = true
     },
 
+    /**
+     *
+     */
     onDrop(event) {
       event.preventDefault()
       event.stopPropagation()
@@ -167,7 +217,8 @@ export default {
 .c-nudity-upload {
   @apply w-full
     relative
-    text-center;
+    text-center
+    mb-5;
 
   .upload-dropzone {
     @apply flex
@@ -175,7 +226,6 @@ export default {
       justify-center
       bg-dark-400
       rounded
-      mx-5
       border-transparent
       border-2
       border-dashed
@@ -193,8 +243,16 @@ export default {
     }
 
     .dropzone-hint {
-      @apply text-gray-500 uppercase;
+      @apply text-generic-300 uppercase;
       transition: all 0.1s linear;
+    }
+  }
+
+  .upload-url {
+    @apply mb-5 flex;
+
+    .input {
+      @apply flex-1 mr-3;
     }
   }
 

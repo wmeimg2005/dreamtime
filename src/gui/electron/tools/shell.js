@@ -1,5 +1,6 @@
 const _ = require('lodash')
-const { api, is, activeWindow } = require('electron-utils')
+const path = require('path')
+const { api, is } = require('electron-utils')
 const regedit = require('regedit')
 
 // const { download } = require('electron-dl')
@@ -52,7 +53,11 @@ module.exports = {
    *
    */
   hasWindowsMedia() {
-    // regedit.setExternalVBSLocation(api.app.getPath('temp'))
+    if (is.windows && !is.dev) {
+      regedit.setExternalVBSLocation(
+        path.join(path.dirname(api.app.getPath('exe')), 'contents', 'vbs')
+      )
+    }
 
     return new Promise(resolve => {
       if (!is.windows) {

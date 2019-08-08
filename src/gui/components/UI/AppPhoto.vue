@@ -21,14 +21,19 @@ export default {
 
 <style lang="scss">
 .app-photo {
-  @apply flex flex-col;
+  @apply relative flex flex-col;
   box-sizing: content-box;
   width: 125px;
 
   img {
     @apply w-full rounded-t shadow-md;
     height: 125px;
-    transition: all 0.1s ease-in-out;
+    transition: all 0.15s ease-in-out;
+
+    &:hover {
+      @apply absolute rounded z-50;
+      transform: scale(2);
+    }
   }
 
   .app-photo-label {

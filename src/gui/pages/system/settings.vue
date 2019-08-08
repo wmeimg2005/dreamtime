@@ -48,7 +48,6 @@ export default {
 <style lang="scss">
 .settings {
   .buttons {
-    @apply border-b border-dark-400 pb-6;
   }
 
   .settings-fields {

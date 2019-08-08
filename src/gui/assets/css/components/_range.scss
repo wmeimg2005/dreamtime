@@ -24,7 +24,7 @@
   width: 20px; /* Set a specific slider handle width */
   height: 20px; /* Slider handle height */
   border-radius: 10px;
-  background: #ff6e81; /* Green background */
+  @apply bg-primary; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
@@ -32,7 +32,7 @@
   width: 20px; /* Set a specific slider handle width */
   height: 20px; /* Slider handle height */
   border-radius: 10px;
-  background: #ff6e81; /* Green background */
+  @apply bg-primary; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 .slider-container{

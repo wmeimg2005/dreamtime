@@ -32,7 +32,10 @@ export default {
       windowsMedia: await this.hasWindowsMedia()
     }
 
-    this.requirements.all = this.requirements.cli && this.requirements.checkpoints && this.requirements.windowsMedia
+    this.requirements.all =
+      this.requirements.cli &&
+      this.requirements.checkpoints &&
+      this.requirements.windowsMedia
 
     this.isLimited = this.getIsLimited()
 
@@ -149,13 +152,18 @@ export default {
       return true
     }
 
-    const version = window.navigator.appVersion.split("NT")[1].split(";")[0].trim()
+    const version = window.navigator.appVersion
+      .split('NT')[1]
+      .split(';')[0]
+      .trim()
 
     if (parseInt(version) < 10) {
       // Not running Windows 10 ¯\_(ツ)_/¯
       return true
     }
 
-    return await $tools.shell.hasWindowsMedia()
+    const value = await $tools.shell.hasWindowsMedia()
+
+    return value
   }
 }

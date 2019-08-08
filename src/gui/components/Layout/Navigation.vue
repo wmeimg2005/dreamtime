@@ -73,7 +73,7 @@ export default {
     },
 
     isActive() {
-      return $settings.welcome !== true
+      return $settings._settings.welcome !== true
     }
   },
 

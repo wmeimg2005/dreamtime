@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import { uuid } from 'electron-utils/browser'
-import moment from 'moment'
-import path from 'path'
+import swal from 'sweetalert'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
 import File from '../file'
@@ -32,23 +31,28 @@ export default class Photo {
       $tools.paths.getCropped(`${this.uuid}.png`)
     )
 
-    //
-    this.isLoading = false
-
     // Transformation Preferences
     this.preferences = _.clone($settings.preferences)
 
-    // Transformation Timers
-    this.timer = new Timer()
+    this.reset()
 
-    //
-    this.jobs = []
-
-    // Queue of transformation, one by one.
+    // Jobs queue
     this.queue = new Queue(
-      async (job, cb) => {
-        await job.start()
-        cb(null)
+      (job, cb) => {
+        job
+          .start()
+          .then(() => {
+            cb(null)
+          })
+          .catch(err => {
+            cb(err)
+          })
+
+        return {
+          cancel: () => {
+            job.cancel()
+          }
+        }
       },
       {
         maxRetries: 3,
@@ -56,42 +60,63 @@ export default class Photo {
         maxTimeout:
           $settings.processing.device === 'GPU' ? 60 * 1000 : 300 * 1000,
         afterProcessDelay: 1000,
+        batchSize: 1,
         store: new MemoryStore()
       }
     )
 
-    this.queue.on('task_started', (jobId, job, stats) => {
-      debug(`The Job #${jobId} has begun!`, { job, stats })
+    this.queue.on('drain', () => {
+      debug('All Jobs have finished!')
+      this.onFinish()
+    })
+
+    this.queue.on('empty', () => {
+      debug('empty')
+      // this.onFinish()
+    })
+
+    this.queue.on('task_started', (jobId, job) => {
+      debug(`The Job #${jobId} has begun!`, { job })
       job.onStart()
     })
 
     this.queue.on('task_finish', (jobId, job, stats) => {
       if (_.isNil(job)) {
-        job = this.jobs[jobId - 1]
+        job = this.getJobById(jobId)
       }
 
       debug(`The Job #${jobId} has finished!`, { jobId, job, stats })
       job.onFinish()
+    })
 
-      if (this.preferences.executions === jobId) {
-        this.onFinish()
+    this.queue.on('task_failed', (jobId, error, payload) => {
+      const job = this.getJobById(jobId)
+
+      console.warn(`The Job #${jobId} has failed!`, { error, payload })
+      job.onFail()
+
+      if (_.isError(error)) {
+        swal(`Transformation #${jobId} failed`, error.message, 'error')
       }
     })
 
-    this.queue.on('task_failed', (jobId, error, data) => {
-      console.log({
-        jobId,
-        error,
-        data
-      })
-    })
-
-    this.debug(`New Photo instance`, {
+    this.debug(`Photo created`, {
       uuid: this.uuid,
       model: this.model,
       sourceFile: this.sourceFile,
       croppedFile: this.croppedFile
     })
+  }
+
+  reset() {
+    //
+    this.isLoading = false
+
+    // Transformation Timer
+    this.timer = new Timer()
+
+    //
+    this.jobs = []
   }
 
   /**
@@ -100,27 +125,35 @@ export default class Photo {
    * @param  {...any} args
    */
   debug(message, ...args) {
-    debug(`[${this.uuid}] ${message} `, ...args)
+    debug(`${message} `, ...args)
   }
 
   /**
-   *
+   * The Photo transformation has begun
    */
   onStart() {
+    if (this.isLoading) {
+      return
+    }
+
     this.isLoading = true
     this.timer.start()
   }
 
   /**
-   *
+   * The Photo transformation has finished
    */
   onFinish() {
+    if (!this.isLoading) {
+      return
+    }
+
     this.isLoading = false
     this.timer.stop()
   }
 
   /**
-   *
+   * Returns if the photo is valid
    */
   isValid() {
     return _.isNil(this.getValidationErrorMessage())
@@ -148,7 +181,7 @@ export default class Photo {
   }
 
   /**
-   *
+   * Returns the name of the model folder where it will be saved
    */
   getFolderName() {
     return _.isNil(this.model) ? 'Uncategorized' : this.model.name
@@ -162,21 +195,21 @@ export default class Photo {
   }
 
   /**
-   *
+   * Returns the transformation preferences
    */
   getPreferences() {
     return this.preferences
   }
 
   /**
-   *
+   * Return the original file
    */
   getSourceFile() {
     return this.sourceFile
   }
 
   /**
-   *
+   * Return the cropped photo
    */
   getCroppedFile() {
     return this.croppedFile
@@ -184,8 +217,25 @@ export default class Photo {
 
   /**
    *
+   * @param {*} id
+   */
+  getJobById(id) {
+    return this.jobs[id - 1]
+  }
+
+  /**
+   * Start the transformation process!
    */
   async start() {
+    if (this.preferences.executions === 0) {
+      swal(
+        'Invalid Configuration',
+        'Please set 1 or more executions',
+        'warning'
+      )
+      return
+    }
+
     debug(
       `Preparing the transformation for ${this.preferences.executions} jobs`
     )
@@ -200,8 +250,34 @@ export default class Photo {
     }
   }
 
-  remake(id) {
-    const job = this.jobs[id - 1]
+  /**
+   *
+   */
+  cancel() {
+    if (!this.isLoading) {
+      return
+    }
+
+    this.jobs.forEach(job => {
+      this.queue.cancel(job.id)
+    })
+
+    this.onFinish()
+  }
+
+  /**
+   *
+   */
+  rerun() {
+    this.reset()
+    this.start()
+  }
+
+  /**
+   * Rerun the indicated Job
+   */
+  rerunJob(id) {
+    const job = this.getJobById(id)
 
     if (_.isNil(job)) {
       return
@@ -210,6 +286,8 @@ export default class Photo {
     debug(`Remaking Job #${id}`)
 
     job.reset()
+    this.onStart()
+
     this.queue.push(job)
   }
 }

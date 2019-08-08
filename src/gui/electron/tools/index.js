@@ -6,11 +6,42 @@ const gpuInfo = require('gpu-info')
 const utils = require('electron-utils')
 
 const debug = require('debug').default('app:electron:tools')
-// const Caman = require('caman').Caman
+const { Image } = require('image-js')
+const copyImage = require('image-js/lib/image/internal/copy').default
+// const { Caman } = require('caman')
 
 const AppError = require('../modules/error')
 const paths = require('./paths')
 const config = require('../../nuxt.config')
+
+Image.prototype.copyImage = function ci(fromImage, x, y) {
+  const fromWidth = fromImage.width
+  const fromHeight = fromImage.height
+  const toWidth = this.width
+  const { channels } = fromImage
+  const { data } = this
+
+  for (let i = 0; i < fromWidth; i++) {
+    for (let j = 0; j < fromHeight; j++) {
+      for (let k = 0; k < channels; k++) {
+        const source = (j * fromWidth + i) * channels + k
+        const target = ((y + j) * toWidth + x + i) * channels + k
+        data[target] = fromImage.data[source]
+        /*
+        console.log({
+          target,
+          source
+        })
+        */
+      }
+    }
+  }
+
+  console.log({
+    data2: this.data,
+    data
+  })
+}
 
 /**
  * deepTools.
@@ -32,6 +63,50 @@ module.exports = {
   },
 
   /**
+   * This is probably not a good cropper, but it's all I have now...
+   *
+   * @param {Photo} photo
+   * @param {HTMLCanvasElement} canvas
+   */
+  async crop(photo, canvas) {
+    const image = Image.fromCanvas(canvas)
+    const savePath = photo.getCroppedFile().getPath()
+
+    debug(`Saving cropped photo in ${savePath}`)
+    await image.save(savePath)
+
+    if (!fs.existsSync(savePath)) {
+      console.warn(
+        'It seems that the first crop method has failed, trying the legacy method'
+      )
+
+      await this.legacyCrop(photo, canvas)
+    } else {
+      photo.getCroppedFile().reload()
+    }
+  },
+
+  /**
+   *
+   * @param {*} photo
+   * @param {*} canvas
+   */
+  async legacyCrop(photo, canvas) {
+    const canvasAsDataURL = canvas.toDataURL(
+      photo.getSourceFile().getMimetype(),
+      1
+    )
+
+    await photo.getCroppedFile().writeDataURL(canvasAsDataURL)
+
+    if (!fs.existsSync(photo.getCroppedFile().getPath())) {
+      throw new Error(
+        'There was a problem trying to save the cropped photo. Please make sure the program has write permissions.'
+      )
+    }
+  },
+
+  /**
    *
    * @param {*} job
    */
@@ -48,34 +123,30 @@ module.exports = {
     // Final photo
     const outputFilePath = job.getFile().getPath()
 
-    if (!fs.existsSync(inputFilePath)) {
-      throw new AppError(
-        `The cropped photo was not found!\n
-        This may be caused because the program does not have permissions to write to the directory or has been automatically deleted, please make sure that the following file exists:\n
-        ${inputFilePath}`
-      )
-    }
-
+    // CLI Args
     const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
-
-    cliArgs.push('--bsize')
-    cliArgs.push(preferences.boobsSize)
-
-    cliArgs.push('--asize')
-    cliArgs.push(preferences.areolaSize)
-
-    cliArgs.push('--nsize')
-    cliArgs.push(preferences.nippleSize)
-
-    cliArgs.push('--vsize')
-    cliArgs.push(preferences.vaginaSize)
-
-    cliArgs.push('--hsize')
-    cliArgs.push(preferences.pubicHairSize)
 
     if ($settings.processing.usePython) {
       // Use the Python script instead of the executable
       cliArgs.unshift('main.py')
+    }
+
+    {
+      // Preferences
+      cliArgs.push('--bsize')
+      cliArgs.push(preferences.boobsSize)
+
+      cliArgs.push('--asize')
+      cliArgs.push(preferences.areolaSize)
+
+      cliArgs.push('--nsize')
+      cliArgs.push(preferences.nippleSize)
+
+      cliArgs.push('--vsize')
+      cliArgs.push(preferences.vaginaSize)
+
+      cliArgs.push('--hsize')
+      cliArgs.push(preferences.pubicHairSize)
     }
 
     if ($settings.processing.device === 'CPU') {
@@ -107,23 +178,28 @@ module.exports = {
     }
 
     process.on('error', error => {
-      debug(error)
+      console.error(error)
       bus.emit('error', null, error)
     })
 
     process.stdout.on('data', data => {
-      debug(`stdout: ${data}`)
+      console.info(`stdout: ${data}`)
       bus.emit('stdout', null, data)
     })
 
     process.stderr.on('data', data => {
-      debug(`stderr: ${data}`)
+      console.warn(`stderr: ${data}`)
       bus.emit('stderr', null, data)
     })
 
     process.on('close', code => {
       debug(`CLI process exited with code ${code}`)
       bus.emit('ready', null, code)
+    })
+
+    bus.on('kill', () => {
+      process.stdin.pause()
+      process.kill()
     })
 
     return bus

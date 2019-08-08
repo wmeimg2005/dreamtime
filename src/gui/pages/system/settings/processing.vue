@@ -15,20 +15,6 @@
         </select>
       </box-section-item>
 
-      <box-section-item label="Photo restoration" description="Restore the cropped photo to the original photo.">
-        <select v-model="currentValue.processing.useRestoration" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-
-      <box-section-item label="waifu2x" description="waifu2x will try to resize your transformed photo to 1024x1024 with the least possible quality loss.">
-        <select v-model="currentValue.processing.useRestoration" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-
       <box-section-item label="Use Python" description="Use Python script instead of the CLI executable. Enable this only if you know what are you doing.">
         <select v-model="currentValue.processing.usePython" class="input">
           <option :value="true">Enabled</option>

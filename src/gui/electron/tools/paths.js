@@ -29,7 +29,7 @@ module.exports = {
         const rootPath = utils.getRootPath()
         folderPath = path.resolve(rootPath, '../')
       } else {
-        folderPath = path.resolve(app.getPath('exe'), '../')
+        folderPath = path.resolve(app.getPath('exe'), '../../')
       }
     } else {
       folderPath = app.getPath(name)

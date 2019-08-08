@@ -10,7 +10,7 @@
   height: 90px;
 
   .title {
-    @apply font-bold text-generic-600 text-xl;
+    @apply font-bold text-white text-xl;
 
     sup {
       @apply text-white;
@@ -18,7 +18,7 @@
   }
 
   .subtitle {
-    @apply text-lg;
+    @apply text-lg text-generic-300;
   }
 
   a {
