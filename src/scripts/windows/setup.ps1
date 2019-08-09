@@ -1,11 +1,11 @@
 Set-Location ../../cli
 
 #
-# CLI.
-# The CLI is where the neural network is located.
+# DreamPower.
+# Deep learning algorithm capable of nudify people photos.
 #
 # Requirements:
-# * Python 3.6 and pip3
+# * Python 3.6.2+
 # * CUDA 10.0
 #
 
@@ -13,17 +13,17 @@ Set-Location ../../cli
 python3 -m pip --no-cache-dir install pyinstaller --user
 
 # This command should resolve and install all the necessary packages
-python3 -m pip --no-cache-dir install -r requirements-windows.txt --user
+python3 -m pip --no-cache-dir install -r requirements-generic.txt --user
 
 # NOTES from wisp101:
 # Make sure pyinstaller is accessible from the cmdline as "pyinstaller".
 # Otherwise, track down its folder and add it to your path. I found mine in "~/.local/bin".
 
-Set-Location ../gui
+Set-Location ../
 
 #
-# GUI.
-# A wrapper of the CLI that offers a graphical interface so that its use is as simple as possible.
+# DreamTime.
+# Friendly user interface for DreamPower.
 #
 # Requirements:
 # * NodeJS 10+
@@ -44,5 +44,5 @@ yarn install
 #
 
 Write-Output "Installation completed!"
-Write-Output "- Now you can run the dev-start.bat script to start modifying the GUI and see the changes in real time."
-Write-Output "- Now you can run the build.bat script to compile the project and get an easy-to-use .exe"
+Write-Output "- Now you can run the dev-start.ps1 script to start modifying the GUI and see the changes in real time."
+Write-Output "- Now you can run the build.ps1 script to compile the project and get an easy-to-use .exe"

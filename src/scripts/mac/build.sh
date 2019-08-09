@@ -3,11 +3,11 @@
 cd ../../cli
 
 #
-# CLI.
-# The CLI is where the neural network is located.
+# DreamPower.
+# Deep learning algorithm capable of nudify people photos.
 #
 # Requirements:
-# * Python 3.6 and pip3
+# * Python 3.6.2+
 # * CUDA 10.0
 #
 
@@ -22,8 +22,8 @@ pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist"
 cd ../gui
 
 #
-# GUI.
-# A wrapper of the CLI that offers a graphic interface so that its use is as simple as possible.
+# DreamTime.
+# Friendly user interface for DreamPower.
 #
 # Requirements:
 # * NodeJS 10+
@@ -35,16 +35,6 @@ cd ../gui
 # Relax more and enjoy more your coffee :))
 
 yarn build
-
-#
-
-cd ../../dist
-
-# We need to move the generated folder to the final folder
-
-rm -r -f "./gui"
-
-mv ./gui-unpacked ./gui
 
 #
 # Success

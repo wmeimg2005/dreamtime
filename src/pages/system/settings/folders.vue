@@ -1,6 +1,6 @@
 <template>
   <div class="settings-fields">
-    <p class="notification">If you change some of these options please restart the program to avoid problems.</p>
+    <p class="notification">If you change any of these options please restart the program to avoid problems.</p>
 
     <section class="box box-section">
       <box-section-item

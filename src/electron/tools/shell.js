@@ -55,7 +55,7 @@ module.exports = {
   hasWindowsMedia() {
     if (is.windows && !is.dev) {
       regedit.setExternalVBSLocation(
-        path.join(path.dirname(api.app.getPath('exe')), 'contents', 'vbs')
+        path.join(path.dirname(api.app.getPath('exe')), 'resources', 'vbs')
       )
     }
 

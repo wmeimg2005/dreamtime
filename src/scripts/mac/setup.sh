@@ -1,31 +1,42 @@
 #!/bin/bash
 
+#
+# Initial preparation
+# by jesscold
+#
+
+brew unlink python
+
+brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb
+
+brew install libomp
+
 cd ../../cli
 
 #
-# CLI.
-# The CLI is where the neural network is located.
+# DreamPower.
+# Deep learning algorithm capable of nudify people photos.
 #
 # Requirements:
-# * Python3 and pip3 (I use 3.6.8)
-# * CUDA 10.0
+# * Python 3.6 and pip3
+# * CUDA 10.0*
 #
 
 # PyInstaller will allow us to compile and package everything in a simple binary
 python3 -m pip --no-cache-dir install pyinstaller --user
 
 # This command should resolve and install all the necessary packages
-python3 -m pip --no-cache-dir install -r requirements-mac.txt --user
+python3 -m pip --no-cache-dir install -r requirements-generic.txt --user
 
 # NOTES from wisp101:
 # Make sure pyinstaller is accessible from the cmdline as "pyinstaller".
 # Otherwise, track down its folder and add it to your path. I found mine in "~/.local/bin".
 
-cd ../gui
+cd ../
 
 #
-# GUI.
-# A wrapper of the CLI that offers a graphic interface so that its use is as simple as possible.
+# DreamTime.
+# Friendly user interface for DreamPower.
 #
 # Requirements:
 # * NodeJS (In theory any recent version works.)
@@ -33,7 +44,6 @@ cd ../gui
 #
 
 # This command should resolve and install all the necessary packages
-# We will not generate a .lock file to avoid problems
 yarn install
 
 # NOTES:
@@ -47,5 +57,5 @@ yarn install
 #
 
 echo "Installation completed!"
-echo "- Now you can run the dev-start.bat script to start modifying the GUI and see the changes in real time."
-echo "- Now you can run the build.bat script to compile the project and get an easy-to-use binary"
+echo "- Now you can run the dev-start.sh script to start modifying the GUI and see the changes in real time."
+echo "- Now you can run the build.sh script to compile the project and get an easy-to-use binary"

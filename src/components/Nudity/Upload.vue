@@ -21,7 +21,7 @@
 
     <div class="box py-5">
       <div class="upload-url">
-        <input v-model="webAddress" type="url" class="input" placeholder="or enter a web address..." />
+        <input v-model="webAddress" type="url" class="input" placeholder="🌍 or enter a web address..." />
 
         <button class="button" @click="onURL">
           Go!

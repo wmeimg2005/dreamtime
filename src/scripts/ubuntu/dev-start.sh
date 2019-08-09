@@ -3,19 +3,19 @@
 cd ../../gui
 
 #
-# GUI - NuxtJS Server
+# NuxtJS Server
 # This command starts the local NuxtJS server,
 # the server will compile all the files of the interface
 # and in case of making changes update them in real time.
 #
 
-sh yarn start:dev:gui
+sh yarn dev:gui
 
 #
-# GUI - Electron App
+# Electron App
 # This command starts the Electron application,
 # which is basically a web browser that will load
 # the local server started previously.
 #
 
-sh yarn start:dev:electron
+sh yarn dev:electron

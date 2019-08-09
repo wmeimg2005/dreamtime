@@ -27,8 +27,11 @@ export default function({ route, redirect }) {
 
   if (!platform.requirements.cli) {
     // DreamPower is missing
-    if (!route.path.includes('/system/settings')) {
-      redirect('/system/settings/folders')
+    if (
+      !route.path.includes('/system/settings') &&
+      route.path !== '/system/about'
+    ) {
+      redirect('/system/about')
     }
 
     return

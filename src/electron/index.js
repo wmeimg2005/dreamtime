@@ -159,7 +159,7 @@ class DreamApp {
    * Create the model folder to save the processed photos
    */
   static createModelsDir() {
-    const modelsPath = paths.getModels('Uncategorized')
+    const modelsPath = path.join(settings.folders.models, 'Uncategorized')
 
     if (!fs.existsSync(modelsPath)) {
       fs.mkdirSync(

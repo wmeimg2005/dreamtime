@@ -1,11 +1,11 @@
 ﻿Set-Location ../../cli
 
 #
-# CLI.
-# The CLI is where the neural network is located.
+# DreamPower.
+# Deep learning algorithm capable of nudify people photos.
 #
 # Requirements:
-# * Python 3.6 and pip3
+# * Python 3.6.2+
 # * CUDA 10.0
 #
 
@@ -17,11 +17,11 @@ pyinstaller main.py -y --onedir --name "dreampower" --distpath "../../dist" --ad
 
 #
 
-Set-Location ../gui
+Set-Location ../
 
 #
-# GUI.
-# A wrapper of the CLI that offers a graphical interface so that its use is as simple as possible.
+# DreamTime.
+# Friendly user interface for DreamPower.
 #
 # Requirements:
 # * NodeJS 10+
@@ -32,27 +32,6 @@ Set-Location ../gui
 # Relax more and enjoy more your coffee :))
 
 yarn build
-
-#
-
-Set-Location ../../dist
-
-# We need to move the generated folder to the final folder
-
-if ( Test-Path ./gui ) {
-  Remove-Item ./gui -recurse -Force
-}
-
-if ( Test-Path ./cli ) {
-  Remove-Item ./cli -recurse -Force
-}
-
-Move-Item ./gui-unpacked/win-unpacked ./gui -Force
-Move-Item ./dreampower ./cli -Force
-
-# We delete the generated folder
-
-#Remove-Item –path ./gui-unpacked -recurse -Force
 
 #
 # Success

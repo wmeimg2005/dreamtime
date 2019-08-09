@@ -13,7 +13,7 @@ Join the social networks of DreamNet, the community interested in developing thi
 - [Keybase](https://keybase.io/team/dreamnet) (Our primary communication channel, here you will find the developers)
 - [Twitter](https://twitter.com/DreamNetCom)
 - [Facebook Group](https://web.facebook.com/groups/812542509140670)
-- [Discord](https://i.imgur.com/411YVaL.png) :)
+- [Discord](https://imgur.com/a/YlNj44B) :)
 
 ## Support
 
@@ -105,3 +105,14 @@ Inside the folder `scripts/` you will find folders for the different supported o
 > ⚠ If you use [Anaconda](https://www.anaconda.com/) or some other program that encapsulates Python or NodeJS in their own development environment it is very likely that these scripts fail, you will have to read the content and execute the commands manually.
 
 > ⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, **you must not access the URL indicated by the console**, the application only works when it is opened from Electron.
+
+## Pull Requests
+
+We seek to improve the software in every possible way, if you want to make a contribution you are welcome to make a Pull Request, just make sure you do it to the **canary branch**.
+
+## ⚠ Drastic Changes in v1.0.0
+
+Because DreamTime has been the **victim of users who take the source code and sell it without complying with the LICENSE conditions**, we are forced to implement certain very unfriendly changes for an open-source project, we apologize for all the inconvenience this may cause, these changes are **temporary** until DreamTime has been noticed on social networks to prevent people from falling into a possible SCAM.
+
+To avoid an alert with information from DreamTime
+when you start your program, please make sure you **don't change the name or type of license** on your fork.
