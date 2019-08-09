@@ -15,7 +15,7 @@ cd ../../cli
 python3.6 -m pip --no-cache-dir install pyinstaller --user
 
 # This command should resolve and install all the necessary packages
-python3.6 -m pip --no-cache-dir install -r requirements-generic.txt --user
+python3.6 -m pip --no-cache-dir install -r requirements-ubuntu.txt --user
 
 # NOTES from wisp101:
 # Make sure pyinstaller is accessible from the cmdline as "pyinstaller".
