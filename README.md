@@ -57,11 +57,11 @@ If you want to share or modify this Software please do it for the same purpose a
 
 ## Download
 
-_Work In Progress_
+- [Releases](https://github.com/private-dreamnet/dreamtime/releases)
 
-## Installation
+## Mirrors
 
-_Work In Progress_
+- Windows: [DreamNet CDN](https://cdn.dreamnet.tech/releases/dreamtime/v1.0.0/DreamTime-windows-x64.exe)
 
 ## F.A.Q.
 
