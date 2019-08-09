@@ -89,7 +89,7 @@
     "dev:gui": "cross-env NODE_ENV=development nuxt",
     "dev:electron": "cross-env NODE_ENV=development DEBUG=app:* electron .",
     "build:gui": "cross-env NODE_ENV=production nuxt build",
-    "build:electron": "cross-env NODE_ENV=production electron-builder",
+    "build:electron": "cross-env NODE_ENV=production electron-builder --publish=never",
     "test": "yarn build:gui && cross-env NODE_ENV=production DEBUG=app:* electron .",
     "build": "yarn build:gui && yarn build:electron",
     "rebuild": "electron-rebuild",
