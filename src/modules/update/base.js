@@ -95,8 +95,8 @@ export default class {
 
     const extension = $tools.utils.platform({
       macos: '',
-      windows: '.7z',
-      linux: '.deb'
+      windows: '.exe',
+      linux: '.AppImage'
     })
 
     return `${this.getTitle()}-v${

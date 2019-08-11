@@ -22,6 +22,7 @@ const instance = {
       captureIp: 'anonymize',
       verbose: process.env.NODE_ENV === 'development',
       nodeSourceMaps: true,
+      reportLevel: 'warning',
       payload: {
         environment:
           process.env.NODE_ENV !== 'development' ? 'production' : 'development',

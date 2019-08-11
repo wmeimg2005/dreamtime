@@ -1,8 +1,8 @@
 {
   "name": "dreamtime",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "electron/index.js",
-  "author": "Iván Bravo Bravo <ivan@dreamnet.tech>",
+  "author": "DreamNet <dreamtime@dreamnet.tech>",
   "homepage": "https://time.dreamnet.tech",
   "license": "GPL-3.0-only",
   "private": true,
@@ -14,7 +14,7 @@
     "url": "https://github.com/private-dreamnet/dreamtime/issues"
   },
   "build": {
-    "appId": "com.kolessios.dreamtime",
+    "appId": "com.dreamnet.dreamtime",
     "productName": "DreamTime",
     "directories": {
       "output": "../dist"
@@ -76,10 +76,15 @@
       "license": "license.txt"
     },
     "linux": {
-      "target": "deb",
-      "icon": "static/favicon.ico",
+      "target": "AppImage",
+      "icon": "static/assets/images/dreamtime.png",
       "executableName": "DreamTime",
       "category": "Graphics"
+    },
+    "appimage": {
+      "license": "license.txt",
+      "category": "Graphics",
+      "artifactName": "${productName}.${ext}"
     }
   },
   "scripts": {
@@ -98,10 +103,8 @@
   "dependencies": {
     "@nuxtjs/dotenv": "^1.4.0",
     "@nuxtjs/pwa": "^2.6.0",
-    "aws-sdk": "^2.503.0",
     "better-queue": "^3.8.10",
     "better-queue-memory": "^1.0.3",
-    "bullet-train-nodejs": "^0.1.2",
     "clipboard": "^2.0.4",
     "compare-versions": "^3.5.0",
     "cropperjs": "^1.5.2",
@@ -116,18 +119,17 @@
     "image-js": "^0.21.7",
     "js-event-bus": "^1.0.0",
     "lodash": "^4.17.11",
+    "markdown": "^0.5.0",
     "md5": "^2.2.1",
     "mime-types": "^2.1.24",
     "moment": "^2.24.0",
     "nuxt": "^2.0.0",
     "patch-package": "^6.1.2",
     "postinstall-postinstall": "^2.0.0",
-    "queue": "^6.0.1",
     "randomcolor": "^0.5.4",
     "randomstring": "^1.1.5",
     "raw-loader": "^3.0.0",
     "regedit": "^3.0.3",
-    "rookout": "^0.1.67",
     "supports-color": "^7.0.0",
     "sweetalert": "^2.1.2",
     "tippy.js": "^4.3.4",

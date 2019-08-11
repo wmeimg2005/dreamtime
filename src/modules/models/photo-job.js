@@ -2,6 +2,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import File from '../file'
 import Timer from '../timer'
+import WebError from '~/modules/web-error'
 
 const debug = require('debug').default('app:modules:models:photo-job')
 
@@ -117,6 +118,70 @@ export default class PhotoJob {
   /**
    *
    */
+  getCliError() {
+    if (_.isNil(this.cli.error) || this.cli.error.length === 0) {
+      return { type: 'debug', message: '' }
+    }
+
+    const message = this.cli.error
+
+    if (message.includes('Found no NVIDIA driver on your system')) {
+      return {
+        type: 'debug',
+        message:
+          "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed a driver from [here](http://www.nvidia.com/Download/index.aspx). If you don't have an NVIDIA GPU please change the Device option in Settings to **CPU**."
+      }
+    }
+
+    if (message.includes('The NVIDIA driver on your system is too old')) {
+      return {
+        type: 'debug',
+        message:
+          'The NVIDIA driver installed on your system is too old! Please update the drivers [here](http://www.nvidia.com/Download/index.aspx), if the drivers are up to date then your GPU may not be compatible.'
+      }
+    }
+
+    if (message.includes('no longer supports this GPU')) {
+      return {
+        type: 'debug',
+        message:
+          'We are sorry but your GPU is not powerful enough to run this program. Please change the Device option in Settings to **CPU**.'
+      }
+    }
+
+    if (message.includes('Buy new RAM!')) {
+      return {
+        type: 'debug',
+        message:
+          'Apparently you have run out of RAM on your system! Try a photo of smaller size or free all possible memory of your system.'
+      }
+    }
+
+    if (message.includes('CUDA out of memory')) {
+      return {
+        type: 'debug',
+        message:
+          'Apparently you have run out of RAM on your GPU! Try a photo of smaller size.'
+      }
+    }
+
+    if (message.includes("codec can't decode byte")) {
+      return {
+        type: 'debug',
+        message:
+          'The algorithm had a problem decoding some characters. This is usually caused by being installed in a location with special characters (accents, spaces, etc.). Please reinstall the program in another location.'
+      }
+    }
+
+    return {
+      type: 'error',
+      message: `The process has been interrupted by an unknown error, this may be caused by a corrupt installation, please check the console for more information.`
+    }
+  }
+
+  /**
+   *
+   */
   cancel() {
     if (!this.isLoading || _.isNil(this.process)) {
       return
@@ -132,10 +197,11 @@ export default class PhotoJob {
     return new Promise((resolve, reject) => {
       const onSpawnError = error => {
         reject(
-          new AppError(
-            `Unable to start the CLI!\n
-            This can be caused by a corrupt installation, please make sure that the cli executable exists and works correctly. If you are not a developer please make sure you have the option "Use Python" disabled.`,
-            error
+          new WebError(
+            `Unable to start DreamPower!\n
+            Could not find the executable to DreamPower, in Settings please make sure that the option "DreamPower Folder" is valid, if you are not a developer make sure that the option "Use Python" is disabled.`,
+            error,
+            'warning'
           )
         )
       }
@@ -189,15 +255,14 @@ export default class PhotoJob {
         } else {
           this.process = undefined
 
+          const err = this.getCliError()
+
           reject(
-            new AppError(
-              `The process has been interrupted by an error. This can be caused by:\n
-              - A corrupt installation
-              - Insufficient RAM. Buy more RAM! (8 GB recommended)
-              - If you are using GPU: The graphics card was not found, it is not compatible (minimum: 3.5 CUDA compute capability) or the drivers are outdated.
-              - Check the console for more information.
-              `,
-              new Error(this.cli.error)
+            new WebError(
+              `Transformation #${this.id} failed`,
+              err.message,
+              Error(this.cli.error),
+              err.type
             )
           )
         }

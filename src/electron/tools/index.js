@@ -22,7 +22,7 @@ module.exports = {
    *
    */
   testError() {
-    $rollbar.error(Error('tools error!'))
+    Error('tools error!')
   },
 
   /**
@@ -164,7 +164,7 @@ module.exports = {
     })
 
     process.on('close', code => {
-      debug(`CLI process exited with code ${code}`)
+      console.log(`CLI process exited with code ${code}`)
       bus.emit('ready', null, code)
     })
 

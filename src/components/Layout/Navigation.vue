@@ -80,7 +80,6 @@ export default {
   methods: {
     testBug() {
       $tools.testError()
-      $rollbar.error(new Error('wow much error'))
       throw new Error('wow much error')
     }
   }

@@ -32,7 +32,7 @@ export default {
 
     &:hover {
       @apply absolute rounded z-50;
-      transform: scale(2);
+      transform: scale(2.5);
     }
   }
 

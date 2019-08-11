@@ -6,6 +6,7 @@ import MemoryStore from 'better-queue-memory'
 import File from '../file'
 import Timer from '../timer'
 import PhotoJob from './photo-job'
+import WebError from '../web-error'
 
 const debug = require('debug').default('app:modules:models:photo')
 
@@ -96,7 +97,11 @@ export default class Photo {
       job.onFail()
 
       if (_.isError(error)) {
-        swal(`Transformation #${jobId} failed`, error.message, 'error')
+        if (error instanceof WebError) {
+          error.report()
+        } else {
+          throw error
+        }
       }
     })
 

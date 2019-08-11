@@ -3,23 +3,25 @@ class AppError extends Error {
    *
    * @param {*} message
    */
-  constructor(message, error) {
-    if ($rollbar.isEnabled) {
-      const response = $rollbar.error(error || new Error(message))
+  constructor(message, error, level = 'error') {
+    if (level !== 'debug') {
+      if ($rollbar.isEnabled) {
+        const response = $rollbar[level](error || new Error(message))
 
-      if (response.uuid) {
+        if (response.uuid) {
+          message += `
+            \nFor more information please report the following URL on Github or to the developers:\n
+            https://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
+        } else {
+          message += `
+            \nFor more information please take a screenshot and report the following on Github or to the developers:\n
+            ${error}`
+        }
+      } else if (error) {
         message += `
-          \nFor help, please report the following to one of our developers:\n
-          https://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
-      } else {
-        message += `
-          \nFor help, take a screenshot and report the following to one of our developers:\n
-          ${error}`
+            \nFor more information please take a screenshot and report the following on Github or to the developers:\n
+            ${error}`
       }
-    } else if (error) {
-      message += `
-          \nFor help, take a screenshot and report the following to one of our developers:\n
-          ${error}`
     }
 
     super(message)

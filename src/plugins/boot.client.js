@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
+import swal from 'sweetalert'
 import BaseMixin from '~/mixins/BaseMixin'
-import { dream, platform, updater, nudify } from '~/modules'
+import { dream, platform, updater, nudify, WebError } from '~/modules'
 
 const debug = require('debug').default('app:plugins:boot')
 
@@ -26,6 +27,16 @@ tippy.setDefaults({
   arrow: true,
   arrowType: 'round'
 })
+
+function live(selector, event, callback, context) {
+  ;(context || document).addEventListener(event, function event(e) {
+    let found
+    let el = e.target || e.srcElement
+    // eslint-disable-next-line
+    while (el && !(found = el.id == selector)) el = el.parentElement
+    if (found) callback.call(el, e)
+  })
+}
 
 export default async ({ app, isDev }, inject) => {
   // Environment Information
@@ -54,6 +65,33 @@ export default async ({ app, isDev }, inject) => {
 
   //---
 
+  window.addEventListener('error', (error, url, lineNumber) => {
+    console.log('Error captured', {
+      error,
+      type: typeof error
+    })
+
+    WebError.handle(error)
+    return true
+  })
+
+  window.addEventListener('unhandledrejection', rejection => {
+    console.log('Unhandled Rejection captured', {
+      error: rejection.reason,
+      type: typeof rejection.reason
+    })
+
+    WebError.handle(rejection.reason)
+    return true
+  })
+
+  Vue.config.errorHandler = (err, vm, info) => {
+    WebError.handle(err)
+    throw err
+  }
+
+  //---
+
   // Platform information
   await platform.init()
   app.context.$platform = platform
@@ -76,15 +114,6 @@ export default async ({ app, isDev }, inject) => {
   nudify.init()
   app.context.$nudify = nudify
   inject('nudify', nudify)
-
-  Vue.config.errorHandler = (err, vm, info) => {
-    // Report Vue.js Errors
-    if ($rollbar.isEnabled) {
-      $rollbar.error(err)
-    }
-
-    throw err
-  }
 
   // axios - default headers
   // $axios.setHeader('X-Requested-With', 'XMLHttpRequest')
