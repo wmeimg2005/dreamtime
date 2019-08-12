@@ -1,5 +1,6 @@
 {
   "name": "dreamtime",
+  "description": "Friendly user interface that allows you to use DreamPower and transform photos of people into free and private entertainment, something that in the past you could only dream of...",
   "version": "1.0.1",
   "main": "electron/index.js",
   "author": "DreamNet <dreamtime@dreamnet.tech>",
@@ -76,14 +77,15 @@
       "license": "license.txt"
     },
     "linux": {
-      "target": "AppImage",
+      "target": "deb",
       "icon": "static/assets/images/dreamtime.png",
       "executableName": "DreamTime",
       "category": "Graphics"
     },
-    "appImage": {
-      "license": "license.txt",
-      "category": "Graphics",
+    "deb": {
+      "packageCategory": "graphics",
+      "icon": "static/assets/images/dreamtime.png",
+      "synopsis": "Friendly user interface for DreamPower.",
       "artifactName": "${productName}.${ext}"
     }
   },

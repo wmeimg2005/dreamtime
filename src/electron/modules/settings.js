@@ -1,6 +1,6 @@
 const fs = require('fs')
 const _ = require('lodash')
-const { uuid } = require('electron-utils')
+const { uuid, api, is } = require('electron-utils')
 const debug = require('debug').default('app:electron:modules:settings')
 
 const tools = require('../tools')
@@ -107,7 +107,27 @@ const settings = {
       }
     }
 
-    fs.writeFileSync(this._path, JSON.stringify(defaultSettings, null, 2))
+    try {
+      fs.writeFileSync(this._path, JSON.stringify(defaultSettings, null, 2))
+    } catch (err) {
+      if (is.windows) {
+        api.dialog.showErrorBox(
+          'The program could not be started',
+          `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${this._path}`
+        )
+
+        api.app.exit()
+      } else {
+        api.dialog.showErrorBox(
+          'The program could not be started',
+          `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${
+            this._path
+          }.\nDue to the way Ubuntu installs the program you need to grant 777 permissions to the following folder:\n${tools.paths.getRoot()}`
+        )
+
+        api.app.exit()
+      }
+    }
   },
 
   /**
