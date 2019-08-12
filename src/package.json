@@ -81,7 +81,7 @@
       "executableName": "DreamTime",
       "category": "Graphics"
     },
-    "appimage": {
+    "appImage": {
       "license": "license.txt",
       "category": "Graphics",
       "artifactName": "${productName}.${ext}"

@@ -15,11 +15,11 @@ cd ../../cli
 # everything necessary in a directory with the final binary
 # Relax and enjoy your coffee :)
 
-pyinstaller main.py -y --onedir --name "cli" --distpath "../../dist"
+pyinstaller main.py -y --onedir --name "dreampower" --distpath "../../dist"
 
 #
 
-cd ../gui
+cd ../
 
 #
 # DreamTime.
