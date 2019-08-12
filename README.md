@@ -96,12 +96,17 @@ We do not store any personal information or photos that have been processed with
 
 ### Quick Setup
 
-Inside the folder `scripts/` you will find folders for the different supported operating systems, within each folder there is a series of scripts that will allow you to prepare the project for its development.
+Inside the folder `scripts/` you will find python setup scripts for supported operating systems (Windows, MacOS,Ubuntu, Linux) that will allow you to prepare the project for its development.
 
-- **setup**: This script will install all the necessary requirements for Python and NodeJS. In theory you only need to run this script once per version.
-- **build**: This script will compile the project in the `dist/` folder (generate the binaries for CLI and GUI), once finished you can compress the `dist/` folder and share it with the world.
-- **dev-start**: This script will launch 2 processes, one to start the NuxtJS server (which will compile all the CSS, JavaScript and Vue files) and other that will start Electron that will load the NuxtJS server. Any change you make in `gui/` will be reflected in real time.
+- **setup.py**: This script will install all the necessary requirements for Python and NodeJS. In theory you only need to run this script once per version.
+- **build.py**: This script will compile the project in the `dist/` folder (generate the binaries for CLI and GUI), once finished you can compress the `dist/` folder and share it with the world.
+- **dev-start.py**: This script will launch 2 processes, one to start the NuxtJS server (which will compile all the CSS, JavaScript and Vue files) and other that will start Electron that will load the NuxtJS server. Any change you make in `gui/` will be reflected in real time.
 
+To see possible options for these scripts run --help :
+```
+ python3 setup.py --help
+ python3 build.py --help
+```
 > ⚠ If you use [Anaconda](https://www.anaconda.com/) or some other program that encapsulates Python or NodeJS in their own development environment it is very likely that these scripts fail, you will have to read the content and execute the commands manually.
 
 > ⚠ The NuxtJS server incorporates an HTTP server to view the live application in a web browser, **you must not access the URL indicated by the console**, the application only works when it is opened from Electron.
