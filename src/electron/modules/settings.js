@@ -65,7 +65,12 @@ const settings = {
       return
     }
 
-    const hasGPU = (await tools.getGpusList()).length > 0
+    let hasGPU = false
+
+    try {
+      hasGPU = (await tools.getGpusList()).length > 0
+      // eslint-disable-next-line
+    } catch (err) {}
 
     const defaultSettings = {
       welcome: true,
