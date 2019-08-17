@@ -12,42 +12,42 @@
 
     <div class="content-body">
       <!-- Stats -->
-      <div class="nudify-results-stats">
-        <div class="stats-item">
-          <app-photo :src="sourceDataURL">Original</app-photo>
-        </div>
-
-        <div class="stats-item">
-          <app-photo :src="croppedDataURL">Cropped</app-photo>
-        </div>
-
-        <div v-if="!photo.isLoading" class="box stats-item stats-actions">
-          <p>Transformation completed</p>
-
-          <div class="buttons">
-            <button type="button" class="button is-success" @click.prevent="togglePreferences">
-              <span v-if="!isPreferencesVisible">Change Preferences</span>
-              <span v-else>Results</span>
-            </button>
-            <button type="button" class="button is-danger" @click.prevent="rerun">Rerun all</button>
+      <div class="__summary">
+        <div class="__content">
+          <div class="__status box">
+            <p v-if="!photo.isLoading">📸 Dream completed<br>Has it been a good dream?</p>
+            <p v-else>💭 Dreaming... this will take a moment</p>
           </div>
 
-          <div class="buttons">
-            <button type="button" class="button is-sm" @click.prevent="openFolder">Open Folder</button>
-            <nuxt-link to="/" class="button is-sm">Another photo</nuxt-link>
+          <div class="__photos">
+            <app-photo :src="sourceDataURL">Original</app-photo>
+            <app-photo :src="croppedDataURL">Cropped</app-photo>
           </div>
-        </div>
 
-        <div v-else class="box stats-item stats-actions">
-          <p>Relax, this will take a moment...</p>
+          <div v-show="!photo.isLoading" class="__actions">
+            <div class="buttons">
+              <button type="button" class="button is-success" @click.prevent="togglePreferences">
+                <span v-if="!isPreferencesVisible">Change Preferences</span>
+                <span v-else>Results</span>
+              </button>
 
-          <div class="buttons">
+              <button type="button" class="button is-danger" @click.prevent="rerun">Rerun all</button>
+            </div>
+
+            <div class="buttons">
+              <button type="button" class="button" @click.prevent="openFolder">Open Folder</button>
+              <nuxt-link to="/" class="button">Another photo</nuxt-link>
+            </div>
+          </div>
+
+          <div v-show="photo.isLoading" class="__actions justify-center items-center">
             <button type="button" class="button is-danger" @click.prevent="cancel">Cancel</button>
           </div>
         </div>
       </div>
 
-      <div v-show="!isPreferencesVisible" class="box">
+      <!-- Jobs -->
+      <div v-show="!isPreferencesVisible" class="__jobs">
         <nudity-job v-for="(job, index) in photo.jobs" :key="index" :job="job" />
       </div>
 
@@ -139,44 +139,52 @@ export default {
 
 <style lang="scss">
 .nudify-results {
-  .nudify-results-stats {
-    @apply flex mb-5;
+  .content-body {
+    @apply flex;
+  }
 
-    .stats-item {
-      @apply mb-0;
+  .__summary {
+    @apply flex-1 mr-5;
 
-      &:not(:last-child) {
-        @apply mr-5;
-      }
+    .__content {
+      @apply sticky top-0;
     }
 
-    .stats-actions {
-      @apply flex-1 flex flex-col justify-center items-center;
-
-      .buttons {
-        @apply mt-3;
-      }
+    .__status {
+      @apply flex justify-center items-center
+        text-xl;
     }
 
-    .box {
-      &:not(:last-child) {
-        @apply mr-3;
-      }
+    .__photos {
+      @apply flex justify-center
+        mb-5;
 
-      /*
-      &.is-photo {
-        @apply flex flex-col justify-center items-center;
-      }
-      */
-
-      figure {
-        @apply flex justify-center;
-        box-sizing: content-box;
-
-        img {
+      .app-photo {
+        &:not(:last-child) {
+          @apply mr-5;
         }
       }
     }
+
+    .__actions {
+      @apply flex;
+
+      .buttons {
+        @apply flex-1 flex-col justify-center;
+      }
+    }
+  }
+
+  .__jobs {
+    @apply flex-1 flex flex-col;
+
+    .c-nudity-job {
+      @apply mr-5 mb-5;
+    }
+  }
+
+  .c-settings-preferences {
+    @apply flex-1;
   }
 }
 </style>

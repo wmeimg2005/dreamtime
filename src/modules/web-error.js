@@ -14,17 +14,24 @@ import { markdown } from 'markdown'
 import swal from 'sweetalert'
 
 class WebError extends Error {
-  constructor(title, message, error, level = 'error') {
+  constructor(title, message, opts = {}) {
     super(message)
 
+    opts = {
+      error: undefined,
+      level: 'error',
+      extra: {},
+      ...opts
+    }
+
     this.title = title
-    this.error = error
-    this.level = level
+    this.opts = opts
   }
 
   report() {
     let { message } = this
-    const { error, level } = this
+    const { title } = this
+    const { error, level, extra } = this.opts
 
     console.log('Reporting error...', {
       message,
@@ -34,20 +41,24 @@ class WebError extends Error {
     })
 
     if ($rollbar.isEnabled) {
-      const response = $rollbar[level](error || Error(this.message))
+      const response = $rollbar[level](error || Error(this.message), {
+        title,
+        message,
+        ...extra
+      })
 
       if (response.uuid) {
         message += `
-            \nFor more information please report the following URL on Github or to the developers:
+            \nFor more information please report the following URL on [Github](https://github.com/private-dreamnet/dreamtime/issues) or [here](https://git.dreamnet.tech/dreamnet/dreamtime/issues):
             [https://rollbar.com/occurrence/uuid/?uuid=${response.uuid}](https://rollbar.com/occurrence/uuid/?uuid=${response.uuid})`
       } else {
         message += `
-            \nFor more information please take a screenshot and report the following on Github or to the developers:\n
+            \nFor more information please take a screenshot and report the following on [Github](https://github.com/private-dreamnet/dreamtime/issues) or [here](https://git.dreamnet.tech/dreamnet/dreamtime/issues):\n
             ${error}`
       }
     } else if (error) {
       message += `
-            \nFor more information please take a screenshot and report the following on Github or to the developers:\n
+            \nFor more information please take a screenshot and report the following on [Github](https://github.com/private-dreamnet/dreamtime/issues) or [here](https://git.dreamnet.tech/dreamnet/dreamtime/issues):\n
             ${error}`
     }
 

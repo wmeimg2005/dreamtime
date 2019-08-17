@@ -1,9 +1,9 @@
 {
   "name": "dreamtime",
-  "version": "1.0.1",
-  "main": "electron/index.js",
   "author": "DreamNet <dreamtime@dreamnet.tech>",
   "homepage": "https://time.dreamnet.tech",
+  "version": "1.1.0",
+  "main": "electron/index.js",
   "license": "GPL-3.0-only",
   "private": true,
   "repository": {

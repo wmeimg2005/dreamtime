@@ -16,6 +16,8 @@ import { platform } from '~/modules'
  * otherwise redirects him to the appropriate page.
  */
 export default function({ route, redirect }) {
+  window.$redirect = redirect
+
   if ($settings.welcome) {
     // First time execution!
     if (route.path !== '/system/welcome') {

@@ -10,6 +10,7 @@
  */
 
 import _ from 'lodash'
+import path from 'path'
 import Base from './base'
 import dream from '../dream'
 
@@ -51,6 +52,10 @@ export default class extends Base {
   }
 
   async install(filePath) {
-    $tools.shell.openItem(filePath)
+    try {
+      $tools.shell.openItem(filePath)
+    } catch (err) {
+      $tools.shell.openItem(path.dirname(filePath))
+    }
   }
 }

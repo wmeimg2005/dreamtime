@@ -83,7 +83,7 @@ module.exports = {
    */
   transform(job) {
     // Independent preferences for the photo
-    const preferences = job.getPhoto().getPreferences()
+    const preferences = job.getPreferences()
 
     // Cropped photo
     const inputFilePath = job
@@ -105,19 +105,19 @@ module.exports = {
     {
       // Preferences
       cliArgs.push('--bsize')
-      cliArgs.push(preferences.boobsSize)
+      cliArgs.push(preferences.boobs.size)
 
       cliArgs.push('--asize')
-      cliArgs.push(preferences.areolaSize)
+      cliArgs.push(preferences.areola.size)
 
       cliArgs.push('--nsize')
-      cliArgs.push(preferences.nippleSize)
+      cliArgs.push(preferences.nipple.size)
 
       cliArgs.push('--vsize')
-      cliArgs.push(preferences.vaginaSize)
+      cliArgs.push(preferences.vagina.size)
 
       cliArgs.push('--hsize')
-      cliArgs.push(preferences.pubicHairSize)
+      cliArgs.push(preferences.pubicHair.size)
     }
 
     if ($settings.processing.device === 'CPU') {
@@ -132,6 +132,7 @@ module.exports = {
     debug('The transformation process has begun!', {
       inputFilePath,
       outputFilePath,
+      preferences,
       cliArgs,
       job
     })

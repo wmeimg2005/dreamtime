@@ -1,37 +1,85 @@
 <template>
   <div class="c-nudity-job">
-    <div v-if="job.hasFinished" class="job-status">
-      <p class="status-title">{{ job.timer.duration }}s</p>
+    <figure class="__preview">
+      <img v-if="job.hasFinished" :src="outputDataURL" />
+      <span v-else v-tooltip="'Loading...'">💭</span>
+    </figure>
 
-      <div class="buttons">
-        <button class="button is-success" @click.prevent="save">Save</button>
-        <button class="button is-danger is-sm" @click.prevent="rerun">Rerun</button>
-      </div>
-    </div>
+    <div class="__content">
+      <!-- Actions -->
+      <details class="__section" open>
+        <summary class="__title">Actions</summary>
 
-    <div v-else-if="job.hasFailed" class="job-status">
-      <p class="status-title text-danger">FAIL!</p>
+        <div class="__buttons">
+          <button v-if="job.hasFinished" class="button is-success" @click.prevent="save">Save</button>
+          <button v-if="job.hasFinished || job.hasFailed" class="button is-danger is-sm" @click.prevent="rerun">Rerun</button>
+        </div>
+      </details>
 
-      <div class="buttons">
-        <button class="button is-sm" @click.prevent="rerun">Rerun</button>
-      </div>
-    </div>
+      <details v-if="job.hasFinished || job.isLoading" class="__section" open>
+        <summary class="__title">Duration</summary>
 
-    <div v-else-if="job.isLoading" class="job-status">
-      <p class="status-title">{{ job.timer.duration }}s</p>
-      <p class="status-text">Processing...</p>
-    </div>
+        <div class="__status">
+          <p>{{ job.timer.duration }}s</p>
+        </div>
+      </details>
 
-    <div v-else class="job-status">
-      <p class="status-text">Pending</p>
-    </div>
+      <details v-else-if="job.hasFailed" class="__section" open>
+        <summary class="__title">Status</summary>
 
-    <div class="job-photos">
-      <app-photo v-if="job.hasFinished" :src="outputDataURL">Result</app-photo>
-    </div>
+        <div class="__status text-danger">
+          <p>Fail</p>
+        </div>
+      </details>
 
-    <div class="job-console">
-      <li v-for="(item, index) in job.cli.lines" :key="index" :class="item.css">{{ item.text }}</li>
+      <details v-else class="__section" open>
+        <summary class="__title">Status</summary>
+
+        <div class="__status">
+          <p>Pending...</p>
+        </div>
+      </details>
+
+      <!-- Preferences -->
+      <details class="__section">
+        <summary class="__title">Preferences</summary>
+
+        <div class="__preferences">
+          <p>
+            <span class="__name">Boobs size</span>
+            <span class="__value">{{ job.preferences.boobs.size | size }}</span>
+          </p>
+
+          <p>
+            <span class="__name">Areola size</span>
+            <span class="__value">{{ job.preferences.areola.size | size }}</span>
+          </p>
+
+          <p>
+            <span class="__name">Nipple size</span>
+            <span class="__value">{{ job.preferences.nipple.size | size }}</span>
+          </p>
+
+          <p>
+            <span class="__name">Vagina size</span>
+            <span class="__value">{{ job.preferences.vagina.size | size }}</span>
+          </p>
+
+          <p>
+            <span class="__name">Pubic Hair size</span>
+            <span class="__value">{{ job.preferences.pubicHair.size | size }}</span>
+          </p>
+        </div>
+      </details>
+
+      <!-- Console -->
+      <details class="__section">
+        <summary class="__title">Console</summary>
+
+        <div class="__console">
+          <li v-for="(item, index) in job.cli.lines" :key="index" :class="item.css">> {{ item.text }}</li>
+        </div>
+      </details>
     </div>
   </div>
 </template>
@@ -40,6 +88,11 @@
 import _ from 'lodash'
 
 export default {
+  filters: {
+    size(value) {
+      return Number.parseFloat(value).toFixed(2)
+    }
+  },
   props: {
     job: {
       type: Object,
@@ -60,9 +113,15 @@ export default {
   },
 
   methods: {
+    view() {},
+
     save() {
-      const savePath = $tools.shell.showSaveDialogSync({
-        defaultPath: this.job.getFileName()
+      const savePath = $tools.shell.showSaveDialog({
+        defaultPath: this.job.getFileName(),
+        filters: [
+          { name: 'PNG', extensions: ['png'] }
+          // { name: 'JPEG', extensions: ['jpg'] }
+        ]
       })
 
       if (_.isNil(savePath)) {
@@ -81,8 +140,93 @@ export default {
 
 <style lang="scss">
 .c-nudity-job {
+  @apply flex;
+
+  .__preview {
+    @apply flex justify-center items-center
+        rounded rounded-tr-none rounded-br-none
+        border-2 border-dark border-r-0
+        text-3xl;
+    width: 125px;
+    height: 125px;
+
+    img {
+      @apply w-full h-full rounded rounded-tr-none rounded-br-none;
+      transition: all 0.15s ease-in-out;
+
+      &:hover {
+        @apply rounded z-50;
+        transform: scale(3);
+      }
+    }
+  }
+
+  .__content {
+    @apply flex-1 flex flex-col
+        bg-dark
+        rounded
+        rounded-tl-none
+        rounded-bl-none
+        px-4
+        shadow;
+
+    width: 200px;
+
+    .__section {
+      @apply py-3;
+
+      &:not(:last-child) {
+        @apply border-b border-dark-400;
+      }
+
+      .__title {
+        @apply text-xs uppercase text-generic-300 mb-2 cursor-pointer;
+      }
+
+      .__status {
+        @apply flex justify-center
+          text-xl font-bold;
+      }
+
+      .__buttons {
+        @apply flex justify-center items-center;
+      }
+
+      .__console {
+        @apply p-3 bg-black overflow-auto rounded;
+        height: 150px;
+
+        li {
+          @apply font-mono text-xs text-generic-100 mb-3 block;
+
+          &.text-danger {
+            @apply text-danger;
+          }
+        }
+      }
+
+      .__preferences {
+        p {
+          @apply text-sm;
+
+          .__name {
+            @apply inline-block text-generic-300;
+            width: 150px;
+          }
+
+          .__value {
+            @apply inline-block font-bold text-generic-100;
+          }
+        }
+      }
+    }
+  }
+}
+
+/*
+.c-nudity-job {
   @apply flex pb-4;
-  min-height: 150px;
+  height: 170px;
 
   &:not(:first-child) {
     @apply pt-4;
@@ -92,13 +236,27 @@ export default {
     @apply border-b border-dark-400;
   }
 
+  .job-section {
+    @apply p-2 mb-0;
+    width: 200px;
+
+    &:not(:last-child) {
+      @apply mr-5;
+    }
+  }
+
   .job-photos {
     @apply flex-1 inline-flex;
+    width: auto;
   }
 
   .job-status {
-    @apply flex flex-col justify-center items-center mr-5 mb-0;
+    @apply flex flex-col justify-center items-center;
     width: 150px;
+
+    & > div {
+      @apply text-center;
+    }
 
     .buttons {
       @apply flex flex-col justify-center items-center mt-3;
@@ -118,9 +276,7 @@ export default {
   }
 
   .job-console {
-    @apply bg-black p-2 overflow-auto rounded;
-    width: 200px;
-    height: 150px;
+    @apply bg-black overflow-auto rounded;
 
     li {
       @apply font-mono text-xs text-generic-100 mb-3 block;
@@ -130,5 +286,24 @@ export default {
       }
     }
   }
+
+  .job-preferences {
+    @apply flex flex-col justify-center items-center;
+
+    p {
+      @apply text-sm;
+
+      .preference-name {
+        @apply inline-block;
+        width: 150px;
+      }
+
+      .preference-value {
+        @apply inline-block;
+        @apply font-bold;
+      }
+    }
+  }
 }
+*/
 </style>

@@ -65,6 +65,9 @@ class DreamApp {
    * Prepare the application for use
    */
   static async setup() {
+    // https://electronjs.org/docs/tutorial/notifications#windows
+    app.setAppUserModelId(process.execPath)
+
     // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
     utils.enforceMacOSAppLocation()
 

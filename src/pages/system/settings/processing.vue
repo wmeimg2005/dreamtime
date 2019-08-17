@@ -8,7 +8,7 @@
         </select>
       </box-section-item>
 
-      <box-section-item label="GPU" description="Graphics card to be used for processing.">
+      <box-section-item v-if="currentValue.processing.device === 'GPU'" label="GPU" description="Graphics card to be used for processing.">
         <select v-model="currentValue.processing.gpus[0]" class="input">
           <option v-for="(device, index) in gpuDevices" :key="index" :value="index">{{ device.Caption }}</option>
           <option v-for="n in 5" :key="n - 1" :value="n - 1">{{ n - 1 }}</option>
@@ -37,6 +37,7 @@ export default {
 
   created() {
     this.gpuDevices = this.$platform.gpuDevices
+    $nucleus.track('PAGE_SETTINGS_PROCESSING')
   }
 }
 </script>

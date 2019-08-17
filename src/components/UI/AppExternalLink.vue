@@ -15,6 +15,7 @@ export default {
 
   methods: {
     openExternal() {
+      $nucleus.track('EXTERNAL_LINK', { href: this.href })
       $tools.shell.openExternal(this.href)
     }
   }

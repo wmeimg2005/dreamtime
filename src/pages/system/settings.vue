@@ -14,6 +14,7 @@
       <div class="buttons is-group is-center">
         <nuxt-link to="/system/settings/processing" class="button is-outlined is-sm">Processing</nuxt-link>
         <nuxt-link to="/system/settings/preferences" class="button is-outlined is-sm">Preferences</nuxt-link>
+        <nuxt-link to="/system/settings/notifications" class="button is-outlined is-sm">Notifications</nuxt-link>
         <nuxt-link to="/system/settings/folders" class="button is-outlined is-sm">Folders</nuxt-link>
         <!--<nuxt-link to="/settings/theme" class="button is-outlined is-sm">Theme</nuxt-link>-->
         <nuxt-link to="/system/settings/telemetry" class="button is-outlined is-sm">Telemetry</nuxt-link>

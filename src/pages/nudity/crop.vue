@@ -17,7 +17,7 @@
           <p class="box-title">📷 Photo cropping</p>
 
           <p class="help-text">
-            For now the algorithm can only work with photos of the size of 512x512.
+            To be able to generate the dream correctly it is necessary to resize your photo to the size of 512x512
           </p>
 
           <p class="help-text">
@@ -27,6 +27,12 @@
           <p class="help-text">
             🐭 Move the photo by dragging it with the mouse, you can zoom in or out using the mouse wheel.
           </p>
+        </section>
+
+        <section class="box">
+          <label for="is-cropped">
+            <input id="is-cropped" v-model="isCropped" type="checkbox" /> My photo is already the size of 512x512, do not crop. <span v-tooltip="'Select this option to ignore the cropping tool on the right and pass the original photo directly to the transformation algorithm.'" class="underline text-sm">?</span>
+          </label>
         </section>
 
         <section class="box">
@@ -69,6 +75,8 @@ export default {
   data: () => ({
     // Instance of CropperJS
     cropper: undefined,
+
+    isCropped: false,
     isPreferencesVisible: false
   }),
 
@@ -126,19 +134,23 @@ export default {
       console.log(data)
        */
 
-      const canvas = this.cropper.getCroppedCanvas({
-        width: 512,
-        height: 512,
-        minWidth: 512,
-        minHeight: 512,
-        maxWidth: 512,
-        maxHeight: 512,
-        fillColor: 'white',
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high'
-      })
+      if (!this.isCropped) {
+        const canvas = this.cropper.getCroppedCanvas({
+          width: 512,
+          height: 512,
+          minWidth: 512,
+          minHeight: 512,
+          maxWidth: 512,
+          maxHeight: 512,
+          fillColor: 'white',
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high'
+        })
 
-      await $tools.crop(this.photo, canvas)
+        await $tools.crop(this.photo, canvas)
+      } else {
+        this.photo.croppedFile = this.photo.sourceFile
+      }
     },
 
     /**

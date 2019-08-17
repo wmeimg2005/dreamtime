@@ -38,9 +38,10 @@ function live(selector, event, callback, context) {
   })
 }
 
-export default async ({ app, isDev }, inject) => {
+export default async ({ app }, inject) => {
   // Environment Information
   debug('Enviroment', {
+    app,
     env: process.env.NODE_ENV,
     isStatic: $tools.utils.pack.isStatic(),
     paths: {
@@ -66,7 +67,7 @@ export default async ({ app, isDev }, inject) => {
   //---
 
   window.addEventListener('error', (error, url, lineNumber) => {
-    console.log('Error captured', {
+    debug('Error captured', {
       error,
       type: typeof error
     })
@@ -76,7 +77,7 @@ export default async ({ app, isDev }, inject) => {
   })
 
   window.addEventListener('unhandledrejection', rejection => {
-    console.log('Unhandled Rejection captured', {
+    debug('Unhandled Rejection captured', {
       error: rejection.reason,
       type: typeof rejection.reason
     })

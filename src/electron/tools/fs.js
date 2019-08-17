@@ -169,7 +169,12 @@ module.exports = {
       ...options
     }
 
-    const fileName = options.fileName || path.basename(url)
+    const fileName =
+      options.fileName ||
+      path
+        .basename(url)
+        .split('?')[0]
+        .split('#')[0]
     let filePath = path.join(options.directory, fileName)
 
     const deleteFile = () => {

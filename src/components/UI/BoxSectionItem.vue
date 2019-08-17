@@ -1,5 +1,5 @@
 <template>
-  <itemtag :tag="tag" :href="href" class="box-section-item">
+  <itemtag :version="version" :tag="tag" :href="href" class="box-section-item">
     <slot name="icon">
       <figure v-if="isURL(icon)" class="item-icon">
         <img :src="icon" />
@@ -29,8 +29,21 @@ export default {
   components: {
     itemtag: {
       name: 'itemtag',
-      props: ['tag', 'href'],
+      props: ['tag', 'href', 'version'],
+      computed: {
+        isVisible() {
+          if (_.isNil(this.version)) {
+            return true
+          }
+
+          return this.version === $dream.version
+        }
+      },
       render(createElement) {
+        if (!this.isVisible) {
+          return null
+        }
+
         return createElement(
           this.tag,
           {
@@ -61,6 +74,11 @@ export default {
     },
 
     href: {
+      type: String,
+      default: undefined
+    },
+
+    version: {
       type: String,
       default: undefined
     }

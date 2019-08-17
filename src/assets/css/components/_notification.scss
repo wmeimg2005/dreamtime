@@ -5,6 +5,10 @@
     @apply underline;
   }
 
+  &.is-warning {
+    @apply bg-warning border-warning;
+  }
+
   &.is-danger {
     @apply bg-danger-25 border-danger-20;
   }

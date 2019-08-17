@@ -56,7 +56,7 @@ export default class Photo {
         }
       },
       {
-        maxRetries: 3,
+        maxRetries: 2,
         retryDelay: 1000,
         maxTimeout:
           $settings.processing.device === 'GPU' ? 60 * 1000 : 300 * 1000,
@@ -72,7 +72,6 @@ export default class Photo {
     })
 
     this.queue.on('empty', () => {
-      debug('empty')
       // this.onFinish()
     })
 
@@ -105,12 +104,14 @@ export default class Photo {
       }
     })
 
+    /*
     this.debug(`Photo created`, {
       uuid: this.uuid,
       model: this.model,
       sourceFile: this.sourceFile,
       croppedFile: this.croppedFile
     })
+    */
   }
 
   reset() {
@@ -155,6 +156,18 @@ export default class Photo {
 
     this.isLoading = false
     this.timer.stop()
+
+    const activeWindow = $tools.utils.activeWindow()
+
+    if (!activeWindow.isFocused() && $settings.notifications.allRuns) {
+      const notification = new Notification(`💭 All runs have finished`, {
+        body: 'Now you can save all the dreams you like'
+      })
+
+      notification.onclick = () => {
+        activeWindow.focus()
+      }
+    }
   }
 
   /**
@@ -233,11 +246,8 @@ export default class Photo {
    */
   async start() {
     if (this.preferences.executions === 0) {
-      swal(
-        'Invalid Configuration',
-        'Please set 1 or more executions',
-        'warning'
-      )
+      swal('Invalid Configuration', 'Please set 1 or more runs', 'warning')
+
       return
     }
 

@@ -21,7 +21,9 @@ export default {
 
   data: () => ({}),
 
-  created() {}
+  created() {
+    $nucleus.track('PAGE_SETTINGS_TELEMETRY')
+  }
 }
 </script>
 

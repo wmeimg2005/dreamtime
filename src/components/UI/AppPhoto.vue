@@ -31,7 +31,7 @@ export default {
     transition: all 0.15s ease-in-out;
 
     &:hover {
-      @apply absolute rounded z-50;
+      @apply rounded z-50;
       transform: scale(2.5);
     }
   }

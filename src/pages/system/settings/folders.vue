@@ -44,7 +44,9 @@ export default {
 
   data: () => ({}),
 
-  created() {},
+  created() {
+    $nucleus.track('PAGE_SETTINGS_FOLDERS')
+  },
 
   methods: {
     showOpenDialog(path) {

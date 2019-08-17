@@ -45,6 +45,10 @@ export default class File {
     this.reload(path)
   }
 
+  /**
+   *
+   * @param {*} path
+   */
   reload(path) {
     if (_.isNil(path)) {
       path = this.getPath()
@@ -118,6 +122,7 @@ export default class File {
     }
 
     $tools.fs.unlink(this.getPath())
+    this.reload()
   }
 
   /**

@@ -151,6 +151,8 @@ export default {
         return
       }
 
+      $nucleus.track('UPLOAD_SELECTED')
+
       this.startFromFile(files[0])
       event.target.value = ''
     },
@@ -163,6 +165,8 @@ export default {
         swal('Upload failed', 'Please enter a valid web address', 'error')
         return
       }
+
+      $nucleus.track('UPLOAD_URL')
 
       this.startFromURL(this.webAddress)
     },
@@ -204,8 +208,10 @@ export default {
       const externalURL = event.dataTransfer.getData('url')
 
       if (files.length > 0) {
+        $nucleus.track('UPLOAD_DROP')
         this.startFromFile(files[0])
       } else if (externalURL.length > 0) {
+        $nucleus.track('UPLOAD_DROP_URL')
         this.startFromURL(externalURL)
       }
     }

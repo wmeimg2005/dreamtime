@@ -11,6 +11,8 @@
     </app-title>
 
     <div class="about-body">
+      <div v-if="alert" class="notification is-warning text-lg" v-html="alert" />
+
       <!-- Limited! -->
       <section v-if="$platform.isLimited" class="box box-section">
         <box-section-item
@@ -80,7 +82,7 @@
           :description="item.description"
           :icon="item.icon"
           :href="item.href"
-          class="about-item" />
+          :version="item.version" />
       </section>
 
       <!-- DreamPower -->
@@ -105,7 +107,8 @@
           :label="item.label"
           :description="item.description"
           :icon="item.icon"
-          :href="item.href" />
+          :href="item.href"
+          :version="item.version" />
       </section>
 
       <!-- DreamNet -->
@@ -126,7 +129,8 @@
           :label="item.label"
           :description="item.description"
           :icon="item.icon"
-          :href="item.href" />
+          :href="item.href"
+          :version="item.version" />
       </section>
 
       <!-- Contributors -->
@@ -209,10 +213,16 @@ export default {
 
     developers() {
       return $nucleus.isEnabled ? $nucleus.about.developers : []
+    },
+
+    alert() {
+      return $nucleus.isEnabled ? $nucleus.alerts.about : undefined
     }
   },
 
-  created() {},
+  created() {
+    $nucleus.track('PAGE_ABOUT')
+  },
 
   methods: {
     openGUI() {

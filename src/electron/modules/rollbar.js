@@ -26,6 +26,7 @@ const instance = {
       payload: {
         environment:
           process.env.NODE_ENV !== 'development' ? 'production' : 'development',
+        settings: settings._settings,
         person: {
           id: settings.user
         },
