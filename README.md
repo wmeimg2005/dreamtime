@@ -82,7 +82,7 @@ If you want to share or modify this Software please do it for the same purpose a
 
 [![Windows](https://img.shields.io/badge/cdn-v1.1.0-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-windows-x64.exe)
 
-[![Ubuntu](https://img.shields.io/badge/cdn-v1.1.0-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-windows-x64.exe)
+[![Ubuntu](https://img.shields.io/badge/cdn-v1.1.0-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-ubuntu-x64.exe)
 
 ## F.A.Q.
 
