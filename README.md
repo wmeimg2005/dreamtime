@@ -1,12 +1,12 @@
 ![](assets/dreamtime.png)
 
-[![Windows Build Status](https://img.shields.io/teamcity/https/ci.dreamnet.tech/s/DreamTime_Windows_Build?label=windows%20build)](https://ci.dreamnet.tech/viewType.html?buildTypeId=DreamTime_Windows_Build&guest=1)
-[![Ubuntu Build Status](https://img.shields.io/teamcity/https/ci.dreamnet.tech/s/DreamTime_Ubuntu_Build?label=ubuntu%20build)](https://ci.dreamnet.tech/viewType.html?buildTypeId=DreamTime_Ubuntu_Build&guest=1)
-[![GitHub All Releases](https://img.shields.io/github/downloads/private-dreamnet/dreamtime/total)](https://github.com/private-dreamnet/dreamtime/releases)
+[![Windows Build Status](https://img.shields.io/teamcity/https/ci.dreamnet.tech/s/DreamTime_Windows_Build?logo=windows&logoColor=white)](https://ci.dreamnet.tech/viewType.html?buildTypeId=DreamTime_Windows_Build&guest=1)
+[![Ubuntu Build Status](https://img.shields.io/teamcity/https/ci.dreamnet.tech/s/DreamTime_Ubuntu_Build?logo=ubuntu&logoColor=white)](https://ci.dreamnet.tech/viewType.html?buildTypeId=DreamTime_Ubuntu_Build&guest=1)
+[![GitHub All Releases](https://img.shields.io/github/downloads/private-dreamnet/dreamtime/total?logo=github&logoColor=white)](https://github.com/private-dreamnet/dreamtime/releases)
 
 ![GitHub](https://img.shields.io/github/license/private-dreamnet/dreamtime)
 ![GitHub top language](https://img.shields.io/github/languages/top/private-dreamnet/dreamtime)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/w/private-dreamnet/dreamtime)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/private-dreamnet/dreamtime?logo=github&logoColor=white)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0ecb8ba6eeae42e7bfd0d414d1bacee1)](https://www.codacy.com/app/kolessios/dreamtime?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=private-dreamnet/dreamtime&amp;utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8d325515768f221e235f/maintainability)](https://codeclimate.com/github/private-dreamnet/dreamtime/maintainability)
 
@@ -17,22 +17,16 @@ DreamTime is a friendly user interface that allows you to use [DreamPower](https
 
 ![](assets/preview.png)
 
-## Community
+## DreamNet
 
 Join the social networks of DreamNet, the community interested in developing this technology. You can also join just to talk and make friends:
 
 [![Keybase](https://img.shields.io/badge/keybase-33A0FF?logo=keybase&logoColor=white&style=for-the-badge)](https://keybase.io/team/dreamnet)
-
 [![Twitter](https://img.shields.io/twitter/follow/DreamNetCom?label=twitter&logo=twitter&logoColor=white&style=for-the-badge&labelColor=1DA1F2)](https://twitter.com/DreamNetCom)
-
 [![Facebook](https://img.shields.io/badge/facebook-4172B8?logo=facebook&logoColor=white&style=for-the-badge)](https://web.facebook.com/groups/812542509140670)
 
-[![GitHub followers](https://img.shields.io/github/followers/private-dreamnet?label=github&logo=github&logoColor=white&style=for-the-badge&labelColor=181717)](https://github.com/private-dreamnet)
-
-[![DreamNet](https://img.shields.io/badge/dreamnet-E24329?logo=git&logoColor=white&style=for-the-badge)](https://git.dreamnet.tech/dreamnet)
-
+[![GitHub followers](https://img.shields.io/github/followers/private-dreamnet?label=github&logo=github&logoColor=white&style=for-the-badge&labelColor=181717)](https://github.com/private-dreamnet) [![DreamNet](https://img.shields.io/badge/dreamnet-E24329?logo=git&logoColor=white&style=for-the-badge)](https://git.dreamnet.tech/dreamnet)
 [![NotABug](https://img.shields.io/badge/notabug-black?logo=git&logoColor=white&style=for-the-badge)](https://notabug.org/DreamNet)
-
 [![GitGud](https://img.shields.io/badge/gitgud-F05032?logo=git&logoColor=white&style=for-the-badge)](https://gitgud.io/dreamnet)
 
 ## Support
@@ -82,7 +76,7 @@ If you want to share or modify this Software please do it for the same purpose a
 ## Download
 
 
-[![GitHub All Releases](https://img.shields.io/github/downloads/private-dreamnet/dreamtime/total?logo=github&logoColor=white&style=for-the-badge&labelColor=181717)](https://github.com/private-dreamnet/dreamtime/releases)
+[![GitHub All Releases](https://img.shields.io/github/downloads/private-dreamnet/dreamtime/total?logo=github&logoColor=white&style=for-the-badge&labelColor=181717&color=blue)](https://github.com/private-dreamnet/dreamtime/releases)
 
 ## Mirrors
 
