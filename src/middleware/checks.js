@@ -44,16 +44,14 @@ export default function({ route, redirect }) {
     if (route.path !== '/system/about') {
       redirect('/system/about#checkpoints')
     }
-
-    return
   }
 
-  if (!platform.requirements.windowsMedia) {
+  /* if (!platform.requirements.windowsMedia) {
     // Windows Media Pack is missing
     if (route.path !== '/system/about') {
       redirect('/system/about#wmp')
     }
 
     // return
-  }
+  } */
 }

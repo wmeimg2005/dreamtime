@@ -34,8 +34,8 @@ export default {
 
     this.requirements.all =
       this.requirements.cli &&
-      this.requirements.checkpoints &&
-      this.requirements.windowsMedia
+      this.requirements.checkpoints /* &&
+      this.requirements.windowsMedia */
 
     this.isLimited = this.getIsLimited()
 
@@ -88,7 +88,15 @@ export default {
     }
 
     // One of these files must exist
-    const binaries = ['main.py', 'dreampower.exe', 'cli.exe']
+    const binaries = [
+      'main.py',
+      'dreampower.exe',
+      'cli.exe',
+      'dreampower',
+      'cli',
+      'dreampower.dmg', // TODO: Verify that this is correct
+      'cli.dmg'
+    ]
 
     for (const bin of binaries) {
       if ($tools.fs.exists(path.join(dirPath, bin))) {
