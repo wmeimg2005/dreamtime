@@ -4,6 +4,7 @@
   "homepage": "https://time.dreamnet.tech",
   "version": "1.1.0",
   "main": "electron/index.js",
+  "description": "DreamTime is a friendly user interface that allows you to use DreamPower to transform photos of people into free and private entertainment ",
   "license": "GPL-3.0-only",
   "private": true,
   "repository": {
@@ -40,41 +41,67 @@
         "to": "vbs"
       }
     ],
-    "extraFiles": [
-      {
-        "from": ".env",
-        "to": ".env"
-      },
-      {
-        "from": "../dist/dreampower",
-        "to": "cli",
-        "filter": [
-          "**/*",
-          "!{build,checkpoints,readmeimgs}"
-        ]
-      }
-    ],
     "win": {
       "icon": "static/favicon.ico",
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
+          "arch": "x64"
+        }
+      ],
+      "extraFiles": [
+        {
+          "from": ".env",
+          "to": ".env"
+        },
+        {
+          "from": "../dist/dreampower",
+          "to": "cli",
+          "filter": [
+            "**/*",
+            "!{build,checkpoints,readmeimgs}"
           ]
         }
       ]
     },
     "linux": {
       "target": "deb",
-      "icon": "static/assets/images/dreamtime.png",
+      "icon": "static/favicon.icns",
       "executableName": "DreamTime",
-      "category": "Graphics"
+      "category": "Graphics",
+      "extraFiles": [
+        {
+          "from": ".env",
+          "to": ".env"
+        },
+        {
+          "from": "../dist/dreampower",
+          "to": "cli",
+          "filter": [
+            "**/*",
+            "!{build,checkpoints,readmeimgs}"
+          ]
+        }
+      ]
     },
     "mac": {
-      "category": "public.app-category.graphics-design",
       "target": "dmg",
-      "darkModeSupport": true
+      "icon": "static/favicon.icns",
+      "category": "public.app-category.graphics-design",
+      "extraFiles": [
+        {
+          "from": ".env",
+          "to": "MacOS/.env"
+        },
+        {
+          "from": "../dist/dreampower",
+          "to": "MacOS/cli",
+          "filter": [
+            "**/*",
+            "!{build,checkpoints,readmeimgs}"
+          ]
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -86,15 +113,18 @@
       "uninstallerIcon": "static/favicon.ico",
       "license": "license.txt"
     },
+
     "deb": {
-      "packageCategory": "graphics",
-      "icon": "static/assets/images/dreamtime.png",
-      "artifactName": "${productName}.${ext}"
+      "artifactName": "${productName}.${ext}",
+      "fpm": [
+        "--deb-no-default-config-files"
+      ]
     },
     "dmg": {
       "title": "${productName} v${version}",
-      "artifactName": "${productName}.${ext}"
+      "artifactName": "${productName}_${version}.${ext}"
     }
+
   },
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
