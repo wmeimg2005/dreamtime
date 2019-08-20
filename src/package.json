@@ -65,6 +65,17 @@
         }
       ]
     },
+    "linux": {
+      "target": "deb",
+      "icon": "static/assets/images/dreamtime.png",
+      "executableName": "DreamTime",
+      "category": "Graphics"
+    },
+    "mac": {
+      "category": "public.app-category.graphics-design",
+      "target": "dmg",
+      "darkModeSupport": true
+    },
     "nsis": {
       "oneClick": false,
       "artifactName": "${productName}_Setup.${ext}",
@@ -75,15 +86,13 @@
       "uninstallerIcon": "static/favicon.ico",
       "license": "license.txt"
     },
-    "linux": {
-      "target": "deb",
-      "icon": "static/assets/images/dreamtime.png",
-      "executableName": "DreamTime",
-      "category": "Graphics"
-    },
     "deb": {
       "packageCategory": "graphics",
       "icon": "static/assets/images/dreamtime.png",
+      "artifactName": "${productName}.${ext}"
+    },
+    "dmg": {
+      "title": "${productName} v${version}",
       "artifactName": "${productName}.${ext}"
     }
   },
