@@ -3,15 +3,15 @@ import importlib
 import logging
 import os
 import subprocess
-import shutil
+from importlib import util
 
-spec = importlib.util.spec_from_file_location("cli._common",
+spec = util.spec_from_file_location("cli._common",
                                               os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                            "../cli/scripts/_common.py"))
-c = importlib.util.module_from_spec(spec)
+c = util.module_from_spec(spec)
 spec.loader.exec_module(c)
 
-spec = importlib.util.spec_from_file_location("cli.build", "../cli/scripts/build.py")
+spec = util.spec_from_file_location("cli.build", "../cli/scripts/build.py")
 b = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(b)
 

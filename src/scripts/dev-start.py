@@ -1,12 +1,12 @@
 import argparse
-import importlib
+from importlib import util
 import os
 import subprocess
 
-spec = importlib.util.spec_from_file_location("cli._common",
+spec = util.spec_from_file_location("cli._common",
                                               os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                            "../cli/scripts/_common.py"))
-c = importlib.util.module_from_spec(spec)
+c = util.module_from_spec(spec)
 spec.loader.exec_module(c)
 
 parser = argparse.ArgumentParser(description='cli and gui builder')

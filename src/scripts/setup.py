@@ -1,17 +1,17 @@
 import argparse
-import importlib.util
+from importlib import util
 import logging
 import os
 import subprocess
 
-spec = importlib.util.spec_from_file_location("cli._common",
+spec = util.spec_from_file_location("cli._common",
                                               os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                            "../cli/scripts/_common.py"))
-c = importlib.util.module_from_spec(spec)
+c = util.module_from_spec(spec)
 spec.loader.exec_module(c)
 
-spec = importlib.util.spec_from_file_location("cli.setup", "../cli/scripts/setup.py")
-s = importlib.util.module_from_spec(spec)
+spec = util.spec_from_file_location("cli.setup", "../cli/scripts/setup.py")
+s = util.module_from_spec(spec)
 spec.loader.exec_module(s)
 
 
