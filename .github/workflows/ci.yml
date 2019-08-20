@@ -132,8 +132,17 @@ jobs:
 
       - name: Build DreamTime
         working-directory: src
+        if: false
         run: |
           yarn build
+
+      - name: Deploy
+        working-directory: src
+        #if: startsWith(github.ref, 'refs/tags')
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          yarn release --ci --github.assets="../dist/${{ matrix.artifact-file }}"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1

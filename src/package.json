@@ -1,10 +1,10 @@
 {
   "name": "dreamtime",
+  "description": "Friendly user interface for DreamPower.",
   "author": "DreamNet <dreamtime@dreamnet.tech>",
   "homepage": "https://time.dreamnet.tech",
   "version": "1.1.0",
   "main": "electron/index.js",
-  "description": "DreamTime is a friendly user interface that allows you to use DreamPower to transform photos of people into free and private entertainment ",
   "license": "GPL-3.0-only",
   "private": true,
   "repository": {
@@ -35,18 +35,18 @@
       "!**/{components,cli,layouts,middleware,mixins,pages,patches,plugins,scripts,store,third,nucleus.json,tailwind.config.js}",
       "!{assets,modules}"
     ],
-    "extraResources": [
-      {
-        "from": "node_modules/regedit/vbs",
-        "to": "vbs"
-      }
-    ],
     "win": {
       "icon": "static/favicon.ico",
       "target": [
         {
           "target": "nsis",
           "arch": "x64"
+        }
+      ],
+      "extraResources": [
+        {
+          "from": "node_modules/regedit/vbs",
+          "to": "vbs"
         }
       ],
       "extraFiles": [
@@ -113,7 +113,6 @@
       "uninstallerIcon": "static/favicon.ico",
       "license": "license.txt"
     },
-
     "deb": {
       "artifactName": "${productName}.${ext}",
       "fpm": [
@@ -122,9 +121,8 @@
     },
     "dmg": {
       "title": "${productName} v${version}",
-      "artifactName": "${productName}_${version}.${ext}"
+      "artifactName": "${productName}.${ext}"
     }
-
   },
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
@@ -137,7 +135,8 @@
     "test": "yarn build:gui && cross-env NODE_ENV=production DEBUG=app:* electron .",
     "build": "yarn build:gui && yarn build:electron",
     "rebuild": "electron-rebuild",
-    "pack": "electron-builder --dir"
+    "pack": "electron-builder --dir",
+    "release": "release-it"
   },
   "dependencies": {
     "@nuxtjs/dotenv": "^1.4.0",
@@ -202,6 +201,7 @@
     "nodemon": "^1.18.9",
     "nuxtjs-electron": "^0.1.10",
     "prettier": "^1.16.4",
+    "release-it": "^12.3.5",
     "rollbar-sourcemap-webpack-plugin": "^2.5.1",
     "sass-loader": "^7.1.0",
     "tailwindcss": "^1.0.0"
