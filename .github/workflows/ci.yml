@@ -1,6 +1,22 @@
-name: Build CI
+name: CI/CD
 
-on: [push, release]
+on:
+  push:
+    branches:
+      - master
+      - canary
+    tags:
+      - v*
+    paths:
+      - .github/workflows/*
+      - src/*
+
+  pull_request:
+    branches:
+      - canary
+    paths:
+      - .github/workflows/*
+      - src/*
 
 jobs:
   build:
@@ -25,6 +41,7 @@ jobs:
           - os: ubuntu-latest # Ubuntu
             os-short: ubuntu
             os-ext: deb
+            python: python3
             artifact-file: DreamTime.deb
           - os: ubuntu-latest # Ubuntu & GPU
             device: gpu
@@ -35,6 +52,7 @@ jobs:
           - os: windows-latest # Windows
             os-short: windows
             os-ext: exe
+            python: python
             artifact-file: DreamTime_Setup.exe
             pyinstaller-args: --add-binary "./third/msvcp/msvcp140.dll;."
           - os: windows-latest # Windows & GPU
@@ -46,6 +64,7 @@ jobs:
           - os: macOS-latest # macOS
             os-short: macos
             os-ext: dmg
+            python: python3
             artifact-file: DreamTime.dmg
             torch-version: torch
 
@@ -89,17 +108,17 @@ jobs:
       - name: Setup DreamPower
         working-directory: src/cli
         run: |
-          python3 -m pip install pyinstaller
-          python3 -m pip install numpy==1.16.4
-          python3 -m pip install pillow==6.1.0
-          python3 -m pip install opencv-python==4.1.0.25
-          python3 -m pip install rsa==4.0
-          python3 -m pip install imageio==2.5.0
-          python3 -m pip install python-dotenv==0.10.3
-          python3 -m pip install rook==0.1.73
-          python3 -m pip install sentry-sdk==0.10.2
-          python3 -m pip --no-cache-dir install ${{ matrix.torch-version }}
-          python3 -m pip --no-cache-dir install torchvision==0.2.2.post3
+          ${{ matrix.python }} -m pip install pyinstaller
+          ${{ matrix.python }} -m pip install numpy==1.16.4
+          ${{ matrix.python }} -m pip install pillow==6.1.0
+          ${{ matrix.python }} -m pip install opencv-python==4.1.0.25
+          ${{ matrix.python }} -m pip install rsa==4.0
+          ${{ matrix.python }} -m pip install imageio==2.5.0
+          ${{ matrix.python }} -m pip install python-dotenv==0.10.3
+          ${{ matrix.python }} -m pip install rook==0.1.73
+          ${{ matrix.python }} -m pip install sentry-sdk==0.10.2
+          ${{ matrix.python }} -m pip --no-cache-dir install ${{ matrix.torch-version }}
+          ${{ matrix.python }} -m pip --no-cache-dir install torchvision==0.2.2.post3
 
       - name: Setup DreamTime
         working-directory: src
@@ -109,7 +128,7 @@ jobs:
       - name: Build DreamPower
         working-directory: src/cli
         run: |
-          python3 -m PyInstaller main.py -y --onedir --name "dreampower" --distpath "../../dist" ${{ matrix.pyinstaller-args }}
+          ${{ matrix.python }} -m PyInstaller main.py -y --onedir --name "dreampower" --distpath "../../dist" ${{ matrix.pyinstaller-args }}
 
       - name: Build DreamTime
         working-directory: src
@@ -119,5 +138,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: DreamTime-${{ github.sha }}-${{ matrix.os-short }}-${{ matrix.device }}-x64
+          name: DreamTime-${{ github.sha }}-${{ matrix.os-short }}-${{ matrix.device }}
           path: dist/${{ matrix.artifact-file }}
