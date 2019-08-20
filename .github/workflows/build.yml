@@ -1,0 +1,132 @@
+name: Build CI
+
+on: [push, release]
+
+jobs:
+  build:
+    name: Build (${{ matrix.os-short }}-${{ matrix.device }})
+    runs-on: ${{ matrix.os }}
+
+    # Strategy
+    # or a.k.a variables for multiple platforms
+    # https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategy
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          #- ubuntu-latest
+          #- windows-latest
+          - macOS-latest
+        device:
+          - gpu
+          - cpu
+
+        include:
+          - os: ubuntu-latest # Ubuntu
+            os-short: ubuntu
+            os-ext: deb
+            artifact-file: DreamTime.deb
+          - os: ubuntu-latest # Ubuntu & GPU
+            device: gpu
+            torch-version: https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
+          - os: ubuntu-latest # Ubuntu & CPU
+            device: cpu
+            torch-version: https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
+          - os: windows-latest # Windows
+            os-short: windows
+            os-ext: exe
+            artifact-file: DreamTime_Setup.exe
+            pyinstaller-args: --add-binary "./third/msvcp/msvcp140.dll;."
+          - os: windows-latest # Windows & GPU
+            device: gpu
+            torch-version: https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-win_amd64.whl
+          - os: windows-latest # Windows & CPU
+            device: cpu
+            torch-version: https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-win_amd64.whl
+          - os: macOS-latest # macOS
+            os-short: macos
+            os-ext: dmg
+            artifact-file: DreamTime.dmg
+            torch-version: torch
+
+        exclude:
+          - os: macOS-latest
+            device: gpu
+
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+        continue-on-error: true
+
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+        continue-on-error: true
+
+      - name: Runner test
+        run: which python
+
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+
+      - name: Use Python 3.7
+        uses: actions/setup-python@v1
+        if: runner.os != 'macOS'
+        with:
+          python-version: 3.7
+          architecture: x64
+
+      - name: Use Python
+        if: false
+        run: |
+          brew unlink python
+          brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb
+          brew install libomp
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Use Yarn
+        run: npm install -g yarn
+
+      - name: Setup DreamPower
+        working-directory: src/cli
+        run: |
+          python3 -m pip install pyinstaller
+          python3 -m pip install numpy==1.16.4
+          python3 -m pip install pillow==6.1.0
+          python3 -m pip install opencv-python==4.1.0.25
+          python3 -m pip install rsa==4.0
+          python3 -m pip install imageio==2.5.0
+          python3 -m pip install python-dotenv==0.10.3
+          python3 -m pip install rook==0.1.73
+          python3 -m pip install sentry-sdk==0.10.2
+          python3 -m pip --no-cache-dir install ${{ matrix.torch-version }}
+          python3 -m pip --no-cache-dir install torchvision==0.2.2.post3
+
+      - name: Setup DreamTime
+        working-directory: src
+        run: |
+          yarn install
+
+      - name: Build DreamPower
+        working-directory: src/cli
+        run: |
+          python3 -m PyInstaller main.py -y --onedir --name "dreampower" --distpath "../../dist" ${{ matrix.pyinstaller-args }}
+
+      - name: Build DreamTime
+        working-directory: src
+        run: |
+          yarn build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: DreamTime-${{ github.sha }}-${{ matrix.os-short }}-${{ matrix.device }}-x64
+          path: dist/${{ matrix.artifact-file }}
