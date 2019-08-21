@@ -293,14 +293,14 @@ export default class {
 
     this.downloadBus = $tools.fs.download(url)
 
-    this.downloadBus.on('progress', payload => {
+    this.downloadBus.on('progress', (payload) => {
       this.updating.progress = payload.progress
       this.updating.mbTotal = payload.mbTotal
       this.updating.mbWritten = payload.mbWritten
       // debug(`Progress: ${progress}`)
     })
 
-    this.downloadBus.on('end', filePath => {
+    this.downloadBus.on('end', (filePath) => {
       debug('Download finished!', {
         filePath
       })
@@ -309,7 +309,7 @@ export default class {
       deferred.resolve(filePath)
     })
 
-    this.downloadBus.on('error', err => {
+    this.downloadBus.on('error', (err) => {
       this.downloadBus = undefined
       deferred.reject(err)
     })
@@ -332,6 +332,7 @@ export default class {
    * Install the downloaded update
    * @param {string} filePath
    */
+  /* eslint-disable-next-line */
   async install(filePath) {
     // Custom
   }

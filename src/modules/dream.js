@@ -1,5 +1,4 @@
-import _ from 'lodash'
-
+/* eslint-disable-next-line */
 const debug = require('debug').default('app:modules:app')
 
 export default {

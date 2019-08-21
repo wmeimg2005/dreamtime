@@ -9,9 +9,7 @@ const debug = require('debug').default('app:electron:tools')
 const { Image } = require('image-js')
 // const { Caman } = require('caman')
 
-const AppError = require('../modules/error')
 const paths = require('./paths')
-const config = require('../../nuxt.config')
 
 /**
  * deepTools.
@@ -149,22 +147,22 @@ module.exports = {
       process = spawn(paths.getCli('dreampower'), cliArgs)
     }
 
-    process.on('error', error => {
+    process.on('error', (error) => {
       console.error(error)
       bus.emit('error', null, error)
     })
 
-    process.stdout.on('data', data => {
+    process.stdout.on('data', (data) => {
       console.info(`stdout: ${data}`)
       bus.emit('stdout', null, data)
     })
 
-    process.stderr.on('data', data => {
+    process.stderr.on('data', (data) => {
       console.warn(`stderr: ${data}`)
       bus.emit('stderr', null, data)
     })
 
-    process.on('close', code => {
+    process.on('close', (code) => {
       console.log(`CLI process exited with code ${code}`)
       bus.emit('ready', null, code)
     })

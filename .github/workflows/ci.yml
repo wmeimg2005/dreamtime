@@ -34,43 +34,40 @@ jobs:
           - windows-latest
           - macOS-latest
         device:
-          - gpu
-          - cpu
+          - any
+          - cpuonly
 
         include:
           - os: ubuntu-latest # Ubuntu
             os-short: ubuntu
             os-ext: deb
             python: python3
-            artifact-file: DreamTime.deb
           - os: ubuntu-latest # Ubuntu & GPU
-            device: gpu
+            device: any
             torch-version: https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
           - os: ubuntu-latest # Ubuntu & CPU
-            device: cpu
+            device: cpuonly
             torch-version: https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
           - os: windows-latest # Windows
             os-short: windows
             os-ext: exe
             python: python
-            artifact-file: DreamTime_Setup.exe
             pyinstaller-args: --add-binary "./third/msvcp/msvcp140.dll;."
           - os: windows-latest # Windows & GPU
-            device: gpu
+            device: any
             torch-version: https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-win_amd64.whl
           - os: windows-latest # Windows & CPU
-            device: cpu
+            device: cpuonly
             torch-version: https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-win_amd64.whl
           - os: macOS-latest # macOS
             os-short: macos
             os-ext: dmg
             python: python3
-            artifact-file: DreamTime.dmg
             torch-version: torch
 
         exclude:
           - os: macOS-latest
-            device: gpu
+            device: any
 
     steps:
       - name: Dump GitHub context
@@ -130,22 +127,16 @@ jobs:
         run: |
           ${{ matrix.python }} -m PyInstaller main.py -y --onedir --name "dreampower" --distpath "../../dist" ${{ matrix.pyinstaller-args }}
 
-      - name: Build DreamTime
+      - name: Build & Deploy DreamTime
         working-directory: src
-        if: false
-        run: |
-          yarn build
-
-      - name: Deploy
-        working-directory: src
-        #if: startsWith(github.ref, 'refs/tags')
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          BUILD_DEVICE: ${{ matrix.device }}
         run: |
-          yarn release --ci --github.assets="../dist/${{ matrix.artifact-file }}"
+          yarn release --ci --github.assets="../dist/DreamTime-${{ matrix.os-short }}-${{ matrix.device }}.${{ matrix.os-ext }}"
 
-      - name: Upload Artifact
+      - name: Upload Internal Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: DreamTime-${{ github.sha }}-${{ matrix.os-short }}-${{ matrix.device }}
-          path: dist/${{ matrix.artifact-file }}
+          name: ${{ matrix.os-short }}-${{ matrix.device }}
+          path: dist/DreamTime-${{ matrix.os-short }}-${{ matrix.device }}.${{ matrix.os-ext }}

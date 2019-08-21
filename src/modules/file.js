@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import path from 'path'
 
+/* eslint-disable-next-line */
 const debug = require('debug').default('app:modules:file')
 
 export default class File {

@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
-import swal from 'sweetalert'
 import BaseMixin from '~/mixins/BaseMixin'
 import { dream, platform, updater, nudify, WebError } from '~/modules'
 
@@ -27,16 +26,6 @@ tippy.setDefaults({
   arrow: true,
   arrowType: 'round'
 })
-
-function live(selector, event, callback, context) {
-  ;(context || document).addEventListener(event, function event(e) {
-    let found
-    let el = e.target || e.srcElement
-    // eslint-disable-next-line
-    while (el && !(found = el.id == selector)) el = el.parentElement
-    if (found) callback.call(el, e)
-  })
-}
 
 export default async ({ app }, inject) => {
   // Environment Information
@@ -66,7 +55,7 @@ export default async ({ app }, inject) => {
 
   //---
 
-  window.addEventListener('error', (error, url, lineNumber) => {
+  window.addEventListener('error', (error) => {
     debug('Error captured', {
       error,
       type: typeof error
@@ -76,7 +65,7 @@ export default async ({ app }, inject) => {
     return true
   })
 
-  window.addEventListener('unhandledrejection', rejection => {
+  window.addEventListener('unhandledrejection', (rejection) => {
     debug('Unhandled Rejection captured', {
       error: rejection.reason,
       type: typeof rejection.reason
@@ -86,7 +75,7 @@ export default async ({ app }, inject) => {
     return true
   })
 
-  Vue.config.errorHandler = (err, vm, info) => {
+  Vue.config.errorHandler = (err) => {
     WebError.handle(err)
     throw err
   }

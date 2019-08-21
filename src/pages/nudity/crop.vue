@@ -67,7 +67,6 @@
 
 <script>
 import Cropper from 'cropperjs'
-import _ from 'lodash'
 
 export default {
   middleware: 'nudity',

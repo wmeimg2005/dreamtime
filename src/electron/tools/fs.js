@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const fs = require('fs')
 const mime = require('mime-types')
 const path = require('path')
@@ -125,7 +126,7 @@ module.exports = {
       bus.emit('end')
     })
 
-    stream.on('data', entryStream => {
+    stream.on('data', (entryStream) => {
       extracted += 1
       const progress = extracted / 4 // TODO: Hardcoded for checkpoints
 
@@ -137,7 +138,7 @@ module.exports = {
       bus.emit('progress', null, progress)
     })
 
-    stream.on('error', err => {
+    stream.on('error', (err) => {
       bus.emit('error', null, err)
     })
 
@@ -193,7 +194,7 @@ module.exports = {
         responseType: 'stream',
         maxContentLength: -1
       })
-      .then(response => {
+      .then((response) => {
         const contentLength = response.data.headers['content-length'] || -1
         const mbTotal = filesize(contentLength, {
           exponent: 2,
@@ -203,7 +204,7 @@ module.exports = {
         const output = fs.createWriteStream(filePath)
         const stream = response.data
 
-        const cancel = err => {
+        const cancel = (err) => {
           stream.destroy(err)
           deleteFile()
 
@@ -222,11 +223,11 @@ module.exports = {
           exists: fs.existsSync(filePath)
         })
 
-        output.on('error', err => {
+        output.on('error', (err) => {
           cancel(err)
         })
 
-        stream.on('data', chunk => {
+        stream.on('data', (chunk) => {
           output.write(Buffer.from(chunk))
 
           if (contentLength > 0) {
@@ -266,7 +267,7 @@ module.exports = {
           bus.emit('end', null, filePath)
         })
 
-        stream.on('error', err => {
+        stream.on('error', (err) => {
           cancel(err)
         })
 
@@ -275,7 +276,7 @@ module.exports = {
           cancel()
         })
       })
-      .catch(err => {
+      .catch((err) => {
         bus.emit('error', null, err)
       })
 
@@ -286,11 +287,11 @@ module.exports = {
     return new Promise((resolve, reject) => {
       const bus = this.download(url, options)
 
-      bus.on('end', filePath => {
+      bus.on('end', (filePath) => {
         resolve(filePath)
       })
 
-      bus.on('error', err => {
+      bus.on('error', (err) => {
         reject(err)
       })
     })

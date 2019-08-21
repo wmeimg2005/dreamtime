@@ -3,5 +3,4 @@ module.exports = {
   settings: require('./settings'),
   nucleus: require('./nucleus'),
   rollbar: require('./rollbar')
-  // bullet: require('./bullet'),
 }

@@ -9,8 +9,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import _ from 'lodash'
-
 /**
  * Pages that include this middleware will only be accessible
  * if the user has selected a photo to transform.

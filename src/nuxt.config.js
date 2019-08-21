@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+// eslint-disable-next-line nuxt/no-cjs-in-config
 module.exports = {
   mode: 'spa',
 
@@ -62,13 +63,19 @@ module.exports = {
   plugins: ['~/plugins/boot.client.js', '~/components'],
 
   /*
+   ** Nuxt.js dev-modules
+   */
+  devModules: [
+    // Doc: https://github.com/nuxt-community/eslint-module
+    '@nuxtjs/eslint-module',
+    // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
+    '@nuxtjs/tailwindcss'
+  ],
+
+  /*
    ** Nuxt.js modules
    */
-  modules: [
-    '@nuxtjs/pwa',
-    // '@nuxtjs/eslint-module',
-    '@nuxtjs/dotenv'
-  ],
+  modules: ['@nuxtjs/pwa', '@nuxtjs/dotenv'],
 
   /*
    ** Axios module configuration

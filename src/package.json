@@ -105,7 +105,7 @@
     },
     "nsis": {
       "oneClick": false,
-      "artifactName": "${productName}_Setup.${ext}",
+      "artifactName": "${productName}-windows-${env.BUILD_DEVICE}.${ext}",
       "menuCategory": true,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
@@ -114,29 +114,32 @@
       "license": "license.txt"
     },
     "deb": {
-      "artifactName": "${productName}.${ext}",
+      "artifactName": "${productName}-ubuntu-${env.BUILD_DEVICE}.${ext}",
       "fpm": [
         "--deb-no-default-config-files"
       ]
     },
     "dmg": {
       "title": "${productName} v${version}",
-      "artifactName": "${productName}.${ext}"
+      "artifactName": "${productName}-macos-${env.BUILD_DEVICE}.${ext}"
     }
   },
   "scripts": {
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "precommit": "yarn lint",
     "postinstall": "patch-package",
+    "pack": "electron-builder --dir",
     "dev:gui": "cross-env NODE_ENV=development nuxt",
     "dev:electron": "cross-env NODE_ENV=development DEBUG=app:* electron .",
     "build:gui": "cross-env NODE_ENV=production nuxt build",
     "build:electron": "cross-env NODE_ENV=production electron-builder --publish=never",
-    "test": "yarn build:gui && cross-env NODE_ENV=production DEBUG=app:* electron .",
     "build": "yarn build:gui && yarn build:electron",
-    "rebuild": "electron-rebuild",
-    "pack": "electron-builder --dir",
+    "preview": "yarn build:gui && cross-env NODE_ENV=production DEBUG=app:* electron .",
     "release": "release-it"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
   },
   "dependencies": {
     "@nuxtjs/dotenv": "^1.4.0",
@@ -178,6 +181,7 @@
     "@babel/core": "^7.5.0",
     "@nuxtjs/eslint-config": "^0.0.1",
     "@nuxtjs/eslint-module": "^0.0.1",
+    "@nuxtjs/tailwindcss": "^1.1.2",
     "babel-eslint": "^10.0.1",
     "cross-env": "^5.2.0",
     "electron": "^5.0.6",
@@ -197,6 +201,7 @@
     "eslint-plugin-promise": ">=4.0.1",
     "eslint-plugin-standard": ">=4.0.0",
     "eslint-plugin-vue": "^5.2.3",
+    "husky": "^3.0.4",
     "node-sass": "^4.12.0",
     "nodemon": "^1.18.9",
     "nuxtjs-electron": "^0.1.10",

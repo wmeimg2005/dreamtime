@@ -1,9 +1,10 @@
 module.exports = {
   hooks: {
-    'before:init': ['yarn lint', 'yarn build'],
-    'before:github:release': [
+    'before:init': [
       'git config user.email "developers@dreamnet.tech"',
-      'git config user.name "DreamNet"'
+      'git config user.name "DreamNet"',
+      'yarn lint',
+      'yarn build'
     ]
   },
 
@@ -24,6 +25,7 @@ module.exports = {
     release: true,
     releaseName: 'v${version}',
     preRelease: true,
-    draft: true
+    draft: true,
+    tagName: 'v${version}'
   }
 }
