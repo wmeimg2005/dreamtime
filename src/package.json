@@ -134,7 +134,7 @@
     "build:electron": "cross-env NODE_ENV=production electron-builder --publish=never",
     "build": "yarn build:gui && yarn build:electron",
     "preview": "yarn build:gui && cross-env NODE_ENV=production DEBUG=app:* electron .",
-    "release": "release-it"
+    "release": "release-it --no-increment"
   },
   "husky": {
     "hooks": {

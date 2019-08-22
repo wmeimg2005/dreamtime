@@ -131,15 +131,9 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, { isClient, isDev }) {
-      console.log({
-        isClient,
-        isDev
-      })
+      if (isDev) {
+        config.devtool = isClient ? 'source-map' : 'inline-source-map'
 
-      config.output.futureEmitAssets = false
-      config.devtool = isClient ? 'source-map' : 'inline-source-map'
-
-      if (!isDev) {
         // const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
         /*
         config.plugins.push(
@@ -153,20 +147,7 @@ module.exports = {
           })
         )
         */
-        /*
-        config.plugins.push(
-          new SentryWebpackPlugin({
-            include: '.',
-            ignoreFile: '.sentrycliignore',
-            ignore: ['node_modules', 'nuxt.config.js'],
-            configFile: 'sentry.properties'
-          })
-        )
-        */
-      }
-
-      if (!isDev) {
-        // relative links, please.
+      } else {
         config.output.publicPath = './_nuxt/'
       }
     }

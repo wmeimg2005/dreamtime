@@ -30,8 +30,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
-          - windows-latest
+          #- ubuntu-latest
+          #- windows-latest
           - macOS-latest
         device:
           - any
@@ -133,7 +133,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           BUILD_DEVICE: ${{ matrix.device }}
         run: |
-          yarn release --ci --github.assets="../dist/DreamTime-${{ matrix.os-short }}-${{ matrix.device }}.${{ matrix.os-ext }}"
+          yarn release --verbose --ci --github.assets="../dist/DreamTime-${{ matrix.os-short }}-${{ matrix.device }}.${{ matrix.os-ext }}"
 
       - name: Upload Internal Artifact
         uses: actions/upload-artifact@v1

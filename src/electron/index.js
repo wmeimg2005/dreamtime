@@ -114,9 +114,13 @@ class DreamApp {
     this.loadURL = this.getNuxtAppLocation()
 
     if (config.dev) {
-      // Development,
-      // Load the DevTools and wait for the NuxtJS server to load.
-      this.window.webContents.openDevTools()
+      // Development
+
+      if (!process.env.DEBUGGING) {
+        // Load the DevTools
+        this.window.webContents.openDevTools()
+      }
+
       this.pollServer()
     } else {
       // Production, load the static interface!
@@ -131,7 +135,7 @@ class DreamApp {
     console.log(`Requesting status from the server: ${this.loadURL}`)
 
     http
-      .get(this.loadURL, response => {
+      .get(this.loadURL, (response) => {
         if (response.statusCode === 200) {
           console.log('> Server ready, show time!')
           this.window.loadURL(this.loadURL)
@@ -170,7 +174,7 @@ class DreamApp {
         {
           recursive: true
         },
-        error => {
+        (error) => {
           throw new AppError(
             `Trying to create the directory to save the models,
           please make sure that the application has permissions to create the directory:\n

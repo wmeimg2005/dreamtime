@@ -99,7 +99,7 @@ export default class {
       linux: '.deb'
     })
 
-    return `${this.getTitle()}-v${
+    return `${this.getTitle()}-${
       this.latest.tag_name
     }-${platform}-x64${extension}`
   }
