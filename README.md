@@ -1,12 +1,10 @@
 ![](assets/dreamtime.png)
 
-[![Windows Build Status](https://img.shields.io/teamcity/https/ci.dreamnet.tech/s/DreamTime_Windows_Build?logo=windows&logoColor=white)](https://ci.dreamnet.tech/viewType.html?buildTypeId=DreamTime_Windows_Build&guest=1)
-[![Ubuntu Build Status](https://img.shields.io/teamcity/https/ci.dreamnet.tech/s/DreamTime_Ubuntu_Build?logo=ubuntu&logoColor=white)](https://ci.dreamnet.tech/viewType.html?buildTypeId=DreamTime_Ubuntu_Build&guest=1)
+[![Build Status](https://github.com/private-dreamnet/dreamtime/workflows/CI/CD/badge.svg)](https://github.com/private-dreamnet/dreamtime/actions)
 [![GitHub All Releases](https://img.shields.io/github/downloads/private-dreamnet/dreamtime/total?logo=github&logoColor=white)](https://github.com/private-dreamnet/dreamtime/releases)
 
 ![GitHub](https://img.shields.io/github/license/private-dreamnet/dreamtime)
 ![GitHub top language](https://img.shields.io/github/languages/top/private-dreamnet/dreamtime)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/w/private-dreamnet/dreamtime?logo=github&logoColor=white)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0ecb8ba6eeae42e7bfd0d414d1bacee1)](https://www.codacy.com/app/kolessios/dreamtime?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=private-dreamnet/dreamtime&amp;utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8d325515768f221e235f/maintainability)](https://codeclimate.com/github/private-dreamnet/dreamtime/maintainability)
 
@@ -60,11 +58,12 @@ If you want to share or modify this Software please do it for the same purpose a
 - 64 bits OS
 - Windows 7 SP1/Windows 8/Windows 10 1803+
 - Ubuntu 16.04+
+- 🧪 macOS
 - **8 GB** of RAM or more.
 
 > ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
 
-> 🤷‍♂️ We cannot offer a build for **macOS** because we don't have a Mac to compile the project (FeelsPoorMan). Sorry! We are trying to provide all the necessary information so that macOS users can compile their own version.
+> 🧪 **macOS** support is in an experimental version, current version of DreamTime has not been developed with a "cpu-only" or "macOS" support in mind, some features may fail and it will not be possible to upgrade from version 1.1 to 1.2 automatically.
 
 ## GPU Processing Requirements
 
@@ -82,7 +81,9 @@ If you want to share or modify this Software please do it for the same purpose a
 
 [![Windows](https://img.shields.io/badge/cdn-v1.1.0-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-windows-x64.exe)
 
-[![Ubuntu](https://img.shields.io/badge/cdn-v1.1.0-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-ubuntu-x64.exe)
+[![Ubuntu](https://img.shields.io/badge/cdn-v1.1.0-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-ubuntu-x64.deb)
+
+[![macOS](https://img.shields.io/badge/cdn-v1.1.0%20(Experimental)-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/fc09024/DreamTime-v1.1.0-macos-cpuonly.dmg)
 
 ## F.A.Q.
 
@@ -138,7 +139,7 @@ python3 build.py --help
 
 We seek to improve the software in every possible way, if you want to make a contribution you are welcome to make a Pull Request, just make sure you do it to the **canary branch**.
 
-## ⚠ Drastic Changes in v1.0.0
+## ⚠ Drastic Changes in v1.0.0+
 
 Because DreamTime has been the **victim of users who take the source code and sell it without complying with the LICENSE conditions**, we are forced to implement certain very unfriendly changes for an open-source project, we apologize for all the inconvenience this may cause, these changes are **temporary** until DreamTime has been noticed on social networks to prevent people from falling into a possible SCAM.
 
