@@ -30,8 +30,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          #- ubuntu-latest
-          #- windows-latest
+          - ubuntu-latest
+          - windows-latest
           - macOS-latest
         device:
           - any
@@ -102,7 +102,7 @@ jobs:
       - name: Use Yarn
         run: npm install -g yarn
 
-      - name: Setup DreamPower
+      - name: Setup - DreamPower
         working-directory: src/cli
         run: |
           ${{ matrix.python }} -m pip install pyinstaller
@@ -117,26 +117,35 @@ jobs:
           ${{ matrix.python }} -m pip --no-cache-dir install ${{ matrix.torch-version }}
           ${{ matrix.python }} -m pip --no-cache-dir install torchvision==0.2.2.post3
 
-      - name: Setup DreamTime
+      - name: Setup - DreamTime
         working-directory: src
         run: |
           yarn install
 
-      - name: Build DreamPower
+      - name: Build - DreamPower
         working-directory: src/cli
         run: |
           ${{ matrix.python }} -m PyInstaller main.py -y --onedir --name "dreampower" --distpath "../../dist" ${{ matrix.pyinstaller-args }}
 
-      - name: Build & Deploy DreamTime
+      - name: Lint - DreamTime
+        working-directory: src
+        run: |
+          yarn lint
+
+      - name: Build - DreamTime
         working-directory: src
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           BUILD_DEVICE: ${{ matrix.device }}
         run: |
-          yarn release --verbose --ci --github.assets="../dist/DreamTime-${{ matrix.os-short }}-${{ matrix.device }}.${{ matrix.os-ext }}"
+          yarn build
 
-      - name: Upload Internal Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: ${{ matrix.os-short }}-${{ matrix.device }}
-          path: dist/DreamTime-${{ matrix.os-short }}-${{ matrix.device }}.${{ matrix.os-ext }}
+      - name: Deploy
+        working-directory: src/scripts
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+        run: |
+          node release.js

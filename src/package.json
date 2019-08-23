@@ -105,7 +105,7 @@
     },
     "nsis": {
       "oneClick": false,
-      "artifactName": "${productName}-windows-${env.BUILD_DEVICE}.${ext}",
+      "artifactName": "${productName}-v${version}-windows-${env.BUILD_DEVICE}.${ext}",
       "menuCategory": true,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
@@ -114,14 +114,14 @@
       "license": "license.txt"
     },
     "deb": {
-      "artifactName": "${productName}-ubuntu-${env.BUILD_DEVICE}.${ext}",
+      "artifactName": "${productName}-v${version}-ubuntu-${env.BUILD_DEVICE}.${ext}",
       "fpm": [
         "--deb-no-default-config-files"
       ]
     },
     "dmg": {
       "title": "${productName} v${version}",
-      "artifactName": "${productName}-macos-${env.BUILD_DEVICE}.${ext}"
+      "artifactName": "${productName}-v${version}-macos-${env.BUILD_DEVICE}.${ext}"
     }
   },
   "scripts": {
@@ -182,6 +182,8 @@
     "@nuxtjs/eslint-config": "^0.0.1",
     "@nuxtjs/eslint-module": "^0.0.1",
     "@nuxtjs/tailwindcss": "^1.1.2",
+    "@octokit/rest": "^16.28.7",
+    "aws-sdk": "^2.515.0",
     "babel-eslint": "^10.0.1",
     "cross-env": "^5.2.0",
     "electron": "^5.0.6",
@@ -206,7 +208,6 @@
     "nodemon": "^1.18.9",
     "nuxtjs-electron": "^0.1.10",
     "prettier": "^1.16.4",
-    "release-it": "^12.3.5",
     "rollbar-sourcemap-webpack-plugin": "^2.5.1",
     "sass-loader": "^7.1.0",
     "tailwindcss": "^1.0.0"
