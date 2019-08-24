@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Something has not worked? Use this template.
+about: Help us improve by reporting any problem.
 title: ''
 labels: bug
 assignees: ''

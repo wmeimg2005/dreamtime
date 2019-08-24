@@ -222,7 +222,11 @@ export default class {
     this.current = _.find(releases, { tag_name: `v${currentVersion}` })
     this.available = compareVersions(this.latest.tag_name, currentVersion) === 1
 
-    // this.available = true // TODO: DEBUG
+    // this.available = true
+
+    if ($settings.notifications.update && this.available) {
+      this.sendNotification()
+    }
   }
 
   /**
@@ -330,10 +334,16 @@ export default class {
 
   /**
    * Install the downloaded update
+   *
    * @param {string} filePath
    */
   /* eslint-disable-next-line */
   async install(filePath) {
     // Custom
   }
+
+  /**
+   * Send a notification indicating update available
+   */
+  sendNotification() {}
 }

@@ -12,7 +12,6 @@
 // eslint-disable-next-line
 import _ from 'lodash'
 
-import platform from './platform'
 import DreamTime from './update/dreamtime'
 import Checkpoints from './update/checkpoints'
 
@@ -34,36 +33,6 @@ export default {
     // Information of the current and most recent version
     await this.dreamtime.fetch()
     await this.checkpoints.fetch()
-
-    if ($settings.notifications.update) {
-      if (this.dreamtime.available) {
-        const dreamtimeNotification = new Notification(
-          `🎉 DreamTime ${this.dreamtime.latest.tag_name} available!`,
-          {
-            body: 'A new version of DreamTime is available for download.'
-          }
-        )
-
-        dreamtimeNotification.onclick = () => {
-          window.$redirect('/system/about')
-          $tools.utils.activeWindow().focus()
-        }
-      }
-
-      if (platform.requirements.checkpoints && this.checkpoints.available) {
-        const checkpointsNotification = new Notification(
-          `✨ Checkpoints ${this.checkpoints.latest.tag_name} available!`,
-          {
-            body: 'A new version of the Checkpoints is available for download.'
-          }
-        )
-
-        checkpointsNotification.onclick = () => {
-          window.$redirect('/system/about')
-          $tools.utils.activeWindow().focus()
-        }
-      }
-    }
 
     debug('Updater initialized!', {
       dreamtime: this.dreamtime,

@@ -15,6 +15,9 @@ import Base from './base'
 import platform from '../platform'
 
 export default class extends Base {
+  /**
+   * Returns if this provider is activated
+   */
   can() {
     if (!$nucleus.isEnabled) {
       return false
@@ -35,14 +38,24 @@ export default class extends Base {
     return true
   }
 
+  /**
+   * Returns the code name of the project.
+   * It is usually the lowercase name
+   */
   getName() {
     return $nucleus.about.checkpoints.name
   }
 
+  /**
+   * Returns the name of the project.
+   */
   getTitle() {
     return $nucleus.about.checkpoints.name
   }
 
+  /**
+   * Returns the current version of the project
+   */
   getCurrentVersion() {
     if (!platform.requirements.checkpoints || !platform.requirements.cli) {
       return '0.0.0'
@@ -60,14 +73,24 @@ export default class extends Base {
     return version
   }
 
+  /**
+   * Returns the domain and repository of the project in Github.
+   * Example: private-dreamnet/dreamtime
+   */
   getGithubRepository() {
     return $nucleus.about.checkpoints.github
   }
 
+  /**
+   * Returns the file name of the latest version
+   */
   getUpdateFileName() {
     return `v${this.latest.tag_name}.zip`
   }
 
+  /**
+   * Returns the URLs where the latest version can be downloaded
+   */
   getUpdateDownloadURLs() {
     const urls = [
       // CDN
@@ -109,14 +132,19 @@ export default class extends Base {
     return super.download()
   }
 
+  /**
+   * Install the downloaded update
+   *
+   * @param {string} filePath
+   */
   async install(filePath) {
     const bus = $tools.fs.extract(filePath, $tools.paths.getCli())
 
-    bus.on('progress', value => {
+    bus.on('progress', (value) => {
       this.updating.progress = value
     })
 
-    bus.on('end', value => {
+    bus.on('end', (value) => {
       this.updating.progress = value
       this._resetUpdating()
 
@@ -124,8 +152,25 @@ export default class extends Base {
       $tools.utils.api.app.exit()
     })
 
-    bus.on('error', err => {
+    bus.on('error', (err) => {
       throw err
     })
+  }
+
+  /**
+   * Send a notification indicating update available
+   */
+  sendNotification() {
+    const notification = new Notification(
+      `✨ Checkpoints ${this.latest.tag_name} available!`,
+      {
+        body: 'A new version of the Checkpoints is available for download.'
+      }
+    )
+
+    notification.onclick = () => {
+      window.$redirect('/system/about')
+      $tools.utils.activeWindow().focus()
+    }
   }
 }

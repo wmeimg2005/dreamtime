@@ -15,6 +15,9 @@ import Base from './base'
 import dream from '../dream'
 
 export default class extends Base {
+  /**
+   * Returns if this provider is activated
+   */
   can() {
     if (!$nucleus.isEnabled) {
       return false
@@ -35,27 +38,62 @@ export default class extends Base {
     return true
   }
 
+  /**
+   * Returns the code name of the project.
+   * It is usually the lowercase name
+   */
   getName() {
     return $nucleus.about.dreamtime.name
   }
 
+  /**
+   * Returns the name of the project.
+   */
   getTitle() {
     return $nucleus.about.dreamtime.title
   }
 
+  /**
+   * Returns the domain and repository of the project in Github.
+   * Example: private-dreamnet/dreamtime
+   */
   getGithubRepository() {
     return $nucleus.about.dreamtime.github
   }
 
+  /**
+   * Returns the current version of the project
+   */
   getCurrentVersion() {
     return dream.version
   }
 
+  /**
+   * Install the downloaded update
+   * @param {string} filePath
+   */
   async install(filePath) {
     try {
       $tools.shell.openItem(filePath)
     } catch (err) {
       $tools.shell.openItem(path.dirname(filePath))
+    }
+  }
+
+  /**
+   * Send a notification indicating update available
+   */
+  sendNotification() {
+    const notification = new Notification(
+      `🎉 DreamTime ${this.latest.tag_name} available!`,
+      {
+        body: 'A new version of DreamTime is available for download.'
+      }
+    )
+
+    notification.onclick = () => {
+      window.$redirect('/system/about')
+      $tools.utils.activeWindow().focus()
     }
   }
 }
