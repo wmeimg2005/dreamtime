@@ -7,6 +7,9 @@ import Timer from '../timer'
 import { rand } from '../helpers'
 import WebError from '~/modules/web-error'
 
+import cliErrors from '../config/cli-errors'
+import preferencesConfig from '../config/preferences'
+
 const debug = require('debug').default('app:modules:models:photo-job')
 
 export default class PhotoJob {
@@ -147,81 +150,18 @@ export default class PhotoJob {
    *
    */
   getCliError() {
-    if (_.isNil(this.cli.error) || this.cli.error.length === 0) {
+    const message = this.cli.error
+
+    if (!_.isString(message) || message.length === 0) {
       return { type: 'debug', message: '' }
     }
 
-    const message = this.cli.error
-
-    if (message.includes('Found no NVIDIA driver on your system')) {
-      return {
-        type: 'debug',
-        message:
-          "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed a driver from [here](http://www.nvidia.com/Download/index.aspx). If you don't have an NVIDIA GPU please change the Device option in **Settings** to **CPU**."
-      }
-    }
-
-    if (message.includes('The NVIDIA driver on your system is too old')) {
-      return {
-        type: 'debug',
-        message:
-          'The NVIDIA driver installed on your system is too old! Please update the drivers [here](http://www.nvidia.com/Download/index.aspx), if the drivers are up to date then your GPU may not be compatible. You can also change the Device option in **Settings** to **CPU**.'
-      }
-    }
-
-    if (message.includes('no longer supports this GPU')) {
-      return {
-        type: 'debug',
-        message:
-          'Your GPU is not powerful enough to run this program. Please change the Device option in **Settings** to **CPU**.'
-      }
-    }
-
-    if (message.includes('Buy new RAM!')) {
-      return {
-        type: 'debug',
-        message:
-          'Apparently you have run out of RAM on your system! Try a photo of smaller size or free all possible memory.'
-      }
-    }
-
-    if (message.includes('CUDA out of memory')) {
-      return {
-        type: 'debug',
-        message:
-          'Apparently you have run out of RAM on your GPU! Try a photo of smaller size or free all possible GPU use.'
-      }
-    }
-
-    if (message.includes("codec can't decode byte")) {
-      return {
-        type: 'debug',
-        message:
-          'The algorithm had a problem decoding some characters. This is usually caused by being installed in a location with special characters (accents, spaces, etc.). Please reinstall the program in another location.'
-      }
-    }
-
-    if (message.includes('invalid device ordinal')) {
-      return {
-        type: 'debug',
-        message:
-          'A valid GPU device was not found in the indicated GPU option, please try another. You can also change the Device option in **Settings** to **CPU**.'
-      }
-    }
-
-    if (message.includes('image is not 512 x 512')) {
-      return {
-        type: 'debug',
-        message:
-          'The photo is not 512x512, please make sure you have uploaded the correct photo or enable and use the cropper.'
-      }
-    }
-
-    if (message.includes('loading Python')) {
-      return {
-        type: 'debug',
-        message:
-          'There was a problem loading a necessary DreamPower file. It is possible that your installation is corrupt, download the program again and reinstall.'
+    for (const payload of cliErrors) {
+      if (message.includes(payload.error)) {
+        return {
+          type: payload.type,
+          message: payload.message
+        }
       }
     }
 
@@ -255,80 +195,23 @@ export default class PhotoJob {
   customizePreferences() {
     if (this.preferences.randomizePreferences) {
       // Randomize
-      if (this.preferences.boobs.randomize) {
-        this.preferences.boobs.size = rand(0.3, 2.0)
-      }
-
-      if (this.preferences.areola.randomize) {
-        this.preferences.areola.size = rand(0.3, 2.0)
-      }
-
-      if (this.preferences.nipple.randomize) {
-        this.preferences.nipple.size = rand(0.3, 2.0)
-      }
-
-      if (this.preferences.vagina.randomize) {
-        this.preferences.vagina.size = rand(0.3, 1.5)
-      }
-
-      if (this.preferences.pubicHair.randomize) {
-        this.preferences.pubicHair.size = rand(0, 2.0)
-      }
+      _.forIn(preferencesConfig, (payload, key) => {
+        if (this.preferences[key].randomize) {
+          this.preferences[key].size = rand(payload.min, payload.max)
+        }
+      })
     } else if (this.preferences.progressivePreferences) {
       // Progressive
-      const add = 0.2 * (this.id - 1)
+      const add = 0.1 * (this.id - 1)
 
-      if (this.preferences.boobs.progressive) {
-        this.preferences.boobs.size = Number.parseFloat(
-          this.preferences.boobs.size
-        )
-        this.preferences.boobs.size += add
-        this.preferences.boobs.size = Math.min(this.preferences.boobs.size, 2.0)
-      }
+      _.forIn(preferencesConfig, (payload, key) => {
+        if (this.preferences[key].progressive) {
+          let value = Number.parseFloat(this.preferences[key].size)
+          value = Math.min(value + add, payload.max)
 
-      if (this.preferences.areola.progressive) {
-        this.preferences.areola.size = Number.parseFloat(
-          this.preferences.areola.size
-        )
-        this.preferences.areola.size += add
-        this.preferences.areola.size = Math.min(
-          this.preferences.areola.size,
-          2.0
-        )
-      }
-
-      if (this.preferences.nipple.progressive) {
-        this.preferences.nipple.size = Number.parseFloat(
-          this.preferences.nipple.size
-        )
-        this.preferences.nipple.size += add
-        this.preferences.nipple.size = Math.min(
-          this.preferences.nipple.size,
-          2.0
-        )
-      }
-
-      if (this.preferences.vagina.progressive) {
-        this.preferences.vagina.size = Number.parseFloat(
-          this.preferences.vagina.size
-        )
-        this.preferences.vagina.size += add
-        this.preferences.vagina.size = Math.min(
-          this.preferences.vagina.size,
-          1.5
-        )
-      }
-
-      if (this.preferences.pubicHair.progressive) {
-        this.preferences.pubicHair.size = Number.parseFloat(
-          this.preferences.pubicHair.size
-        )
-        this.preferences.pubicHair.size += add
-        this.preferences.pubicHair.size = Math.min(
-          this.preferences.pubicHair.size,
-          2.0
-        )
-      }
+          this.preferences[key].size = value
+        }
+      })
     }
   }
 
@@ -338,7 +221,7 @@ export default class PhotoJob {
   start() {
     const deferred = Deferred()
 
-    const onSpawnError = error => {
+    const onSpawnError = (error) => {
       deferred.reject(
         new WebError(
           'Unable to start DreamPower!',
@@ -362,19 +245,19 @@ export default class PhotoJob {
       return deferred.promise
     }
 
-    this.process.on('error', error => {
+    this.process.on('error', (error) => {
       // Error before starting
       onSpawnError(error)
     })
 
-    this.process.on('stdout', output => {
+    this.process.on('stdout', (output) => {
       // Output generated by the CLI
       output = output
         .toString()
         .trim()
         .split('\n')
 
-      output.forEach(text => {
+      output.forEach((text) => {
         this.cli.lines.unshift({
           text,
           css: {}
@@ -382,7 +265,7 @@ export default class PhotoJob {
       })
     })
 
-    this.process.on('stderr', output => {
+    this.process.on('stderr', (output) => {
       // CLI error
       this.cli.lines.unshift({
         text: output,
@@ -394,7 +277,7 @@ export default class PhotoJob {
       this.cli.error += `${output}\n`
     })
 
-    this.process.on('ready', code => {
+    this.process.on('ready', (code) => {
       this.process = undefined
 
       if (code === 0 || _.isNil(code)) {

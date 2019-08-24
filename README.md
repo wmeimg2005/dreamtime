@@ -55,11 +55,11 @@ If you want to share or modify this Software please do it for the same purpose a
 
 ## Requirements
 
-- 64 bits OS
-- Windows 7 SP1/Windows 8/Windows 10 1803+
-- Ubuntu 16.04+
-- 🧪 macOS
-- **8 GB** of RAM or more.
+  - 64 bits OS
+  - Windows 7 SP1/Windows 8/Windows 10 1803+
+  - Ubuntu 16.04+
+  - 🧪 macOS
+  - **8 GB** of RAM or more.
 
 > ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
 
@@ -67,8 +67,8 @@ If you want to share or modify this Software please do it for the same purpose a
 
 ## GPU Processing Requirements
 
-- NVIDIA Graphics card with minimum [3.5 CUDA compute capability](https://developer.nvidia.com/cuda-gpus)
-- [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
+  - NVIDIA Graphics card with minimum [3.5 CUDA compute capability](https://developer.nvidia.com/cuda-gpus)
+  - [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
 
 > 👉 If you do not have an NVIDIA or compatible graphics card you can use CPU processing.
 
@@ -99,18 +99,18 @@ We do not store any personal information or photos that have been processed with
 
 ## Requirements
 
-- [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive)
-- [Python 3.6.2+](https://www.python.org/downloads/release/python-368/)
-- [NodeJS 10+](https://nodejs.org/en/)
-- [Yarn](https://yarnpkg.com/en/docs/install)
+  - [CUDA 10.0](https://developer.nvidia.com/cuda-10.0-download-archive)
+  - [Python 3.6.2+](https://www.python.org/downloads/release/python-368/)
+  - [NodeJS 10+](https://nodejs.org/en/)
+  - [Yarn](https://yarnpkg.com/en/docs/install)
 
 ## What should I know?
 
-- [HTML, CSS](https://www.codecademy.com/catalog/language/html-css), [JavaScript](https://www.codecademy.com/catalog/language/javascript): For website development (DreamTime is a website 😮)
-- [SCSS](https://sass-lang.com/): CSS Preprocessor
-- [TailwindCSS](https://tailwindcss.com/): CSS Framework
-- [VueJS](https://vuejs.org/), [NuxtJS](https://nuxtjs.org/): The JavaScript frameworks. _(VueJS is the best #changemymind)_
-- [Electron](https://electronjs.org/): The software used to "transform" DreamTime from a website to a desktop program.
+  - [HTML, CSS](https://www.codecademy.com/catalog/language/html-css), [JavaScript](https://www.codecademy.com/catalog/language/javascript): For website development (DreamTime is a website 😮)
+  - [SCSS](https://sass-lang.com/): CSS Preprocessor
+  - [TailwindCSS](https://tailwindcss.com/): CSS Framework
+  - [VueJS](https://vuejs.org/), [NuxtJS](https://nuxtjs.org/): The JavaScript frameworks. _(VueJS is the best #changemymind)_
+  - [Electron](https://electronjs.org/): The software used to "transform" DreamTime from a website to a desktop program.
 
 ## Setup
 

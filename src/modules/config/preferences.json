@@ -1,0 +1,26 @@
+{
+  "boobs": {
+    "min": 0.3,
+    "max": 2.0
+  },
+
+  "areola": {
+    "min": 0.3,
+    "max": 2.0
+  },
+
+  "nipple": {
+    "min": 0.3,
+    "max": 2.0
+  },
+
+  "vagina": {
+    "min": 0.3,
+    "max": 1.5
+  },
+
+  "pubicHair": {
+    "min": 0,
+    "max": 2.0
+  }
+}

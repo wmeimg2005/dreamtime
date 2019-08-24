@@ -1,0 +1,47 @@
+[
+  {
+    "error": "Found no NVIDIA driver on your system",
+    "message": "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed a driver from [here](http://www.nvidia.com/Download/index.aspx). If you don't have an NVIDIA GPU please change the Device option in **Settings** to **CPU**.",
+    "type": "debug"
+  },
+  {
+    "error": "The NVIDIA driver on your system is too old",
+    "message": "The NVIDIA driver installed on your system is too old! Please update the drivers [here](http://www.nvidia.com/Download/index.aspx), if the drivers are up to date then your GPU may not be compatible. You can also change the Device option in **Settings** to **CPU**.",
+    "type": "debug"
+  },
+  {
+    "error": "no longer supports this GPU",
+    "message": "Your GPU is not powerful enough to run this program. Please change the Device option in **Settings** to **CPU**.",
+    "type": "debug"
+  },
+  {
+    "error": "Buy new RAM!",
+    "message": "You have run out of RAM on your system! Try a photo of smaller size or free all possible memory.",
+    "type": "debug"
+  },
+  {
+    "error": "CUDA out of memory",
+    "message": "You have run out of RAM on your GPU! Try a photo of smaller size or free all possible GPU use.",
+    "type": "debug"
+  },
+  {
+    "error": "codec can't decode byte",
+    "message": "The algorithm had a problem decoding some characters. This is usually caused by being installed in a location with special characters (accents, spaces, etc.). Please reinstall the program in another location.",
+    "type": "debug"
+  },
+  {
+    "error": "invalid device ordinal",
+    "message": "A valid GPU device was not found in the indicated GPU option, please try another. You can also change the Device option in **Settings** to **CPU**.",
+    "type": "debug"
+  },
+  {
+    "error": "image is not 512 x 512",
+    "message": "The photo is not 512x512, please make sure you have uploaded the correct photo or enable and use the cropper.",
+    "type": "debug"
+  },
+  {
+    "error": "loading Python",
+    "message": "There was a problem loading a necessary DreamPower file. It is possible that your installation is corrupt, download the program again and reinstall.",
+    "type": "debug"
+  }
+]

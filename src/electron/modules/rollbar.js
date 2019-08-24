@@ -10,12 +10,31 @@ const instance = {
 
   _rollbar: undefined,
 
+  /**
+   *
+   */
   init() {
     if (!this.can()) {
       return
     }
 
-    const config = {
+    const config = this.getConfig()
+
+    try {
+      this._rollbar = new Rollbar(config)
+      this.isEnabled = true
+
+      debug('Rollbar initialized!', config)
+    } catch (err) {
+      console.warn('Error at connecting to Rollbar', err)
+    }
+  },
+
+  /**
+   *
+   */
+  getConfig() {
+    return {
       accessToken: this.getAccessToken(),
       captureUncaught: true,
       captureUnhandledRejections: true,
@@ -26,31 +45,23 @@ const instance = {
       payload: {
         environment:
           process.env.NODE_ENV !== 'development' ? 'production' : 'development',
-        settings: settings._settings,
         person: {
           id: settings.user
         },
         client: {
           javascript: {
             source_map_enabled: true,
-            code_version: process.env.APP_VERSION,
-            guess_uncaught_frames: true
+            code_version: process.env.APP_VERSION
           }
-        }
+        },
+        settings: settings._settings
       }
-    }
-
-    try {
-      this._rollbar = new Rollbar(config)
-
-      this.isEnabled = true
-
-      debug('Rollbar initialized!', config)
-    } catch (err) {
-      console.warn('Error at connecting to Rollbar', err)
     }
   },
 
+  /**
+   *
+   */
   getAccessToken() {
     return (
       process.env.ROLLBAR_ACCESS_TOKEN ||
@@ -58,6 +69,9 @@ const instance = {
     )
   },
 
+  /**
+   *
+   */
   can() {
     return settings.telemetry.enabled && this.getAccessToken()
   }
