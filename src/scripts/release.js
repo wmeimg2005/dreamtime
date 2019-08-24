@@ -57,13 +57,12 @@ const tagName = isTagRelease
   : _.truncate(process.env.GITHUB_SHA, { length: 7, omission: '' })
 
 const version = `v${pkg.version}`
-const fileName = `DreamTime-${version}-${getOS()}`
 
-const anyFileName = `${fileName}-any.${getExt()}`
-const cpuFileName = `${fileName}-cpuonly.${getExt()}`
+const fileName = `DreamTime-${version}-${getOS()}-${
+  process.env.BUILD_DEVICE
+}.${getExt()}`
 
-const anyFilePath = path.resolve(__dirname, '../../dist', anyFileName)
-const cpuFilePath = path.resolve(__dirname, '../../dist', cpuFileName)
+const filePath = path.resolve(__dirname, '../../dist', fileName)
 
 async function getGithubReleaseUrl() {
   let response
@@ -79,6 +78,8 @@ async function getGithubReleaseUrl() {
       throw err
     }
 
+    console.log(`Creating release for tag: ${tagName}...`)
+
     try {
       response = await octokit.repos.createRelease({
         owner: 'private-dreamnet',
@@ -86,7 +87,7 @@ async function getGithubReleaseUrl() {
         tag_name: tagName,
         name: version,
         prerelease: true,
-        draft: true
+        draft: false
       })
     } catch (err) {
       console.log(err)
@@ -150,22 +151,24 @@ async function upload(filePath, fileName) {
   console.log('S3 say:', response)
 }
 
-if (fs.existsSync(anyFilePath)) {
-  console.log(`Uploading ${anyFileName}`)
-  upload(anyFilePath, anyFileName)
+async function main() {
+  if (fs.existsSync(filePath)) {
+    upload(filePath, fileName)
 
-  if (pkg.version === '1.2.0') {
-    const legacyAnyFileName = `${fileName}-x64.${getExt()}`
-    const legacy2AnyFileName = `DreamTime-vv${
-      pkg.version
-    }-${getOS()}-x64.${getExt()}`
+    if (pkg.version === '1.2.0' && process.env.BUILD_DEVICE === 'any') {
+      const legacyAnyFileName = `DreamTime-${version}-${getOS()}-x64.${getExt()}`
+      const legacy2AnyFileName = `DreamTime-v${version}-${getOS()}-x64.${getExt()}`
 
-    upload(anyFilePath, legacyAnyFileName)
-    upload(anyFilePath, legacy2AnyFileName)
+      upload(filePath, legacyAnyFileName)
+      upload(filePath, legacy2AnyFileName)
+    }
+  } else {
+    console.log('No release found!')
   }
-} else if (fs.existsSync(cpuFilePath)) {
-  console.log(`Uploading ${cpuFileName}`)
-  upload(cpuFilePath, cpuFileName)
-} else {
-  console.log('No release found!')
 }
+
+process.on('unhandledRejection', (err) => {
+  throw err
+})
+
+main()
