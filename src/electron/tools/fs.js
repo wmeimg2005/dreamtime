@@ -143,7 +143,19 @@ module.exports = {
   extractSeven(zipPath, targetPath) {
     const def = deferred()
 
-    const pathTo7zip = sevenBin.path7za
+    let pathTo7zip
+
+    if ($tools.utils.is.development) {
+      pathTo7zip = sevenBin.path7za
+    } else {
+      const binName = $tools.utils.platform({
+        macos: '7za',
+        windows: '7za.exe',
+        linux: '7za'
+      })
+
+      pathTo7zip = $tools.paths.getGui('..', 'resources', '7zip-bin', binName)
+    }
 
     const seven = extractFull(zipPath, targetPath, {
       $bin: pathTo7zip,

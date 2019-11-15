@@ -11,7 +11,8 @@
 
 # DreamTime
 
-DreamTime allows you to "nudify" photos of people in the most accessible way possible. 
+DreamTime allows you to nudify photos of people easily and better than DeepNude.
+
 **Exclusive use for private entertainment.**
 
 ![](assets/preview.png)
@@ -22,9 +23,7 @@ If you want to share or modify this Software please do it for the same purpose a
 
 We are a community interested in developing decentralized applications free of censorship. Join our social networks or repositories:
 
-- [Chat](https://chat.dreamnet.tech)
-- [Twitter](https://twitter.com/DreamNetTechno)
-- [Facebook](https://web.facebook.com/DreamNetTechnology)
+- [Website](https://dreamnet.tech)
 - [GitHub](https://github.com/dreamnettech)
 - [NotABug](https://notabug.org/DreamNet)
 - [GitGud](https://gitgud.io/dreamnet)
@@ -33,11 +32,17 @@ We are a community interested in developing decentralized applications free of c
 
 Developing DreamNet applications is time consuming! Help us accelerate development and offer better updates!
 
-[![Ko-fi](https://img.shields.io/badge/support%20with%20coffe-ff5e5b?logo=ko-fi&logoColor=white&style=for-the-badge)](https://ko-fi.com/R6R2ZSG3)
-
 [![patreon](https://img.shields.io/badge/become%20a%20patron-fb6c54?logo=patreon&logoColor=white&style=for-the-badge)](https://www.patreon.com/dreamnet)
 
-[![coinbase](https://img.shields.io/badge/support%20with%20bitcoin-000000?logo=bitcoin&logoColor=white&style=for-the-badge)](https://commerce.coinbase.com/charges/27J877GZ)
+[![Ko-fi](https://img.shields.io/badge/support%20with%20coffe-ff5e5b?logo=ko-fi&logoColor=white&style=for-the-badge)](https://ko-fi.com/R6R2ZSG3)
+
+[![coinbase](https://img.shields.io/badge/support%20with%20crypto-000000?logo=bitcoin&logoColor=white&style=for-the-badge)](https://commerce.coinbase.com/charges/27J877GZ)
+
+## Contact
+
+Do you have any problem? Doubts? or you are simply interested in chatting with the main developer, any email (except SPAM) is welcome:
+
+`ivan[at]dreamnet.tech`
 
 ---
 
@@ -48,17 +53,15 @@ Developing DreamNet applications is time consuming! Help us accelerate developme
   - 64 bits OS
   - Windows 7 SP1, Windows 8, Windows 10 1803+
   - Ubuntu 16.04+
-  - 🧪 macOS 10.13+
+  - macOS 10.13+
   - **8 GB+** of RAM.
 
 > ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
 
-> 🧪 **macOS** support is in an experimental phase, current version of DreamTime has not been developed with a "cpu-only" or "macOS" support in mind, some features may fail.
+### GPU Processing
 
-## GPU Processing Requirements
-
-  - NVIDIA Graphics card with minimum [3.5 CUDA compute capability](https://developer.nvidia.com/cuda-gpus)
-  - [Latest NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
+  - NVIDIA Graphics card with minimum [3.5 CUDA compute capability.](https://developer.nvidia.com/cuda-gpus)
+  - [Latest NVIDIA drivers.](https://www.nvidia.com/Download/index.aspx)
 
 > 👉 If you do not have an NVIDIA or compatible graphics card you can use CPU processing.
 
@@ -69,11 +72,11 @@ Developing DreamNet applications is time consuming! Help us accelerate developme
 
 ### Mirrors
 
-[![Windows](https://img.shields.io/badge/cdn-v1.1.0-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-windows-x64.exe)
+[![Windows](https://img.shields.io/badge/dreamlink-v1.1.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-windows.exe)
 
-[![Ubuntu](https://img.shields.io/badge/cdn-v1.1.0-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/v1.1.0/DreamTime-v1.1.0-ubuntu-x64.deb)
+[![Ubuntu](https://img.shields.io/badge/dreamlink-v1.1.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-ubuntu.deb)
 
-[![macOS](https://img.shields.io/badge/cdn-v1.1.0%20(Experimental)-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://cdn.dreamnet.tech/releases/dreamtime/fc09024/DreamTime-v1.1.0-macos-cpuonly.dmg)
+[![macOS](https://img.shields.io/badge/dreamlink-v1.1.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-macos.dmg)
 
 ## F.A.Q.
 
@@ -108,26 +111,23 @@ We do not store any personal information or photos that have been processed with
 
 ### Quick Setup
 
-Inside the folder `scripts/` you will find Python scripts that will allow you to prepare the project for all phases, these scripts are compatible with Windows, Linux and macOS.
+Install dependencies:
 
-- **setup.py**: This script will install all the necessary requirements for Python and NodeJS. In theory you only need to run this script once per version.
-- **build.py**: This script will compile the project in the `dist/` folder, once it's finished you can share the executable (exe, deb, dmg) inside the folder.
-- **dev-start.py**: This script will launch 2 processes, one to start the NuxtJS server (which will compile all the CSS, JavaScript and Vue files) and other that will start Electron that will load the NuxtJS server. Any change you make will be reflected in real time.
+`yarn install`
 
-To see possible options for these scripts run `--help`
+Start development enviroment:
 
-```
-python3 setup.py --help
-python3 build.py --help
-```
+`yarn dev:nuxt`
 
-> ⚠ If you use [Anaconda](https://www.anaconda.com/) or some other program that encapsulates Python or NodeJS in their own development environment it is very likely that these scripts fail, you will have to read the content and execute the commands manually.
+`yarn dev:electron`
 
-> ⚠ The NuxtJS server incorporates an HTTP server to view the live application, **you must not access the URL indicated by the console**, the application only works when it is loaded from Electron.
+Build:
+
+`yarn build`
 
 ## Pull Requests
 
-We seek to improve the software in every possible way, if you want to make a contribution you are welcome to make a Pull Request, just make sure you do it to the **canary branch**.
+Pull Requests of all kinds are welcome! Please make sure you do it in the **canary branch**.
 
 ## ⚠ Drastic Changes in v1.0.0+
 
