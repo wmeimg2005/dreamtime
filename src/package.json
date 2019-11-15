@@ -46,6 +46,10 @@
         {
           "from": "node_modules/regedit/vbs",
           "to": "vbs"
+        },
+        {
+          "from": "node_modules/7zip-bin/win/x64",
+          "to": "7zip-bin"
         }
       ],
       "extraFiles": [
@@ -60,6 +64,12 @@
       "icon": "static/app.icns",
       "executableName": "DreamTime",
       "category": "Graphics",
+      "extraResources": [
+        {
+          "from": "node_modules/7zip-bin/linux/x64",
+          "to": "7zip-bin"
+        }
+      ],
       "extraFiles": [
         {
           "from": ".env",
@@ -71,6 +81,12 @@
       "target": "dmg",
       "icon": "static/app.icns",
       "category": "public.app-category.graphics-design",
+      "extraResources": [
+        {
+          "from": "node_modules/7zip-bin/mac",
+          "to": "7zip-bin"
+        }
+      ],
       "extraFiles": [
         {
           "from": ".env",
@@ -132,6 +148,7 @@
     "electron-nucleus": "^2.4.0",
     "electron-utils": "^3.0.11",
     "filesize": "^6.0.1",
+    "fs-extra": "^8.1.0",
     "gpu-info": "^0.0.1",
     "gsap": "^3.0.1",
     "image-js": "^0.21.8",

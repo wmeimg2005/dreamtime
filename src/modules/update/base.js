@@ -125,6 +125,10 @@ export default class {
       urls = urls[platform]
     }
 
+    if (_.isNil(urls)) {
+      urls = []
+    }
+
     if (this.latest.assets.length === 1) {
       // eslint-disable-next-line prefer-destructuring
       asset = this.latest.assets[0]
@@ -270,12 +274,12 @@ export default class {
       return false
     }
 
-    this._setUpdating('Downloading...', 0)
-
     const downloadURLs = this.getUpdateDownloadURLs()
     let filePath
 
     for (const url of downloadURLs) {
+      this._setUpdating('Downloading...', 0)
+
       // Try to download it from each mirror
       try {
         // eslint-disable-next-line no-await-in-loop

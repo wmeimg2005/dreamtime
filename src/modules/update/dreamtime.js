@@ -66,6 +66,10 @@ export default class extends Base {
    * @param {string} filePath
    */
   async install(filePath) {
+    await new Promise((resolve) => {
+      setTimeout(() => { resolve() }, 1500)
+    })
+
     try {
       $tools.shell.openItem(filePath)
     } catch (err) {
