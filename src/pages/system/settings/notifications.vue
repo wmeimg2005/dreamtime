@@ -20,8 +20,8 @@
       </box-section-item>
 
       <box-section-item
-        label="On Update"
-        :description="`Show a notification when there is a new version of ${$dream.name} or the Checkpoints.`">
+        :description="`Show a notification when there is a new version of ${$dream.name} or the Checkpoints.`"
+        label="On Update">
         <select v-model="currentValue.notifications.update" class="input">
           <option :value="true">Enabled</option>
           <option :value="false">Disabled</option>

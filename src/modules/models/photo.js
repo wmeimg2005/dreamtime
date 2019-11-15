@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { uuid } from 'electron-utils/browser'
+import uuid from 'uuid'
 import swal from 'sweetalert'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'

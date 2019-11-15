@@ -2,8 +2,8 @@
   <div class="c-nudity-upload">
     <!-- Dropzone -->
     <div
-      class="upload-dropzone"
       :class="{'is-dragging': isDraggingFile}"
+      class="upload-dropzone"
       @dragenter="onDragEnter"
       @dragover="onDragOver"
       @dragleave="onDragLeave"

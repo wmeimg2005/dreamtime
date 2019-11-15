@@ -1,6 +1,6 @@
 <template>
   <div class="layout-navbar">
-    <div class="navbar" :class="{ 'is-active': isActive }">
+    <div :class="{ 'is-active': isActive }" class="navbar">
       <!-- Welcome! -->
       <div class="navbar-header">
         <h1 class="header-title">
@@ -110,7 +110,7 @@ export default {
 }
 
 .layout-navbar {
-  @apply pb-6 shadow h-screen bg-dark relative;
+  @apply pb-6 shadow h-screen bg-dark-500 relative;
   width: 200px;
 
   .navbar {
@@ -129,7 +129,7 @@ export default {
   .navbar-header {
     @apply mb-5 text-gray-300 flex flex-col items-center justify-center;
     animation: 20s ease-in-out infinite bgAnim;
-    height: 90px;
+    height: 70px;
 
     background: rgb(99, 66, 245);
 

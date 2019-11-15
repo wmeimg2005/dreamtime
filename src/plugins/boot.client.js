@@ -21,10 +21,9 @@ Vue.mixin(BaseMixin)
 moment.locale('en')
 
 // Tippy settings
-tippy.setDefaults({
+tippy.setDefaultProps({
   delay: 100,
   arrow: true,
-  arrowType: 'round'
 })
 
 export default async ({ app }, inject) => {
@@ -34,10 +33,8 @@ export default async ({ app }, inject) => {
     env: process.env.NODE_ENV,
     isStatic: $tools.utils.pack.isStatic(),
     paths: {
-      getRootPath: $tools.utils.getRootPath(),
       appPath: $tools.utils.api.app.getAppPath(),
       exePath: $tools.utils.api.app.getPath('exe'),
-      rootPath: $tools.paths.getRoot()
     }
   })
 

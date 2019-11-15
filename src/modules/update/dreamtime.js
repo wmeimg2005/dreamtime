@@ -47,13 +47,6 @@ export default class extends Base {
   }
 
   /**
-   * Returns the name of the project.
-   */
-  getTitle() {
-    return $nucleus.about.dreamtime.title
-  }
-
-  /**
    * Returns the domain and repository of the project in Github.
    * Example: private-dreamnet/dreamtime
    */
@@ -65,7 +58,7 @@ export default class extends Base {
    * Returns the current version of the project
    */
   getCurrentVersion() {
-    return dream.version
+    return `v${dream.version}`
   }
 
   /**

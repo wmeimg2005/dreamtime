@@ -28,7 +28,7 @@
     </section>
 
     <section class="box box-section">
-      <box-section-item label="Boob Size" :description="`Current value: ${currentValue.boobs.size}`">
+      <box-section-item :description="`Current value: ${currentValue.boobs.size}`" label="Boob Size">
         <div class="slider-container">
           <input
             v-model="currentValue.boobs.size"
@@ -64,7 +64,7 @@
     </section>
 
     <section class="box box-section">
-      <box-section-item label="Areola Size" :description="`Current value: ${currentValue.areola.size}`">
+      <box-section-item :description="`Current value: ${currentValue.areola.size}`" label="Areola Size">
         <div class="slider-container">
           <input
             v-model="currentValue.areola.size"
@@ -100,7 +100,7 @@
     </section>
 
     <section class="box box-section">
-      <box-section-item label="Nipple Size" :description="`Current value: ${currentValue.nipple.size}`">
+      <box-section-item :description="`Current value: ${currentValue.nipple.size}`" label="Nipple Size">
         <div class="slider-container">
           <input
             v-model="currentValue.nipple.size"
@@ -136,7 +136,7 @@
     </section>
 
     <section class="box box-section">
-      <box-section-item label="Vagina Size" :description="`Current value: ${currentValue.vagina.size}`">
+      <box-section-item :description="`Current value: ${currentValue.vagina.size}`" label="Vagina Size">
         <div class="slider-container">
           <input
             v-model="currentValue.vagina.size"
@@ -172,7 +172,7 @@
     </section>
 
     <section class="box box-section">
-      <box-section-item label="Pubic Hair" :description="`Current value: ${currentValue.pubicHair.size}`">
+      <box-section-item :description="`Current value: ${currentValue.pubicHair.size}`" label="Pubic Hair">
         <div class="slider-container">
           <input
             v-model="currentValue.pubicHair.size"

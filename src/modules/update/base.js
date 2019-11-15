@@ -34,11 +34,11 @@ export default class {
     this.downloadBus = undefined
 
     this.current = {
-      tag_name: '0.0.0'
+      tag_name: 'v0.0.0'
     }
 
     this.latest = {
-      tag_name: '0.0.0'
+      tag_name: 'v0.0.0'
     }
 
     this.http = axios.create({
@@ -62,17 +62,21 @@ export default class {
   }
 
   /**
-   * Returns the name of the project.
-   */
-  getTitle() {
-    return undefined
-  }
-
-  /**
    * Returns the current version of the project
    */
   getCurrentVersion() {
-    return '0.0.0'
+    return 'v0.0.0'
+  }
+
+  /**
+   * 
+   * @param {string} latest 
+   * @param {string} current 
+   * @return {boolean}
+   */
+  isAvailable(latest) {
+    const currentVersion = this.getCurrentVersion()
+    return compareVersions.compare(latest, currentVersion, '>')
   }
 
   /**
@@ -84,46 +88,69 @@ export default class {
   }
 
   /**
-   * Returns the file name of the latest version
+   * 
    */
   getUpdateFileName() {
-    const platform = $tools.utils.platform({
+    const url = this.getUpdateDownloadURLs()[0]
+    return url.substring(url.lastIndexOf('/') + 1)
+  }
+
+  /**
+   * 
+   */
+  getUpdatePlatform() {
+    return $tools.utils.platform({
       macos: 'macos',
       windows: 'windows',
       linux: 'ubuntu'
     })
-
-    const extension = $tools.utils.platform({
-      macos: '.dmg',
-      windows: '.exe',
-      linux: '.deb'
-    })
-
-    return `${this.getTitle()}-${
-      this.latest.tag_name
-    }-${platform}-x64${extension}`
   }
 
   /**
    * Returns the URLs where the latest version can be downloaded
    */
   getUpdateDownloadURLs() {
-    const urls = [
-      // CDN
-      `${$nucleus.urls.cdn}/releases/${this.getName()}/v${
-        this.latest.tag_name
-      }/${this.getUpdateFileName()}`
-    ]
+    const platform = this.getUpdatePlatform()
 
-    const asset = _.find(this.latest.assets, {
-      name: this.getUpdateFileName()
-    })
+    let urls
+    let asset
 
-    if (!_.isNil(asset)) {
-      urls.push(asset.browser_download_url)
+    try {
+      urls = $nucleus.releases[`${this.getName()}`][`${this.latest.tag_name}`]
+    } catch (err) {
+      urls = []
     }
 
+    if (_.isPlainObject(urls)) {
+      urls = urls[platform]
+    }
+
+    if (this.latest.assets.length === 1) {
+      // eslint-disable-next-line prefer-destructuring
+      asset = this.latest.assets[0]
+    } else {
+      asset = _.find(this.latest.assets, (asset) => {
+        return asset.name.includes(platform)
+      })
+    }
+
+    if (!_.isNil(asset)) {
+      urls.unshift(asset.browser_download_url)
+    }
+
+    urls = urls.filter((item) => {
+      return _.startsWith(item, 'http')
+    })
+
     return urls
+  }
+
+  /**
+   * 
+   * @param {Array} releases 
+   */
+  getLatestRelease(releases) {
+    return releases[0]
   }
 
   /**
@@ -178,20 +205,20 @@ export default class {
 
       this.enabled = true
 
-      debug(`${this.getTitle()} - Update provider initialized!`, {
+      debug(`${this.getName()} - Update provider initialized!`, {
         provider: this,
         name: this.getName(),
-        title: this.getTitle(),
         currentVersion: this.getCurrentVersion(),
+        downloadURLs: this.getUpdateDownloadURLs(),
         fileName: this.getUpdateFileName(),
-        downloadURLs: this.getUpdateDownloadURLs()
+        platform: this.getUpdatePlatform()
       })
     } catch (err) {
       $rollbar.warn(err, {
-        project: this.getTitle()
+        project: this.getName()
       })
 
-      console.warn(`${this.getTitle()}: Error at fetch releases`, err)
+      console.warn(`${this.getName()}: Error at fetch releases`, err)
 
       this.enabled = false
     }
@@ -218,9 +245,9 @@ export default class {
     const currentVersion = this.getCurrentVersion()
 
     // eslint-disable-next-line
-    this.latest = releases[0]
-    this.current = _.find(releases, { tag_name: `v${currentVersion}` })
-    this.available = compareVersions(this.latest.tag_name, currentVersion) === 1
+    this.latest = this.getLatestRelease(releases)
+    this.current = _.find(releases, { tag_name: currentVersion })
+    this.available = this.isAvailable(this.latest.tag_name)
 
     // this.available = true
 
@@ -345,5 +372,5 @@ export default class {
   /**
    * Send a notification indicating update available
    */
-  sendNotification() {}
+  sendNotification() { }
 }
