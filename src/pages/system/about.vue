@@ -231,7 +231,7 @@ export default {
 
   methods: {
     openGUI() {
-      $tools.shell.openItem($tools.paths.getGui('..'))
+      $tools.shell.openItem($tools.paths.getGui())
     },
 
     openCLI() {
