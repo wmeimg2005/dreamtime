@@ -1,13 +1,13 @@
 // DreamTime.
 // Copyright (C) DreamNet. All rights reserved.
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License 3.0 as published by
 // the Free Software Foundation.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
-// 
+//
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 const Octokit = require('@octokit/rest')
@@ -18,7 +18,7 @@ const path = require('path')
 const pkg = require('../package.json')
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN
+  auth: process.env.GITHUB_TOKEN,
 })
 
 const isTagRelease = _.startsWith(process.env.GITHUB_REF, 'refs/tags')
@@ -40,7 +40,7 @@ async function getGithubReleaseUrl() {
     response = await octokit.repos.getReleaseByTag({
       owner: 'dreamnettech',
       repo: 'dreamtime',
-      tag: tagName
+      tag: tagName,
     })
   } catch (err) {
     if (err.status !== 404) {
@@ -56,11 +56,14 @@ async function getGithubReleaseUrl() {
         tag_name: tagName,
         name: version,
         prerelease: true,
-        draft: false
+        draft: false,
       })
     } catch (err) {
-      console.log(err)
-      throw err
+      console.warn(err)
+      console.log('Retrying...')
+
+      // eslint-disable-next-line no-return-await
+      return await getGithubReleaseUrl()
     }
   }
 
@@ -75,10 +78,10 @@ async function uploadToGithub(filePath, fileName) {
     url,
     headers: {
       'content-length': stats.size,
-      'content-type': mime.lookup(filePath)
+      'content-type': mime.lookup(filePath),
     },
     name: fileName,
-    file: fs.createReadStream(filePath)
+    file: fs.createReadStream(filePath),
   })
 
   return response

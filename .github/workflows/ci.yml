@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    name: Build (${{ matrix.os-short }}
+    name: Build (${{ matrix.os-short }})
     runs-on: ${{ matrix.os }}
 
     # Strategy
@@ -46,6 +46,7 @@ jobs:
 
     steps:
       - name: Dump GitHub context
+        if: false
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
@@ -69,10 +70,6 @@ jobs:
 
       - name: Use Yarn
         run: npm install -g yarn
-
-      - name: Use 7z
-        if: runner.os == 'macOS'
-        run: brew install p7zip
 
       - name: Setup
         working-directory: src
