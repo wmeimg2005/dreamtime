@@ -16,29 +16,30 @@
       <!-- Limited! -->
       <section v-if="$platform.isLimited" class="box box-section">
         <box-section-item
-          label="It seems that you are offline"
-          :description="`It's okay! You can use ${$dream.name} offline, but while you are disconnected we cannot offer you more information about the project, updates or report errors automatically. Connect to the Internet or if you are a developer, set the Nucleus API key and restart the program.`">
+          :description="`It's okay! You can use ${$dream.name} offline, but while you are disconnected we cannot offer you more information about the project, updates or report errors automatically. Connect to the Internet or if you are a developer, set the Nucleus API key and restart the program.`"
+          label="It seems that you are offline">
         </box-section-item>
       </section>
 
       <!-- Requirements -->
       <section v-if="!$platform.requirements.all" class="box box-section">
-        <box-section-item icon="❗" label="Requirements" :description="`You need to meet all the requirements below to use ${$dream.name}.`" />
+        <box-section-item :description="`You need to meet all the requirements below to start using ${$dream.name}.`" icon="📜" label="Requirements" />
 
         <box-section-item
           label="DreamPower"
-          description="DreamPower (also known as CLI) is the program necessary to transform photos. Be sure to set the correct location in the settings.">
+          description="Deep Learning algorithm that nudify photos.">
           <template slot="icon">
             <span v-if="$platform.requirements.cli" class="item-icon">✔</span>
             <span v-else class="item-icon">❌</span>
           </template>
 
+          <a href="#dreampower" class="button is-sm">Update</a>
           <nuxt-link to="/system/settings/folders" class="button is-sm">Settings</nuxt-link>
         </box-section-item>
 
         <box-section-item
           label="Checkpoints"
-          description="The models required by the AI. They are big but keeping them updated increases the quality of the transformation.">
+          description="Data models required by the algorithm.">
           <template slot="icon">
             <span v-if="$platform.requirements.checkpoints" class="item-icon">✔</span>
             <span v-else class="item-icon">❌</span>
@@ -49,127 +50,131 @@
 
         <box-section-item
           label="Media Feature Pack"
-          description="Multimedia package required by Windows.">
+          description="Multimedia package required by some versions of Windows.">
           <template slot="icon">
             <span v-if="$platform.requirements.windowsMedia" class="item-icon">✔</span>
-            <span v-else class="item-icon">❌</span>
+            <span v-else class="item-icon">❗</span>
           </template>
 
           <app-external-link href="https://www.microsoft.com/en-us/software-download/mediafeaturepack" class="button is-sm">Download</app-external-link>
         </box-section-item>
       </section>
 
-      <!-- DreamTime -->
-      <section class="box box-section">
-        <box-section-item
-          :label="$dream.name"
-          :description="guiDescription">
-          <template slot="icon">
-            <figure class="item-icon">
-              <img src="~/assets/images/dreamtime.png" />
-            </figure>
-          </template>
+      <div class="about-columns">
+        <!-- DreamTime -->
+        <section class="box box-section">
+          <box-section-item
+            :label="$dream.name"
+            :description="guiDescription">
+            <template slot="icon">
+              <figure class="item-icon">
+                <img src="~/assets/images/dreamtime.png" />
+              </figure>
+            </template>
 
-          <button type="button" class="button" @click="openGUI">App Folder</button>
-        </box-section-item>
+            <button type="button" class="button" @click="openGUI">App</button>
+          </box-section-item>
 
-        <app-update project="dreamtime" :project-title="$dream.name" />
+          <app-update :project-title="$dream.name" project="dreamtime" />
 
-        <box-section-item
-          v-for="(item, index) in guiNavigation"
-          :key="index"
-          :label="item.label"
-          :description="item.description"
-          :icon="item.icon"
-          :href="item.href"
-          :version="item.version" />
-      </section>
+          <box-section-item
+            v-for="(item, index) in guiNavigation"
+            :key="index"
+            :label="item.label"
+            :description="item.description"
+            :icon="item.icon"
+            :href="item.href"
+            :version="item.version" />
+        </section>
 
-      <!-- DreamPower -->
-      <section class="box box-section">
-        <box-section-item
-          :label="cliTitle"
-          :description="cliDescription">
-          <template slot="icon">
-            <figure class="item-icon">
-              <img src="~/assets/images/dreampower.png" />
-            </figure>
-          </template>
+        <!-- DreamPower -->
+        <section class="box box-section">
+          <box-section-item
+            :label="cliTitle"
+            :description="cliDescription">
+            <template slot="icon">
+              <figure class="item-icon">
+                <img src="~/assets/images/dreampower.png" />
+              </figure>
+            </template>
 
-          <button type="button" class="button" @click="openCLI">App Folder</button>
-        </box-section-item>
+            <button type="button" class="button" @click="openCLI">App</button>
+          </box-section-item>
 
-        <app-update id="checkpoints" project="checkpoints" :project-title="cliTitle" />
+          <app-update id="dreampower" project-title="DreamPower" project="dreampower" />
 
-        <box-section-item
-          v-for="(item, index) in cliNavigation"
-          :key="index"
-          :label="item.label"
-          :description="item.description"
-          :icon="item.icon"
-          :href="item.href"
-          :version="item.version" />
-      </section>
+          <app-update v-if="$platform.requirements.cli" id="checkpoints" project-title="Checkpoints" project="checkpoints" />
 
-      <!-- DreamNet -->
-      <section class="box box-section">
-        <box-section-item
-          label="DreamNet"
-          description="Community interested in developing the technology introduced by DeepNude.">
-          <template slot="icon">
-            <figure class="item-icon">
-              <img src="~/assets/images/dreamnet.png" />
-            </figure>
-          </template>
-        </box-section-item>
+          <box-section-item
+            v-for="(item, index) in cliNavigation"
+            :key="index"
+            :label="item.label"
+            :description="item.description"
+            :icon="item.icon"
+            :href="item.href"
+            :version="item.version" />
+        </section>
 
-        <box-section-item
-          v-for="(item, index) in dreamNetNavigation"
-          :key="index"
-          :label="item.label"
-          :description="item.description"
-          :icon="item.icon"
-          :href="item.href"
-          :version="item.version" />
-      </section>
+        <!-- DreamNet -->
+        <section class="box box-section">
+          <box-section-item
+            label="DreamNet"
+            description="Community interested in developing the technology introduced by DeepNude.">
+            <template slot="icon">
+              <figure class="item-icon">
+                <img src="~/assets/images/dreamnet.png" />
+              </figure>
+            </template>
+          </box-section-item>
 
-      <!-- Contributors -->
-      <section class="box box-section is-contributors">
-        <box-section-item
-          icon="😍"
-          label="Contributors"
-          description="People who have helped us in the project either economically or solving problems in the community.">
-        </box-section-item>
+          <box-section-item
+            v-for="(item, index) in dreamNetNavigation"
+            :key="index"
+            :label="item.label"
+            :description="item.description"
+            :icon="item.icon"
+            :href="item.href"
+            :version="item.version" />
+        </section>
 
-        <box-section-item
-          v-for="(item, index) in contributors"
-          :key="index"
-          :label="item.name"
-          :description="item.description"
-          :icon="item.icon"
-          :class="item.role" />
-      </section>
+        <!-- Contributors -->
+        <section class="box box-section is-contributors">
+          <box-section-item
+            icon="😍"
+            label="Contributors"
+            description="People who have helped us in the project either economically or solving problems in the community.">
+          </box-section-item>
 
-      <!-- Developers -->
-      <section class="box box-section is-contributors">
-        <box-section-item
-          icon="👨‍💻"
-          label="Developers"
-          description="Developers and important people in our projects.">
-        </box-section-item>
+          <box-section-item
+            v-for="(item, index) in contributors"
+            :key="index"
+            :label="item.name"
+            :description="item.description"
+            :icon="item.icon"
+            :class="item.role" />
+        </section>
 
-        <box-section-item
-          v-for="(item, index) in developers"
-          :key="index"
-          :label="item.name"
-          :description="item.description"
-          :icon="item.icon"
-          :class="item.role">
-          <div class="buttons">
-            <app-external-link v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" class="button is-sm">{{ link.name }}</app-external-link>
-          </div>
-        </box-section-item>
-      </section>
+        <!-- Developers -->
+        <section class="box box-section is-contributors">
+          <box-section-item
+            icon="👨‍💻"
+            label="Developers"
+            description="Developers and important people in our projects.">
+          </box-section-item>
+
+          <box-section-item
+            v-for="(item, index) in developers"
+            :key="index"
+            :label="item.name"
+            :description="item.description"
+            :icon="item.icon"
+            :class="item.role">
+            <div class="buttons">
+              <app-external-link v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" class="button is-sm">{{ link.name }}</app-external-link>
+            </div>
+          </box-section-item>
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -226,7 +231,7 @@ export default {
 
   methods: {
     openGUI() {
-      $tools.shell.openItem($tools.paths.getGui())
+      $tools.shell.openItem($tools.paths.getGui('..'))
     },
 
     openCLI() {
@@ -257,6 +262,15 @@ export default {
 .about {
   .about-body {
     @apply p-5;
+  }
+
+  .about-columns {
+    @apply flex flex-wrap;
+    justify-content: space-between;
+
+    .box {
+      width: calc(1/2*100% - (1 - 1/2)*1rem);
+    }
   }
 
   .is-contributors {

@@ -30,17 +30,9 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
 
-    link: [
-      /* { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' } */
-    ],
+    link: [],
 
-    scripts: [
-      /*
-      {
-        src: 'https://www.gstatic.com/firebasejs/6.3.1/firebase-app.js'
-      }
-      */
-    ]
+    scripts: []
   },
 
   /*
@@ -52,9 +44,11 @@ module.exports = {
    ** Global CSS
    */
   css: [
+    'tippy.js/dist/tippy.css',
+    'cropperjs/dist/cropper.css',
+
     '~/assets/css/tailwind.scss',
     '~/assets/css/fonts.scss',
-    '~/assets/css/vendor.scss'
   ],
 
   /*
@@ -65,7 +59,7 @@ module.exports = {
   /*
    ** Nuxt.js dev-modules
    */
-  devModules: [
+  buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
@@ -75,7 +69,10 @@ module.exports = {
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/pwa', '@nuxtjs/dotenv'],
+  modules: [
+    // '@nuxtjs/pwa', 
+    '@nuxtjs/dotenv'
+  ],
 
   /*
    ** Axios module configuration
@@ -101,31 +98,9 @@ module.exports = {
    ** Build configuration
    */
   build: {
-    /**
-     *
-     */
-    postcss: {
-      plugins: {
-        tailwindcss: './tailwind.config.js'
-      }
-    },
+    analyze: false,
 
-    /**
-     *
-     */
-    terser: {
-      parallel: true,
-      cache: false,
-      sourceMap: true,
-      extractComments: {
-        filename: 'LICENSES'
-      },
-      terserOptions: {
-        output: {
-          comments: /^\**!|@preserve|@license|@cc_on/
-        }
-      }
-    },
+    extractCSS: true,
 
     /*
      ** You can extend webpack config here

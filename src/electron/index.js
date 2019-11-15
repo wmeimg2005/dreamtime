@@ -43,10 +43,8 @@ console.log('Starting...')
 console.log({
   env: process.env.NODE_ENV,
   paths: {
-    getRootPath: utils.getRootPath(),
     appPath: app.getAppPath(),
     exePath: app.getPath('exe'),
-    rootPath: paths.getRoot()
   },
   isStatic: utils.pack.isStatic()
 })
@@ -101,6 +99,7 @@ class DreamApp {
       height: 700,
       minWidth: 1200,
       minHeight: 700,
+      icon: path.join(config.rootDir, 'dist', 'app.ico'),
       webPreferences: {
         // Script that offers secure communication to the NodeJS API
         preload: path.join(app.getAppPath(), 'electron', 'preload.js')
@@ -125,6 +124,11 @@ class DreamApp {
     } else {
       // Production, load the static interface!
       this.window.loadFile(this.loadURL)
+
+      if (process.env.DEVTOOLS) {
+        // Load the DevTools
+        this.window.webContents.openDevTools()
+      }
     }
   }
 

@@ -7,6 +7,9 @@ const axios = require('axios')
 const { api } = require('electron-utils')
 const filesize = require('filesize')
 const unzipper = require('unzipper')
+const deferred = require('deferred')
+const sevenBin = require('7zip-bin')
+const { extractFull } = require('node-7z')
 
 const debug = require('debug').default('app:electron:tools:fs')
 
@@ -112,49 +115,50 @@ module.exports = {
    *
    * @param {string} zipPath
    * @param {string} targetPath
+   * @return {Promise}
    */
   extract(zipPath, targetPath) {
-    const bus = new EventBus()
+    const def = deferred()
 
     const stream = fs
       .createReadStream(zipPath)
       .pipe(unzipper.Extract({ path: targetPath }))
 
-    let extracted = 0
-
     stream.on('close', () => {
-      bus.emit('end')
-    })
-
-    stream.on('data', (entryStream) => {
-      extracted += 1
-      const progress = extracted / 4 // TODO: Hardcoded for checkpoints
-
-      debug({
-        extracted,
-        entryStream
-      })
-
-      bus.emit('progress', null, progress)
+      def.resolve()
     })
 
     stream.on('error', (err) => {
-      bus.emit('error', null, err)
+      def.reject(err)
     })
 
-    /*
-    const zip = new AdmZip(zipPath)
+    return def.promise
+  },
 
-    zip.extractAllToAsync(targetPath, overwrite, null, progress => {
-      bus.emit('progress', null, progress)
+  /**
+   *
+   * @param {string} zipPath
+   * @param {string} targetPath
+   */
+  extractSeven(zipPath, targetPath) {
+    const def = deferred()
 
-      if (progress === 1) {
-        bus.emit('end', null, progress)
-      }
+    const pathTo7zip = sevenBin.path7za
+
+    const seven = extractFull(zipPath, targetPath, {
+      $bin: pathTo7zip,
+      recursive: true
     })
-    */
 
-    return bus
+    seven.on('end', () => {
+      def.resolve()
+    })
+
+    seven.on('error', (err) => {
+      def.reject(err)
+    })
+
+    return def.promise
   },
 
   /**

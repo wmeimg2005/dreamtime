@@ -14,6 +14,7 @@ import _ from 'lodash'
 
 import DreamTime from './update/dreamtime'
 import Checkpoints from './update/checkpoints'
+import DreamPower from './update/dreampower'
 
 const debug = require('debug').default('app:modules:updater')
 
@@ -29,14 +30,17 @@ export default {
     // Software
     this.dreamtime = new DreamTime()
     this.checkpoints = new Checkpoints()
+    this.dreampower = new DreamPower()
 
     // Information of the current and most recent version
     await this.dreamtime.fetch()
     await this.checkpoints.fetch()
+    await this.dreampower.fetch()
 
     debug('Updater initialized!', {
       dreamtime: this.dreamtime,
-      checkpoints: this.checkpoints
+      checkpoints: this.checkpoints,
+      dreampower: this.dreampower
     })
   }
 }

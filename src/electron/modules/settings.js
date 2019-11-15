@@ -1,6 +1,7 @@
 const fs = require('fs')
 const _ = require('lodash')
-const { uuid, api, is } = require('electron-utils')
+const uuid = require('uuid')
+const { api, is } = require('electron-utils')
 const debug = require('debug').default('app:electron:modules:settings')
 
 const tools = require('../tools')
@@ -22,7 +23,7 @@ const settings = {
   async init() {
     await this._initDefault()
 
-    this._path = tools.paths.getRoot('settings.json')
+    this._path = tools.paths.get('userData', 'settings.json')
     this._settings = {}
 
     await this._ensure()
@@ -41,7 +42,7 @@ const settings = {
     try {
       hasGPU = (await tools.getGpusList()).length > 0
       // eslint-disable-next-line
-    } catch (err) {}
+    } catch (err) { }
 
     this._default = {
       version: 2,
@@ -100,7 +101,7 @@ const settings = {
         cropped: tools.paths.get('temp'),
         models: tools.paths.get('userData', 'models'),
         masks: tools.paths.get('userData', 'masks'),
-        cli: tools.paths.getRoot('cli')
+        cli: tools.paths.get('userData', 'dreampower')
       },
 
       telemetry: {
@@ -121,23 +122,12 @@ const settings = {
     try {
       fs.writeFileSync(this._path, JSON.stringify(this._default, null, 2))
     } catch (err) {
-      if (is.windows) {
-        api.dialog.showErrorBox(
-          'The program could not be started',
-          `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${this._path}`
-        )
+      api.dialog.showErrorBox(
+        'The program could not be started',
+        `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${this._path}`
+      )
 
-        api.app.exit()
-      } else {
-        api.dialog.showErrorBox(
-          'The program could not be started',
-          `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${
-            this._path
-          }.\nDue to the way Ubuntu installs the program you need to grant 777 permissions to the following folder:\n${tools.paths.getRoot()}`
-        )
-
-        api.app.exit()
-      }
+      api.app.exit()
     }
   },
 
@@ -212,7 +202,7 @@ const settings = {
    */
   async load() {
     this._settings = JSON.parse(fs.readFileSync(this._path))
-    debug('User Settings loaded!', this._settings)
+    debug('User Settings loaded!', { path: this._path, settings: this._settings })
   },
 
   /**

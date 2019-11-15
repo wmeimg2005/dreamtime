@@ -22,28 +22,9 @@ module.exports = {
    */
   get(name, ...args) {
     const { app } = utils.api
-    let folderPath
-
-    if (name === 'root') {
-      if (utils.is.development) {
-        folderPath = utils.getRootPath()
-      } else {
-        folderPath = path.resolve(app.getPath('exe'), '../')
-      }
-    } else {
-      folderPath = app.getPath(name)
-    }
+    const folderPath = app.getPath(name)
 
     return path.join(folderPath, ...args)
-  },
-
-  /**
-   * Alias for get('root', ...args)
-   *
-   * @param  {string} args Series of path segments to join into one path
-   */
-  getRoot(...args) {
-    return this.get('root', ...args)
   },
 
   /**
@@ -52,7 +33,7 @@ module.exports = {
    */
   getGui(...args) {
     if (utils.is.development) {
-      return path.join(utils.getRootPath(), ...args)
+      return path.join(utils.api.app.getPath('exe'), ...args)
     }
 
     return path.join(utils.api.app.getPath('exe'), ...args)
@@ -66,7 +47,7 @@ module.exports = {
     let folder = $settings.folders.cli
 
     if (!fs.existsSync(folder)) {
-      folder = this.getRoot('cli')
+      folder = this.get('userData', 'dreampower')
     }
 
     return path.join(folder, ...args)

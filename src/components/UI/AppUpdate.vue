@@ -8,29 +8,29 @@
   <!-- Updated! -->
   <box-section-item
     v-else-if="!updater.available"
-    :label="`${projectTitle} it's updated!`"
-    :description="`v${updater.getCurrentVersion()}`"
+    :label="`${projectTitle} is up to date.`"
+    :description="updater.getCurrentVersion()"
     icon="🌐" />
 
   <!-- Update available -->
   <box-section-item
     v-else-if="!updater.updating.active"
-    :label="`Update available: ${updater.latest.tag_name}`"
-    description="Click 'Update' to start the automatic update!"
+    :label="`${projectTitle} ${updater.latest.tag_name} available.`"
     icon="🌐"
     class="update-item">
-    <button type="button" class="button is-sm" @click.prevent="updater.download()">Update</button>
-    <app-external-link v-tooltip="'Download and install the update manually.'" :href="downloadURL" class="button is-sm">Download</app-external-link>
-    <button v-tooltip="'Open download folder, if you have already downloaded the update you can find it here.'" type="button" class="button is-sm" @click.prevent="openDownload">Folder</button>
+    <button v-tooltip="'Download and install the update automatically.'" type="button" class="button is-sm" @click.prevent="updater.download()">Update</button>
+    <app-external-link v-tooltip="'Download the update manually.'" :href="downloadURL" class="button is-sm">Manual</app-external-link>
   </box-section-item>
 
   <!-- Updating... -->
+  <!-- eslint-disable-next-line vue/valid-template-root --->
   <box-section-item
     v-else
     :label="updater.updating.text"
     icon="🌐">
     <template slot="description">
-      <p class="item-description"><strong>{{ updater.updating.progress | progress }}</strong> - {{ updater.updating.mbWritten | size }}/{{ updater.updating.mbTotal | size }} MB - (Please do not close the program or leave this section)</p>
+      <p v-if="updater.updating.text === 'Downloading...'" class="item-description"><strong>{{ updater.updating.progress | progress }}</strong> - {{ updater.updating.mbWritten | size }}/{{ updater.updating.mbTotal | size }} MB.</p>
+      <p v-else class="item-description">Wait a few minutes, please do not close the program.</p>
     </template>
 
     <button type="button" class="button is-danger is-sm" @click.prevent="updater.cancel()">Cancel</button>

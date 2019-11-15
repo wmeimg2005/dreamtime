@@ -10,7 +10,7 @@
  */
 
 .box {
-  @apply bg-dark rounded px-5 py-3 shadow mb-5;
+  @apply bg-dark-500 rounded px-5 py-3 shadow mb-5;
 
   &.is-transparent {
     @apply bg-transparent rounded-none shadow-none;
@@ -58,8 +58,8 @@
     }
 
     .item-extra {
-      @apply flex items-center justify-center;
-      min-width: 200px;
+      @apply ml-4 flex items-center justify-center;
+      max-width: 200px;
     }
   }
 }

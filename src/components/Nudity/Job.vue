@@ -145,7 +145,7 @@ export default {
   .__preview {
     @apply flex justify-center items-center
         rounded rounded-tr-none rounded-br-none
-        border-2 border-dark border-r-0
+        border-2 border-dark-500 border-r-0
         text-3xl;
     width: 125px;
     height: 125px;
@@ -163,7 +163,7 @@ export default {
 
   .__content {
     @apply flex-1 flex flex-col
-        bg-dark
+        bg-dark-500
         rounded
         rounded-tl-none
         rounded-bl-none

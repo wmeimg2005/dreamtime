@@ -11,7 +11,7 @@
     </app-title>
 
     <div class="content-body">
-      <div v-if="alert" class="notification is-warning text-lg" v-html="alert" />
+      <div v-if="alert" class="notification is-warning" v-html="alert" />
 
       <!-- Quick Upload -->
       <nudity-upload />

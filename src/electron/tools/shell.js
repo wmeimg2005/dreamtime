@@ -39,7 +39,7 @@ module.exports = {
    * @param  {...any} args
    */
   showSaveDialog(...args) {
-    return api.dialog.showSaveDialog(...args)
+    return api.dialog.showSaveDialogSync(...args)
   },
 
   /**

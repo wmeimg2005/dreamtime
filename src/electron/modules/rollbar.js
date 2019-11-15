@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const { Rollbar } = require('electron-utils')
+const { Rollbar } = require('rollbar')
 const debug = require('debug').default('app:electron:modules:rollbar')
 
 const settings = require('./settings')
@@ -89,6 +89,6 @@ module.exports = new Proxy(instance, {
       }
     }
 
-    return () => {}
+    return () => { }
   }
 })
