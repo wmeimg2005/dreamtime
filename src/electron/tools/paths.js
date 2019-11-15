@@ -32,11 +32,24 @@ module.exports = {
    * @param  {...any} args
    */
   getGui(...args) {
-    if (utils.is.development) {
-      return path.join(utils.api.app.getPath('exe'), ...args)
+    if (process.platform === 'darwin') {
+      // /Applications/DreamTime.app/Contents/MacOS/DreamTime
+      // /Applications/DreamTime.app/Contents
+      return this.get('exe', '..', '..', ...args)
     }
 
-    return path.join(utils.api.app.getPath('exe'), ...args)
+    return this.get('exe', '..', ...args)
+  },
+
+  /**
+   * @param  {...any} args
+   */
+  getGuiResources(...args) {
+    if (process.platform === 'darwin') {
+      return this.getGui('Resources', ...args)
+    }
+
+    return this.getGui('resources', ...args)
   },
 
   /**

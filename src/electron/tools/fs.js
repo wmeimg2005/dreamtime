@@ -154,7 +154,7 @@ module.exports = {
         linux: '7za'
       })
 
-      pathTo7zip = $tools.paths.getGui('..', 'resources', '7zip-bin', binName)
+      pathTo7zip = $tools.paths.getGuiResources('7zip-bin', binName)
     }
 
     const seven = extractFull(zipPath, targetPath, {
