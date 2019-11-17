@@ -12,7 +12,9 @@
 
     <div class="content-body">
       <div class="buttons">
-        <nuxt-link to="/models/add" class="button">Create</nuxt-link>
+        <nuxt-link to="/models/add" class="button">
+          Create
+        </nuxt-link>
       </div>
     </div>
   </div>
@@ -26,4 +28,3 @@ export default {}
 .models {
 }
 </style>
-

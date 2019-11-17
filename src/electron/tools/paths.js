@@ -110,5 +110,5 @@ module.exports = {
     }
 
     return path.join(folder, ...args)
-  }
+  },
 }

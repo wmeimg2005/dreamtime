@@ -2,7 +2,9 @@ import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
 import BaseMixin from '~/mixins/BaseMixin'
-import { dream, platform, updater, nudify, WebError } from '~/modules'
+import {
+  dream, platform, updater, nudify, WebError,
+} from '~/modules'
 
 const debug = require('debug').default('app:plugins:boot')
 
@@ -35,8 +37,12 @@ export default async ({ app }, inject) => {
     paths: {
       appPath: $tools.utils.api.app.getAppPath(),
       exePath: $tools.utils.api.app.getPath('exe'),
-    }
+    },
   })
+
+  inject('tools', $tools)
+
+  //---
 
   // User settings
   await $settings.init()
@@ -55,7 +61,7 @@ export default async ({ app }, inject) => {
   window.addEventListener('error', (error) => {
     debug('Error captured', {
       error,
-      type: typeof error
+      type: typeof error,
     })
 
     WebError.handle(error)
@@ -65,7 +71,7 @@ export default async ({ app }, inject) => {
   window.addEventListener('unhandledrejection', (rejection) => {
     debug('Unhandled Rejection captured', {
       error: rejection.reason,
-      type: typeof rejection.reason
+      type: typeof rejection.reason,
     })
 
     WebError.handle(rejection.reason)
@@ -79,16 +85,16 @@ export default async ({ app }, inject) => {
 
   //---
 
-  // Platform information
-  await platform.init()
-  app.context.$platform = platform
-  inject('platform', platform)
-
   // DreamTime information
   dream.init()
   window.$dream = dream
   app.context.$dream = dream
   inject('dream', dream)
+
+  // Platform information
+  await platform.init()
+  app.context.$platform = platform
+  inject('platform', platform)
 
   // Updates information
   updater.init()

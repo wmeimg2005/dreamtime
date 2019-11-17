@@ -11,15 +11,15 @@ export default {
      * @model
      */
     value: {
-      default: null
-    }
+      default: null,
+    },
   },
 
   data: () => ({
     /**
      * Contains the current value, this variable must be changed within the component.
      */
-    currentValue: null
+    currentValue: null,
   }),
 
   created() {
@@ -35,12 +35,12 @@ export default {
     $forceCurrentValueUpdate() {
       debug('$currentValue has changed, updating the v-model', {
         oldValue: this.value,
-        newValue: this.currentValue
+        newValue: this.currentValue,
       })
 
       this.$emit('input', this.currentValue)
       this.onChange(this.currentValue)
-    }
+    },
   },
 
   watch: {
@@ -55,13 +55,13 @@ export default {
 
         debug('$currentValue has changed, updating the v-model', {
           oldValue: this.value,
-          newValue: value
+          newValue: value,
         })
 
         this.$emit('input', value)
         this.onChange(value)
       },
-      deep: true
+      deep: true,
     },
 
     // The v-model value has changed, update the local value
@@ -72,11 +72,11 @@ export default {
 
       debug('v-model value has changed, updating currentValue', {
         oldValue: this.currentValue,
-        newValue: value
+        newValue: value,
       })
 
       this.currentValue = value
       this.onChange(value)
-    }
-  }
+    },
+  },
 }

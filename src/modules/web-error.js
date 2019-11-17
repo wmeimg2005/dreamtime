@@ -21,7 +21,7 @@ class WebError extends Error {
       error: undefined,
       level: 'error',
       extra: {},
-      ...opts
+      ...opts,
     }
 
     this.title = title
@@ -37,14 +37,14 @@ class WebError extends Error {
       message,
       error,
       level,
-      weberror: this
+      weberror: this,
     })
 
     if ($rollbar.isEnabled) {
       const response = $rollbar[level](error || Error(this.message), {
         title,
         message,
-        ...extra
+        ...extra,
       })
 
       if (response.uuid) {
@@ -78,13 +78,13 @@ class WebError extends Error {
     swal({
       title: this.title,
       content: text,
-      icon
+      icon,
     })
 
     const links = document.querySelectorAll('.swal-content a')
 
     for (const link of links) {
-      link.addEventListener('click', e => {
+      link.addEventListener('click', (e) => {
         e.preventDefault()
         $tools.shell.openItem(e.target.href)
       })
@@ -96,7 +96,7 @@ class WebError extends Error {
       error = new WebError(
         'An error has occurred!',
         'Oops! An unknown error has awakened us from our dreams, we will try to solve it in the next version.',
-        _.isError(error) ? error : new Error(error)
+        _.isError(error) ? error : new Error(error),
       )
     }
 

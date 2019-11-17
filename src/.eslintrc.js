@@ -3,6 +3,7 @@ module.exports = {
   env: {
     browser: true,
     node: true,
+    es2020: true,
     'shared-node-browser': true,
   },
   parserOptions: {
@@ -11,47 +12,53 @@ module.exports = {
   extends: [
     '@nuxtjs',
     'airbnb-base',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:promise/recommended',
     'plugin:lodash/recommended',
     'plugin:vue/recommended',
-    'plugin:nuxt/recommended',
-    'prettier',
-    'prettier/vue',
+    'plugin:nuxt/recommended'
   ],
-  plugins: ['lodash', 'vue', 'prettier'],
-  // add your custom rules here
+  plugins: ['import', 'promise', 'lodash', 'vue'],
+  settings: {
+    'import/resolver': {
+      nuxt: {}
+    }
+  },
   rules: {
+    quotes: ['error', 'single', { allowTemplateLiterals: true }],
+    semi: ['error', 'never'],
+    'max-len': 'off',
+    'comma-dangle': 'warn',
     'class-methods-use-this': 'off',
-    'global-require': 'off',
-    'import/no-unresolved': 'off',
     'padded-blocks': ['error', 'never'],
     'no-await-in-loop': 'warn',
     'no-console': 'off',
-    'no-alert': 'off',
     'no-continue': 'off',
-    'no-param-reassign': 'off',
     'no-restricted-syntax': 'off',
     'no-useless-constructor': 'warn',
-    'no-underscore-dangle': 'off',
+    'no-underscore-dangle': ['error', { allowAfterThis: true }],
     'no-shadow': 'off',
     'no-unused-vars': 'warn',
     'no-debugger': 'warn',
     'no-restricted-globals': 'warn',
     'no-unreachable': 'warn',
     'no-lone-blocks': 'off',
+    'no-param-reassign': 'off',
     'object-shorthand': ['error', 'always'],
     'quote-props': ['error', 'as-needed'],
     'spaced-comment': 'warn',
-    'import/no-webpack-loader-syntax': 'warn',
+    'import/no-webpack-loader-syntax': 'off',
     'vue/no-v-html': 'off',
     'vue/html-indent': ['warn', 2],
-    'vue/html-self-closing': 'off',
-    'vue/singleline-html-element-content-newline': 'off',
+    'vue/html-self-closing': 'error',
+    'vue/singleline-html-element-content-newline': 'warn',
     'vue/html-closing-bracket-newline': [
       'warn',
       {
         singleline: 'never',
-        multiline: 'never',
-      },
+        multiline: 'never'
+      }
     ],
     'lodash/import-scope': ['warn', 'full'],
     'lodash/prefer-lodash-method': 'off',
@@ -60,16 +67,18 @@ module.exports = {
     'lodash/prefer-includes': 'warn',
     'lodash/prefer-lodash-typecheck': 'warn',
     'lodash/prefer-constant': 'off',
-    'import/order': 'warn',
+    'import/order': 'error',
+    'import/prefer-default-export': 'off',
+    'import/default': 'off',
     'import/no-extraneous-dependencies': [
       'off',
       {
-        devDependencies: true,
+        devDependencies: false,
         optionalDependencies: false,
-        peerDependencies: false,
-      },
+        peerDependencies: false
+      }
     ],
-    'nuxt/no-globals-in-created': 'off',
+    'nuxt/no-globals-in-created': 'off'
   },
   globals: {
     $dream: false,

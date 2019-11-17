@@ -26,10 +26,10 @@ export default {
   computed: {
     alert() {
       return $nucleus.isEnabled ? $nucleus.alerts.index : undefined
-    }
+    },
   },
 
-  created() {}
+  created() {},
 }
 </script>
 

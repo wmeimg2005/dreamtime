@@ -1,236 +1,353 @@
 <template>
-  <div class="c-settings-preferences">
-    <section class="box box-section">
-      <box-section-item
-        label="Number of runs"
-        description="The transformation can be different each time, here you can set how many times your photo will be processed. In the end you can save the one you like best.">
-        <input v-model="currentValue.executions" type="number" min="1" class="input" />
-      </box-section-item>
+  <div class="c-preferences">
+    <section class="box box--items">
+      <div class="box__header">
+        <h2 class="title">
+          Runs
+        </h2>
+        <h3 class="subtitle">
+          Customize what will happen in each processing.
+        </h3>
+      </div>
 
-      <box-section-item
-        label="Randomize every run"
-        description="Random preferences will be set at each run">
-        <select v-model="currentValue.randomizePreferences" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
+      <div class="box__content">
+        <box-item
+          label="Number of runs"
+          description="How many times will the photo be processed?">
+          <input v-model="currentValue.body.executions" type="number" min="1" class="input">
+        </box-item>
 
-      <box-section-item
-        v-show="!currentValue.randomizePreferences"
-        label="Progressive every run"
-        description="Preferences will increase their value +0.2 in each run">
-        <select v-model="currentValue.progressivePreferences" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
+        <box-item
+          label="Randomize"
+          description="Random body preferences will be set at each run.">
+          <select v-model="currentValue.body.randomize" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          v-show="!currentValue.body.randomize"
+          label="Progressive"
+          :description="`Body preferences will increase their value ${currentValue.body.progressive.rate} at each run.`">
+          <select v-model="currentValue.body.progressive.enabled" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          v-show="!currentValue.body.randomize"
+          label="Progressive rate"
+          :description="`Current value: ${currentValue.body.progressive.rate}`">
+          <div class="slider-container">
+            <input
+              v-model="currentValue.body.progressive.rate"
+              type="range"
+              class="slider"
+              min="0.1"
+              max="0.9"
+              step="0.1">
+            <span class="min">0.1</span>
+            <span class="max">0.9</span>
+          </div>
+        </box-item>
+      </div>
     </section>
 
-    <section class="box box-section">
-      <box-section-item :description="`Current value: ${currentValue.boobs.size}`" label="Boob Size">
-        <div class="slider-container">
-          <input
-            v-model="currentValue.boobs.size"
-            type="range"
-            class="slider"
-            in="0.3"
-            max="2"
-            step="0.1" />
-          <span class="min">0.3</span>
-          <span class="max">2.0</span>
-        </div>
-      </box-section-item>
+    <section class="box box--items">
+      <div class="box__header">
+        <h2 class="title">
+          Body
+        </h2>
+        <h3 class="subtitle">
+          Customize the body of your dream.
+        </h3>
+      </div>
 
-      <box-section-item
-        v-show="currentValue.randomizePreferences"
-        label="Randomize"
-        description="Randomize the value in each run.">
-        <select v-model="currentValue.boobs.randomize" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
+      <div class="box__content">
+        <!-- Boobs -->
+        <box-item :description="`Current value: ${currentValue.body.boobs.size}`" label="Boobs size">
+          <div class="slider-container">
+            <input
+              v-model="currentValue.body.boobs.size"
+              type="range"
+              class="slider"
+              in="0.3"
+              max="2"
+              step="0.1">
+            <span class="min">0.3</span>
+            <span class="max">2.0</span>
+          </div>
+        </box-item>
 
-      <box-section-item
-        v-show="!currentValue.randomizePreferences && currentValue.progressivePreferences"
-        label="Progressive"
-        description="Increase the value progressively in each run">
-        <select v-model="currentValue.boobs.progressive" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
+        <box-item
+          v-show="currentValue.body.randomize"
+          label="Randomize"
+          description="Randomize the value in each run."
+          class="box__item--sub">
+          <select v-model="currentValue.body.boobs.randomize" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          v-show="!currentValue.body.randomize && currentValue.body.progressive.enabled"
+          label="Progressive"
+          description="Increase the value progressively in each run"
+          class="box__item--sub">
+          <select v-model="currentValue.body.boobs.progressive" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <!-- Areola -->
+        <box-item :description="`Current value: ${currentValue.body.areola.size}`" label="Areola size">
+          <div class="slider-container">
+            <input
+              v-model="currentValue.body.areola.size"
+              type="range"
+              class="slider"
+              in="0.3"
+              max="2"
+              step="0.1">
+            <span class="min">0.3</span>
+            <span class="max">2.0</span>
+          </div>
+        </box-item>
+
+        <box-item
+          v-show="currentValue.body.randomize"
+          label="Randomize"
+          description="Randomize the value in each run."
+          class="box__item--sub">
+          <select v-model="currentValue.body.areola.randomize" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          v-show="!currentValue.body.randomize && currentValue.body.progressive.enabled"
+          label="Progressive"
+          description="Increase the value progressively in each run"
+          class="box__item--sub">
+          <select v-model="currentValue.body.areola.progressive" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <!-- Nipple -->
+        <box-item :description="`Current value: ${currentValue.body.nipple.size}`" label="Nipple Size">
+          <div class="slider-container">
+            <input
+              v-model="currentValue.body.nipple.size"
+              type="range"
+              class="slider"
+              in="0.3"
+              max="2"
+              step="0.1">
+            <span class="min">0.3</span>
+            <span class="max">2.0</span>
+          </div>
+        </box-item>
+
+        <box-item
+          v-show="currentValue.body.randomize"
+          label="Randomize"
+          description="Randomize the value in each run."
+          class="box__item--sub">
+          <select v-model="currentValue.body.nipple.randomize" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          v-show="!currentValue.body.randomize && currentValue.body.progressive.enabled"
+          label="Progressive"
+          description="Increase the value progressively in each run"
+          class="box__item--sub">
+          <select v-model="currentValue.body.nipple.progressive" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <!-- Vagina -->
+        <box-item :description="`Current value: ${currentValue.body.vagina.size}`" label="Vagina Size">
+          <div class="slider-container">
+            <input
+              v-model="currentValue.body.vagina.size"
+              type="range"
+              class="slider"
+              in="0.3"
+              max="1.5"
+              step="0.1"></input>
+            <span class="min">0.3</span>
+            <span class="max">1.5</span>
+          </div>
+        </box-item>
+
+        <box-item
+          v-show="currentValue.body.randomize"
+          label="Randomize"
+          description="Randomize the value in each run."
+          class="box__item--sub">
+          <select v-model="currentValue.body.vagina.randomize" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          v-show="!currentValue.body.randomize && currentValue.body.progressive.enabled"
+          label="Progressive"
+          description="Increase the value progressively in each run"
+          class="box__item--sub">
+          <select v-model="currentValue.body.vagina.progressive" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item :description="`Current value: ${currentValue.body.pubicHair.size}`" label="Pubic Hair">
+          <div class="slider-container">
+            <input
+              v-model="currentValue.body.pubicHair.size"
+              type="range"
+              class="slider"
+              in="0"
+              max="2"
+              step="0.1"></input>
+            <span class="min">Disabled</span>
+            <span class="max">2.0</span>
+          </div>
+        </box-item>
+
+        <box-item
+          v-show="currentValue.body.randomize"
+          label="Randomize"
+          description="Randomize the value in each run."
+          class="box__item--sub">
+          <select v-model="currentValue.body.pubicHair.randomize" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          v-show="!currentValue.body.randomize && currentValue.body.progressive.enabled"
+          label="Progressive"
+          description="Increase the value progressively in each run"
+          class="box__item--sub">
+          <select v-model="currentValue.body.pubicHair.progressive" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+      </div>
     </section>
 
-    <section class="box box-section">
-      <box-section-item :description="`Current value: ${currentValue.areola.size}`" label="Areola Size">
-        <div class="slider-container">
-          <input
-            v-model="currentValue.areola.size"
-            type="range"
-            class="slider"
-            in="0.3"
-            max="2"
-            step="0.1" />
-          <span class="min">0.3</span>
-          <span class="max">2.0</span>
-        </div>
-      </box-section-item>
+    <section class="box box--items">
+      <div class="box__header">
+        <h2 class="title">
+          Advanced
+        </h2>
+        <h3 class="subtitle">
+          Additional processing settings.
+        </h3>
+      </div>
 
-      <box-section-item
-        v-show="currentValue.randomizePreferences"
-        label="Randomize"
-        description="Randomize the value in each run.">
-        <select v-model="currentValue.areola.randomize" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
+      <div class="box__content">
+        <box-item
+          label="Scale mode"
+          description="Method that will be used to scale your photo to 512x512.">
+          <select v-model="currentValue.advanced.scaleMode" class="input">
+            <option value="none">
+              None
+            </option>
+            <option value="cropjs">
+              Manual Crop (Not recommended)
+            </option>
+            <option value="auto-rescale">
+              Fixed Scale
+            </option>
+            <option value="auto-resize">
+              Scale and pad
+            </option>
+            <!--
+            <option value="auto-resize-crop">
+              Scale and crop
+            </option>
+            -->
+          </select>
+        </box-item>
 
-      <box-section-item
-        v-show="!currentValue.randomizePreferences && currentValue.progressivePreferences"
-        label="Progressive"
-        description="Increase the value progressively in each run">
-        <select v-model="currentValue.areola.progressive" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-    </section>
-
-    <section class="box box-section">
-      <box-section-item :description="`Current value: ${currentValue.nipple.size}`" label="Nipple Size">
-        <div class="slider-container">
-          <input
-            v-model="currentValue.nipple.size"
-            type="range"
-            class="slider"
-            in="0.3"
-            max="2"
-            step="0.1" />
-          <span class="min">0.3</span>
-          <span class="max">2.0</span>
-        </div>
-      </box-section-item>
-
-      <box-section-item
-        v-show="currentValue.randomizePreferences"
-        label="Randomize"
-        description="Randomize the value in each run.">
-        <select v-model="currentValue.nipple.randomize" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-
-      <box-section-item
-        v-show="!currentValue.randomizePreferences && currentValue.progressivePreferences"
-        label="Progressive"
-        description="Increase the value progressively in each run">
-        <select v-model="currentValue.nipple.progressive" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-    </section>
-
-    <section class="box box-section">
-      <box-section-item :description="`Current value: ${currentValue.vagina.size}`" label="Vagina Size">
-        <div class="slider-container">
-          <input
-            v-model="currentValue.vagina.size"
-            type="range"
-            class="slider"
-            in="0.3"
-            max="1.5"
-            step="0.1"></input>
-          <span class="min">0.3</span>
-          <span class="max">1.5</span>
-        </div>
-      </box-section-item>
-
-      <box-section-item
-        v-show="currentValue.randomizePreferences"
-        label="Randomize"
-        description="Randomize the value in each run.">
-        <select v-model="currentValue.vagina.randomize" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-
-      <box-section-item
-        v-show="!currentValue.randomizePreferences && currentValue.progressivePreferences"
-        label="Progressive"
-        description="Increase the value progressively in each run">
-        <select v-model="currentValue.vagina.progressive" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-    </section>
-
-    <section class="box box-section">
-      <box-section-item :description="`Current value: ${currentValue.pubicHair.size}`" label="Pubic Hair">
-        <div class="slider-container">
-          <input
-            v-model="currentValue.pubicHair.size"
-            type="range"
-            class="slider"
-            in="0"
-            max="2"
-            step="0.1"></input>
-          <span class="min">Disabled</span>
-          <span class="max">2.0</span>
-        </div>
-      </box-section-item>
-
-      <box-section-item
-        v-show="currentValue.randomizePreferences"
-        label="Randomize"
-        description="Randomize the value in each run.">
-        <select v-model="currentValue.pubicHair.randomize" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-
-      <box-section-item
-        v-show="!currentValue.randomizePreferences && currentValue.progressivePreferences"
-        label="Progressive"
-        description="Increase the value progressively in each run">
-        <select v-model="currentValue.pubicHair.progressive" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-    </section>
-
-    <section class="box box-section">
-      <box-section-item v-if="false" label="Photo restoration" description="Restore the cropped photo to the original photo.">
-        <select v-model="currentValue.useRestoration" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-
-      <box-section-item v-if="false" label="waifu2x" description="waifu2x will try to resize your transformed photo to 1024x1024 with the least possible quality loss.">
-        <select v-model="currentValue.useWaifu" class="input">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
-        </select>
-      </box-section-item>
-
-      <box-section-item
-        v-if="false"
-        label="Use Custom Mask"
-        hint="(Advanced) You can edit the masks of the photo before processing.">
-        <select v-model="currentValue.useCustomMask" class="input">
-          <option :value="false">Disabled</option>
-          <option :value="true">Enabled</option>
-        </select>
-      </box-section-item>
+        <box-item
+          label="Color transfer"
+          description="(Experimental) At the end of the transformation, a color transfer algorithm will be applied to try to recover the original colors of the photo.">
+          <select v-model="currentValue.advanced.useColorTransfer" class="input">
+            <option :value="true">
+              Enabled
+            </option>
+            <option :value="false">
+              Disabled
+            </option>
+          </select>
+        </box-item>
+      </div>
     </section>
   </div>
 </template>
@@ -239,7 +356,6 @@
 import { VModel } from '~/mixins'
 
 export default {
-  mixins: [VModel]
+  mixins: [VModel],
 }
 </script>
-

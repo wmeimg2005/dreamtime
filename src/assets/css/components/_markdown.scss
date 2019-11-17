@@ -11,7 +11,7 @@
     @apply text-lg mb-2;
 
     &:not(:first-child) {
-      @apply mt-5;
+      @apply mt-4;
     }
   }
 
@@ -23,7 +23,7 @@
     @apply list-disc ml-6;
 
     li {
-      @apply mt-1;
+      @apply mt-2;
     }
   }
 
@@ -36,6 +36,6 @@
   }
 
   code {
-    @apply bg-gray-200 font-mono py-1 px-2 text-sm;
+    @apply bg-gray-200 font-mono py-2 px-2 text-sm;
   }
 }

@@ -17,22 +17,14 @@ export default class PhotoJob {
     this.id = id
     this.photo = photo
 
-    // Transformation Process event bus
+    // dreampower event bus
     this.process = undefined
 
-    // Output file, this is the photo already transformed!
+    // output file
     this.file = File.fromPath(photo.getFolderPath(this.getFileName()))
 
-    // Clean initialization
+    // reset data
     this.reset()
-
-    /*
-    this.debug(`Job created`, {
-      id: this.id,
-      photo: this.photo,
-      file: this.file
-    })
-    */
   }
 
   /**
@@ -42,10 +34,10 @@ export default class PhotoJob {
     // CLI messages
     this.cli = {
       lines: [],
-      error: ''
+      error: '',
     }
 
-    // Transformation Preferences
+    // preferences
     this.preferences = _.cloneDeep(this.photo.preferences)
 
     this.isLoading = false
@@ -85,7 +77,7 @@ export default class PhotoJob {
 
     if (!activeWindow.isFocused() && $settings.notifications.run) {
       const notification = new Notification(`💭 Run #${this.id} has finished`, {
-        body: 'Now you can save the dream'
+        body: 'Now you can save the dream',
       })
 
       notification.onclick = () => {
@@ -104,27 +96,6 @@ export default class PhotoJob {
   }
 
   /**
-   * ID. Execution Number
-   */
-  getId() {
-    return this.id
-  }
-
-  /**
-   *
-   */
-  getPhoto() {
-    return this.photo
-  }
-
-  /**
-   *
-   */
-  getPreferences() {
-    return this.preferences
-  }
-
-  /**
    * Transformed File Name
    */
   getFileName() {
@@ -132,18 +103,11 @@ export default class PhotoJob {
 
     // Original name normalized to avoid problems
     const originalName = _.truncate(
-      _.deburr(this.photo.getSourceFile().getName()),
-      { length: 30, omission: '' }
+      _.deburr(this.photo.file.getName()),
+      { length: 30, omission: '' },
     )
 
     return `${originalName}-${this.id}-${now}-dreamtime.png`
-  }
-
-  /**
-   *
-   */
-  getFile() {
-    return this.file
   }
 
   /**
@@ -160,14 +124,14 @@ export default class PhotoJob {
       if (message.includes(payload.error)) {
         return {
           type: payload.type,
-          message: payload.message
+          message: payload.message,
         }
       }
     }
 
     return {
       type: 'error',
-      message: `The process has been interrupted by an unknown error, this may be caused by a corrupt installation, please check the console for more information.`
+      message: `The process has been interrupted by an unknown error, this may be caused by a corrupt installation, please check the console for more information.`,
     }
   }
 
@@ -193,44 +157,48 @@ export default class PhotoJob {
    *
    */
   customizePreferences() {
-    if (this.preferences.randomizePreferences) {
-      // Randomize
+    const preferences = this.preferences.body
+
+    if (preferences.randomize) {
+      // randomize
       _.forIn(preferencesConfig, (payload, key) => {
-        if (this.preferences[key].randomize) {
-          this.preferences[key].size = rand(payload.min, payload.max)
+        if (preferences[key].randomize) {
+          preferences[key].size = rand(payload.min, payload.max)
         }
       })
-    } else if (this.preferences.progressivePreferences) {
-      // Progressive
-      const add = 0.1 * (this.id - 1)
+    } else if (preferences.progressive.enabled) {
+      // progressive
+      const add = preferences.progressive.rate * (this.id - 1)
 
       _.forIn(preferencesConfig, (payload, key) => {
-        if (this.preferences[key].progressive) {
-          let value = Number.parseFloat(this.preferences[key].size)
+        if (preferences[key].progressive) {
+          let value = Number.parseFloat(preferences[key].size)
           value = Math.min(value + add, payload.max)
 
-          this.preferences[key].size = value
+          preferences[key].size = value
         }
       })
     }
+
+    this.preferences.body = preferences
   }
 
   /**
    *
    */
   start() {
-    const deferred = Deferred()
+    const def = Deferred()
 
     const onSpawnError = (error) => {
-      deferred.reject(
+      def.reject(
         new WebError(
           'Unable to start DreamPower!',
-          `There was a problem trying to start DreamPower, in **Settings** please make sure that the option **DreamPower Folder** is valid, if you are not a developer make sure that the option **Use Python** is disabled.`,
+          `There was a problem trying to start DreamPower, in **Settings** please make sure that the option **DreamPower Folder** is valid.`,
           {
             error,
-            type: 'debug'
-          }
-        )
+            type: 'debug',
+          },
+        ),
       )
     }
 
@@ -242,7 +210,7 @@ export default class PhotoJob {
       setTimeout(() => {
         onSpawnError(error)
       }, 0)
-      return deferred.promise
+      return def.promise
     }
 
     this.process.on('error', (error) => {
@@ -260,7 +228,7 @@ export default class PhotoJob {
       output.forEach((text) => {
         this.cli.lines.unshift({
           text,
-          css: {}
+          css: {},
         })
       })
     })
@@ -270,8 +238,8 @@ export default class PhotoJob {
       this.cli.lines.unshift({
         text: output,
         css: {
-          'text-danger': true
-        }
+          'text-danger': true,
+        },
       })
 
       this.cli.error += `${output}\n`
@@ -287,36 +255,36 @@ export default class PhotoJob {
 
         if (this.file.exists()) {
           $nucleus.track('DREAM_COMPLETED')
-          deferred.resolve()
+          def.resolve()
         } else {
-          deferred.reject(
+          def.reject(
             new WebError(
               `Transformation #${this.id} failed`,
               'DreamPower has reported that the photo has been transformed but the file does not exist! This may be due to a problem saving the photo, verify that DreamPower has write permissions and that your Antivirus is not detecting false positives. It is also possible that DreamPower is ending abruptly due to a major problem.',
               {
                 type: 'warning',
                 extra: {
-                  output: this.cli.lines
-                }
-              }
-            )
+                  output: this.cli.lines,
+                },
+              },
+            ),
           )
         }
       } else {
         const err = this.getCliError()
 
-        deferred.reject(
+        def.reject(
           new WebError(`Transformation #${this.id} failed`, err.message, {
             error: Error(this.cli.error),
             type: err.type,
             extra: {
-              output: this.cli.lines
-            }
-          })
+              output: this.cli.lines,
+            },
+          }),
         )
       }
     })
 
-    return deferred.promise
+    return def.promise
   }
 }

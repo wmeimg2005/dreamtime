@@ -32,14 +32,29 @@
         </nav>
       </section>
 
+      <!-- Nice links -->
+      <section v-if="!$platform.isLimited" class="navbar-section">
+        <nav class="navbar-items">
+          <app-external-link :href="$nucleus.urls.web" class="navbar-item">
+            <span class="icon">🌎</span>
+            <span>Website</span>
+          </app-external-link>
+
+          <app-external-link :href="$nucleus.urls.chat" class="navbar-item">
+            <span class="icon">💬</span>
+            <span>Chat</span>
+          </app-external-link>
+
+          <app-external-link :href="$nucleus.urls.forum" class="navbar-item">
+            <span class="icon">👥</span>
+            <span>Forum</span>
+          </app-external-link>
+        </nav>
+      </section>
+
       <!-- Developer Navigation -->
       <section v-if="isDev" class="navbar-section">
-        <nav class="navbar-items">
-          <a href="#" class="navbar-item" @click.prevent="testBug">
-            <span class="icon">🐛</span>
-            <span>I am a error!</span>
-          </a>
-        </nav>
+        <nav class="navbar-items" />
       </section>
     </div>
   </div>
@@ -73,16 +88,17 @@ export default {
     },
 
     isActive() {
+      // eslint-disable-next-line no-underscore-dangle
       return $settings._settings.welcome !== true
-    }
+    },
   },
 
   methods: {
     testBug() {
       $tools.testError()
       throw new Error('wow much error')
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -127,7 +143,7 @@ export default {
   }
 
   .navbar-header {
-    @apply mb-5 text-gray-300 flex flex-col items-center justify-center;
+    @apply mb-4 text-gray-300 flex flex-col items-center justify-center;
     animation: 20s ease-in-out infinite bgAnim;
     height: 70px;
 
@@ -163,7 +179,7 @@ export default {
   }
 
   .navbar-section {
-    @apply mb-5;
+    @apply mb-4;
   }
 
   .section-title {

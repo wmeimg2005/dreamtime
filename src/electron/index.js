@@ -1,13 +1,12 @@
-/*
- * DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License 3.0 as published by
- * the Free Software Foundation.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
+
 
 const { app, BrowserWindow } = require('electron')
 const http = require('http')
@@ -18,7 +17,6 @@ const utils = require('electron-utils')
 
 const AppError = require('./modules/error')
 const { settings, nucleus, rollbar } = require('./modules')
-const paths = require('./tools/paths')
 const config = require('../nuxt.config')
 
 // Indicate to NuxtJS the root directory of the project
@@ -27,14 +25,12 @@ config.rootDir = path.dirname(__dirname)
 // Copyright.
 // DO NOT DELETE OR ALTER THIS SECTION!
 console.log(`
-  DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
+  DreamTime.
+  Copyright (C) DreamNet. All rights reserved.
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License 3.0 as published by
-  the Free Software Foundation.
-
-  You should have received a copy of the GNU General Public License
-  along with this program. If not, see <https://www.gnu.org/licenses/>
+  the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
 `)
 
 // Debug
@@ -46,7 +42,7 @@ console.log({
     appPath: app.getAppPath(),
     exePath: app.getPath('exe'),
   },
-  isStatic: utils.pack.isStatic()
+  isStatic: utils.pack.isStatic(),
 })
 
 class DreamApp {
@@ -85,7 +81,7 @@ class DreamApp {
 
     //
     contextMenu({
-      showSaveImageAs: true
+      showSaveImageAs: true,
     })
   }
 
@@ -102,8 +98,8 @@ class DreamApp {
       icon: path.join(config.rootDir, 'dist', 'app.ico'),
       webPreferences: {
         // Script that offers secure communication to the NodeJS API
-        preload: path.join(app.getAppPath(), 'electron', 'preload.js')
-      }
+        preload: path.join(app.getAppPath(), 'electron', 'preload.js'),
+      },
     })
 
     // Disable the default menu
@@ -114,21 +110,15 @@ class DreamApp {
 
     if (config.dev) {
       // Development
-
-      if (!process.env.DEBUGGING) {
-        // Load the DevTools
-        this.window.webContents.openDevTools()
-      }
-
       this.pollServer()
     } else {
       // Production, load the static interface!
       this.window.loadFile(this.loadURL)
+    }
 
-      if (process.env.DEVTOOLS) {
-        // Load the DevTools
-        this.window.webContents.openDevTools()
-      }
+    if (process.env.DEVTOOLS) {
+      // Load the DevTools
+      this.window.webContents.openDevTools()
     }
   }
 
@@ -145,7 +135,7 @@ class DreamApp {
           this.window.loadURL(this.loadURL)
         } else {
           console.log(
-            `> The server reported the status code: ${response.statusCode}`
+            `> The server reported the status code: ${response.statusCode}`,
           )
           setTimeout(this.pollServer.bind(this), 300)
         }
@@ -176,16 +166,16 @@ class DreamApp {
       fs.mkdirSync(
         modelsPath,
         {
-          recursive: true
+          recursive: true,
         },
         (error) => {
           throw new AppError(
             `Trying to create the directory to save the models,
           please make sure that the application has permissions to create the directory:\n
           ${modelsPath}`,
-            error
+            error,
           )
-        }
+        },
       )
     }
   }

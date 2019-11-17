@@ -2,17 +2,21 @@
   <itemtag :version="version" :tag="tag" :href="href" class="box-section-item">
     <slot name="icon">
       <figure v-if="isURL(icon)" class="item-icon">
-        <img :src="icon" />
+        <img :src="icon">
       </figure>
 
       <span v-else-if="icon" class="item-icon">{{ icon }}</span>
     </slot>
 
     <div class="item-text">
-      <p class="item-label">{{ label }}</p>
+      <p class="item-label">
+        {{ label }}
+      </p>
 
       <slot name="description">
-        <p v-if="description" class="item-description">{{ description }}</p>
+        <p v-if="description" class="item-description">
+          {{ description }}
+        </p>
       </slot>
     </div>
 
@@ -37,7 +41,7 @@ export default {
           }
 
           return this.version === $dream.version
-        }
+        },
       },
       render(createElement) {
         if (!this.isVisible) {
@@ -48,40 +52,40 @@ export default {
           this.tag,
           {
             props: {
-              href: this.href
-            }
+              href: this.href,
+            },
           },
-          this.$slots.default
+          this.$slots.default,
         )
-      }
-    }
+      },
+    },
   },
 
   props: {
     label: {
       type: String,
-      required: true
+      required: true,
     },
 
     description: {
       type: String,
-      default: ''
+      default: '',
     },
 
     icon: {
       type: String,
-      default: undefined
+      default: undefined,
     },
 
     href: {
       type: String,
-      default: undefined
+      default: undefined,
     },
 
     version: {
       type: String,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
 
   computed: {
@@ -93,7 +97,7 @@ export default {
       }
 
       return tag
-    }
+    },
   },
 
   methods: {
@@ -107,17 +111,16 @@ export default {
       }
 
       const pattern = new RegExp(
-        '^(https?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-          '(\\#[-a-z\\d_]*)?$',
-        'i'
+        '^(https?:\\/\\/)?' // protocol
+        + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
+        + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
+        + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
+        + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
+          + '(\\#[-a-z\\d_]*)?$',
+        'i',
       ) // fragment locator
       return !!pattern.test(str)
-    }
-  }
+    },
+  },
 }
 </script>
-

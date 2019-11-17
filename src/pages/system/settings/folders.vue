@@ -1,36 +1,36 @@
 <template>
-  <div class="settings-fields">
-    <p class="notification">Changing this options needs restart to take effect.</p>
+  <div class="settings-folders" scoped>
+    <div class="notification">
+      Changing this options needs a restart to take effect.
+    </div>
 
-    <section class="box box-section">
-      <box-section-item
-        label="DreamPower"
-        description="Location of DreamPower (also known as CLI)">
-        <input v-model="currentValue.folders.cli" class="input" />
-        <button type="button" class="button" @click.prevent="changeCLI">📂</button>
-      </box-section-item>
+    <section class="box box--items">
+      <div class="box__content">
+        <box-item
+          label="DreamPower"
+          description="Location of DreamPower (also known as CLI)">
+          <input v-model="currentValue.folders.cli" readonly class="input" title="Change" @click.prevent="changePower">
+        </box-item>
 
-      <box-section-item
-        label="Models"
-        description="Location where the transformed photos will be saved.">
-        <input v-model="currentValue.folders.models" class="input" />
-        <button type="button" class="button" @click.prevent="changeModels">📂</button>
-      </box-section-item>
+        <box-item
+          label="Models"
+          description="Location where the transformed photos will be saved.">
+          <input v-model="currentValue.folders.models" class="input" readonly title="Change" @click.prevent="changeModels">
+        </box-item>
 
-      <box-section-item
-        label="Cropped"
-        description="Location where the cropped photos will be saved. We recommend selecting a temporary folder.">
-        <input v-model="currentValue.folders.cropped" class="input" />
-        <button type="button" class="button" @click.prevent="changeCropped">📂</button>
-      </box-section-item>
+        <box-item
+          label="Cropped"
+          description="Location where the cropped photos will be saved. We recommend selecting a temporary folder.">
+          <input v-model="currentValue.folders.cropped" class="input" readonly title="Change" @click.prevent="changeCropped">
+        </box-item>
 
-      <box-section-item
-        v-if="false"
-        label="Masks"
-        description="Location where the algorithm masks photos will be saved.">
-        <input v-model="currentValue.folders.masks" class="input" />
-        <button type="button" class="button" @click.prevent="changeMasks">📂</button>
-      </box-section-item>
+        <box-item
+          v-if="false"
+          label="Masks"
+          description="Location where the algorithm masks photos will be saved.">
+          <input v-model="currentValue.folders.masks" class="input" readonly title="Change" @click.prevent="changeMasks">
+        </box-item>
+      </div>
     </section>
   </div>
 </template>
@@ -52,8 +52,10 @@ export default {
     showOpenDialog(path) {
       const dir = $tools.shell.showOpenDialog(null, {
         defaultPath: path,
-        properties: ['openDirectory']
+        properties: ['openDirectory'],
       })
+
+      console.log(dir)
 
       if (_.isNil(dir)) {
         return path
@@ -82,18 +84,22 @@ export default {
       this.currentValue.folders.masks = dir
     },
 
-    changeCLI() {
+    changePower() {
       const dir = this.showOpenDialog(this.currentValue.folders.cli)
       this.currentValue.folders.cli = dir
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
-p {
-  @apply mb-5;
+.settings-folders {
+  .input {
+    @apply cursor-pointer;
+  }
+
+  .notification {
+    @apply mb-4;
+  }
 }
 </style>
-
-

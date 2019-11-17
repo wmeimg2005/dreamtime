@@ -43,5 +43,10 @@
     "error": "loading Python",
     "message": "There was a problem loading a necessary DreamPower file. It is possible that your installation is corrupt, download the program again and reinstall.",
     "type": "debug"
+  },
+  {
+    "error": "DLL",
+    "message": "There was a problem loading a necessary DreamPower file. It is possible that your installation is corrupt, download the program again and reinstall.",
+    "type": "debug"
   }
 ]

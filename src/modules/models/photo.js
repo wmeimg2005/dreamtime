@@ -3,7 +3,6 @@ import uuid from 'uuid'
 import swal from 'sweetalert'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
-import File from '../file'
 import Timer from '../timer'
 import PhotoJob from './photo-job'
 import WebError from '../web-error'
@@ -20,39 +19,48 @@ export default class Photo {
    * @param {File} file Instance of the file
    */
   constructor(model, file) {
-    // Unique identification and model
+    // unique identification and model
     this.uuid = uuid()
     this.model = model
 
-    // Source file, this is the photo that we want to transform
-    this.sourceFile = file
+    this.started = false
+    this.running = false
 
-    // Cropped file, this is the photo cropped to 512x512
-    this.croppedFile = File.fromPath(
-      $tools.paths.getCropped(`${this.uuid}.png`)
-    )
+    // photo file
+    this.file = file
 
-    // Transformation Preferences
+    this.crop = {
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+    }
+
+    // preferences
     this.preferences = _.clone($settings.preferences)
 
+    // reset data
     this.reset()
 
-    // Jobs queue
+    // jobs queue
     this.queue = new Queue(
       (job, cb) => {
         job
           .start()
           .then(() => {
+            // eslint-disable-next-line promise/no-callback-in-promise
             cb(null)
+            return true
           })
-          .catch(err => {
+          .catch((err) => {
+            // eslint-disable-next-line promise/no-callback-in-promise
             cb(err)
           })
 
         return {
           cancel: () => {
             job.cancel()
-          }
+          },
         }
       },
       {
@@ -62,17 +70,13 @@ export default class Photo {
           $settings.processing.device === 'GPU' ? 60 * 1000 : 300 * 1000,
         afterProcessDelay: 1000,
         batchSize: 1,
-        store: new MemoryStore()
-      }
+        store: new MemoryStore(),
+      },
     )
 
     this.queue.on('drain', () => {
       debug('All Jobs have finished!')
       this.onFinish()
-    })
-
-    this.queue.on('empty', () => {
-      // this.onFinish()
     })
 
     this.queue.on('task_started', (jobId, job) => {
@@ -103,22 +107,13 @@ export default class Photo {
         }
       }
     })
-
-    /*
-    this.debug(`Photo created`, {
-      uuid: this.uuid,
-      model: this.model,
-      sourceFile: this.sourceFile,
-      croppedFile: this.croppedFile
-    })
-    */
   }
 
   reset() {
     //
-    this.isLoading = false
+    this.running = false
 
-    // Transformation Timer
+    // timer
     this.timer = new Timer()
 
     //
@@ -138,11 +133,12 @@ export default class Photo {
    * The Photo transformation has begun
    */
   onStart() {
-    if (this.isLoading) {
+    if (this.running) {
       return
     }
 
-    this.isLoading = true
+    this.started = true
+    this.running = true
     this.timer.start()
   }
 
@@ -150,18 +146,18 @@ export default class Photo {
    * The Photo transformation has finished
    */
   onFinish() {
-    if (!this.isLoading) {
+    if (!this.running) {
       return
     }
 
-    this.isLoading = false
+    this.running = false
     this.timer.stop()
 
     const activeWindow = $tools.utils.activeWindow()
 
     if (!activeWindow.isFocused() && $settings.notifications.allRuns) {
-      const notification = new Notification(`💭 All runs have finished`, {
-        body: 'Now you can save all the dreams you like'
+      const notification = new Notification(`💭 All runs have finished.`, {
+        body: 'Now you can save all the dreams you like.',
       })
 
       notification.onclick = () => {
@@ -181,16 +177,16 @@ export default class Photo {
    * Returns the error message for an invalid file. null if there are no errors.
    */
   getValidationErrorMessage() {
-    const file = this.getSourceFile()
+    const { file } = this
 
     if (!file.exists) {
       return 'Apparently the file does not exist anymore!'
     }
 
     if (
-      file.mimetype !== 'image/jpeg' &&
-      file.mimetype !== 'image/png' &&
-      file.mimetype !== 'image/gif'
+      file.mimetype !== 'image/jpeg'
+      && file.mimetype !== 'image/png'
+      && file.mimetype !== 'image/gif'
     ) {
       return 'The selected file is not a valid photo. Only JPEG, PNG or GIF.'
     }
@@ -213,27 +209,6 @@ export default class Photo {
   }
 
   /**
-   * Returns the transformation preferences
-   */
-  getPreferences() {
-    return this.preferences
-  }
-
-  /**
-   * Return the original file
-   */
-  getSourceFile() {
-    return this.sourceFile
-  }
-
-  /**
-   * Return the cropped photo
-   */
-  getCroppedFile() {
-    return this.croppedFile
-  }
-
-  /**
    *
    * @param {*} id
    */
@@ -245,19 +220,20 @@ export default class Photo {
    * Start the transformation process!
    */
   async start() {
-    if (this.preferences.executions === 0) {
-      swal('Invalid Configuration', 'Please set 1 or more runs', 'warning')
-
+    if (this.preferences.body.executions === 0) {
+      swal('Invalid preferences', 'Please set 1 or more runs', 'error')
       return
     }
 
+    this.reset()
+
     debug(
-      `Preparing the transformation for ${this.preferences.executions} jobs`
+      `Preparing the transformation for ${this.preferences.body.executions} jobs`,
     )
 
     this.onStart()
 
-    for (let it = 1; it <= this.preferences.executions; it += 1) {
+    for (let it = 1; it <= this.preferences.body.executions; it += 1) {
       const job = new PhotoJob(it, this)
 
       this.jobs.push(job)
@@ -269,23 +245,15 @@ export default class Photo {
    *
    */
   cancel() {
-    if (!this.isLoading) {
+    if (!this.running) {
       return
     }
 
-    this.jobs.forEach(job => {
+    this.jobs.forEach((job) => {
       this.queue.cancel(job.id)
     })
 
     this.onFinish()
-  }
-
-  /**
-   *
-   */
-  rerun() {
-    this.reset()
-    this.start()
   }
 
   /**

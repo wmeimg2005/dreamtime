@@ -14,6 +14,7 @@ import Title from './AppTitle'
 import ExternalLink from './AppExternalLink'
 import Update from './AppUpdate'
 import SectionItem from './BoxSectionItem'
+import BoxItem from './BoxItem'
 import AppPhoto from './AppPhoto'
 
 Vue.component('app-title', Title)
@@ -21,3 +22,4 @@ Vue.component('app-external-link', ExternalLink)
 Vue.component('app-update', Update)
 Vue.component('app-photo', AppPhoto)
 Vue.component('box-section-item', SectionItem)
+Vue.component('box-item', BoxItem)

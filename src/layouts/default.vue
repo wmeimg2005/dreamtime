@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  middleware: ['checks']
+  middleware: ['checks'],
 }
 </script>
 

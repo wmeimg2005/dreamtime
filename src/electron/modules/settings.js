@@ -1,7 +1,7 @@
 const fs = require('fs')
 const _ = require('lodash')
 const uuid = require('uuid')
-const { api, is } = require('electron-utils')
+const { api } = require('electron-utils')
 const debug = require('debug').default('app:electron:modules:settings')
 
 const tools = require('../tools')
@@ -45,68 +45,78 @@ const settings = {
     } catch (err) { }
 
     this._default = {
-      version: 2,
+      version: 3,
       welcome: true,
       user: uuid(),
 
       processing: {
         device: hasGPU ? 'GPU' : 'CPU',
         gpus: [0],
-        usePython: process.env.NODE_ENV === 'development'
+        cores: 4,
+        disablePersistentGan: false,
+        usePython: process.env.NODE_ENV === 'development',
       },
 
       preferences: {
-        boobs: {
-          size: '1',
-          randomize: true,
-          progressive: true
-        },
-        areola: {
-          size: '1',
+        body: {
+          executions: 1,
           randomize: false,
-          progressive: true
-        },
-        nipple: {
-          size: '1',
-          randomize: false,
-          progressive: true
-        },
-        vagina: {
-          size: '0.75',
-          randomize: true,
-          progressive: true
-        },
-        pubicHair: {
-          size: '1',
-          randomize: true,
-          progressive: true
+
+          progressive: {
+            enabled: false,
+            rate: 0.1,
+          },
+
+          boobs: {
+            size: '1',
+            randomize: true,
+            progressive: true,
+          },
+          areola: {
+            size: '1',
+            randomize: false,
+            progressive: true,
+          },
+          nipple: {
+            size: '1',
+            randomize: false,
+            progressive: true,
+          },
+          vagina: {
+            size: '0.75',
+            randomize: true,
+            progressive: true,
+          },
+          pubicHair: {
+            size: '1',
+            randomize: true,
+            progressive: true,
+          },
         },
 
-        executions: 1,
-        randomizePreferences: false,
-        progressivePreferences: false,
-
-        useWaifu: false, // weebs out 😡👉🚪
-        useRestoration: true,
-        useCustomMask: false
+        advanced: {
+          scaleMode: 'auto-rescale',
+          useColorTransfer: false,
+          useWaifu: false,
+        },
       },
 
       notifications: {
         run: false,
         allRuns: true,
-        update: true
+        update: true,
       },
 
       folders: {
         cropped: tools.paths.get('temp'),
         models: tools.paths.get('userData', 'models'),
         masks: tools.paths.get('userData', 'masks'),
-        cli: tools.paths.get('userData', 'dreampower')
+        cli: tools.paths.get('userData', 'dreampower'),
       },
 
       telemetry: {
-        enabled: true
-      }
+        enabled: true,
+      },
     }
   },
 
@@ -124,7 +134,7 @@ const settings = {
     } catch (err) {
       api.dialog.showErrorBox(
         'The program could not be started',
-        `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${this._path}`
+        `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${this._path}`,
       )
 
       api.app.exit()
@@ -136,16 +146,18 @@ const settings = {
    * - Ugly code, here we go!
    */
   async _upgrade() {
-    const version = this._settings.version || 1
-    const currentVersion = this._default.version
+    const currentVersion = this._settings.version || 1
+    const newVersion = this._default.version
 
-    if (currentVersion === version) {
+    if (newVersion === currentVersion) {
       return
     }
 
-    if (version === 1 && currentVersion === 2) {
-      const newSettings = _.cloneDeep(this._settings)
+    const currentSettings = this._settings
+    const newSettings = _.cloneDeep(currentSettings)
 
+    // Upgrade 1 -> 2
+    if (currentVersion === 1 && newVersion === 2) {
       newSettings.version = 2
       newSettings.preferences = this._default.preferences
       newSettings.notifications = this._default.notifications
@@ -155,7 +167,7 @@ const settings = {
         areolaSize,
         nippleSize,
         vaginaSize,
-        pubicHairSize
+        pubicHairSize,
       } = this._settings.preferences
 
       newSettings.preferences.boobs.size = boobsSize
@@ -163,9 +175,46 @@ const settings = {
       newSettings.preferences.nipple.size = nippleSize
       newSettings.preferences.vagina.size = vaginaSize
       newSettings.preferences.pubicHair.size = pubicHairSize
-
-      this.set(newSettings)
     }
+
+    // Upgrade 2 -> 3
+    if (currentVersion === 2 && newVersion === 3) {
+      const { processing, preferences } = currentSettings
+
+      newSettings.version = 3
+
+      newSettings.processing = {
+        ...processing,
+        cores: 4,
+        disablePersistentGan: false,
+      }
+
+      newSettings.preferences = {
+        body: {
+          executions: preferences.executions,
+          randomize: preferences.randomizePreferences,
+
+          progressive: {
+            enabled: preferences.progressivePreferences,
+            rate: 0.1,
+          },
+
+          boobs: preferences.boobs,
+          areola: preferences.areola,
+          nipple: preferences.nipple,
+          vagina: preferences.vagina,
+          pubicHair: preferences.pubicHair,
+        },
+
+        advanced: {
+          scaleMode: 'auto-rescale',
+          useColorTransfer: false,
+          useWaifu: false,
+        },
+      }
+    }
+
+    this.set(newSettings)
   },
 
   /**
@@ -216,11 +265,11 @@ const settings = {
     if (window && window.$rollbar) {
       $rollbar.configure({
         payload: {
-          settings: this._settings
-        }
+          settings: this._settings,
+        },
       })
     }
-  }
+  },
 }
 
 module.exports = new Proxy(settings, {
@@ -229,14 +278,17 @@ module.exports = new Proxy(settings, {
       return obj[prop]
     }
 
+    /* eslint-disable no-underscore-dangle */
     if (prop in obj._settings) {
       return obj._settings[prop]
     }
+    /* eslint-enable no-underscore-dangle */
 
     return undefined
   },
 
   set: (obj, prop, value) => {
+    /* eslint-disable no-underscore-dangle */
     if (!_.isNil(obj._settings)) {
       if (prop in obj._settings) {
         obj._settings[prop] = value
@@ -245,8 +297,9 @@ module.exports = new Proxy(settings, {
         return true
       }
     }
+    /* eslint-enable no-underscore-dangle */
 
     obj[prop] = value
     return true
-  }
+  },
 })

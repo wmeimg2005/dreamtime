@@ -15,7 +15,7 @@ import { platform } from '~/modules'
  * Detects if the user has what it takes to run the program,
  * otherwise redirects him to the appropriate page.
  */
-export default function({ route, redirect }) {
+export default function ({ route, redirect }) {
   window.$redirect = redirect
 
   if ($settings.welcome) {
@@ -30,8 +30,8 @@ export default function({ route, redirect }) {
   if (!platform.requirements.cli) {
     // DreamPower is missing
     if (
-      !route.path.includes('/system/settings') &&
-      route.path !== '/system/about'
+      !route.path.includes('/system/settings')
+      && route.path !== '/system/about'
     ) {
       redirect('/system/about')
     }

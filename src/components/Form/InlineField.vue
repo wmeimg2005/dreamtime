@@ -1,8 +1,12 @@
 <template>
   <div class="c-inline-field">
     <div class="inline-field-left">
-      <p class="inline-field-label">{{ label }}</p>
-      <p v-if="hint" class="inline-field-hint">{{ hint }}</p>
+      <p class="inline-field-label">
+        {{ label }}
+      </p>
+      <p v-if="hint" class="inline-field-hint">
+        {{ hint }}
+      </p>
     </div>
 
     <div class="inline-field-right">
@@ -16,14 +20,14 @@ export default {
   props: {
     label: {
       type: String,
-      required: true
+      required: true,
     },
 
     hint: {
       type: String,
-      default: undefined
-    }
-  }
+      default: undefined,
+    },
+  },
 }
 </script>
 
@@ -32,7 +36,7 @@ export default {
   @apply flex;
 
   &:not(:last-child) {
-    @apply mb-5;
+    @apply mb-4;
   }
 
   .inline-field-left {
@@ -53,4 +57,3 @@ export default {
   }
 }
 </style>
-

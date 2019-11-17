@@ -1,13 +1,13 @@
 // DreamTime.
 // Copyright (C) DreamNet. All rights reserved.
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License 3.0 as published by
 // the Free Software Foundation.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
-// 
+//
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import _ from 'lodash'
@@ -59,31 +59,34 @@ export default class DreamPower extends Base {
   /**
    * Returns the current version of the project
    */
-  getCurrentVersion() {
+  async getCurrentVersion() {
     if (!platform.requirements.cli) {
       return 'v0.0.0'
     }
 
-    const filePath = $tools.paths.getCli('version')
-
-    if (!$tools.fs.exists(filePath)) {
-      return 'v1.1.0'
+    if (this.currentVersion) {
+      return this.currentVersion
     }
 
-    let version = $tools.fs.read(filePath) || 'v1.1.0'
-    version = version.trim()
+    const version = await $tools.getPowerVersion()
 
-    return version
+    if (_.isEmpty(version)) {
+      this.currentVersion = 'v1.1.0'
+    } else {
+      this.currentVersion = version
+    }
+
+    return this.currentVersion
   }
 
   /**
-   * 
+   *
    */
   getUpdatePlatform() {
     let platform = $tools.utils.platform({
       macos: 'macos',
       windows: 'windows',
-      linux: 'ubuntu'
+      linux: 'ubuntu',
     })
 
     if (platform === 'macos' || $settings.processing.device === 'CPU') {
@@ -96,11 +99,11 @@ export default class DreamPower extends Base {
   }
 
   /**
-   * 
-   * @param {string} latest 
+   *
+   * @param {string} latest
    * @return {boolean}
    */
-  isAvailable(latest) {
+  async isAvailable(latest) {
     const compatibility = $nucleus.compatibility[`v${dream.version}`]
 
     for (const conditions of compatibility) {
@@ -115,15 +118,13 @@ export default class DreamPower extends Base {
   }
 
   /**
-   * 
-   * @param {Array} releases 
+   *
+   * @param {Array} releases
    */
   getLatestRelease(releases) {
     const currentVersion = this.getCurrentVersion()
 
-    return _.find(releases, (release) => {
-      return this.isAvailable(release.tag_name) || release.tag_name === currentVersion
-    })
+    return _.find(releases, (release) => this.isAvailable(release.tag_name) || release.tag_name === currentVersion)
   }
 
   /**
@@ -147,8 +148,8 @@ export default class DreamPower extends Base {
     const notification = new Notification(
       `✨ DreamPower ${this.latest.tag_name} available!`,
       {
-        body: 'A new version of DreamPower is available for update.'
-      }
+        body: 'A new version of DreamPower is available for update.',
+      },
     )
 
     notification.onclick = () => {

@@ -8,7 +8,7 @@ module.exports = {
    *
    */
   router: {
-    mode: 'hash'
+    mode: 'hash',
   },
 
   /**
@@ -16,7 +16,7 @@ module.exports = {
    */
   server: {
     port: process.env.SERVER_PORT,
-    host: process.env.SERVER_HOST
+    host: process.env.SERVER_HOST,
   },
 
   /*
@@ -27,12 +27,12 @@ module.exports = {
 
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     ],
 
     link: [],
 
-    scripts: []
+    scripts: [],
   },
 
   /*
@@ -63,15 +63,15 @@ module.exports = {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
   ],
 
   /*
    ** Nuxt.js modules
    */
   modules: [
-    // '@nuxtjs/pwa', 
-    '@nuxtjs/dotenv'
+    // '@nuxtjs/pwa',
+    '@nuxtjs/dotenv',
   ],
 
   /*
@@ -91,7 +91,7 @@ module.exports = {
   env: {
     APP_NAME: process.env.APP_NAME,
     APP_VERSION: process.env.APP_VERSION,
-    NUCLEUS_APPID: process.env.NUCLEUS_APPID
+    NUCLEUS_APPID: process.env.NUCLEUS_APPID,
   },
 
   /*
@@ -101,6 +101,14 @@ module.exports = {
     analyze: false,
 
     extractCSS: true,
+
+    babel: {
+      plugins: [
+        '@babel/plugin-proposal-class-properties',
+        '@babel/plugin-proposal-export-default-from',
+        '@babel/plugin-proposal-optional-chaining',
+      ],
+    },
 
     /*
      ** You can extend webpack config here
@@ -125,6 +133,6 @@ module.exports = {
       } else {
         config.output.publicPath = './_nuxt/'
       }
-    }
-  }
+    },
+  },
 }

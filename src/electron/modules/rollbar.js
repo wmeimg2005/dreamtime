@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const _ = require('lodash')
 const { Rollbar } = require('rollbar')
 const debug = require('debug').default('app:electron:modules:rollbar')
@@ -46,16 +47,16 @@ const instance = {
         environment:
           process.env.NODE_ENV !== 'development' ? 'production' : 'development',
         person: {
-          id: settings.user
+          id: settings.user,
         },
         client: {
           javascript: {
             source_map_enabled: true,
-            code_version: process.env.APP_VERSION
-          }
+            code_version: process.env.APP_VERSION,
+          },
         },
-        settings: settings._settings
-      }
+        settings: settings._settings,
+      },
     }
   },
 
@@ -64,8 +65,8 @@ const instance = {
    */
   getAccessToken() {
     return (
-      process.env.ROLLBAR_ACCESS_TOKEN ||
-      _.get(nucleus, 'keys.rollbar_access_token')
+      process.env.ROLLBAR_ACCESS_TOKEN
+      || _.get(nucleus, 'keys.rollbar_access_token')
     )
   },
 
@@ -74,7 +75,7 @@ const instance = {
    */
   can() {
     return settings.telemetry.enabled && this.getAccessToken()
-  }
+  },
 }
 
 module.exports = new Proxy(instance, {
@@ -90,5 +91,5 @@ module.exports = new Proxy(instance, {
     }
 
     return () => { }
-  }
+  },
 })

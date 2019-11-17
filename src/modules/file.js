@@ -32,7 +32,7 @@ export default class File {
    */
   static async fromURL(url) {
     const filePath = await $tools.fs.downloadAsync(url, {
-      directory: $tools.paths.get('temp')
+      directory: $tools.paths.get('temp'),
     })
 
     return new this(filePath)

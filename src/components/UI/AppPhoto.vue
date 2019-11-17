@@ -1,6 +1,6 @@
 <template>
   <figure class="app-photo">
-    <img :src="src" />
+    <img :src="src">
 
     <p class="app-photo-label">
       <slot />
@@ -13,9 +13,9 @@ export default {
   props: {
     src: {
       type: undefined,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>
 
@@ -37,7 +37,7 @@ export default {
   }
 
   .app-photo-label {
-    @apply p-1 bg-dark-600 text-generic-300 text-sm rounded-b font-semibold text-center;
+    @apply p-2 bg-dark-600 text-generic-300 text-sm rounded-b font-semibold text-center;
   }
 }
 </style>

@@ -20,11 +20,11 @@
 
 <style lang="scss">
 .layout-jobs {
-  @apply p-3 shadow h-screen flex flex-col;
+  @apply p-2 shadow h-screen flex flex-col;
   width: 200px;
 
   .jobs-pending {
-    @apply flex-1 border-b border-gray-300 mb-3;
+    @apply flex-1 border-b border-gray-300 mb-2;
   }
 
   .jobs-recent {
@@ -32,7 +32,7 @@
   }
 
   .job-section {
-    @apply mb-5;
+    @apply mb-4;
   }
 
   .section-title {
