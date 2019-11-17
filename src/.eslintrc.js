@@ -28,6 +28,7 @@ module.exports = {
   rules: {
     quotes: ['error', 'single', { allowTemplateLiterals: true }],
     semi: ['error', 'never'],
+    'linebreak-style': 'off',
     'max-len': 'off',
     'comma-dangle': 'warn',
     'class-methods-use-this': 'off',
