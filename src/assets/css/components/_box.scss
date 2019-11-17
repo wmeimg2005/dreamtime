@@ -1,31 +1,55 @@
 /*
- * DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
- *
+ * DreamTime.
+ * Copyright (C) DreamNet. All rights reserved.
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License 3.0 as published by
- * the Free Software Foundation.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+ * 
+ * Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
  */
 
 .box {
-  @apply bg-dark-500 rounded px-5 py-3 shadow mb-5;
+  @apply bg-dark-500 rounded shadow mb-6;
 
-  &.is-transparent {
-    @apply bg-transparent rounded-none shadow-none;
+  .box__photo {
+    @apply relative;
+    @apply bg-cover bg-center;
+    min-height: 120px;
+
+    .box__photo__content {
+      @apply absolute w-full h-full;
+      @apply bg-black-70;
+    }
   }
 
-  .box-title {
-    @apply font-bold text-generic-300 text-lg mb-2;
+  .box__header {
+    @apply px-4 pt-2;
+
+    .title {
+      @apply text-lg font-bold text-white;
+    }
+
+    .subtitle {
+      @apply text-sm mb-2 font-light text-white;
+    }
+  }
+
+  .box__content {
+    @apply px-4 py-2;
+  }
+
+  .box__footer {
+    @apply px-4 py-2 text-sm;
+    @apply border-t border-dark-400;
   }
 }
 
 .box-section {
-  @apply px-0 py-1;
+  @apply px-0 py-2;
 
   .box-section-item {
-    @apply flex py-3 px-5;
+    @apply flex py-2 px-4;
 
     &:not(:last-child) {
       @apply border-b border-dark-400;

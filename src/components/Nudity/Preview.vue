@@ -1,6 +1,6 @@
 <template>
   <figure class="cnudity-preview">
-    <img :src="nudityPreview" :style="{ 'width': width + 'px', 'height': height + 'px' }" />
+    <img :src="nudityPreview" :style="{ 'width': width + 'px', 'height': height + 'px' }">
   </figure>
 </template>
 
@@ -9,22 +9,22 @@ export default {
   props: {
     width: {
       type: Number,
-      default: 312
+      default: 312,
     },
 
     height: {
       type: Number,
-      default: 312
+      default: 312,
     },
 
     type: {
       type: String,
-      default: 'output'
-    }
+      default: 'output',
+    },
   },
 
   data: () => ({
-    nudityPreview: undefined
+    nudityPreview: undefined,
   }),
 
   async created() {
@@ -34,6 +34,7 @@ export default {
   methods: {
     async getPreviewDataURL() {
       if (!this.$nudity.hasModelPhoto()) {
+        // eslint-disable-next-line global-require
         return require('~/assets/images/d1hpv9d-e1c2c577-d272-41b0-bd73-a89209108efd.jpg')
       }
 
@@ -46,13 +47,13 @@ export default {
       }
 
       return this.$nudity.modelPhoto.getSourceFile().readAsDataURL()
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss">
 .cnudity-preview {
-  @apply flex justify-center items-center py-5;
+  @apply flex justify-center items-center py-4;
 }
 </style>

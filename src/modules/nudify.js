@@ -63,5 +63,5 @@ export default {
   start(photo, model = null) {
     this.setModel(model)
     this.setPhoto(photo)
-  }
+  },
 }

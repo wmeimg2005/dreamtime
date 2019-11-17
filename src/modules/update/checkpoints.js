@@ -35,6 +35,10 @@ export default class extends Base {
       return false
     }
 
+    if (!platform.requirements.cli) {
+      return false
+    }
+
     return true
   }
 
@@ -49,7 +53,7 @@ export default class extends Base {
   /**
    * Returns the current version of the project
    */
-  getCurrentVersion() {
+  async getCurrentVersion() {
     if (!platform.requirements.checkpoints || !platform.requirements.cli) {
       return 'v0.0.0'
     }
@@ -93,7 +97,7 @@ export default class extends Base {
         swal({
           icon: 'error',
           title: 'Update failed',
-          text: `We tried to install the file located in the Downloads folder but an error has occurred. If this problem persists try to delete the file and download it again.`
+          text: `We tried to install the file located in the Downloads folder but an error has occurred. If this problem persists try to delete the file and download it again.`,
         })
 
         $rollbar.warn(err, { provider: this })
@@ -125,8 +129,8 @@ export default class extends Base {
     const notification = new Notification(
       `✨ Checkpoints ${this.latest.tag_name} available!`,
       {
-        body: 'A new version of the Checkpoints is available for download.'
-      }
+        body: 'A new version of the Checkpoints is available for download.',
+      },
     )
 
     notification.onclick = () => {

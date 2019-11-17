@@ -9,9 +9,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const rand = (min, max) => {
-  return Math.random() * (max - min) + min
-}
+const rand = (min, max) => Math.random() * (max - min) + min
 
 /* eslint-disable-next-line */
 export { rand }

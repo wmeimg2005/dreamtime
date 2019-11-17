@@ -12,15 +12,26 @@
 
     <div class="content-body">
       <div class="buttons is-group is-center">
-        <nuxt-link to="/system/settings/processing" class="button is-outlined is-sm">Processing</nuxt-link>
-        <nuxt-link to="/system/settings/preferences" class="button is-outlined is-sm">Preferences</nuxt-link>
-        <nuxt-link to="/system/settings/notifications" class="button is-outlined is-sm">Notifications</nuxt-link>
-        <nuxt-link to="/system/settings/folders" class="button is-outlined is-sm">Folders</nuxt-link>
-        <!--<nuxt-link to="/settings/theme" class="button is-outlined is-sm">Theme</nuxt-link>-->
-        <nuxt-link to="/system/settings/telemetry" class="button is-outlined is-sm">Telemetry</nuxt-link>
+        <nuxt-link to="/system/settings/processing" class="button is-outlined is-sm">
+          Processing
+        </nuxt-link>
+        <nuxt-link to="/system/settings/preferences" class="button is-outlined is-sm">
+          Preferences
+        </nuxt-link>
+        <nuxt-link to="/system/settings/notifications" class="button is-outlined is-sm">
+          Notifications
+        </nuxt-link>
+        <nuxt-link to="/system/settings/folders" class="button is-outlined is-sm">
+          Folders
+        </nuxt-link>
+        <nuxt-link to="/system/settings/telemetry" class="button is-outlined is-sm">
+          Telemetry
+        </nuxt-link>
       </div>
 
-      <nuxt-child v-model="settings" />
+      <div class="settings__content">
+        <nuxt-child v-model="settings" keep-alive />
+      </div>
     </div>
   </div>
 </template>
@@ -28,30 +39,27 @@
 <script>
 export default {
   data: () => ({
-    settings: {}
+    settings: {},
   }),
 
   watch: {
     settings: {
-      handler: value => {
+      handler: (value) => {
         $settings.set(value)
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
 
   created() {
     this.settings = $settings.get()
-  }
+  },
 }
 </script>
 
 <style lang="scss">
 .settings {
-  .buttons {
-  }
-
-  .settings-fields {
+  .settings__content {
     @apply py-6;
   }
 

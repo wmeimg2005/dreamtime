@@ -1,19 +1,18 @@
-/*
- * DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License 3.0 as published by
- * the Free Software Foundation.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import _ from 'lodash'
 import axios from 'axios'
 import compareVersions from 'compare-versions'
 import Deferred from 'deferred'
 import swal from 'sweetalert'
+import filesize from 'filesize'
 import dream from '../dream'
 
 const debug = require('debug').default('app:modules:update')
@@ -34,15 +33,15 @@ export default class {
     this.downloadBus = undefined
 
     this.current = {
-      tag_name: 'v0.0.0'
+      tag_name: 'v0.0.0',
     }
 
     this.latest = {
-      tag_name: 'v0.0.0'
+      tag_name: 'v0.0.0',
     }
 
     this.http = axios.create({
-      baseURL: API_URL
+      baseURL: API_URL,
     })
   }
 
@@ -64,18 +63,18 @@ export default class {
   /**
    * Returns the current version of the project
    */
-  getCurrentVersion() {
+  async getCurrentVersion() {
     return 'v0.0.0'
   }
 
   /**
-   * 
-   * @param {string} latest 
-   * @param {string} current 
+   *
+   * @param {string} latest
+   * @param {string} current
    * @return {boolean}
    */
-  isAvailable(latest) {
-    const currentVersion = this.getCurrentVersion()
+  async isAvailable(latest) {
+    const currentVersion = await this.getCurrentVersion()
     return compareVersions.compare(latest, currentVersion, '>')
   }
 
@@ -88,7 +87,7 @@ export default class {
   }
 
   /**
-   * 
+   *
    */
   getUpdateFileName() {
     const url = this.getUpdateDownloadURLs()[0]
@@ -96,13 +95,13 @@ export default class {
   }
 
   /**
-   * 
+   *
    */
   getUpdatePlatform() {
     return $tools.utils.platform({
       macos: 'macos',
       windows: 'windows',
-      linux: 'ubuntu'
+      linux: 'ubuntu',
     })
   }
 
@@ -116,13 +115,13 @@ export default class {
     let asset
 
     try {
-      urls = $nucleus.releases[`${this.getName()}`][`${this.latest.tag_name}`]
+      urls = _.clone($nucleus.releases[`${this.getName()}`][`${this.latest.tag_name}`])
     } catch (err) {
       urls = []
     }
 
     if (_.isPlainObject(urls)) {
-      urls = urls[platform]
+      urls = _.clone(urls[platform])
     }
 
     if (_.isNil(urls)) {
@@ -133,25 +132,21 @@ export default class {
       // eslint-disable-next-line prefer-destructuring
       asset = this.latest.assets[0]
     } else {
-      asset = _.find(this.latest.assets, (asset) => {
-        return asset.name.includes(platform)
-      })
+      asset = _.find(this.latest.assets, (asset) => asset.name.includes(platform))
     }
 
     if (!_.isNil(asset)) {
-      urls.unshift(asset.browser_download_url)
+      urls.push(asset.browser_download_url)
     }
 
-    urls = urls.filter((item) => {
-      return _.startsWith(item, 'http')
-    })
+    urls = urls.filter((item) => _.startsWith(item, 'http'))
 
     return urls
   }
 
   /**
-   * 
-   * @param {Array} releases 
+   *
+   * @param {Array} releases
    */
   getLatestRelease(releases) {
     return releases[0]
@@ -183,7 +178,7 @@ export default class {
 
       progress: 0,
       mbWritten: 0,
-      mbTotal: 0
+      mbTotal: 0,
     }
   }
 
@@ -212,14 +207,14 @@ export default class {
       debug(`${this.getName()} - Update provider initialized!`, {
         provider: this,
         name: this.getName(),
-        currentVersion: this.getCurrentVersion(),
+        currentVersion: await this.getCurrentVersion(),
         downloadURLs: this.getUpdateDownloadURLs(),
         fileName: this.getUpdateFileName(),
-        platform: this.getUpdatePlatform()
+        platform: this.getUpdatePlatform(),
       })
     } catch (err) {
       $rollbar.warn(err, {
-        project: this.getName()
+        project: this.getName(),
       })
 
       console.warn(`${this.getName()}: Error at fetch releases`, err)
@@ -233,25 +228,25 @@ export default class {
    */
   async fetchFromAPI() {
     const response = await this.http.get(
-      `${this.getGithubRepository()}/releases`
+      `${this.getGithubRepository()}/releases`,
     )
 
     // Stable versions only
     const releases = _.filter(response.data, {
       draft: false,
-      prerelease: false
+      prerelease: false,
     })
 
     if (releases.length === 0) {
       return
     }
 
-    const currentVersion = this.getCurrentVersion()
+    const currentVersion = await this.getCurrentVersion()
 
     // eslint-disable-next-line
     this.latest = this.getLatestRelease(releases)
     this.current = _.find(releases, { tag_name: currentVersion })
-    this.available = this.isAvailable(this.latest.tag_name)
+    this.available = await this.isAvailable(this.latest.tag_name)
 
     // this.available = true
 
@@ -268,7 +263,7 @@ export default class {
       swal({
         icon: 'error',
         title: 'Update failed',
-        text: `Please verify that you are connected to the Internet and that ${dream.name} has permission to connect.`
+        text: `Please verify that you are connected to the Internet and that ${dream.name} has permission to connect.`,
       })
 
       return false
@@ -291,6 +286,17 @@ export default class {
           return false
         }
 
+        if (!$tools.fs.exists(filePath)) {
+          throw new Error('The update has not been downloaded!')
+        }
+
+        const stats = $tools.fs.stats(filePath)
+        const size = filesize(stats.size, { exponent: 2, output: 'object' })
+
+        if (size.value < 20) {
+          throw new Error('The update is corrupt!')
+        }
+
         // Download completed, now install
         this._setUpdating('Installing...', 0)
 
@@ -309,7 +315,7 @@ export default class {
     swal({
       icon: 'error',
       title: 'Update failed',
-      text: `There was a problem trying to download the update, please verify that you are connected to the Internet. If the problem persists try to configure or temporarily disable your Firewall/Antivirus/VPN.`
+      text: `There was a problem trying to download the update, please verify that you are connected to the Internet. If the problem persists try to configure or temporarily disable your Firewall/Antivirus/VPN.`,
     })
 
     this._resetUpdating()
@@ -337,7 +343,7 @@ export default class {
 
     this.downloadBus.on('end', (filePath) => {
       debug('Download finished!', {
-        filePath
+        filePath,
       })
 
       this.downloadBus = undefined

@@ -1,23 +1,31 @@
 <template>
   <div class="c-nudity-job">
     <figure class="__preview">
-      <img v-if="job.hasFinished" :src="outputDataURL" />
+      <img v-if="job.hasFinished" :src="outputDataURL">
       <span v-else v-tooltip="'Loading...'">💭</span>
     </figure>
 
     <div class="__content">
       <!-- Actions -->
       <details class="__section" open>
-        <summary class="__title">Actions</summary>
+        <summary class="__title">
+          Actions
+        </summary>
 
         <div class="__buttons">
-          <button v-if="job.hasFinished" class="button is-success" @click.prevent="save">Save</button>
-          <button v-if="job.hasFinished || job.hasFailed" class="button is-danger is-sm" @click.prevent="rerun">Rerun</button>
+          <button v-if="job.hasFinished" class="button is-success" @click.prevent="save">
+            Save
+          </button>
+          <button v-if="job.hasFinished || job.hasFailed" class="button is-danger is-sm" @click.prevent="rerun">
+            Rerun
+          </button>
         </div>
       </details>
 
       <details v-if="job.hasFinished || job.isLoading" class="__section" open>
-        <summary class="__title">Duration</summary>
+        <summary class="__title">
+          Duration
+        </summary>
 
         <div class="__status">
           <p>{{ job.timer.duration }}s</p>
@@ -25,7 +33,9 @@
       </details>
 
       <details v-else-if="job.hasFailed" class="__section" open>
-        <summary class="__title">Status</summary>
+        <summary class="__title">
+          Status
+        </summary>
 
         <div class="__status text-danger">
           <p>Fail</p>
@@ -33,7 +43,9 @@
       </details>
 
       <details v-else class="__section" open>
-        <summary class="__title">Status</summary>
+        <summary class="__title">
+          Status
+        </summary>
 
         <div class="__status">
           <p>Pending...</p>
@@ -42,42 +54,48 @@
 
       <!-- Preferences -->
       <details class="__section">
-        <summary class="__title">Preferences</summary>
+        <summary class="__title">
+          Preferences
+        </summary>
 
         <div class="__preferences">
           <p>
             <span class="__name">Boobs size</span>
-            <span class="__value">{{ job.preferences.boobs.size | size }}</span>
+            <span class="__value">{{ job.preferences.body.boobs.size | size }}</span>
           </p>
 
           <p>
             <span class="__name">Areola size</span>
-            <span class="__value">{{ job.preferences.areola.size | size }}</span>
+            <span class="__value">{{ job.preferences.body.areola.size | size }}</span>
           </p>
 
           <p>
             <span class="__name">Nipple size</span>
-            <span class="__value">{{ job.preferences.nipple.size | size }}</span>
+            <span class="__value">{{ job.preferences.body.nipple.size | size }}</span>
           </p>
 
           <p>
             <span class="__name">Vagina size</span>
-            <span class="__value">{{ job.preferences.vagina.size | size }}</span>
+            <span class="__value">{{ job.preferences.body.vagina.size | size }}</span>
           </p>
 
           <p>
             <span class="__name">Pubic Hair size</span>
-            <span class="__value">{{ job.preferences.pubicHair.size | size }}</span>
+            <span class="__value">{{ job.preferences.body.pubicHair.size | size }}</span>
           </p>
         </div>
       </details>
 
       <!-- Console -->
       <details class="__section">
-        <summary class="__title">Console</summary>
+        <summary class="__title">
+          Console
+        </summary>
 
         <div class="__console">
-          <li v-for="(item, index) in job.cli.lines" :key="index" :class="item.css">> {{ item.text }}</li>
+          <li v-for="(item, index) in job.cli.lines" :key="index" :class="item.css">
+            > {{ item.text }}
+          </li>
         </div>
       </details>
     </div>
@@ -91,25 +109,25 @@ export default {
   filters: {
     size(value) {
       return Number.parseFloat(value).toFixed(2)
-    }
+    },
   },
   props: {
     job: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data: () => ({
-    outputDataURL: undefined
+    outputDataURL: undefined,
   }),
 
   watch: {
     async 'job.hasFinished'(value) {
       if (value) {
-        this.outputDataURL = await this.job.getFile().readAsDataURL()
+        this.outputDataURL = await this.job.file.readAsDataURL()
       }
-    }
+    },
   },
 
   methods: {
@@ -119,22 +137,22 @@ export default {
       const savePath = $tools.shell.showSaveDialog({
         defaultPath: this.job.getFileName(),
         filters: [
-          { name: 'PNG', extensions: ['png'] }
+          { name: 'PNG', extensions: ['png'] },
           // { name: 'JPEG', extensions: ['jpg'] }
-        ]
+        ],
       })
 
       if (_.isNil(savePath)) {
         return
       }
 
-      this.job.getFile().copy(savePath)
+      this.job.file.copy(savePath)
     },
 
     rerun() {
       this.job.photo.rerunJob(this.job.id)
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -173,7 +191,7 @@ export default {
     width: 200px;
 
     .__section {
-      @apply py-3;
+      @apply py-2;
 
       &:not(:last-child) {
         @apply border-b border-dark-400;
@@ -193,11 +211,11 @@ export default {
       }
 
       .__console {
-        @apply p-3 bg-black overflow-auto rounded;
+        @apply p-2 bg-black overflow-auto rounded;
         height: 150px;
 
         li {
-          @apply font-mono text-xs text-generic-100 mb-3 block;
+          @apply font-mono text-xs text-generic-100 mb-2 block;
 
           &.text-danger {
             @apply text-danger;

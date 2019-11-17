@@ -46,37 +46,38 @@ Do you have any problem? Doubts? or you are simply interested in chatting with t
 
 ---
 
-# 💜 Binaries
+# 💜 Releases
 
 ## Requirements
 
   - 64 bits OS
   - Windows 7 SP1, Windows 8, Windows 10 1803+
   - Ubuntu 16.04+
-  - macOS 10.13+
+  - macOS Catalina 10.15+
   - **8 GB+** of RAM.
 
 > ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
 
 ### GPU Processing
 
-  - NVIDIA Graphics card with minimum [3.5 CUDA compute capability.](https://developer.nvidia.com/cuda-gpus)
+  - NVIDIA GPU with minimum [3.5 CUDA compute capability.](https://developer.nvidia.com/cuda-gpus)
   - [Latest NVIDIA drivers.](https://www.nvidia.com/Download/index.aspx)
 
-> 👉 If you do not have an NVIDIA or compatible graphics card you can use CPU processing.
+> 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing.
 
 ## Download
 
+> 💕 [Patrons](https://www.patreon.com/dreamnet) can get access to the latest versions before everyone else!
 
 [![GitHub All Releases](https://img.shields.io/github/downloads/dreamnettech/dreamtime/total?logo=github&logoColor=white&style=for-the-badge&labelColor=181717&color=blue)](https://github.com/dreamnettech/dreamtime/releases)
 
 ### Mirrors
 
-[![Windows](https://img.shields.io/badge/dreamlink-v1.1.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-windows.exe)
+[![Windows](https://img.shields.io/badge/windows-v1.1.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-windows.exe)
 
-[![Ubuntu](https://img.shields.io/badge/dreamlink-v1.1.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-ubuntu.deb)
+[![Ubuntu](https://img.shields.io/badge/ubuntu-v1.1.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-ubuntu.deb)
 
-[![macOS](https://img.shields.io/badge/dreamlink-v1.1.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-macos.dmg)
+[![macOS](https://img.shields.io/badge/macos-v1.1.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-macos.dmg)
 
 ## F.A.Q.
 

@@ -10,11 +10,16 @@
     min-height: 80px;
 
     .button {
-      @apply mx-3;
+      @apply mx-4;
     }
   }
 }
 
 .content-body {
   @apply p-6;
+}
+
+.content__body {
+  @apply pt-6 pl-6 pr-6;
+  height: calc(100vh - 70px);
 }

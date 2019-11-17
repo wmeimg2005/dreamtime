@@ -3,12 +3,10 @@
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License 3.0 as published by
-// the Free Software Foundation.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
+
 
 const Octokit = require('@octokit/rest')
 const mime = require('mime-types')
@@ -102,12 +100,6 @@ async function upload(filePath, fileName) {
 async function main() {
   if (fs.existsSync(filePath)) {
     upload(filePath, fileName)
-
-    if (pkg.version === '1.1.1') {
-      console.log('Uploading legacy version!')
-      const legacyAnyFileName = `DreamTime-${version}-${process.env.BUILD_OS}-x64.${process.env.BUILD_OS_EXTENSION}`
-      upload(filePath, legacyAnyFileName)
-    }
   } else {
     console.log('No release found!')
   }

@@ -9,16 +9,15 @@ export default {
   props: {
     href: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   methods: {
     openExternal() {
       $nucleus.track('EXTERNAL_LINK', { href: this.href })
       $tools.shell.openExternal(this.href)
-    }
-  }
+    },
+  },
 }
 </script>
-

@@ -15,8 +15,8 @@ export default {
         }
 
         tippy(el, settings)
-      }
-    }
+      },
+    },
   },
 
   filters: {},
@@ -26,6 +26,6 @@ export default {
 
     $nudify: nudify,
     $updater: updater,
-    $settings
-  })
+    $settings,
+  }),
 }

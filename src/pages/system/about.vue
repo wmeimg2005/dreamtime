@@ -16,25 +16,26 @@
       <!-- Limited! -->
       <section v-if="$platform.isLimited" class="box box-section">
         <box-section-item
-          :description="`It's okay! You can use ${$dream.name} offline, but while you are disconnected we cannot offer you more information about the project, updates or report errors automatically. Connect to the Internet or if you are a developer, set the Nucleus API key and restart the program.`"
-          label="It seems that you are offline">
-        </box-section-item>
+          :description="`It's okay! You can use ${$dream.name} offline, but while you are disconnected we cannot offer you more information about the project, updates or report errors automatically.`"
+          label="It seems that you are offline" />
       </section>
 
       <!-- Requirements -->
       <section v-if="!$platform.requirements.all" class="box box-section">
-        <box-section-item :description="`You need to meet all the requirements below to start using ${$dream.name}.`" icon="📜" label="Requirements" />
+        <box-section-item :description="`You need to meet all the requirements below to start using ${$dream.name}. Some require an Internet connection to update.`" icon="📜" label="Requirements" />
 
         <box-section-item
           label="DreamPower"
-          description="Deep Learning algorithm that nudify photos.">
+          description="You have not installed DreamPower or the current version is not compatible.">
           <template slot="icon">
             <span v-if="$platform.requirements.cli" class="item-icon">✔</span>
             <span v-else class="item-icon">❌</span>
           </template>
 
           <a href="#dreampower" class="button is-sm">Update</a>
-          <nuxt-link to="/system/settings/folders" class="button is-sm">Settings</nuxt-link>
+          <nuxt-link to="/system/settings/folders" class="button is-sm">
+            Settings
+          </nuxt-link>
         </box-section-item>
 
         <box-section-item
@@ -56,7 +57,9 @@
             <span v-else class="item-icon">❗</span>
           </template>
 
-          <app-external-link href="https://www.microsoft.com/en-us/software-download/mediafeaturepack" class="button is-sm">Download</app-external-link>
+          <app-external-link href="https://www.microsoft.com/en-us/software-download/mediafeaturepack" class="button is-sm">
+            Download
+          </app-external-link>
         </box-section-item>
       </section>
 
@@ -68,11 +71,13 @@
             :description="guiDescription">
             <template slot="icon">
               <figure class="item-icon">
-                <img src="~/assets/images/dreamtime.png" />
+                <img src="~/assets/images/dreamtime.png">
               </figure>
             </template>
 
-            <button type="button" class="button" @click="openGUI">App</button>
+            <button type="button" class="button" @click="openGUI">
+              App
+            </button>
           </box-section-item>
 
           <app-update :project-title="$dream.name" project="dreamtime" />
@@ -94,11 +99,13 @@
             :description="cliDescription">
             <template slot="icon">
               <figure class="item-icon">
-                <img src="~/assets/images/dreampower.png" />
+                <img src="~/assets/images/dreampower.png">
               </figure>
             </template>
 
-            <button type="button" class="button" @click="openCLI">App</button>
+            <button type="button" class="button" @click="openCLI">
+              App
+            </button>
           </box-section-item>
 
           <app-update id="dreampower" project-title="DreamPower" project="dreampower" />
@@ -122,7 +129,7 @@
             description="Community interested in developing the technology introduced by DeepNude.">
             <template slot="icon">
               <figure class="item-icon">
-                <img src="~/assets/images/dreamnet.png" />
+                <img src="~/assets/images/dreamnet.png">
               </figure>
             </template>
           </box-section-item>
@@ -142,8 +149,7 @@
           <box-section-item
             icon="😍"
             label="Contributors"
-            description="People who have helped us in the project either economically or solving problems in the community.">
-          </box-section-item>
+            description="People who have helped us in the project either economically or solving problems in the community." />
 
           <box-section-item
             v-for="(item, index) in contributors"
@@ -159,8 +165,7 @@
           <box-section-item
             icon="👨‍💻"
             label="Developers"
-            description="Developers and important people in our projects.">
-          </box-section-item>
+            description="Developers and important people in our projects." />
 
           <box-section-item
             v-for="(item, index) in developers"
@@ -170,7 +175,9 @@
             :icon="item.icon"
             :class="item.role">
             <div class="buttons">
-              <app-external-link v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" class="button is-sm">{{ link.name }}</app-external-link>
+              <app-external-link v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" class="button is-sm">
+                {{ link.name }}
+              </app-external-link>
             </div>
           </box-section-item>
         </section>
@@ -222,7 +229,7 @@ export default {
 
     alert() {
       return $nucleus.isEnabled ? $nucleus.alerts.about : undefined
-    }
+    },
   },
 
   created() {
@@ -244,24 +251,24 @@ export default {
       }
 
       const pattern = new RegExp(
-        '^(https?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-          '(\\#[-a-z\\d_]*)?$',
-        'i'
+        '^(https?:\\/\\/)?' // protocol
+        + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
+        + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
+        + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
+        + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
+          + '(\\#[-a-z\\d_]*)?$',
+        'i',
       ) // fragment locator
       return !!pattern.test(str)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss">
 .about {
   .about-body {
-    @apply p-5;
+    @apply p-4;
   }
 
   .about-columns {

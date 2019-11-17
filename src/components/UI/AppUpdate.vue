@@ -2,14 +2,14 @@
   <!-- Cannot update, only show the version... -->
   <box-section-item
     v-if="!updater.enabled"
-    :label="updater.getCurrentVersion()"
+    :label="currentVersion"
     icon="🌐" />
 
   <!-- Updated! -->
   <box-section-item
     v-else-if="!updater.available"
     :label="`${projectTitle} is up to date.`"
-    :description="updater.getCurrentVersion()"
+    :description="currentVersion"
     icon="🌐" />
 
   <!-- Update available -->
@@ -18,8 +18,12 @@
     :label="`${projectTitle} ${updater.latest.tag_name} available.`"
     icon="🌐"
     class="update-item">
-    <button v-tooltip="'Download and install the update automatically.'" type="button" class="button is-sm" @click.prevent="updater.download()">Update</button>
-    <app-external-link v-tooltip="'Download the update manually.'" :href="downloadURL" class="button is-sm">Manual</app-external-link>
+    <button v-tooltip="'Download and install the update automatically.'" type="button" class="button is-sm" @click.prevent="updater.download()">
+      Update
+    </button>
+    <app-external-link v-tooltip="'Download the update manually.'" :href="downloadURL" class="button is-sm">
+      Manual
+    </app-external-link>
   </box-section-item>
 
   <!-- Updating... -->
@@ -29,11 +33,17 @@
     :label="updater.updating.text"
     icon="🌐">
     <template slot="description">
-      <p v-if="updater.updating.text === 'Downloading...'" class="item-description"><strong>{{ updater.updating.progress | progress }}</strong> - {{ updater.updating.mbWritten | size }}/{{ updater.updating.mbTotal | size }} MB.</p>
-      <p v-else class="item-description">Wait a few minutes, please do not close the program.</p>
+      <p v-if="updater.updating.text === 'Downloading...'" class="item-description">
+        <strong>{{ updater.updating.progress | progress }}</strong> - {{ updater.updating.mbWritten | size }}/{{ updater.updating.mbTotal | size }} MB.
+      </p>
+      <p v-else class="item-description">
+        Wait a few minutes, please do not close the program.
+      </p>
     </template>
 
-    <button type="button" class="button is-danger is-sm" @click.prevent="updater.cancel()">Cancel</button>
+    <button type="button" class="button is-danger is-sm" @click.prevent="updater.cancel()">
+      Cancel
+    </button>
   </box-section-item>
 </template>
 
@@ -48,19 +58,24 @@ export default {
 
     size(value) {
       return value.toFixed(2)
-    }
+    },
   },
+
   props: {
     project: {
       type: String,
-      required: true
+      required: true,
     },
 
     projectTitle: {
       type: String,
-      default: 'Project'
-    }
+      default: 'Project',
+    },
   },
+
+  data: () => ({
+    currentVersion: 'v0.0.0',
+  }),
 
   computed: {
     updater() {
@@ -69,7 +84,11 @@ export default {
 
     downloadURL() {
       return this.updater.getUpdateDownloadURLs()[0]
-    }
+    },
+  },
+
+  async created() {
+    this.currentVersion = await this.updater.getCurrentVersion()
   },
 
   beforeDestroy() {
@@ -79,8 +98,8 @@ export default {
   methods: {
     openDownload() {
       $tools.shell.openItem($tools.paths.get('downloads'))
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -91,7 +110,7 @@ export default {
   }
 
   50% {
-    @apply bg-dark-400;
+    @apply bg-dark-100;
   }
 
   100% {
@@ -107,7 +126,7 @@ export default {
 
   &:hover {
     animation-name: none;
-    background: theme('colors.dark.400') !important;
+    background: theme('colors.dark.300') !important;
   }
 
   .item-label {

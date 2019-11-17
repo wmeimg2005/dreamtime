@@ -1,6 +1,8 @@
 <template>
   <div class="settings-fields">
-    <p class="notification">These are the global preferences, they are applied by default and you can change them independently in each photo.</p>
+    <p class="notification">
+      Preferences are applied as default and can be customized before each photo.
+    </p>
 
     <settings-preferences v-model="currentValue.preferences" />
   </div>
@@ -14,7 +16,7 @@ export default {
 
   created() {
     $nucleus.track('PAGE_SETTINGS_PREFERENCES')
-  }
+  },
 }
 </script>
 

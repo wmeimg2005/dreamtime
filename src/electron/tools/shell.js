@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const path = require('path')
 const { api, is } = require('electron-utils')
 const regedit = require('regedit')
 const paths = require('./paths')
@@ -32,7 +31,7 @@ module.exports = {
    * @param  {...any} args
    */
   showOpenDialog(...args) {
-    return api.dialog.showOpenDialog(...args)
+    return api.dialog.showOpenDialogSync(...args)
   },
 
   /**
@@ -56,18 +55,17 @@ module.exports = {
   hasWindowsMedia() {
     if (is.windows && !is.development) {
       regedit.setExternalVBSLocation(
-        paths.getGuiResources('vbs')
+        paths.getGuiResources('vbs'),
       )
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (!is.windows) {
         resolve(true)
         return
       }
 
-      const regKey =
-        'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\WindowsFeatures'
+      const regKey = 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\WindowsFeatures'
 
       regedit.list(regKey, (err, result) => {
         if (!_.isNil(err)) {
@@ -78,5 +76,5 @@ module.exports = {
         resolve(result[regKey].keys.includes('WindowsMediaVersion'))
       })
     })
-  }
+  },
 }

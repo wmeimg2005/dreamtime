@@ -3,7 +3,7 @@
   "description": "Friendly user interface for DreamPower.",
   "author": "DreamNet <dreamtime@dreamnet.tech>",
   "homepage": "https://time.dreamnet.tech",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "electron/index.js",
   "license": "GPL-3.0-only",
   "private": true,
@@ -120,16 +120,19 @@
     "postinstall": "patch-package",
     "pack": "electron-builder --dir",
     "dev:nuxt": "cross-env NODE_ENV=development nuxt",
-    "dev:electron": "cross-env NODE_ENV=development DEBUG=app:* electron .",
+    "dev:electron": "cross-env NODE_ENV=development DEBUG=app:* DEVTOOLS=true electron .",
     "build:nuxt": "cross-env NODE_ENV=production nuxt build",
     "build:electron": "cross-env NODE_ENV=production electron-builder --publish=never",
     "build": "yarn build:nuxt && yarn build:electron",
-    "preview": "yarn build:nuxt && yarn preview:electron",
-    "preview:electron": "cross-env NODE_ENV=production DEBUG=app:* DEVTOOLS=true electron ."
+    "preview:electron": "cross-env NODE_ENV=production DEBUG=app:* DEVTOOLS=true electron .",
+    "preview": "yarn build:nuxt && yarn preview:electron"
+  },
+  "lint-staged": {
+    "*.{js,vue}": "eslint"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "lint-staged"
     }
   },
   "dependencies": {
@@ -169,6 +172,7 @@
     "rollbar": "^2.14.4",
     "supports-color": "^7.1.0",
     "sweetalert": "^2.1.2",
+    "systeminformation": "^4.15.3",
     "tippy.js": "^5.1.1",
     "unzipper": "^0.10.5",
     "uuid": "^3.3.3"
@@ -176,6 +180,9 @@
   "devDependencies": {
     "@babel/cli": "^7.7.0",
     "@babel/core": "^7.7.2",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@nuxtjs/eslint-config": "^1.1.2",
     "@nuxtjs/eslint-module": "^1.1.0",
     "@nuxtjs/tailwindcss": "^1.2.0",
@@ -188,22 +195,21 @@
     "electron-rebuild": "^1.8.6",
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-config-prettier": "^6.5.0",
     "eslint-config-standard": ">=14.1.0",
+    "eslint-import-resolver-nuxt": "^0.1.5",
     "eslint-plugin-import": ">=2.18.2",
     "eslint-plugin-jest": ">=23.0.4",
     "eslint-plugin-lodash": "^6.0.0",
     "eslint-plugin-node": ">=10.0.0",
     "eslint-plugin-nuxt": ">=0.5.0",
-    "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-promise": ">=4.2.1",
     "eslint-plugin-standard": ">=4.0.1",
     "eslint-plugin-vue": "^6.0.1",
     "husky": "^3.0.9",
+    "lint-staged": "^9.4.3",
     "node-sass": "^4.13.0",
     "nodemon": "^1.19.4",
     "nuxtjs-electron": "^0.1.10",
-    "prettier": "^1.19.1",
     "rollbar-sourcemap-webpack-plugin": "^2.5.1",
     "sass-loader": "^8.0.0",
     "tailwindcss": "^1.1.3",

@@ -1,4 +1,6 @@
-const { AppError, settings, nucleus, rollbar } = require('./modules')
+const {
+  AppError, settings, nucleus, rollbar,
+} = require('./modules')
 const tools = require('./tools')
 
 // Custom Error

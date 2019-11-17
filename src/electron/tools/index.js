@@ -4,12 +4,14 @@ const { spawn } = require('child_process')
 const EventBus = require('js-event-bus')
 const gpuInfo = require('gpu-info')
 const utils = require('electron-utils')
+const deferred = require('deferred')
 
 const debug = require('debug').default('app:electron:tools')
 const { Image } = require('image-js')
 // const { Caman } = require('caman')
 
 const paths = require('./paths')
+const { system } = require('./system')
 
 /**
  * deepTools.
@@ -46,7 +48,7 @@ module.exports = {
 
     if (!fs.existsSync(savePath)) {
       console.warn(
-        'It seems that the first crop method has failed, trying the legacy method'
+        'It seems that the first crop method has failed, trying the legacy method',
       )
 
       await this.legacyCrop(photo, canvas)
@@ -63,14 +65,14 @@ module.exports = {
   async legacyCrop(photo, canvas) {
     const canvasAsDataURL = canvas.toDataURL(
       photo.getSourceFile().getMimetype(),
-      1
+      1,
     )
 
     await photo.getCroppedFile().writeDataURL(canvasAsDataURL)
 
     if (!fs.existsSync(photo.getCroppedFile().getPath())) {
       throw new Error(
-        'There was a problem trying to save the cropped photo. Please make sure the program has write permissions.'
+        'There was a problem trying to save the cropped photo. Please make sure the program has write permissions.',
       )
     }
   },
@@ -81,70 +83,72 @@ module.exports = {
    */
   transform(job) {
     // Independent preferences for the photo
-    const preferences = job.getPreferences()
+    const { preferences } = job
 
-    // Cropped photo
-    const inputFilePath = job
-      .getPhoto()
-      .getCroppedFile()
-      .getPath()
+    // input
+    const photoFilepath = job.photo.file.getPath()
 
-    // Final photo
-    const outputFilePath = job.getFile().getPath()
+    // output
+    const outputFilepath = job.file.getPath()
 
     // CLI Args
-    const cliArgs = ['--input', inputFilePath, '--output', outputFilePath]
+    const args = ['run', '--input', photoFilepath, '--output', outputFilepath]
 
     if ($settings.processing.usePython) {
-      // Use the Python script instead of the executable
-      cliArgs.unshift('main.py')
+      // use python script
+      args.unshift('main.py')
     }
 
-    {
-      // Preferences
-      cliArgs.push('--bsize')
-      cliArgs.push(preferences.boobs.size)
-
-      cliArgs.push('--asize')
-      cliArgs.push(preferences.areola.size)
-
-      cliArgs.push('--nsize')
-      cliArgs.push(preferences.nipple.size)
-
-      cliArgs.push('--vsize')
-      cliArgs.push(preferences.vagina.size)
-
-      cliArgs.push('--hsize')
-      cliArgs.push(preferences.pubicHair.size)
-    }
-
+    // Device preferences
     if ($settings.processing.device === 'CPU') {
-      cliArgs.push('--cpu')
+      args.push('--cpu', '--n-cores', $settings.processing.cores)
     } else {
       for (const id of $settings.processing.gpus) {
-        cliArgs.push(`--gpu`)
-        cliArgs.push(id)
+        args.push('--gpu', id)
       }
     }
 
+    // Advanced preferences
+    const { scaleMode, useColorTransfer } = preferences.advanced
+
+    if (scaleMode === 'cropjs') {
+      const { crop } = job.photo
+      args.push('--overlay', `${crop.startX},${crop.startY}:${crop.endX},${crop.endY}`)
+    } else if (scaleMode !== 'none') {
+      args.push(`--${scaleMode}`)
+    }
+
+    if (useColorTransfer) {
+      args.push('--color-transfer')
+    }
+
+    // Body preferences
+    args.push('--bsize', preferences.body.boobs.size)
+    args.push('--asize', preferences.body.areola.size)
+    args.push('--nsize', preferences.body.nipple.size)
+    args.push('--vsize', preferences.body.vagina.size)
+    args.push('--hsize', preferences.body.pubicHair.size)
+
     debug('The transformation process has begun!', {
-      inputFilePath,
-      outputFilePath,
+      input: photoFilepath,
+      output: outputFilepath,
       preferences,
-      cliArgs,
-      job
+      args,
+      job,
     })
 
     let process
     const bus = new EventBus()
 
     if ($settings.processing.usePython) {
-      // Use the Python script instead of the executable
-      process = spawn('python', cliArgs, {
-        cwd: paths.getCli()
+      // python script
+      process = spawn('python3', args, {
+        cwd: paths.getCli(),
       })
     } else {
-      process = spawn(paths.getCli('dreampower'), cliArgs)
+      process = spawn(paths.getCli('dreampower'), args, {
+        cwd: paths.getCli(),
+      })
     }
 
     process.on('error', (error) => {
@@ -175,10 +179,43 @@ module.exports = {
     return bus
   },
 
+  getPowerVersion() {
+    const def = deferred()
+
+    let process
+    let response = ''
+
+    if ($settings.processing.usePython) {
+      // python script
+      process = spawn('python3', ['main.py', '--version'], {
+        cwd: paths.getCli(),
+      })
+    } else {
+      process = spawn(paths.getCli('dreampower'), ['--version'])
+    }
+
+    process.on('error', () => {
+      def.resolve('')
+    })
+
+    process.stdout.on('data', (data) => {
+      response += data
+    })
+
+    process.on('close', () => {
+      response = _.trim(response.replace('dreampower ', ''))
+      def.resolve(response)
+    })
+
+    return def.promise
+  },
+
   //
+  // eslint-disable-next-line global-require
   fs: require('./fs'),
 
   //
+  // eslint-disable-next-line global-require
   shell: require('./shell'),
 
   //
@@ -187,5 +224,10 @@ module.exports = {
   /**
    *
    */
-  utils
+  utils,
+
+  /**
+   *
+   */
+  system,
 }

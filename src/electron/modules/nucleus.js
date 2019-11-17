@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const Nucleus = require('electron-nucleus')
 const axios = require('axios')
 const debug = require('debug').default('app:electron:modules:nucleus')
@@ -30,7 +31,7 @@ const nucleus = {
       disableErrorReports: true,
       userId: settings.user,
       version: process.env.APP_VERSION,
-      persist: false
+      persist: false,
     }
 
     try {
@@ -39,14 +40,14 @@ const nucleus = {
 
       // Get global application settings
       this._settings = (await axios.get(
-        `https://nucleus.sh/app/${this.getAppId()}/customdata`
+        `https://nucleus.sh/app/${this.getAppId()}/customdata`,
       )).data
 
       this.isEnabled = true
 
       debug('Nucleus initialized!', {
         config,
-        settings: this._settings
+        settings: this._settings,
       })
     } catch (err) {
       console.warn('Error at connecting to Nucleus', err)
@@ -65,7 +66,7 @@ const nucleus = {
    */
   can() {
     return this.getAppId()
-  }
+  },
 }
 
 module.exports = new Proxy(nucleus, {
@@ -84,6 +85,6 @@ module.exports = new Proxy(nucleus, {
       }
     }
 
-    return () => {}
-  }
+    return () => { }
+  },
 })

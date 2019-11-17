@@ -1,17 +1,17 @@
-/*
- * DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License 3.0 as published by
- * the Free Software Foundation.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import _ from 'lodash'
 import path from 'path'
 import filesize from 'filesize'
+import compareVersions from 'compare-versions'
+import dream from './dream'
 
 const debug = require('debug').default('app:modules:platform')
 
@@ -27,14 +27,13 @@ export default {
 
     this.requirements = {
       all: false,
-      cli: this.hasCli(),
+      cli: await this.hasCli(),
       checkpoints: this.hasCheckpoints(),
-      windowsMedia: await this.hasWindowsMedia()
+      windowsMedia: await this.hasWindowsMedia(),
     }
 
-    this.requirements.all =
-      this.requirements.cli &&
-      this.requirements.checkpoints /* &&
+    this.requirements.all = this.requirements.cli
+      && this.requirements.checkpoints /* &&
       this.requirements.windowsMedia */
 
     this.isLimited = this.getIsLimited()
@@ -50,7 +49,7 @@ export default {
     debug('Platform initialized!', {
       gpuDevices: this.gpuDevices,
       requirements: this.requirements,
-      isLimited: this.isLimited
+      isLimited: this.isLimited,
     })
   },
 
@@ -74,7 +73,7 @@ export default {
   /**
    * Verify if the CLI directory is valid
    */
-  hasCli() {
+  async hasCli() {
     const dirPath = $settings.folders.cli
 
     if (!_.isString(dirPath)) {
@@ -87,24 +86,40 @@ export default {
       return false
     }
 
+    let exists = false
+
     // One of these files must exist
     const binaries = [
       'main.py',
       'dreampower.exe',
-      'cli.exe',
       'dreampower',
-      'cli',
-      'dreampower.dmg', // TODO: Verify that this is correct
-      'cli.dmg'
     ]
 
     for (const bin of binaries) {
       if ($tools.fs.exists(path.join(dirPath, bin))) {
-        return true
+        exists = true
+        break
       }
     }
 
-    return false
+    if (!exists) {
+      return false
+    }
+
+    const version = await $tools.getPowerVersion()
+    const compatibility = $nucleus.compatibility[`v${dream.version}`]
+
+    console.log($nucleus.compatibility, `v${dream.version}`, compatibility)
+
+    for (const conditions of compatibility) {
+      // v1.2.2 v1.0.0 >= = true
+      // v1.2.2 v.1.0 <= = false
+      if (!compareVersions.compare(version, conditions[0], conditions[1])) {
+        return false
+      }
+    }
+
+    return true
   },
 
   /**
@@ -168,5 +183,5 @@ export default {
     const value = await $tools.shell.hasWindowsMedia()
 
     return value
-  }
+  },
 }
