@@ -1,48 +1,59 @@
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
+
 const fs = require('fs')
-const _ = require('lodash')
+const {
+  memoize, isNil, round, cloneDeep,
+} = require('lodash')
 const uuid = require('uuid')
 const { api } = require('electron-utils')
-const debug = require('debug').default('app:electron:modules:settings')
-
-const tools = require('../tools')
+const logger = require('logplease').create('electron:scripts:services:settings')
+const { BaseService } = require('./base')
+const { AppError } = require('../error')
+const { paths, system } = require('../tools')
 
 /**
  * User settings.
- * This class is responsible for loading, saving and offering easy access to user settings.
- *
- * Examples:
- * settings.processing.device -> 'CPU'
- *
- * settings.telemetry.enabled = false
- * settings.save()
  */
-const settings = {
+class SettingsService extends BaseService {
   /**
-   * Initialize the settings
+   * file where to save the payload.
+   *
+   * @type {string}
    */
-  async init() {
-    await this._initDefault()
+  get path() {
+    return memoize(() => paths.get('userData', 'settings.json'))('settings.path')
+  }
 
-    this._path = tools.paths.get('userData', 'settings.json')
-    this._settings = {}
+  /**
+   * settings defaults.
+   *
+   * @type {Object}
+   */
+  _defaults = {}
 
-    await this._ensure()
+  /**
+   * Setup service
+   */
+  async setup() {
+    this._setupDefaults()
 
-    this.load()
+    await this._create()
+
+    await this.load()
 
     await this._upgrade()
-  },
+  }
 
-  /**
-   *
-   */
-  async _initDefault() {
-    let hasGPU = false
-
-    try {
-      hasGPU = (await tools.getGpusList()).length > 0
-      // eslint-disable-next-line
-    } catch (err) { }
+  _setupDefaults() {
+    const hasGPU = system.graphics.length > 0
+    const cores = round(system.cores / 2)
 
     this._default = {
       version: 3,
@@ -52,7 +63,7 @@ const settings = {
       processing: {
         device: hasGPU ? 'GPU' : 'CPU',
         gpus: [0],
-        cores: 4,
+        cores,
         disablePersistentGan: false,
         usePython: process.env.NODE_ENV === 'development',
       },
@@ -108,42 +119,36 @@ const settings = {
       },
 
       folders: {
-        cropped: tools.paths.get('temp'),
-        models: tools.paths.get('userData', 'models'),
-        masks: tools.paths.get('userData', 'masks'),
-        cli: tools.paths.get('userData', 'dreampower'),
+        cropped: paths.get('temp'),
+        models: paths.get('userData', 'models'),
+        masks: paths.get('userData', 'masks'),
+        cli: paths.get('userData', 'dreampower'),
       },
 
       telemetry: {
         enabled: true,
       },
     }
-  },
+  }
 
   /**
-   * Make sure the settings file exists
+   * Create the settings file if it does not exist
    */
-  async _ensure() {
-    if (fs.existsSync(this._path)) {
-      // Exists
+  async _create() {
+    if (fs.existsSync(this.path)) {
       return
     }
 
     try {
-      fs.writeFileSync(this._path, JSON.stringify(this._default, null, 2))
-    } catch (err) {
-      api.dialog.showErrorBox(
-        'The program could not be started',
-        `An error occurred while trying to save the settings, please make sure the program has the necessary permissions to write to:\n${this._path}`,
-      )
-
-      api.app.exit()
+      fs.outputFileSync(this.path, JSON.stringify(this._defaults, null, 2))
+    } catch (error) {
+      throw new AppError(`Could not create settings file. Please make sure the program has the necessary permissions to write to:\n${this.path}`, { error })
     }
-  },
+  }
 
   /**
    * Check if it is necessary to update the settings file.
-   * - Ugly code, here we go!
+   * legacy code :WutFaceW:
    */
   async _upgrade() {
     const currentVersion = this._settings.version || 1
@@ -154,7 +159,7 @@ const settings = {
     }
 
     const currentSettings = this._settings
-    const newSettings = _.cloneDeep(currentSettings)
+    const newSettings = cloneDeep(currentSettings)
 
     // Upgrade 1 -> 2
     if (currentVersion === 1 && newVersion === 2) {
@@ -215,91 +220,9 @@ const settings = {
     }
 
     this.set(newSettings)
-  },
-
-  /**
-   * Returns the value of the settings in the path
-   *
-   * @param {string} path
-   */
-  get(path = '') {
-    if (path.length === 0) {
-      return this._settings
-    }
-
-    return _.get(this._settings, path)
-  },
-
-  /**
-   * Set a new value in the settings
-   *
-   * @param {any} path
-   * @param {any} payload
-   */
-  set(path, payload) {
-    if (_.isPlainObject(path)) {
-      this._settings = path
-      this.save()
-    }
-
-    this._settings = _.set(this._settings, path, payload)
-    this.save()
-  },
-
-  /**
-   * Load the settings file. If it is already loaded then it refreshes.
-   */
-  async load() {
-    this._settings = JSON.parse(fs.readFileSync(this._path))
-    debug('User Settings loaded!', { path: this._path, settings: this._settings })
-  },
-
-  /**
-   * Save the settings.
-   * This function is called automatically if you set a first level variable.
-   */
-  async save() {
-    const payload = JSON.stringify(this._settings, null, 2)
-    fs.writeFileSync(this._path, payload)
-
-    if (window && window.$rollbar) {
-      $rollbar.configure({
-        payload: {
-          settings: this._settings,
-        },
-      })
-    }
-  },
+  }
 }
 
-module.exports = new Proxy(settings, {
-  get: (obj, prop) => {
-    if (prop in obj) {
-      return obj[prop]
-    }
-
-    /* eslint-disable no-underscore-dangle */
-    if (prop in obj._settings) {
-      return obj._settings[prop]
-    }
-    /* eslint-enable no-underscore-dangle */
-
-    return undefined
-  },
-
-  set: (obj, prop, value) => {
-    /* eslint-disable no-underscore-dangle */
-    if (!_.isNil(obj._settings)) {
-      if (prop in obj._settings) {
-        obj._settings[prop] = value
-        obj.save()
-
-        return true
-      }
-    }
-    /* eslint-enable no-underscore-dangle */
-
-    obj[prop] = value
-    return true
-  },
-})
+module.exports = {
+  settings: SettingsService.make(),
+}

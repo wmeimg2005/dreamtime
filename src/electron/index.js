@@ -7,23 +7,23 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-
 const { app, BrowserWindow } = require('electron')
 const http = require('http')
 const path = require('path')
 const fs = require('fs')
 const contextMenu = require('electron-context-menu')
 const utils = require('electron-utils')
+const logger = require('logplease').create('electron')
 
-const AppError = require('./modules/error')
-const { settings, nucleus, rollbar } = require('./modules')
+const { AppError } = require('./scripts')
+const { settings, nucleus, rollbar } = require('./scripts/services')
+const { system } = require('./scripts/tools')
 const config = require('../nuxt.config')
 
-// Indicate to NuxtJS the root directory of the project
+// NuxtJS root directory
 config.rootDir = path.dirname(__dirname)
 
-// Copyright.
-// DO NOT DELETE OR ALTER THIS SECTION!
+// copyright
 console.log(`
   DreamTime.
   Copyright (C) DreamNet. All rights reserved.
@@ -33,10 +33,9 @@ console.log(`
   the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
 `)
 
-// Debug
-console.log('Starting...')
+logger.info('Starting...')
 
-console.log({
+logger.debug({
   env: process.env.NODE_ENV,
   paths: {
     appPath: app.getAppPath(),
@@ -47,7 +46,7 @@ console.log({
 
 class DreamApp {
   /**
-   * Start the magic!
+   * Start the app!
    */
   static async start() {
     await this.setup()
@@ -56,7 +55,7 @@ class DreamApp {
   }
 
   /**
-   * Prepare the application for use
+   * Prepare the application.
    */
   static async setup() {
     // https://electronjs.org/docs/tutorial/notifications#windows
@@ -65,16 +64,17 @@ class DreamApp {
     // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
     utils.enforceMacOSAppLocation()
 
-    // User settings
-    await settings.init()
+    // system stats.
+    await system.setup()
 
-    // Analytics & App settings
-    // https://nucleus.sh/docs/gettingstarted
-    await nucleus.init()
+    // user settings.
+    await settings.setup()
 
-    // Error reporting
-    // https://docs.rollbar.com/docs/nodejs
-    rollbar.init()
+    // analytics.
+    await nucleus.setup()
+
+    // bug tracking.
+    rollbar.setup()
 
     //
     this.createModelsDir()

@@ -7,8 +7,9 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
+const { filter } = require('lodash')
 const si = require('systeminformation')
-const _ = require('lodash')
+const isOnline = require('is-online')
 
 class System {
   /**
@@ -26,24 +27,38 @@ class System {
    */
   _memory
 
-  constructor() {
-    this._setup()
-  }
+  /**
+   * @type {boolean}
+   */
+  online
 
   /**
    *
    */
   async _setup() {
-    this._graphics = await si.graphics()
-    this._cpu = await si.cpu()
-    this._memory = await si.mem()
+    const {
+      graphics,
+      cpu,
+      mem,
+      online,
+    } = await Promise.all([
+      si.graphics(),
+      si.cpu(),
+      si.mem(),
+      isOnline(),
+    ])
+
+    this._graphics = graphics
+    this._cpu = cpu
+    this._memory = mem
+    this.online = online
   }
 
   /**
    * @return {Array}
    */
   get graphics() {
-    return _.filter(this._graphics.controllers, { vendor: 'NVIDIA' })
+    return filter(this._graphics.controllers, { vendor: 'NVIDIA' })
   }
 
   /**

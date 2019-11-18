@@ -179,6 +179,7 @@ module.exports = {
   download(url, options = {}) {
     const bus = new EventBus()
 
+    // eslint-disable-next-line no-param-reassign
     options = {
       // showSaveAs: false,
       directory: api.app.getPath('downloads'),
