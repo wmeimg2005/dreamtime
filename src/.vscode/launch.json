@@ -7,65 +7,23 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Active File",
-      "program": "${file}"
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "client: electron",
       "cwd": "${workspaceRoot}",
+      "preLaunchTask": "nuxt",
+      "postDebugTask": "nuxt-kill",
       "env": {
         "NODE_ENV": "development",
-        "DEBUGGING": "true"
+        "DEVTOOLS": "true"
       },
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-      "runtimeArgs": ["--remote-debugging-port=9222", "."],
       "windows": {
         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
-      }
-    },
-    {
-      "type": "chrome",
-      "request": "attach",
-      "name": "client: electron renderer",
-      "port": 9222,
-      "webRoot": "${workspaceRoot}",
-      "sourceMaps": true,
-      "sourceMapPathOverrides": {
-        "webpack:///./*": "${webRoot}/*",
-        "webpack:///*": "${webRoot}/*"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "server: nuxt",
-      "cwd": "${workspaceRoot}",
-      "protocol": "inspector",
-      "args": ["dev"],
-      "env": {
-        "NODE_ENV": "development"
       },
-      "osx": {
-        "program": "${workspaceFolder}/node_modules/.bin/nuxt"
-      },
-      "linux": {
-        "program": "${workspaceFolder}/node_modules/.bin/nuxt"
-      },
-      "windows": {
-        "program": "${workspaceFolder}/node_modules/nuxt/bin/nuxt.js"
-      }
-    }
-  ],
-  "compounds": [
-    {
-      "name": "fullstack",
-      "configurations": [
-        "server: nuxt",
-        "client: electron",
-        "client: electron renderer"
+      "runtimeArgs": [
+        "--remote-debugging-port=9222",
+        "."
       ]
     }
-  ]
+  ],
+  "compounds": []
 }

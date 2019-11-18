@@ -95,7 +95,7 @@ class DreamApp {
       height: 700,
       minWidth: 1200,
       minHeight: 700,
-      icon: path.join(config.rootDir, 'dist', 'app.ico'),
+      icon: path.join(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
         // Script that offers secure communication to the NodeJS API
         preload: path.join(app.getAppPath(), 'electron', 'preload.js'),
