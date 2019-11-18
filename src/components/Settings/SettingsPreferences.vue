@@ -327,11 +327,9 @@
             <option value="auto-resize">
               Scale and pad
             </option>
-            <!--
             <option value="auto-resize-crop">
               Scale and crop
             </option>
-            -->
           </select>
         </box-item>
 

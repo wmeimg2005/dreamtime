@@ -5,6 +5,7 @@ const EventBus = require('js-event-bus')
 const gpuInfo = require('gpu-info')
 const utils = require('electron-utils')
 const deferred = require('deferred')
+const semverRegex = require('semver-regex')
 
 const debug = require('debug').default('app:electron:tools')
 const { Image } = require('image-js')
@@ -203,7 +204,9 @@ module.exports = {
     })
 
     process.on('close', () => {
-      response = _.trim(response.replace('dreampower ', ''))
+      response = semverRegex().exec(response)
+      response = `v${response[0]}`
+
       def.resolve(response)
     })
 

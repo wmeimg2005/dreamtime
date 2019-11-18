@@ -7,13 +7,20 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-
 const Octokit = require('@octokit/rest')
 const mime = require('mime-types')
 const _ = require('lodash')
 const fs = require('fs')
 const path = require('path')
 const pkg = require('../package.json')
+
+const GITHUB_ORG = 'dreamnettech'
+const GITHUB_REPO = 'dreamtime'
+
+if (!process.env.GITHUB_TOKEN) {
+  console.log('API keys not found!')
+  process.exit(0)
+}
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -36,8 +43,8 @@ async function getGithubReleaseUrl() {
 
   try {
     response = await octokit.repos.getReleaseByTag({
-      owner: 'dreamnettech',
-      repo: 'dreamtime',
+      owner: GITHUB_ORG,
+      repo: GITHUB_REPO,
       tag: tagName,
     })
   } catch (err) {
@@ -49,8 +56,8 @@ async function getGithubReleaseUrl() {
 
     try {
       response = await octokit.repos.createRelease({
-        owner: 'dreamnettech',
-        repo: 'dreamtime',
+        owner: GITHUB_ORG,
+        repo: GITHUB_REPO,
         tag_name: tagName,
         name: version,
         prerelease: true,

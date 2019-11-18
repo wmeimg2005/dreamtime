@@ -85,6 +85,7 @@ jobs:
 
       - name: Release
         working-directory: src/scripts
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
