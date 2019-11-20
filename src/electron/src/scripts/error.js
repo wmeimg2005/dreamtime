@@ -7,10 +7,11 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-const _ = require('lodash')
-const { api } = require('electron-utils')
+import { isError, isString } from 'lodash'
+import { api } from 'electron-utils'
+import { rollbar } from './services/rollbar'
+
 const logger = require('logplease').create('electron:scripts:error')
-const { rollbar } = require('./services/rollbar')
 
 /**
  * @typedef {Object} ErrorOptions
@@ -20,26 +21,43 @@ const { rollbar } = require('./services/rollbar')
  * @property {Object} extra
  */
 
-class AppError extends Error {
+export class AppError extends Error {
+  options = {
+    title: null,
+    error: null,
+    level: 'error',
+  }
+
   /**
    *
    * @param {string} message
    * @param {ErrorOptions} options
    */
-  constructor(message, options = {}) {
-    super(message)
+  constructor(input, options = {}) {
+    if (isString(input)) {
+      super(input)
+    } else if (isError(input)) {
+      super(input.message)
+
+      if (input instanceof AppError) {
+        this.options = {
+          ...this.options,
+          error: input,
+          ...input.options,
+        }
+      }
+    } else {
+      super()
+    }
 
     this.options = {
-      title: 'A problem has occurred.',
-      error: undefined,
-      level: 'error',
-      extra: {},
+      ...this.options,
       ...options,
     }
   }
 
   report() {
-    const { title, level, extra } = this.options
+    const { level } = this.options
 
     // logger
     logger[level](`💔 ${this.message}`)
@@ -48,14 +66,10 @@ class AppError extends Error {
       const error = this.options.error || Error(this.message)
 
       try {
-        const response = rollbar[level](error, {
-          title,
-          message: this.message,
-          ...extra,
-        })
+        const response = rollbar[level](this.message, error, this.options)
 
         if (response.uuid) {
-          this.message += `\nFor more information please report the following:\nhttps://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
+          this.message += `\n\nShare this with a developer:\nhttps://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
         }
       } catch (err) {
         logger.warn('💔 Error trying to report the error!', err)
@@ -64,12 +78,12 @@ class AppError extends Error {
 
     this.show()
 
-    api.app.exit()
+    api.app.quit()
   }
 
   show() {
     api.dialog.showErrorBox(
-      this.options.title,
+      this.options.title || 'A problem has occurred.',
       this.message,
     )
   }
@@ -79,17 +93,13 @@ class AppError extends Error {
 
     if (!(appError instanceof AppError)) {
       appError = new AppError(
-        _.isError(appError) ? error.message : 'The program has detected an unknown error. Sorry!',
+        isError(appError) ? error.message : 'The program has detected an unknown error. Sorry!',
         {
-          error: _.isError(appError) ? appError : new Error(appError),
+          error: isError(appError) ? appError : new Error(appError),
         },
       )
     }
 
     appError.report()
   }
-}
-
-module.exports = {
-  AppError,
 }

@@ -7,12 +7,6 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-const { settings } = require('./settings')
-const { nucleus } = require('./nucleus')
-const { rollbar } = require('./rollbar')
-
-module.exports = {
-  settings,
-  nucleus,
-  rollbar,
-}
+export { settings } from './settings'
+export { nucleus } from './nucleus'
+export { rollbar } from './rollbar'

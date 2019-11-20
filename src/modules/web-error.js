@@ -17,6 +17,7 @@ class WebError extends Error {
   constructor(title, message, opts = {}) {
     super(message)
 
+    // eslint-disable-next-line no-param-reassign
     opts = {
       error: undefined,
       level: 'error',
@@ -93,6 +94,7 @@ class WebError extends Error {
 
   static handle(error) {
     if (!(error instanceof WebError)) {
+      // eslint-disable-next-line no-param-reassign
       error = new WebError(
         'An error has occurred!',
         'Oops! An unknown error has awakened us from our dreams, we will try to solve it in the next version.',

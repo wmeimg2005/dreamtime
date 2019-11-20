@@ -7,13 +7,14 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-const {
+import {
   set, get, isNil, isPlainObject,
-} = require('lodash')
-const fs = require('fs')
+} from 'lodash'
+import fs from 'fs'
+
 const logger = require('logplease').create('electron:scripts:services')
 
-class BaseService {
+export class BaseService {
   /**
    * the payload.
    * a proxy will be used to get or set this information.
@@ -34,7 +35,7 @@ class BaseService {
    *
    * @type {Boolean}
    */
-  enabled: false
+  enabled = false
 
   /**
    * file where to save the payload.
@@ -152,8 +153,4 @@ class BaseService {
     this.payload = set(this.payload, path, payload)
     this.save()
   }
-}
-
-module.exports = {
-  BaseService,
 }

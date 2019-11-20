@@ -1,3 +1,4 @@
+// eslint-disable-next-line lodash/import-scope
 import _ from 'lodash'
 import path from 'path'
 
@@ -51,11 +52,13 @@ export default class File {
    * @param {*} path
    */
   reload(path) {
+    let filePath = path
+
     if (_.isNil(path)) {
-      path = this.getPath()
+      filePath = this.getPath()
     }
 
-    const info = $tools.fs.getInfo(path)
+    const info = $tools.fs.getInfo(filePath)
 
     this.name = info.name
     this.ext = info.ext

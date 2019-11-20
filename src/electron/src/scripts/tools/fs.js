@@ -1,46 +1,41 @@
-const _ = require('lodash')
-const fs = require('fs')
-const mime = require('mime-types')
-const path = require('path')
-const EventBus = require('js-event-bus')
-const axios = require('axios')
-const { api } = require('electron-utils')
-const filesize = require('filesize')
-const unzipper = require('unzipper')
-const deferred = require('deferred')
-const sevenBin = require('7zip-bin')
-const { extractFull } = require('node-7z')
+import path from 'path'
+import fs from 'fs-extra'
+import { isNil } from 'lodash'
+import mime from 'mime-types'
+import EventBus from 'js-event-bus'
+import axios from 'axios'
+import { api, is, platform } from 'electron-utils'
+import filesize from 'filesize'
+import unzipper from 'unzipper'
+import deferred from 'deferred'
+import sevenBin from '7zip-bin'
+import { extractFull } from 'node-7z'
+import { getAppResources } from './paths'
 
-const debug = require('debug').default('app:electron:tools:fs')
-
-/**
- * Returns the base64 of a dataURL
- * @param {*} dataURL
- */
-function getBase64Data(dataURL) {
-  let encoded = dataURL.replace(/^data:(.*;base64,)?/, '')
-
-  if (encoded.length % 4 > 0) {
-    encoded += '='.repeat(4 - (encoded.length % 4))
-  }
-
-  return encoded
-}
-
-module.exports = {
+export default {
   /**
-   *
-   * @param {string} filePath
+   * Returns the base64 of a dataURL
+   * @param {*} dataURL
    */
-  getInfo(filePath) {
-    const exists = this.exists(filePath)
-    const mimetype = mime.lookup(filePath)
-    const { name, ext, dir } = path.parse(filePath)
+  getBase64Data: (dataURL) => {
+    let encoded = dataURL.replace(/^data:(.*;base64,)?/, '')
+
+    if (encoded.length % 4 > 0) {
+      encoded += '='.repeat(4 - (encoded.length % 4))
+    }
+
+    return encoded
+  },
+
+  getInfo: (path) => {
+    const exists = this.exists(path)
+    const mimetype = mime.lookup(path)
+    const { name, ext, dir } = path.parse(path)
 
     let size
 
     if (exists) {
-      const stats = fs.statSync(filePath)
+      const stats = fs.statSync(path)
       size = stats.size / 1000000.0
     }
 
@@ -54,75 +49,19 @@ module.exports = {
     }
   },
 
-  /**
-   *
-   * @param {*} path
-   */
-  async read(path, encoding = 'utf-8') {
-    return fs.readFileSync(path, { encoding })
-  },
+  read: (path, encoding = 'utf-8') => fs.readFileSync(path, { encoding }),
 
-  /**
-   *
-   * @param {*} path
-   */
-  readJSON(path, encoding = 'UTF-8') {
-    return JSON.parse(fs.readFileSync(path, { encoding }))
-  },
-
-  /**
-   *
-   * @param {*} path
-   * @param {*} dataURL
-   */
-  async writeDataURL(path, dataURL) {
-    const data = getBase64Data(dataURL)
+  writeDataUrl: (path, dataURL) => {
+    const data = this.getBase64Data(dataURL)
     return fs.writeFileSync(path, data, 'base64')
   },
 
-  /**
-   *
-   * @param {*} path
-   * @param {*} targetPath
-   */
-  async copy(path, targetPath) {
-    return fs.copyFileSync(path, targetPath)
-  },
-
-  /**
-   *
-   */
-  async unlink(path) {
-    return fs.unlinkSync(path)
-  },
-
-  /**
-   *
-   * @param {string} filePath
-   */
-  exists(filePath) {
-    return fs.existsSync(filePath)
-  },
-
-  /**
-   * @param {string} filePath
-   */
-  stats(filePath) {
-    return fs.statSync(filePath)
-  },
-
-  /**
-   *
-   * @param {string} zipPath
-   * @param {string} targetPath
-   * @return {Promise}
-   */
-  extract(zipPath, targetPath) {
+  extractZip: (path, destinationPath) => {
     const def = deferred()
 
     const stream = fs
-      .createReadStream(zipPath)
-      .pipe(unzipper.Extract({ path: targetPath }))
+      .createReadStream(path)
+      .pipe(unzipper.Extract({ path: destinationPath }))
 
     stream.on('close', () => {
       def.resolve()
@@ -135,29 +74,24 @@ module.exports = {
     return def.promise
   },
 
-  /**
-   *
-   * @param {string} zipPath
-   * @param {string} targetPath
-   */
-  extractSeven(zipPath, targetPath) {
+  extractSeven: (path, destinationPath) => {
     const def = deferred()
 
     let pathTo7zip
 
-    if ($tools.utils.is.development) {
+    if (is.development) {
       pathTo7zip = sevenBin.path7za
     } else {
-      const binName = $tools.utils.platform({
+      const binName = platform({
         macos: '7za',
-        windows: '7za.exe',
         linux: '7za',
+        windows: '7za.exe',
       })
 
-      pathTo7zip = $tools.paths.getGuiResources('7zip-bin', binName)
+      pathTo7zip = getAppResources('7zip-bin', binName)
     }
 
-    const seven = extractFull(zipPath, targetPath, {
+    const seven = extractFull(path, destinationPath, {
       $bin: pathTo7zip,
       recursive: true,
     })
@@ -173,10 +107,7 @@ module.exports = {
     return def.promise
   },
 
-  /**
-   *
-   */
-  download(url, options = {}) {
+  download: (url, options = {}) => {
     const bus = new EventBus()
 
     // eslint-disable-next-line no-param-reassign
@@ -196,7 +127,7 @@ module.exports = {
 
     const deleteFile = () => {
       if (fs.existsSync(filePath)) {
-        debug(`Deleting file ${filePath}`)
+        // debug(`Deleting file ${filePath}`)
         fs.unlinkSync(filePath)
       }
     }
@@ -224,12 +155,13 @@ module.exports = {
           stream.destroy(err)
           deleteFile()
 
-          if (!_.isNil(err)) {
+          if (!isNil(err)) {
             console.warn('Download canceled due to an error', err)
             bus.emit('error', null, err)
           }
         }
 
+        /*
         debug('Downloading file and placing it in a writeStream', {
           url,
           fileName,
@@ -238,6 +170,7 @@ module.exports = {
           mbTotal,
           exists: fs.existsSync(filePath),
         })
+        */
 
         output.on('error', (err) => {
           cancel(err)
@@ -288,7 +221,7 @@ module.exports = {
         })
 
         bus.on('cancel', () => {
-          debug('Download canceled!')
+          // debug('Download canceled!')
           cancel()
         })
 
@@ -301,17 +234,17 @@ module.exports = {
     return bus
   },
 
-  downloadAsync(url, options = {}) {
-    return new Promise((resolve, reject) => {
-      const bus = this.download(url, options)
+  downloadAsync: (url, options = {}) => new Promise((resolve, reject) => {
+    const bus = this.download(url, options)
 
-      bus.on('end', (filePath) => {
-        resolve(filePath)
-      })
-
-      bus.on('error', (err) => {
-        reject(err)
-      })
+    bus.on('end', (filePath) => {
+      resolve(filePath)
     })
-  },
+
+    bus.on('error', (err) => {
+      reject(err)
+    })
+  }),
+
+  ...fs,
 }

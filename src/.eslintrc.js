@@ -40,9 +40,10 @@ module.exports = {
     "import/no-webpack-loader-syntax": "off",
     "import/order": "error",
     "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": "off",
     "linebreak-style": "warn",
     "lodash/import-scope": [
-      "warn",
+      "off",
       "member"
     ],
     "lodash/prefer-constant": "off",

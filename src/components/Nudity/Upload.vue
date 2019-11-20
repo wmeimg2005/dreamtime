@@ -81,6 +81,8 @@
 </template>
 
 <script>
+/* eslint-disable no-param-reassign */
+// eslint-disable-next-line lodash/import-scope
 import _ from 'lodash'
 import swal from 'sweetalert'
 import { Photo } from '~/modules/models'

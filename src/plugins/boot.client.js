@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'

@@ -1,5 +1,4 @@
-require('dotenv').config()
-
+/* eslint-disable no-param-reassign */
 // eslint-disable-next-line nuxt/no-cjs-in-config
 module.exports = {
   mode: 'spa',
@@ -23,7 +22,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.APP_NAME} v${process.env.APP_VERSION}`,
+    title: `${process.env.npm_package_name} v${process.env.npm_package_version}`,
 
     meta: [
       { charset: 'utf-8' },

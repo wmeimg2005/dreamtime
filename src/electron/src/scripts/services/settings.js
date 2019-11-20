@@ -7,16 +7,15 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-const fs = require('fs')
-const {
-  memoize, isNil, round, cloneDeep,
-} = require('lodash')
-const uuid = require('uuid')
-const { api } = require('electron-utils')
+import fs from 'fs'
+import {
+  memoize, round, cloneDeep,
+} from 'lodash'
+import uuid from 'uuid'
+import { BaseService } from './base'
+import { paths, system } from '../tools'
+
 const logger = require('logplease').create('electron:scripts:services:settings')
-const { BaseService } = require('./base')
-const { AppError } = require('../error')
-const { paths, system } = require('../tools')
 
 /**
  * User settings.
@@ -142,7 +141,7 @@ class SettingsService extends BaseService {
     try {
       fs.outputFileSync(this.path, JSON.stringify(this._defaults, null, 2))
     } catch (error) {
-      throw new AppError(`Could not create settings file. Please make sure the program has the necessary permissions to write to:\n${this.path}`, { error })
+      throw new Error(`Settings creation fail. Please make sure the program has the necessary permissions to write to:\n${this.path}`)
     }
   }
 
@@ -151,14 +150,14 @@ class SettingsService extends BaseService {
    * legacy code :WutFaceW:
    */
   async _upgrade() {
-    const currentVersion = this._settings.version || 1
+    const currentVersion = this.payload.version || 1
     const newVersion = this._default.version
 
     if (newVersion === currentVersion) {
       return
     }
 
-    const currentSettings = this._settings
+    const currentSettings = this.payload
     const newSettings = cloneDeep(currentSettings)
 
     // Upgrade 1 -> 2
@@ -173,7 +172,7 @@ class SettingsService extends BaseService {
         nippleSize,
         vaginaSize,
         pubicHairSize,
-      } = this._settings.preferences
+      } = this.payload.preferences
 
       newSettings.preferences.boobs.size = boobsSize
       newSettings.preferences.areola.size = areolaSize
@@ -223,6 +222,4 @@ class SettingsService extends BaseService {
   }
 }
 
-module.exports = {
-  settings: SettingsService.make(),
-}
+export const settings = SettingsService.make()

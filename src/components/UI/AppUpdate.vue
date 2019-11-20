@@ -51,9 +51,8 @@
 export default {
   filters: {
     progress(value) {
-      value = (value * 100).toFixed(2)
-      // value = Math.round(value * 100)
-      return `${value}%`
+      const progress = (value * 100).toFixed(2)
+      return `${progress}%`
     },
 
     size(value) {

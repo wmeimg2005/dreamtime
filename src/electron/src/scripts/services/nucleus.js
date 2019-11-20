@@ -7,13 +7,14 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-const { isNil } = require('lodash')
-const Nucleus = require('nucleus-nodejs')
-const axios = require('axios')
+import { isNil } from 'lodash'
+import Nucleus from 'nucleus-nodejs'
+import axios from 'axios'
+import { BaseService } from './base'
+import { system } from '../tools'
+import { settings } from './settings'
+
 const logger = require('logplease').create('electron:scripts:services:nucleus')
-const { BaseService } = require('./base')
-const { system } = require('../tools')
-const { settings } = require('./settings')
 
 /**
  * https://nucleus.sh
@@ -64,6 +65,7 @@ class NucleusService extends BaseService {
       this.enabled = true
 
       logger.info('Nucleus enabled!')
+      logger.debug(this.appId)
     } catch (err) {
       logger.warn('💔 Error trying to start Nucleus!', err)
     }
@@ -80,6 +82,4 @@ class NucleusService extends BaseService {
   }
 }
 
-module.exports = {
-  nucleus: NucleusService.make(),
-}
+export const nucleus = NucleusService.make()

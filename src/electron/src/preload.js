@@ -1,7 +1,6 @@
-const {
-  AppError, settings, nucleus, rollbar,
-} = require('./modules')
-const tools = require('./tools')
+import { AppError } from './scripts'
+import { settings, nucleus, rollbar } from './scripts/services'
+import * as tools from './scripts/tools'
 
 // Custom Error
 window.AppError = AppError

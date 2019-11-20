@@ -7,12 +7,14 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-const { isNil, isString, get } = require('lodash')
-const { Rollbar } = require('rollbar')
+import { isNil, isString, get } from 'lodash'
+import { execSync } from 'child_process'
+import Rollbar from 'rollbar'
+import { BaseService } from './base'
+import { settings } from './settings'
+import { nucleus } from './nucleus'
+
 const logger = require('logplease').create('electron:scripts:services:rollbar')
-const { BaseService } = require('./base')
-const { settings } = require('./settings')
-const { nucleus } = require('./nucleus')
 
 /**
  * https://rollbar.com
@@ -30,7 +32,15 @@ class RollbarService extends BaseService {
    * @type {boolean}
    */
   get can() {
-    return !isNil(settings.telemetry.enabled) && isString(this.accessToken)
+    return isString(this.accessToken)
+  }
+
+  get codeVersion() {
+    try {
+      return process.env.GIT_SHA || execSync('git rev-parse HEAD').toString().trim()
+    } catch (err) {
+      return null
+    }
   }
 
   /**
@@ -39,22 +49,23 @@ class RollbarService extends BaseService {
   get config() {
     return {
       accessToken: this.accessToken,
-      captureUncaught: true,
-      captureUnhandledRejections: true,
+      captureUncaught: false,
+      captureUnhandledRejections: false,
       captureIp: 'anonymize',
+      enabled: settings.telemetry.enabled,
       verbose: process.env.NODE_ENV === 'development',
+      logLevel: 'info',
       nodeSourceMaps: true,
-      reportLevel: 'warning',
+      reportLevel: 'error',
       payload: {
-        environment:
-          process.env.NODE_ENV !== 'development' ? 'production' : 'development',
+        environment: process.env.NODE_ENV,
         person: {
           id: settings.user,
         },
         client: {
           javascript: {
             source_map_enabled: true,
-            code_version: process.env.APP_VERSION,
+            code_version: this.codeVersion,
           },
         },
         settings: settings.payload,
@@ -76,12 +87,28 @@ class RollbarService extends BaseService {
       this.enabled = true
 
       logger.info('Rollbar enabled!')
+      logger.debug(this.accessToken)
     } catch (err) {
       logger.warn('💔 Error trying to start Rollbar!', err)
     }
   }
+
+  /**
+   *
+   */
+  shutdown() {
+    return new Promise((resolve) => {
+      if (isNil(this._service)) {
+        resolve()
+        return
+      }
+
+      // wait until send bug reports.
+      this._service.wait(() => {
+        resolve()
+      })
+    })
+  }
 }
 
-module.exports = {
-  rollbar: RollbarService.make(),
-}
+export const rollbar = RollbarService.make()

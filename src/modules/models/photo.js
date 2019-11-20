@@ -84,7 +84,9 @@ export default class Photo {
       job.onStart()
     })
 
-    this.queue.on('task_finish', (jobId, job, stats) => {
+    this.queue.on('task_finish', (jobId, jb, stats) => {
+      let job = jb
+
       if (_.isNil(job)) {
         job = this.getJobById(jobId)
       }

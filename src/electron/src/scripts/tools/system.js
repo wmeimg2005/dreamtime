@@ -35,13 +35,13 @@ class System {
   /**
    *
    */
-  async _setup() {
-    const {
+  async setup() {
+    const [
       graphics,
       cpu,
       mem,
       online,
-    } = await Promise.all([
+    ] = await Promise.all([
       si.graphics(),
       si.cpu(),
       si.mem(),
@@ -76,6 +76,4 @@ class System {
   }
 }
 
-module.exports = {
-  system: new System(),
-}
+export const system = new System()

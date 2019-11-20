@@ -4,27 +4,79 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "nuxt",
-      "type": "shell",
-      "command": "yarn dev:nuxt",
+      "label": "start:nuxt",
+      "type": "npm",
+      "script": "start:nuxt",
+      "group": "build",
       "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "clear": true,
+        "group": "build"
+      },
       "problemMatcher": {
-        "owner": "nuxt",
+        "base": "$eslint-stylish",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Updated",
+          "endsPattern": "Compiled successfully in",
+        }
+      }
+    },
+    {
+      "label": "start:babel",
+      "type": "npm",
+      "script": "start:babel",
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "clear": true,
+        "group": "build"
+      },
+      "problemMatcher": {
+        "owner": "custom",
         "fileLocation": "relative",
         "pattern": {
           "regexp": "ERROR"
         },
         "background": {
-          "activeOnStart": false,
-          "beginsPattern": "Listening",
-          "endsPattern": "Compiled successfully in"
+          "activeOnStart": true,
+          "beginsPattern": "->",
+          "endsPattern": "Successfully compiled"
         }
       }
     },
     {
-      "label": "nuxt-kill",
+      "label": "start:electron",
+      "type": "npm",
+      "script": "start:electron",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      }
+    },
+    {
+      "label": "kill",
       "type": "process",
       "command": "${command:workbench.action.terminal.kill}"
+    },
+    {
+      "label": "build",
+      "dependsOn": [
+        "start:nuxt",
+        "start:babel"
+      ],
+      "dependsOrder": "parallel",
+    },
+    {
+      "label": "start",
+      "dependsOn": [
+        "build",
+        "start:electron"
+      ],
+      "dependsOrder": "parallel"
     }
   ]
 }
