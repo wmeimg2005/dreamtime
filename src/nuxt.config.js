@@ -53,7 +53,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/boot.client.js', '~/components'],
+  plugins: ['~/plugins/boot.js', '~/components'],
 
   /*
    ** Nuxt.js dev-modules
@@ -84,15 +84,6 @@ module.exports = {
    */
   dev: process.env.NODE_ENV === 'development',
 
-  /**
-   *
-   */
-  env: {
-    APP_NAME: process.env.APP_NAME,
-    APP_VERSION: process.env.APP_VERSION,
-    NUCLEUS_APPID: process.env.NUCLEUS_APPID,
-  },
-
   /*
    ** Build configuration
    */
@@ -106,6 +97,15 @@ module.exports = {
         '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-optional-chaining',
+        [
+          'transform-inline-environment-variables',
+          {
+            exclude: [
+              'LOG',
+              'DEVTOOLS',
+            ],
+          },
+        ],
       ],
     },
 

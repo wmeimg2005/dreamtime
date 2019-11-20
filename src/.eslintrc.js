@@ -17,11 +17,7 @@ module.exports = {
   ],
   globals: {
     $dream: false,
-    $nucleus: false,
-    $rollbar: false,
-    $settings: false,
-    $tools: false,
-    AppError: false
+    $provider: false
   },
   parserOptions: {
     parser: "babel-eslint"

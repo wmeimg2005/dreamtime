@@ -57,28 +57,30 @@ export class AppError extends Error {
   }
 
   report() {
-    const { level } = this.options
+    let { level } = this.options
 
-    // logger
-    logger[level](`💔 ${this.message}`)
+    if (level === 'warning') {
+      level = 'warn'
+    }
 
-    if (rollbar.enabled) {
-      const error = this.options.error || Error(this.message)
+    try {
+      // logger
+      logger[level](`💔 ${this.message}`)
 
-      try {
+      if (rollbar.enabled) {
+        const error = this.options.error || Error(this.message)
+
         const response = rollbar[level](this.message, error, this.options)
 
         if (response.uuid) {
           this.message += `\n\nShare this with a developer:\nhttps://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
         }
-      } catch (err) {
-        logger.warn('💔 Error trying to report the error!', err)
       }
+    } catch (err) {
+      logger.warn('💔 Error report fail!', err)
     }
 
     this.show()
-
-    api.app.quit()
   }
 
   show() {
@@ -86,6 +88,8 @@ export class AppError extends Error {
       this.options.title || 'A problem has occurred.',
       this.message,
     )
+
+    api.app.quit()
   }
 
   static handle(error) {
@@ -93,7 +97,7 @@ export class AppError extends Error {
 
     if (!(appError instanceof AppError)) {
       appError = new AppError(
-        isError(appError) ? error.message : 'The program has detected an unknown error. Sorry!',
+        isError(appError) ? error : 'The program has encountered an unexpected error.',
         {
           error: isError(appError) ? appError : new Error(appError),
         },

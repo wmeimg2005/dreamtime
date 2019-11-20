@@ -10,6 +10,7 @@
 import { app, BrowserWindow } from 'electron'
 import http from 'http'
 import path from 'path'
+import { URL } from 'url'
 import fs from 'fs-extra'
 import contextMenu from 'electron-context-menu'
 import { pack, enforceMacOSAppLocation } from 'electron-utils'
@@ -32,8 +33,7 @@ Copyright (C) DreamNet. All rights reserved.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License 3.0 as published by
-the Free Software Founda
-tion. See <https://www.gnu.org/licenses/gpl-3.0.html>
+the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
 `)
 
 logger.info('Starting...')
@@ -67,10 +67,12 @@ class DreamApp {
     // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
     enforceMacOSAppLocation()
 
+    // macos activate.
     app.on('activate', () => {
       this.createWindow()
     })
 
+    // application exit.
     app.on('will-quit', async (event) => {
       event.preventDefault()
 
@@ -119,11 +121,10 @@ class DreamApp {
       minHeight: 700,
       icon: path.join(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
-        preload: path.join(app.getAppPath(), 'electron', 'preload.js'),
+        nodeIntegration: true,
+        preload: path.join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })
-
-    throw new AppError('This is a test.')
 
     // disable menu
     this.window.setMenu(null)
@@ -187,7 +188,7 @@ class DreamApp {
     if (!fs.existsSync(modelsPath)) {
       fs.mkdirSync(modelsPath, { recursive: true },
         (error) => {
-          throw new AppError(`Could not create model directory.`, { error })
+          throw new AppError(`Models directory creation fail.`, { error })
         })
     }
   }
@@ -196,13 +197,33 @@ class DreamApp {
 process.on('uncaughtException', (err) => {
   logger.warn('Unhandled exception!', err)
   AppError.handle(err)
+
   return true
 })
 
 process.on('unhandledRejection', (err) => {
   logger.warn('Unhandled rejection!', err)
   AppError.handle(err)
+
   return true
+})
+
+app.on('web-contents-created', (event, contents) => {
+  contents.on('will-navigate', (event, navigationUrl) => {
+    const parsedUrl = new URL(navigationUrl)
+
+    console.log(parsedUrl)
+
+    /**
+    if (parsedUrl.origin !== 'https://example.com') {
+      event.preventDefault()
+    }
+    * */
+  })
+})
+
+app.on('window-all-closed', () => {
+  app.quit()
 })
 
 app.on('ready', async () => {
@@ -211,8 +232,4 @@ app.on('ready', async () => {
   } catch (error) {
     throw new AppError(error, { title: `Failed to start correctly.` })
   }
-})
-
-app.on('window-all-closed', () => {
-  app.quit()
 })

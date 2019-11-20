@@ -8,9 +8,10 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import * as paths from './paths'
+import * as shell from './shell'
 
 export fs from './fs'
-export shell from './shell'
+export { shell }
 export { paths }
 export utils from 'electron-utils'
 export { system } from './system'

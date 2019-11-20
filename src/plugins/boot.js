@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-// eslint-disable-next-line import/no-extraneous-dependencies
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
@@ -8,42 +7,29 @@ import {
   dream, platform, updater, nudify, WebError,
 } from '~/modules'
 
-const debug = require('debug').default('app:plugins:boot')
+const logger = require('logplease').create('plugins:boot')
 
-if (process.env.NODE_ENV === 'dev') {
-  // Development stuff
-  localStorage.debug = 'app:*'
-}
+// lift off!
+logger.info('Lift off!')
 
-// Lift off!
-debug('Preparing front-end...')
-
-// Base Mixin
+// base mixin
 Vue.mixin(BaseMixin)
 
-// MomentJS
+// momentjs
 moment.locale('en')
 
-// Tippy settings
+// tippyjs
 tippy.setDefaultProps({
   delay: 100,
   arrow: true,
 })
 
 export default async ({ app }, inject) => {
-  // Environment Information
-  debug('Enviroment', {
-    app,
-    env: process.env.NODE_ENV,
-    isStatic: $tools.utils.pack.isStatic(),
-    paths: {
-      appPath: $tools.utils.api.app.getAppPath(),
-      exePath: $tools.utils.api.app.getPath('exe'),
-    },
-  })
+  inject('provider', $provider)
 
-  inject('tools', $tools)
+  console.log($provider)
 
+  /*
   //---
 
   // User settings
@@ -115,4 +101,5 @@ export default async ({ app }, inject) => {
 
   // Debug
   debug('The front-end is ready to render!', { app })
+  */
 }
