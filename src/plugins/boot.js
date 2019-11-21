@@ -25,81 +25,42 @@ tippy.setDefaultProps({
 })
 
 export default async ({ app }, inject) => {
+  // provider shortcuts
   inject('provider', $provider)
+  inject('settings', $provider.services.settings)
+  inject('nucleus', $provider.services.nucleus)
 
-  console.log($provider)
+  // error handlers
 
-  /*
-  //---
+  window.addEventListener('error', (err) => {
+    logger.warn('Web error!', err)
+    WebError.handle(err)
 
-  // User settings
-  await $settings.init()
-  inject('settings', $settings)
-
-  // Analytics
-  // App settings
-  await $nucleus.init()
-  inject('nucleus', $nucleus)
-
-  // Error reporting
-  $rollbar.init()
-
-  //---
-
-  window.addEventListener('error', (error) => {
-    debug('Error captured', {
-      error,
-      type: typeof error,
-    })
-
-    WebError.handle(error)
     return true
   })
 
   window.addEventListener('unhandledrejection', (rejection) => {
-    debug('Unhandled Rejection captured', {
-      error: rejection.reason,
-      type: typeof rejection.reason,
-    })
-
+    logger.warn('Web Unhandled rejection!', err)
     WebError.handle(rejection.reason)
+
     return true
   })
 
   Vue.config.errorHandler = (err) => {
+    logger.warn('VueJS error!', err)
     WebError.handle(err)
+
     throw err
   }
 
-  //---
-
-  // DreamTime information
+  // dreamtime
   dream.init()
-  window.$dream = dream
-  app.context.$dream = dream
   inject('dream', dream)
 
-  // Platform information
-  await platform.init()
-  app.context.$platform = platform
-  inject('platform', platform)
-
-  // Updates information
-  updater.init()
-  app.context.$updater = updater
-  inject('updater', updater)
-
-  //---
-
-  // Nudify process
+  // nudify process
   nudify.init()
-  app.context.$nudify = nudify
   inject('nudify', nudify)
 
-  // axios - default headers
-  // $axios.setHeader('X-Requested-With', 'XMLHttpRequest')
-
-  // Debug
-  debug('The front-end is ready to render!', { app })
-  */
+  // ready
+  logger.info('The front-end is ready!')
 }

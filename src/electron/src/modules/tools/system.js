@@ -1,0 +1,238 @@
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
+
+import {
+  filter, isString, isNil, isArray, toInteger,
+} from 'lodash'
+import { existsSync, statSync } from 'fs'
+import si from 'systeminformation'
+import isOnline from 'is-online'
+import compareVersions from 'compare-versions'
+import filesize from 'filesize'
+import { is } from 'electron-utils'
+import regedit from 'regedit'
+import { nucleus } from '../services'
+import { getAppResources, getPower, getPowerCheckpoints } from './paths'
+import { getVersion } from './power'
+
+const logger = require('logplease').create('electron:modules:tools:system')
+
+class System {
+  /**
+   * @type {si.Systeminformation.OsData}
+   */
+  os
+
+  /**
+   * @type {si.Systeminformation.GraphicsData}
+   */
+  _graphics
+
+  /**
+   * @type {si.Systeminformation.CpuData}
+   */
+  cpu
+
+  /**
+   * @type {si.Systeminformation.MemData}
+   */
+  memory
+
+  /**
+   * @type {boolean}
+   */
+  online
+
+  /**
+   * @type {Object}
+   */
+  requirements = {
+    all: false,
+    power: {
+      installed: false,
+      compatible: false,
+      checkpoints: false,
+    },
+    windows: {
+      media: false,
+    },
+    ram: {
+      minimum: false,
+      recommended: false,
+    },
+  }
+
+  /**
+   *
+   */
+  async setup() {
+    const [
+      graphics,
+      os,
+      cpu,
+      mem,
+      online,
+    ] = await Promise.all([
+      si.graphics(),
+      si.osInfo(),
+      si.cpu(),
+      si.mem(),
+      isOnline(),
+    ])
+
+    this._graphics = graphics
+    this.os = os
+    this.cpu = cpu
+    this.memory = mem
+    this.online = online
+
+    logger.info(`GPU devices: ${this.graphics.length}`)
+    logger.info(`RAM: ${this.memory.total} bytes.`)
+    logger.info(`Internet connection: ${this.online}`)
+    logger.debug(this)
+  }
+
+  /**
+   *
+   */
+  async scan() {
+    this.requirements.power.installed = this.hasPower
+    this.requirements.power.compatible = await this.hasCompatiblePower()
+    this.requirements.power.checkpoints = this.hasCheckpoints
+
+    this.requirements.windows.media = await this.hasWindowsMedia()
+
+    this.requirements.ram.recommended = this.memory.total >= 8589934592 // 8 GB
+    this.requirements.ram.minimum = this.memory.total >= 6442450944 // 6 GB
+
+    logger.info('Requirements:', this.requirements)
+  }
+
+  /**
+   * @return {Array}
+   */
+  get graphics() {
+    return filter(this._graphics.controllers, { vendor: 'NVIDIA' })
+  }
+
+  get hasPower() {
+    const dirpath = getPower()
+
+    if (!isString(dirpath)) {
+      // how the fuck?
+      return false
+    }
+
+    if (!existsSync(dirpath)) {
+      return false
+    }
+
+    const binaries = [
+      'main.py',
+      'dreampower.exe',
+      'dreampower',
+    ]
+
+    for (const bin of binaries) {
+      if (existsSync(getPower(bin))) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  async hasCompatiblePower() {
+    if (!this.requirements.power.installed) {
+      return false
+    }
+
+    const version = await getVersion()
+    const compatibility = nucleus.compatibility[`v${process.env.npm_package_version}`]
+
+    if (!isArray(compatibility)) {
+      return true
+    }
+
+    for (const conditions of compatibility) {
+      // v1.2.2 v1.0.0 >= = true
+      // v1.2.2 v.1.0 <= = false
+      if (!compareVersions.compare(version, conditions[0], conditions[1])) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  get hasCheckpoints() {
+    const dirpath = getPowerCheckpoints()
+
+    if (!existsSync(dirpath)) {
+      return false
+    }
+
+    // these files must exist
+    const files = ['cm.lib', 'mm.lib', 'mn.lib']
+
+    for (const file of files) {
+      const filepath = getPowerCheckpoints(file)
+
+      if (!existsSync(filepath)) {
+        return false
+      }
+
+      const stats = statSync(filepath)
+      const size = filesize(stats.size, { exponent: 2, output: 'object' })
+
+      if (size.value < 690) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  async hasWindowsMedia() {
+    if (!is.windows) {
+      return true
+    }
+
+    const version = this.os.release
+
+    if (toInteger(version) < 10) {
+      // no windows 10
+      return true
+    }
+
+    if (!is.development) {
+      // regedit commands
+      regedit.setExternalVBSLocation(
+        getAppResources('vbs'),
+      )
+    }
+
+    const value = await new Promise((resolve) => {
+      const regKey = 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\WindowsFeatures'
+
+      regedit.list(regKey, (err, result) => {
+        if (!isNil(err)) {
+          resolve(false)
+          return
+        }
+
+        resolve(result[regKey].keys.includes('WindowsMediaVersion'))
+      })
+    })
+
+    return value
+  }
+}
+
+export const system = new System()

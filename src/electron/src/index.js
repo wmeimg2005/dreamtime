@@ -15,9 +15,9 @@ import fs from 'fs-extra'
 import contextMenu from 'electron-context-menu'
 import { pack, enforceMacOSAppLocation } from 'electron-utils'
 
-import { AppError } from './scripts'
-import { settings, nucleus, rollbar } from './scripts/services'
-import { system } from './scripts/tools'
+import { AppError } from './modules/app-error'
+import { settings, nucleus, rollbar } from './modules/services'
+import { system } from './modules/tools'
 import config from '~/nuxt.config'
 
 const logger = require('logplease').create('electron')
@@ -93,6 +93,11 @@ class DreamApp {
     // bug tracking.
     await rollbar.setup()
 
+    // requirements.
+    await system.scan()
+
+    // todo: updates
+
     //
     this.createDirs()
 
@@ -121,7 +126,7 @@ class DreamApp {
       minHeight: 700,
       icon: path.join(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
-        nodeIntegration: true,
+        nodeIntegration: false,
         preload: path.join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })

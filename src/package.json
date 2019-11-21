@@ -21,7 +21,7 @@
     "production": "env-cmd -e default,production --no-override",
     "start:nuxt": "yarn development nuxt",
     "start:babel": "yarn development babel electron/src --out-dir electron/dist --source-maps --watch --verbose",
-    "start:electron": "delay 3 && yarn development electron --remote-debugging-port=9222 .",
+    "start:electron": "yarn development electron .",
     "build:nuxt": "yarn production nuxt build",
     "build:babel": "yarn production babel electron/src --out-dir electron/dist --minified",
     "build:electron": "yarn production electron-builder --publish=never --x64",

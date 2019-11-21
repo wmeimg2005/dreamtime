@@ -10,6 +10,7 @@
 import path from 'path'
 import fs from 'fs-extra'
 import { api } from 'electron-utils'
+import { settings } from '../services'
 
 /**
  * Returns an absolute path depending on the parameters
@@ -27,65 +28,65 @@ export const getApp = (...args) => {
   if (process.platform === 'darwin') {
     // /Applications/DreamTime.app/Contents/MacOS/DreamTime
     // /Applications/DreamTime.app/Contents
-    return this.get('exe', '..', '..', ...args)
+    return get('exe', '..', '..', ...args)
   }
 
-  return this.get('exe', '..', ...args)
+  return get('exe', '..', ...args)
 }
 
 export const getAppResources = (...args) => {
   if (process.platform === 'darwin') {
-    return this.getGui('Resources', ...args)
+    return getApp('Resources', ...args)
   }
 
-  return this.getGui('resources', ...args)
+  return getApp('resources', ...args)
 }
 
 export const getPower = (...args) => {
-  let folder = $settings.folders.cli
+  let folder = settings.folders.cli
 
   if (!fs.existsSync(folder)) {
-    folder = this.get('userData', 'dreampower')
+    folder = get('userData', 'dreampower')
   }
 
   return path.join(folder, ...args)
 }
 
-export const getPowerCheckpoints = (...args) => this.getPower('checkpoints', ...args)
+export const getPowerCheckpoints = (...args) => getPower('checkpoints', ...args)
 
 export const getCrop = (...args) => {
-  let folder = $settings.folders.cropped
+  let folder = settings.folders.cropped
 
   if (!fs.existsSync(folder)) {
-    folder = this.get('temp')
+    folder = get('temp')
   }
 
   return path.join(folder, ...args)
 }
 
 export const getModels = (...args) => {
-  let folder = $settings.folders.models
+  let folder = settings.folders.models
 
   if (!fs.existsSync(folder)) {
-    folder = this.get('userData', 'models')
+    folder = get('userData', 'models')
   }
 
   if (!fs.existsSync(folder)) {
-    folder = this.get('temp')
+    folder = get('temp')
   }
 
   return path.join(folder, ...args)
 }
 
 export const getMasks = (...args) => {
-  let folder = $settings.folders.masks
+  let folder = settings.folders.masks
 
   if (!fs.existsSync(folder)) {
-    folder = this.get('userData', 'masks')
+    folder = get('userData', 'masks')
   }
 
   if (!fs.existsSync(folder)) {
-    folder = this.get('temp')
+    folder = get('temp')
   }
 
   return path.join(folder, ...args)

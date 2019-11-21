@@ -113,6 +113,8 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, { isClient, isDev }) {
+      // config.target = 'electron-renderer'
+
       if (isDev) {
         config.devtool = isClient ? 'source-map' : 'inline-source-map'
 

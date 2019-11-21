@@ -52,7 +52,7 @@ class RollbarService extends BaseService {
       captureUncaught: false,
       captureUnhandledRejections: false,
       captureIp: 'anonymize',
-      enabled: settings.telemetry.enabled,
+      enabled: settings.telemetry.enabled && process.env.NODE_ENV !== 'development',
       verbose: process.env.NODE_ENV === 'development',
       logLevel: 'info',
       nodeSourceMaps: true,

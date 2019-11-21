@@ -11,7 +11,8 @@ import { spawn } from 'child_process'
 import EventBus from 'js-event-bus'
 import deferred from 'deferred'
 import semverRegex from 'semver-regex'
-import paths from './paths'
+import { getPower } from './paths'
+import { settings } from '../services'
 
 /**
  *
@@ -30,16 +31,16 @@ export const transform = (job) => {
   // CLI Args
   const args = ['run', '--input', photoFilepath, '--output', outputFilepath]
 
-  if ($settings.processing.usePython) {
+  if (settings.processing.usePython) {
     // use python script
     args.unshift('main.py')
   }
 
   // Device preferences
-  if ($settings.processing.device === 'CPU') {
-    args.push('--cpu', '--n-cores', $settings.processing.cores)
+  if (settings.processing.device === 'CPU') {
+    args.push('--cpu', '--n-cores', settings.processing.cores)
   } else {
-    for (const id of $settings.processing.gpus) {
+    for (const id of settings.processing.gpus) {
       args.push('--gpu', id)
     }
   }
@@ -78,14 +79,14 @@ export const transform = (job) => {
   let process
   const bus = new EventBus()
 
-  if ($settings.processing.usePython) {
+  if (settings.processing.usePython) {
     // python script
     process = spawn('python3', args, {
-      cwd: paths.getCli(),
+      cwd: getPower(),
     })
   } else {
-    process = spawn(paths.getCli('dreampower'), args, {
-      cwd: paths.getCli(),
+    process = spawn(getPower('dreampower'), args, {
+      cwd: getPower(),
     })
   }
 
@@ -126,13 +127,13 @@ export const getVersion = () => {
   let process
   let response = ''
 
-  if ($settings.processing.usePython) {
+  if (settings.processing.usePython) {
     // python script
     process = spawn('python3', ['main.py', '--version'], {
-      cwd: paths.getCli(),
+      cwd: getPower(),
     })
   } else {
-    process = spawn(paths.getCli('dreampower'), ['--version'])
+    process = spawn(getPower('dreampower'), ['--version'])
   }
 
   process.on('error', () => {

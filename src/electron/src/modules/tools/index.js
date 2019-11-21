@@ -9,9 +9,11 @@
 
 import * as paths from './paths'
 import * as shell from './shell'
+import * as power from './power'
 
 export fs from './fs'
 export { shell }
 export { paths }
+export { power }
 export utils from 'electron-utils'
 export { system } from './system'

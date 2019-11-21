@@ -7,4 +7,4 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-export { AppError } from './error'
+export { AppError } from './app-error'

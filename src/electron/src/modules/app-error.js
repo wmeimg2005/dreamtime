@@ -39,10 +39,13 @@ export class AppError extends Error {
     } else if (isError(input)) {
       super(input.message)
 
+      this.stack = input.stack
+
+      this.options.error = input
+
       if (input instanceof AppError) {
         this.options = {
           ...this.options,
-          error: input,
           ...input.options,
         }
       }
