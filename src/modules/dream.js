@@ -6,9 +6,9 @@ export default {
    *
    */
   init() {
-    this.name = process.env.APP_NAME
-    this.version = process.env.APP_VERSION
-    this.status = process.env.APP_STATUS
-    this.settings = $nucleus
+    this.name = process.env.npm_package_displayName
+    this.version = `v${process.env.npm_package_version}`
+    this.status = 'stable'
+    this.settings = $provider.services.nucleus
   },
 }

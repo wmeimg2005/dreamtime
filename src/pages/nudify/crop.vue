@@ -54,6 +54,8 @@
 import { round } from 'lodash'
 import Cropper from 'cropperjs'
 
+const { crop } = $provider.tools.power
+
 export default {
   data: () => ({
     cropper: undefined,
@@ -135,7 +137,7 @@ export default {
           imageSmoothingQuality: 'high',
         })
 
-        await $tools.crop(this.photo, canvas)
+        await crop(this.photo, canvas)
       } else {
         this.photo.croppedFile = this.photo.sourceFile
       }

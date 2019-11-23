@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import moment from 'moment'
 import Deferred from 'deferred'
+import { activeWindow } from 'electron-utils'
 
 import File from '../file'
 import Timer from '../timer'
@@ -11,6 +12,9 @@ import cliErrors from '../config/cli-errors'
 import preferencesConfig from '../config/preferences'
 
 const debug = require('debug').default('app:modules:models:photo-job')
+
+const { settings, nucleus } = $provider.services
+const { transform } = $provider.tools.power
 
 export default class PhotoJob {
   constructor(id, photo) {
@@ -73,15 +77,15 @@ export default class PhotoJob {
     this.hasFinished = true
     this.timer.stop()
 
-    const activeWindow = $tools.utils.activeWindow()
+    const window = activeWindow()
 
-    if (!activeWindow.isFocused() && $settings.notifications.run) {
+    if (!window.isFocused() && settings.notifications.run) {
       const notification = new Notification(`💭 Run #${this.id} has finished`, {
         body: 'Now you can save the dream',
       })
 
       notification.onclick = () => {
-        activeWindow.focus()
+        window.focus()
       }
     }
   }
@@ -205,7 +209,7 @@ export default class PhotoJob {
     this.beforeStart()
 
     try {
-      this.process = $tools.transform(this)
+      this.process = transform(this)
     } catch (error) {
       setTimeout(() => {
         onSpawnError(error)
@@ -254,7 +258,7 @@ export default class PhotoJob {
         this.file.reload()
 
         if (this.file.exists()) {
-          $nucleus.track('DREAM_COMPLETED')
+          nucleus.track('DREAM_COMPLETED')
           def.resolve()
         } else {
           def.reject(

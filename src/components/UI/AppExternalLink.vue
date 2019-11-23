@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { api } from 'electron-utils'
+
 export default {
   props: {
     href: {
@@ -15,8 +17,8 @@ export default {
 
   methods: {
     openExternal() {
-      $nucleus.track('EXTERNAL_LINK', { href: this.href })
-      $tools.shell.openExternal(this.href)
+      $provider.services.nucleus.track('EXTERNAL_LINK', { href: this.href })
+      api.shell.openExternal(this.href)
     },
   },
 }

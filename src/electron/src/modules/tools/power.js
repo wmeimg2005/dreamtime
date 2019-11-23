@@ -11,7 +11,7 @@ import { spawn } from 'child_process'
 import EventBus from 'js-event-bus'
 import deferred from 'deferred'
 import semverRegex from 'semver-regex'
-import { getPower } from './paths'
+import { getPowerPath } from './paths'
 import { settings } from '../services'
 
 /**
@@ -82,11 +82,11 @@ export const transform = (job) => {
   if (settings.processing.usePython) {
     // python script
     process = spawn('python3', args, {
-      cwd: getPower(),
+      cwd: getPowerPath(),
     })
   } else {
-    process = spawn(getPower('dreampower'), args, {
-      cwd: getPower(),
+    process = spawn(getPowerPath('dreampower'), args, {
+      cwd: getPowerPath(),
     })
   }
 
@@ -130,14 +130,14 @@ export const getVersion = () => {
   if (settings.processing.usePython) {
     // python script
     process = spawn('python3', ['main.py', '--version'], {
-      cwd: getPower(),
+      cwd: getPowerPath(),
     })
   } else {
-    process = spawn(getPower('dreampower'), ['--version'])
+    process = spawn(getPowerPath('dreampower'), ['--version'])
   }
 
   process.on('error', () => {
-    def.resolve('')
+    def.resolve()
   })
 
   process.stdout.on('data', (data) => {

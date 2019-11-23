@@ -52,7 +52,7 @@ export default {
   mixins: [VModel],
 
   created() {
-    $nucleus.track('PAGE_SETTINGS_NOTIFICATIONS')
+    $provider.services.nucleus.track('PAGE_SETTINGS_NOTIFICATIONS')
   },
 }
 </script>

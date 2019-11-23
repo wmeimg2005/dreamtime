@@ -5,6 +5,13 @@ import path from 'path'
 /* eslint-disable-next-line */
 const debug = require('debug').default('app:modules:file')
 
+const {
+  writeDataUrl, downloadAsync, getInfo, unlinkSync,
+  read, copySync,
+} = $provider.tools.fs
+
+const { getPath } = $provider.tools.paths
+
 export default class File {
   constructor(path) {
     this.reload(path)
@@ -16,7 +23,7 @@ export default class File {
    * @param {*} dataURL
    */
   static async fromDataURL(path, dataURL) {
-    await $tools.fs.write(path, dataURL)
+    await writeDataUrl(path, dataURL)
     return new this(path)
   }
 
@@ -32,8 +39,8 @@ export default class File {
    *
    */
   static async fromURL(url) {
-    const filePath = await $tools.fs.downloadAsync(url, {
-      directory: $tools.paths.get('temp'),
+    const filePath = await downloadAsync(url, {
+      directory: getPath('temp'),
     })
 
     return new this(filePath)
@@ -58,7 +65,7 @@ export default class File {
       filePath = this.getPath()
     }
 
-    const info = $tools.fs.getInfo(filePath)
+    const info = getInfo(filePath)
 
     this.name = info.name
     this.ext = info.ext
@@ -125,7 +132,7 @@ export default class File {
       return
     }
 
-    $tools.fs.unlink(this.getPath())
+    unlinkSync(this.getPath())
     this.reload()
   }
 
@@ -137,7 +144,7 @@ export default class File {
       return undefined
     }
 
-    const data = await $tools.fs.read(this.getPath(), 'base64')
+    const data = await read(this.getPath(), 'base64')
     return `data:${this.getMimetype()};base64,${data}`
   }
 
@@ -145,7 +152,7 @@ export default class File {
    *
    */
   async writeDataURL(dataURL) {
-    await $tools.fs.writeDataURL(this.getPath(), dataURL)
+    await writeDataUrl(this.getPath(), dataURL)
     this.reload()
   }
 
@@ -154,6 +161,6 @@ export default class File {
    * @param {*} targetPath
    */
   async copy(targetPath) {
-    await $tools.fs.copy(this.getPath(), targetPath)
+    await copySync(this.getPath(), targetPath)
   }
 }

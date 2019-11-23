@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import { api } from 'electron-utils'
+
 export default {
   filters: {
     progress(value) {
@@ -96,7 +98,7 @@ export default {
 
   methods: {
     openDownload() {
-      $tools.shell.openItem($tools.paths.get('downloads'))
+      api.shell.openItem($provider.tools.paths.getPath('downloads'))
     },
   },
 }

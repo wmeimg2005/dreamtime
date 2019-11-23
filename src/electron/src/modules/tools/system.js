@@ -18,10 +18,10 @@ import filesize from 'filesize'
 import { is } from 'electron-utils'
 import regedit from 'regedit'
 import { nucleus } from '../services'
-import { getAppResources, getPower, getPowerCheckpoints } from './paths'
+import { getAppResourcesPath, getPowerPath, getCheckpointsPath } from './paths'
 import { getVersion } from './power'
 
-const logger = require('logplease').create('electron:modules:tools:system')
+const logger = require('logplease').create('system')
 
 class System {
   /**
@@ -53,7 +53,6 @@ class System {
    * @type {Object}
    */
   requirements = {
-    all: false,
     power: {
       installed: false,
       compatible: false,
@@ -102,11 +101,11 @@ class System {
    *
    */
   async scan() {
-    this.requirements.power.installed = this.hasPower
-    this.requirements.power.compatible = await this.hasCompatiblePower()
-    this.requirements.power.checkpoints = this.hasCheckpoints
+    this.requirements.power.installed = this._hasPower
+    this.requirements.power.compatible = await this._hasCompatiblePower()
+    this.requirements.power.checkpoints = this._hasCheckpoints
 
-    this.requirements.windows.media = await this.hasWindowsMedia()
+    this.requirements.windows.media = await this._hasWindowsMedia()
 
     this.requirements.ram.recommended = this.memory.total >= 8589934592 // 8 GB
     this.requirements.ram.minimum = this.memory.total >= 6442450944 // 6 GB
@@ -115,14 +114,17 @@ class System {
   }
 
   /**
-   * @return {Array}
+   * @type {Array}
    */
   get graphics() {
     return filter(this._graphics.controllers, { vendor: 'NVIDIA' })
   }
 
-  get hasPower() {
-    const dirpath = getPower()
+  /**
+   * @type {boolean}
+   */
+  get _hasPower() {
+    const dirpath = getPowerPath()
 
     if (!isString(dirpath)) {
       // how the fuck?
@@ -140,7 +142,7 @@ class System {
     ]
 
     for (const bin of binaries) {
-      if (existsSync(getPower(bin))) {
+      if (existsSync(getPowerPath(bin))) {
         return true
       }
     }
@@ -148,7 +150,10 @@ class System {
     return false
   }
 
-  async hasCompatiblePower() {
+  /**
+   * @return {boolean}
+   */
+  async _hasCompatiblePower() {
     if (!this.requirements.power.installed) {
       return false
     }
@@ -171,8 +176,11 @@ class System {
     return true
   }
 
-  get hasCheckpoints() {
-    const dirpath = getPowerCheckpoints()
+  /**
+   * @type {boolean}
+   */
+  get _hasCheckpoints() {
+    const dirpath = getCheckpointsPath()
 
     if (!existsSync(dirpath)) {
       return false
@@ -182,7 +190,7 @@ class System {
     const files = ['cm.lib', 'mm.lib', 'mn.lib']
 
     for (const file of files) {
-      const filepath = getPowerCheckpoints(file)
+      const filepath = getCheckpointsPath(file)
 
       if (!existsSync(filepath)) {
         return false
@@ -199,7 +207,10 @@ class System {
     return true
   }
 
-  async hasWindowsMedia() {
+  /**
+   * @return {boolean}
+   */
+  async _hasWindowsMedia() {
     if (!is.windows) {
       return true
     }
@@ -214,7 +225,7 @@ class System {
     if (!is.development) {
       // regedit commands
       regedit.setExternalVBSLocation(
-        getAppResources('vbs'),
+        getAppResourcesPath('vbs'),
       )
     }
 

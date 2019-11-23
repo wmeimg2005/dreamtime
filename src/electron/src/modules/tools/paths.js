@@ -16,77 +16,77 @@ import { settings } from '../services'
  * Returns an absolute path depending on the parameters
  *
  * @param {string} name Name of the base path: https://electronjs.org/docs/all#appgetpathname
- * @param {string} args Series of path segments to join into one path
+ * @param {...string} args Series of path segments to join into one path
  */
-export const get = (name, ...args) => path.join(api.app.getPath(name), ...args)
+export const getPath = (name, ...args) => path.join(api.app.getPath(name), ...args)
 
 /**
  *
- * @param  {...any} args
+ * @param  {...string} args
  */
-export const getApp = (...args) => {
+export const getAppPath = (...args) => {
   if (process.platform === 'darwin') {
     // /Applications/DreamTime.app/Contents/MacOS/DreamTime
     // /Applications/DreamTime.app/Contents
-    return get('exe', '..', '..', ...args)
+    return getPath('exe', '..', '..', ...args)
   }
 
-  return get('exe', '..', ...args)
+  return getPath('exe', '..', ...args)
 }
 
-export const getAppResources = (...args) => {
+export const getAppResourcesPath = (...args) => {
   if (process.platform === 'darwin') {
-    return getApp('Resources', ...args)
+    return getAppPath('Resources', ...args)
   }
 
-  return getApp('resources', ...args)
+  return getAppPath('resources', ...args)
 }
 
-export const getPower = (...args) => {
+export const getPowerPath = (...args) => {
   let folder = settings.folders.cli
 
   if (!fs.existsSync(folder)) {
-    folder = get('userData', 'dreampower')
+    folder = getPath('userData', 'dreampower')
   }
 
   return path.join(folder, ...args)
 }
 
-export const getPowerCheckpoints = (...args) => getPower('checkpoints', ...args)
+export const getCheckpointsPath = (...args) => getPowerPath('checkpoints', ...args)
 
-export const getCrop = (...args) => {
+export const getCropPath = (...args) => {
   let folder = settings.folders.cropped
 
   if (!fs.existsSync(folder)) {
-    folder = get('temp')
+    folder = getPath('temp')
   }
 
   return path.join(folder, ...args)
 }
 
-export const getModels = (...args) => {
+export const getModelsPath = (...args) => {
   let folder = settings.folders.models
 
   if (!fs.existsSync(folder)) {
-    folder = get('userData', 'models')
+    folder = getPath('userData', 'models')
   }
 
   if (!fs.existsSync(folder)) {
-    folder = get('temp')
+    folder = getPath('temp')
   }
 
   return path.join(folder, ...args)
 }
 
-export const getMasks = (...args) => {
+export const getMasksPath = (...args) => {
   let folder = settings.folders.masks
 
   if (!fs.existsSync(folder)) {
-    folder = get('userData', 'masks')
+    folder = getPath('userData', 'masks')
   }
 
   if (!fs.existsSync(folder)) {
-    folder = get('temp')
+    folder = getPath('temp')
   }
 
   return path.join(folder, ...args)

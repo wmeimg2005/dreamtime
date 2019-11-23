@@ -3,11 +3,15 @@ import uuid from 'uuid'
 import swal from 'sweetalert'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
+import { activeWindow } from 'electron-utils'
 import Timer from '../timer'
 import PhotoJob from './photo-job'
 import WebError from '../web-error'
 
 const debug = require('debug').default('app:modules:models:photo')
+
+const { settings } = $provider.services
+const { getModelsPath } = $provider.tools.paths
 
 /**
  * Represents the photo to be processed of a Model.
@@ -37,7 +41,7 @@ export default class Photo {
     }
 
     // preferences
-    this.preferences = _.clone($settings.preferences)
+    this.preferences = _.clone(settings.preferences)
 
     // reset data
     this.reset()
@@ -67,7 +71,7 @@ export default class Photo {
         maxRetries: 2,
         retryDelay: 1000,
         maxTimeout:
-          $settings.processing.device === 'GPU' ? 60 * 1000 : 300 * 1000,
+          settings.processing.device === 'GPU' ? 60 * 1000 : 300 * 1000,
         afterProcessDelay: 1000,
         batchSize: 1,
         store: new MemoryStore(),
@@ -155,15 +159,15 @@ export default class Photo {
     this.running = false
     this.timer.stop()
 
-    const activeWindow = $tools.utils.activeWindow()
+    const window = activeWindow()
 
-    if (!activeWindow.isFocused() && $settings.notifications.allRuns) {
+    if (!window.isFocused() && settings.notifications.allRuns) {
       const notification = new Notification(`💭 All runs have finished.`, {
         body: 'Now you can save all the dreams you like.',
       })
 
       notification.onclick = () => {
-        activeWindow.focus()
+        window.focus()
       }
     }
   }
@@ -207,7 +211,7 @@ export default class Photo {
    *
    */
   getFolderPath(...args) {
-    return $tools.paths.getModels(this.getFolderName(), ...args)
+    return getModelsPath(this.getFolderName(), ...args)
   }
 
   /**

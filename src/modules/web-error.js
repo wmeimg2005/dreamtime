@@ -1,110 +1,39 @@
-/*
- * DreamTime | (C) 2019 by Ivan Bravo Bravo <ivan@dreamnet.tech>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License 3.0 as published by
- * the Free Software Foundation.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import _ from 'lodash'
 import { markdown } from 'markdown'
+import { api } from 'electron-utils'
 import swal from 'sweetalert'
 
-class WebError extends Error {
-  constructor(title, message, opts = {}) {
-    super(message)
+const { AppError } = $provider
 
-    // eslint-disable-next-line no-param-reassign
-    opts = {
-      error: undefined,
-      level: 'error',
-      extra: {},
-      ...opts,
-    }
-
-    this.title = title
-    this.opts = opts
-  }
-
-  report() {
-    let { message } = this
-    const { title } = this
-    const { error, level, extra } = this.opts
-
-    console.log('Reporting error...', {
-      message,
-      error,
-      level,
-      weberror: this,
-    })
-
-    if ($rollbar.isEnabled) {
-      const response = $rollbar[level](error || Error(this.message), {
-        title,
-        message,
-        ...extra,
-      })
-
-      if (response.uuid) {
-        message += `
-            \nFor more information please report the following URL on [Github](https://github.com/private-dreamnet/dreamtime/issues) or [here](https://git.dreamnet.tech/dreamnet/dreamtime/issues):
-            [https://rollbar.com/occurrence/uuid/?uuid=${response.uuid}](https://rollbar.com/occurrence/uuid/?uuid=${response.uuid})`
-      } else {
-        message += `
-            \nFor more information please take a screenshot and report the following on [Github](https://github.com/private-dreamnet/dreamtime/issues) or [here](https://git.dreamnet.tech/dreamnet/dreamtime/issues):\n
-            ${error}`
-      }
-    } else if (error) {
-      message += `
-            \nFor more information please take a screenshot and report the following on [Github](https://github.com/private-dreamnet/dreamtime/issues) or [here](https://git.dreamnet.tech/dreamnet/dreamtime/issues):\n
-            ${error}`
-    }
-
+export class WebError extends AppError {
+  show() {
     let icon = 'error'
 
-    if (level === 'warning') {
+    if (this.level === 'warning' || this.level === 'warn') {
       icon = 'warning'
     }
 
-    if (level === 'info') {
+    if (this.level === 'info') {
       icon = 'info'
     }
 
-    const text = document.createElement('div')
-    text.innerHTML = markdown.toHTML(message)
-
     swal({
       title: this.title,
-      content: text,
+      content: this.message,
       icon,
     })
 
-    const links = document.querySelectorAll('.swal-content a')
-
-    for (const link of links) {
-      link.addEventListener('click', (e) => {
-        e.preventDefault()
-        $tools.shell.openItem(e.target.href)
-      })
+    if (this.options.fatal) {
+      api.app.quit()
     }
-  }
-
-  static handle(error) {
-    if (!(error instanceof WebError)) {
-      // eslint-disable-next-line no-param-reassign
-      error = new WebError(
-        'An error has occurred!',
-        'Oops! An unknown error has awakened us from our dreams, we will try to solve it in the next version.',
-        _.isError(error) ? error : new Error(error),
-      )
-    }
-
-    error.report()
-    return true
   }
 }
-
-export default WebError

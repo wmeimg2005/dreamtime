@@ -14,7 +14,7 @@ import { BaseService } from './base'
 import { settings } from './settings'
 import { nucleus } from './nucleus'
 
-const logger = require('logplease').create('electron:scripts:services:rollbar')
+const logger = require('logplease').create('services:rollbar')
 
 /**
  * https://rollbar.com
@@ -89,7 +89,7 @@ class RollbarService extends BaseService {
       logger.info('Rollbar enabled!')
       logger.debug(this.accessToken)
     } catch (err) {
-      logger.warn('💔 Error trying to start Rollbar!', err)
+      logger.warn('Rollbar setup failed!', err)
     }
   }
 

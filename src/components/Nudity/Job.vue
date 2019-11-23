@@ -104,6 +104,7 @@
 
 <script>
 import _ from 'lodash'
+import { api } from 'electron-utils'
 
 export default {
   filters: {
@@ -134,7 +135,7 @@ export default {
     view() {},
 
     save() {
-      const savePath = $tools.shell.showSaveDialog({
+      const savePath = api.shell.showSaveDialog({
         defaultPath: this.job.getFileName(),
         filters: [
           { name: 'PNG', extensions: ['png'] },

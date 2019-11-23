@@ -4,7 +4,7 @@ import moment from 'moment'
 import tippy from 'tippy.js'
 import BaseMixin from '~/mixins/BaseMixin'
 import {
-  dream, platform, updater, nudify, WebError,
+  dream, nudify, WebError,
 } from '~/modules'
 
 const logger = require('logplease').create('plugins:boot')
@@ -40,7 +40,7 @@ export default async ({ app }, inject) => {
   })
 
   window.addEventListener('unhandledrejection', (rejection) => {
-    logger.warn('Web Unhandled rejection!', err)
+    logger.warn('Web Unhandled rejection!', rejection)
     WebError.handle(rejection.reason)
 
     return true

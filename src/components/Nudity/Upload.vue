@@ -88,6 +88,8 @@ import swal from 'sweetalert'
 import { Photo } from '~/modules/models'
 import { File } from '~/modules'
 
+const { nucleus, rollbar } = $provider.services
+
 export default {
   props: {
     model: {
@@ -161,7 +163,7 @@ export default {
           } has permissions to save files.`,
         })
 
-        $rollbar.warn(err)
+        rollbar.warn(err)
       }
     },
 
@@ -204,7 +206,7 @@ export default {
         return
       }
 
-      $nucleus.track('UPLOAD_SELECTED')
+      nucleus.track('UPLOAD_SELECTED')
 
       this.startFromFile(files[0])
       event.target.value = ''
@@ -219,7 +221,7 @@ export default {
         return
       }
 
-      $nucleus.track('UPLOAD_URL')
+      nucleus.track('UPLOAD_URL')
 
       this.startFromURL(this.webAddress)
     },
@@ -261,10 +263,10 @@ export default {
       const externalURL = event.dataTransfer.getData('url')
 
       if (files.length > 0) {
-        $nucleus.track('UPLOAD_DROP')
+        nucleus.track('UPLOAD_DROP')
         this.startFromFile(files[0])
       } else if (externalURL.length > 0) {
-        $nucleus.track('UPLOAD_DROP_URL')
+        nucleus.track('UPLOAD_DROP_URL')
         this.startFromURL(externalURL)
       }
     },

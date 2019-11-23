@@ -63,6 +63,8 @@
 <script>
 import moment from 'moment'
 
+const { settings } = $provider.services
+
 export default {
   computed: {
     greetings() {
@@ -89,13 +91,12 @@ export default {
 
     isActive() {
       // eslint-disable-next-line no-underscore-dangle
-      return $settings._settings.welcome !== true
+      return settings.welcome !== true
     },
   },
 
   methods: {
     testBug() {
-      $tools.testError()
       throw new Error('wow much error')
     },
   },

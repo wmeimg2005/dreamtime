@@ -10,12 +10,12 @@
 import { isNil } from 'lodash'
 import { is } from 'electron-utils'
 import regedit from 'regedit'
-import { getAppResources } from './paths'
+import { getAppResourcesPath } from './paths'
 
 export const hasWindowsMedia = () => {
   if (is.windows && !is.development) {
     regedit.setExternalVBSLocation(
-      getAppResources('vbs'),
+      getAppResourcesPath('vbs'),
     )
   }
 

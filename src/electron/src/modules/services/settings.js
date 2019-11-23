@@ -27,7 +27,7 @@ class SettingsService extends BaseService {
    * @type {string}
    */
   get path() {
-    return memoize(() => paths.get('userData', 'settings.json'))('settings.path')
+    return memoize(() => paths.getPath('userData', 'settings.json'))('settings.path')
   }
 
   /**
@@ -118,10 +118,10 @@ class SettingsService extends BaseService {
       },
 
       folders: {
-        cropped: paths.get('temp'),
-        models: paths.get('userData', 'models'),
-        masks: paths.get('userData', 'masks'),
-        cli: paths.get('userData', 'dreampower'),
+        cropped: paths.getPath('temp'),
+        models: paths.getPath('userData', 'models'),
+        masks: paths.getPath('userData', 'masks'),
+        cli: paths.getPath('userData', 'dreampower'),
       },
 
       telemetry: {

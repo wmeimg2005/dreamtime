@@ -9,49 +9,44 @@
 
 import { app, BrowserWindow } from 'electron'
 import http from 'http'
-import path from 'path'
+import { dirname, join } from 'path'
 import { URL } from 'url'
-import fs from 'fs-extra'
 import contextMenu from 'electron-context-menu'
+import Logger from 'logplease'
 import { pack, enforceMacOSAppLocation } from 'electron-utils'
-
 import { AppError } from './modules/app-error'
 import { settings, nucleus, rollbar } from './modules/services'
-import { system } from './modules/tools'
+import { system } from './modules/tools/system'
+import { existsSync, mkdirSync } from './modules/tools/fs'
+import { getPath } from './modules/tools/paths'
+import { dreamtime, dreampower, checkpoints } from './modules/updater'
 import config from '~/nuxt.config'
 
-const logger = require('logplease').create('electron')
+const logger = Logger.create('electron')
 
 // NuxtJS root directory
-config.rootDir = path.dirname(__dirname)
-
-// copyright
-
-console.log(`
-DreamTime.
-Copyright (C) DreamNet. All rights reserved.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License 3.0 as published by
-the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
-`)
-
-logger.info('Starting...')
-
-logger.debug({
-  env: process.env.NODE_ENV,
-  isStatic: pack.isStatic(),
-  paths: {
-    appPath: app.getAppPath(),
-    exePath: app.getPath('exe'),
-  },
-})
+config.rootDir = dirname(__dirname)
 
 class DreamApp {
   /**
    * Start the app!
    */
   static async start() {
+    // logger setup
+    Logger.setLogLevel(process.env.LOG || 'info')
+    Logger.setLogfile(getPath('userData', 'dreamtime.log'))
+
+    logger.info('Starting...')
+
+    logger.debug({
+      env: process.env.NODE_ENV,
+      isStatic: pack.isStatic(),
+      paths: {
+        appPath: app.getAppPath(),
+        exePath: app.getPath('exe'),
+      },
+    })
+
     await this.setup()
 
     this.createWindow()
@@ -87,16 +82,21 @@ class DreamApp {
     // user settings.
     await settings.setup()
 
-    // analytics.
+    // analytics & app settings.
     await nucleus.setup()
 
-    // bug tracking.
-    await rollbar.setup()
+    // services
+    await Promise.all([
+      rollbar.setup(), // bug tracking.
+      system.scan(), // requirements.
+    ])
 
-    // requirements.
-    await system.scan()
-
-    // todo: updates
+    // update providers
+    await Promise.all([
+      dreamtime.setup(),
+      dreampower.setup(),
+      checkpoints.setup(),
+    ])
 
     //
     this.createDirs()
@@ -124,10 +124,10 @@ class DreamApp {
       height: 700,
       minWidth: 1200,
       minHeight: 700,
-      icon: path.join(config.rootDir, 'dist', 'icon.ico'),
+      icon: join(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
         nodeIntegration: false,
-        preload: path.join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
+        preload: join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })
 
@@ -178,7 +178,7 @@ class DreamApp {
    */
   static getUiUrl() {
     if (!config.dev) {
-      return path.join(config.rootDir, 'dist', 'index.html')
+      return join(config.rootDir, 'dist', 'index.html')
     }
 
     return `http://localhost:${config.server.port}`
@@ -188,10 +188,10 @@ class DreamApp {
    * Create required directories.
    */
   static createDirs() {
-    const modelsPath = path.join(settings.folders.models, 'Uncategorized')
+    const modelsPath = join(settings.folders.models, 'Uncategorized')
 
-    if (!fs.existsSync(modelsPath)) {
-      fs.mkdirSync(modelsPath, { recursive: true },
+    if (!existsSync(modelsPath)) {
+      mkdirSync(modelsPath, { recursive: true },
         (error) => {
           throw new AppError(`Models directory creation fail.`, { error })
         })
@@ -235,6 +235,6 @@ app.on('ready', async () => {
   try {
     await DreamApp.start()
   } catch (error) {
-    throw new AppError(error, { title: `Failed to start correctly.` })
+    throw new AppError(error, { title: `Failed to start correctly.`, fatal: true })
   }
 })

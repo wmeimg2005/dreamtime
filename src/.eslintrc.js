@@ -37,6 +37,8 @@ module.exports = {
     "import/order": "error",
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
+    "import/named": "off",
+    "import/no-cycle": "off",
     "linebreak-style": "warn",
     "lodash/import-scope": [
       "off",

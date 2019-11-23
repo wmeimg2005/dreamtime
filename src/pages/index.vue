@@ -20,12 +20,14 @@
 </template>
 
 <script>
+const { nucleus } = $provider.services
+
 export default {
   data: () => ({}),
 
   computed: {
     alert() {
-      return $nucleus.isEnabled ? $nucleus.alerts.index : undefined
+      return nucleus.enabled ? nucleus.alerts.index : undefined
     },
   },
 

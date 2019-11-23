@@ -12,7 +12,7 @@ import {
 } from 'lodash'
 import fs from 'fs'
 
-const logger = require('logplease').create('electron:scripts:services')
+const logger = require('logplease').create('services')
 
 export class BaseService {
   /**

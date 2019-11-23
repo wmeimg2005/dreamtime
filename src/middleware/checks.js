@@ -9,7 +9,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { platform } from '~/modules'
+const { settings } = $provider.services
+const { system } = $provider.tools
 
 /**
  * Detects if the user has what it takes to run the program,
@@ -18,7 +19,7 @@ import { platform } from '~/modules'
 export default function ({ route, redirect }) {
   window.$redirect = redirect
 
-  if ($settings.welcome) {
+  if (settings.welcome) {
     // First time execution!
     if (route.path !== '/system/welcome') {
       redirect('/system/welcome')
@@ -27,7 +28,7 @@ export default function ({ route, redirect }) {
     return
   }
 
-  if (!platform.requirements.cli) {
+  if (!system.requirements.power.installed) {
     // DreamPower is missing
     if (
       !route.path.includes('/system/settings')
@@ -39,7 +40,7 @@ export default function ({ route, redirect }) {
     return
   }
 
-  if (!platform.requirements.checkpoints) {
+  if (!system.requirements.power.checkpoints) {
     // Checkpoints are missing
     if (route.path !== '/system/about') {
       redirect('/system/about#checkpoints')

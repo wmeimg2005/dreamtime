@@ -11,6 +11,7 @@ import * as paths from './paths'
 import * as shell from './shell'
 import * as power from './power'
 
+// eslint-disable-next-line import/no-cycle
 export fs from './fs'
 export { shell }
 export { paths }

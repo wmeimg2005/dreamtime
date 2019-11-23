@@ -14,7 +14,7 @@ import { BaseService } from './base'
 import { system } from '../tools'
 import { settings } from './settings'
 
-const logger = require('logplease').create('electron:scripts:services:nucleus')
+const logger = require('logplease').create('services:nucleus')
 
 /**
  * https://nucleus.sh
@@ -67,7 +67,7 @@ class NucleusService extends BaseService {
       logger.info('Nucleus enabled!')
       logger.debug(this.appId)
     } catch (err) {
-      logger.warn('💔 Error trying to start Nucleus!', err)
+      logger.warn('Nucleus setup failed!', err)
     }
   }
 

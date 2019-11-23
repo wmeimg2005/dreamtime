@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import { isError, isString } from 'lodash'
-import { api } from 'electron-utils'
+import { app, dialog } from 'electron'
 import { rollbar } from './services/rollbar'
 
 const logger = require('logplease').create('electron:scripts:error')
@@ -26,6 +26,7 @@ export class AppError extends Error {
     title: null,
     error: null,
     level: 'error',
+    fatal: false,
   }
 
   /**
@@ -87,19 +88,21 @@ export class AppError extends Error {
   }
 
   show() {
-    api.dialog.showErrorBox(
+    dialog.showErrorBox(
       this.options.title || 'A problem has occurred.',
       this.message,
     )
 
-    api.app.quit()
+    if (this.options.fatal) {
+      app.quit()
+    }
   }
 
   static handle(error) {
     let appError = error
 
-    if (!(appError instanceof AppError)) {
-      appError = new AppError(
+    if (!(appError instanceof this)) {
+      appError = new this(
         isError(appError) ? error : 'The program has encountered an unexpected error.',
         {
           error: isError(appError) ? appError : new Error(appError),

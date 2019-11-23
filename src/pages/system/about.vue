@@ -188,61 +188,65 @@
 
 <script>
 import _ from 'lodash'
+import { api } from 'electron-utils'
+
+const { nucleus } = $provider.services
+const { getAppPath, getPowerPath } = $provider.tools.paths
 
 export default {
   computed: {
     guiNavigation() {
-      return $nucleus.isEnabled ? $nucleus.about.dreamtime.navigation : []
+      return nucleus.enabled ? nucleus.about.dreamtime.navigation : []
     },
 
     guiDescription() {
-      return $nucleus.isEnabled
-        ? $nucleus.about.dreamtime.description
+      return nucleus.enabled
+        ? nucleus.about.dreamtime.description
         : 'Friendly user interface for DreamPower.'
     },
 
     cliNavigation() {
-      return $nucleus.isEnabled ? $nucleus.about.dreampower.navigation : []
+      return nucleus.enabled ? nucleus.about.dreampower.navigation : []
     },
 
     cliTitle() {
-      return $nucleus.isEnabled ? $nucleus.about.dreampower.title : 'DreamPower'
+      return nucleus.enabled ? nucleus.about.dreampower.title : 'DreamPower'
     },
 
     cliDescription() {
-      return $nucleus.isEnabled
-        ? $nucleus.about.dreampower.description
+      return nucleus.enabled
+        ? nucleus.about.dreampower.description
         : 'Deep learning algorithm capable of nudify people photos.'
     },
 
     dreamNetNavigation() {
-      return $nucleus.isEnabled ? $nucleus.about.dreamnet.navigation : []
+      return nucleus.enabled ? nucleus.about.dreamnet.navigation : []
     },
 
     contributors() {
-      return $nucleus.isEnabled ? $nucleus.about.contributors : []
+      return nucleus.enabled ? nucleus.about.contributors : []
     },
 
     developers() {
-      return $nucleus.isEnabled ? $nucleus.about.developers : []
+      return nucleus.enabled ? nucleus.about.developers : []
     },
 
     alert() {
-      return $nucleus.isEnabled ? $nucleus.alerts.about : undefined
+      return nucleus.enabled ? nucleus.alerts.about : undefined
     },
   },
 
   created() {
-    $nucleus.track('PAGE_ABOUT')
+    nucleus.track('PAGE_ABOUT')
   },
 
   methods: {
     openGUI() {
-      $tools.shell.openItem($tools.paths.getGui())
+      api.shell.openItem(getAppPath())
     },
 
     openCLI() {
-      $tools.shell.openItem($tools.paths.getCli())
+      api.shell.openItem(getPowerPath())
     },
 
     isURL(str) {

@@ -78,7 +78,7 @@ export default {
   }),
 
   created() {
-    $nucleus.track('PAGE_SETTINGS_PROCESSING')
+    $provider.services.nucleus.track('PAGE_SETTINGS_PROCESSING')
   },
 }
 </script>

@@ -37,7 +37,10 @@
 
 <script>
 import _ from 'lodash'
+import { api } from 'electron-utils'
 import { VModel } from '~/mixins'
+
+const { existsSync } = $provider.tools.fs
 
 export default {
   mixins: [VModel],
@@ -45,23 +48,21 @@ export default {
   data: () => ({}),
 
   created() {
-    $nucleus.track('PAGE_SETTINGS_FOLDERS')
+    $provider.services.nucleus.track('PAGE_SETTINGS_FOLDERS')
   },
 
   methods: {
     showOpenDialog(path) {
-      const dir = $tools.shell.showOpenDialog(null, {
+      const dir = api.shell.showOpenDialog(null, {
         defaultPath: path,
         properties: ['openDirectory'],
       })
-
-      console.log(dir)
 
       if (_.isNil(dir)) {
         return path
       }
 
-      if (!$tools.fs.exists(dir[0])) {
+      if (!existsSync(dir[0])) {
         // ???
         return path
       }

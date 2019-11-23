@@ -37,6 +37,8 @@
 </template>
 
 <script>
+const { settings } = $provider.services
+
 export default {
   data: () => ({
     settings: {},
@@ -45,14 +47,14 @@ export default {
   watch: {
     settings: {
       handler: (value) => {
-        $settings.set(value)
+        settings.set(value)
       },
       deep: true,
     },
   },
 
   created() {
-    this.settings = $settings.get()
+    this.settings = settings.get()
   },
 }
 </script>

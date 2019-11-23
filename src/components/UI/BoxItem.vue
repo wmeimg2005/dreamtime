@@ -20,6 +20,7 @@
 
 <script>
 import _ from 'lodash'
+import { api } from 'electron-utils'
 
 export default {
   props: {
@@ -65,8 +66,8 @@ export default {
     click() {
       this.$emit('click')
       if (!_.isNil(this.href)) {
-        $nucleus.track('EXTERNAL_LINK', { href: this.href })
-        $tools.shell.openExternal(this.href)
+        $provider.services.nucleus.track('EXTERNAL_LINK', { href: this.href })
+        api.shell.openExternal(this.href)
       }
     },
     isURL(str) {

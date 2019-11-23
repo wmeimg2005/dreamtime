@@ -28,7 +28,7 @@ export default {
   data: () => ({}),
 
   created() {
-    $nucleus.track('PAGE_SETTINGS_TELEMETRY')
+    $provider.services.nucleus.track('PAGE_SETTINGS_TELEMETRY')
   },
 }
 </script>
