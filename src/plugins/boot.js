@@ -2,12 +2,15 @@
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
+import swal from 'sweetalert'
+import { isError } from 'lodash'
+import { ipcRenderer } from 'electron'
 import BaseMixin from '~/mixins/BaseMixin'
 import {
-  dream, nudify, WebError,
+  dream, nudify,
 } from '~/modules'
 
-const logger = require('logplease').create('plugins:boot')
+const logger = Logger.create('plugins:boot')
 
 // lift off!
 logger.info('Lift off!')
@@ -24,37 +27,56 @@ tippy.setDefaultProps({
   arrow: true,
 })
 
+// eslint-disable-next-line no-unused-vars
 export default async ({ app }, inject) => {
   // provider shortcuts
   inject('provider', $provider)
   inject('settings', $provider.services.settings)
   inject('nucleus', $provider.services.nucleus)
 
+  ipcRenderer.on('alert', (event, payload) => {
+    swal(payload)
+  })
+
   // error handlers
 
-  window.addEventListener('error', (err) => {
-    logger.warn('Web error!', err)
-    WebError.handle(err)
+  const handleError = (error, quiet = false) => {
+    let message
+    let stack
+    let options = { quiet }
 
+    if (isError(error)) {
+      message = error.message
+      stack = error.stack
+
+      if (error instanceof AppError) {
+        options = error.options
+      }
+    } else {
+      message = error
+      stack = (new Error('dummy')).stack
+    }
+
+    AppError.handleRenderer(message, stack, options)
+  }
+
+  window.addEventListener('error', (err) => {
+    handleError(err)
     return true
   })
 
   window.addEventListener('unhandledrejection', (rejection) => {
-    logger.warn('Web Unhandled rejection!', rejection)
-    WebError.handle(rejection.reason)
-
+    handleError(rejection.reason)
     return true
   })
 
   Vue.config.errorHandler = (err) => {
-    logger.warn('VueJS error!', err)
-    WebError.handle(err)
-
+    handleError(err, true)
     throw err
   }
 
   // dreamtime
-  dream.init()
+  dream.setup()
   inject('dream', dream)
 
   // nudify process

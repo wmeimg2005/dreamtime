@@ -10,7 +10,7 @@
 import { shell, app, Notification } from 'electron'
 import { dirname } from 'path'
 import delay from 'delay'
-import { activeWindow } from 'electron-utils'
+import { activeWindow } from 'electron-util'
 import { BaseUpdater } from './base'
 import { AppError } from '../app-error'
 

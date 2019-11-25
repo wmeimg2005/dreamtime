@@ -1,5 +1,8 @@
 /* eslint-disable no-param-reassign */
-// eslint-disable-next-line nuxt/no-cjs-in-config
+/* eslint-disable nuxt/no-cjs-in-config */
+
+const nodeExternals = require('webpack-node-externals')
+
 module.exports = {
   mode: 'spa',
 
@@ -22,7 +25,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.npm_package_name} v${process.env.npm_package_version}`,
+    title: `${process.env.npm_package_displayName} v${process.env.npm_package_version}`,
 
     meta: [
       { charset: 'utf-8' },
@@ -113,24 +116,26 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, { isClient, isDev }) {
-      // config.target = 'electron-renderer'
+      config.target = 'electron-renderer'
+
+      config.externals = [nodeExternals({
+        modulesFromFile: {
+          include: ['dependencies'],
+        },
+      })]
+
+      // exclude browser field resolution
+      const mainFields = ['esnext', 'main']
+      config.resolve.mainFields = mainFields
+      config.resolve.aliasFields = mainFields
+
+      config.node = {
+        __dirname: process.env.NODE_ENV === 'development',
+        __filename: process.env.NODE_ENV === 'development',
+      }
 
       if (isDev) {
         config.devtool = isClient ? 'source-map' : 'inline-source-map'
-
-        // const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
-        /*
-        config.plugins.push(
-          new RollbarSourceMapPlugin({
-            accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-            version: process.env.npm_package_version,
-            publicPath: source => {
-              console.log(source)
-              return `@/${source}`
-            }
-          })
-        )
-        */
       } else {
         config.output.publicPath = './_nuxt/'
       }

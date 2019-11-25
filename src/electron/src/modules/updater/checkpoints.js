@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import { app, Notification } from 'electron'
-import { activeWindow } from 'electron-utils'
+import { activeWindow } from 'electron-util'
 import { BaseUpdater } from './base'
 import { AppError } from '../app-error'
 import { system } from '../tools/system'

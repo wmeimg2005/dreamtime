@@ -9,7 +9,7 @@
 
 import path from 'path'
 import fs from 'fs-extra'
-import { api } from 'electron-utils'
+import { api } from 'electron-util'
 import { settings } from '../services'
 
 /**

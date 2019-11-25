@@ -13,7 +13,7 @@ import { dirname, join } from 'path'
 import { URL } from 'url'
 import contextMenu from 'electron-context-menu'
 import Logger from 'logplease'
-import { pack, enforceMacOSAppLocation } from 'electron-utils'
+import { enforceMacOSAppLocation, is } from 'electron-util'
 import { AppError } from './modules/app-error'
 import { settings, nucleus, rollbar } from './modules/services'
 import { system } from './modules/tools/system'
@@ -26,6 +26,10 @@ const logger = Logger.create('electron')
 
 // NuxtJS root directory
 config.rootDir = dirname(__dirname)
+
+if (!is.development) {
+  process.chdir(getPath('exe', '../'))
+}
 
 class DreamApp {
   /**
@@ -40,7 +44,6 @@ class DreamApp {
 
     logger.debug({
       env: process.env.NODE_ENV,
-      isStatic: pack.isStatic(),
       paths: {
         appPath: app.getAppPath(),
         exePath: app.getPath('exe'),
@@ -126,7 +129,7 @@ class DreamApp {
       minHeight: 700,
       icon: join(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
-        nodeIntegration: false,
+        nodeIntegration: true,
         preload: join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })

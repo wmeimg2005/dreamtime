@@ -7,33 +7,13 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import _ from 'lodash'
+import { isError } from 'lodash'
 import { markdown } from 'markdown'
-import { api } from 'electron-utils'
 import swal from 'sweetalert'
 
 const { AppError } = $provider
+const { app } = $provider.api
 
-export class WebError extends AppError {
-  show() {
-    let icon = 'error'
+export class WebError extends Error {
 
-    if (this.level === 'warning' || this.level === 'warn') {
-      icon = 'warning'
-    }
-
-    if (this.level === 'info') {
-      icon = 'info'
-    }
-
-    swal({
-      title: this.title,
-      content: this.message,
-      icon,
-    })
-
-    if (this.options.fatal) {
-      api.app.quit()
-    }
-  }
 }

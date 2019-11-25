@@ -14,6 +14,44 @@ import fs from 'fs'
 
 const logger = require('logplease').create('services')
 
+export function makeServiceProxy(obj) {
+  return new Proxy(obj, {
+    get: (obj, prop) => {
+      if (prop in obj) {
+        return obj[prop]
+      }
+
+      /* eslint-disable no-underscore-dangle */
+      if (obj._service && prop in obj._service) {
+        return obj._service[prop]
+      }
+      /* eslint-enable no-underscore-dangle */
+
+      if (prop in obj.payload) {
+        return obj.payload[prop]
+      }
+
+      return undefined
+    },
+
+    /* eslint-disable no-param-reassign */
+    set: (obj, prop, value) => {
+      if (!isNil(obj.payload)) {
+        if (prop in obj.payload) {
+          obj.payload[prop] = value
+          obj.save()
+
+          return true
+        }
+      }
+
+      obj[prop] = value
+      return true
+    },
+    /* eslint-enable no-param-reassign */
+  })
+}
+
 export class BaseService {
   /**
    * the payload.
@@ -51,42 +89,13 @@ export class BaseService {
    *
    * @return {BaseService}
    */
-  static make() {
-    return new Proxy(new this(), {
-      get: (obj, prop) => {
-        if (prop in obj) {
-          return obj[prop]
-        }
+  static make(obj) {
+    if (!obj) {
+      // eslint-disable-next-line no-param-reassign
+      obj = new this()
+    }
 
-        /* eslint-disable no-underscore-dangle */
-        if (obj._service && prop in obj._service) {
-          return obj._service[prop]
-        }
-        /* eslint-enable no-underscore-dangle */
-
-        if (prop in obj.payload) {
-          return obj.payload[prop]
-        }
-
-        return undefined
-      },
-
-      /* eslint-disable no-param-reassign */
-      set: (obj, prop, value) => {
-        if (!isNil(obj.payload)) {
-          if (prop in obj.payload) {
-            obj.payload[prop] = value
-            obj.save()
-
-            return true
-          }
-        }
-
-        obj[prop] = value
-        return true
-      },
-      /* eslint-enable no-param-reassign */
-    })
+    return makeServiceProxy(obj)
   }
 
   /**

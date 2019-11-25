@@ -15,7 +15,7 @@
       <!-- App Navigation -->
       <section class="navbar-section">
         <nav class="navbar-items">
-          <nuxt-link v-if="$platform.requirements.all" to="/" class="navbar-item">
+          <nuxt-link v-if="$provider.tools.system.canNudify" to="/" class="navbar-item">
             <span class="icon">📷</span>
             <span>Nudify</span>
           </nuxt-link>
@@ -33,19 +33,19 @@
       </section>
 
       <!-- Nice links -->
-      <section v-if="!$platform.isLimited" class="navbar-section">
+      <section v-if="$provider.tools.system.online" class="navbar-section">
         <nav class="navbar-items">
-          <app-external-link :href="$nucleus.urls.web" class="navbar-item">
+          <app-external-link :href="$provider.services.nucleus.urls.web" class="navbar-item">
             <span class="icon">🌎</span>
             <span>Website</span>
           </app-external-link>
 
-          <app-external-link :href="$nucleus.urls.chat" class="navbar-item">
+          <app-external-link :href="$provider.services.nucleus.urls.chat" class="navbar-item">
             <span class="icon">💬</span>
             <span>Chat</span>
           </app-external-link>
 
-          <app-external-link :href="$nucleus.urls.forum" class="navbar-item">
+          <app-external-link :href="$provider.services.nucleus.urls.forum" class="navbar-item">
             <span class="icon">👥</span>
             <span>Forum</span>
           </app-external-link>

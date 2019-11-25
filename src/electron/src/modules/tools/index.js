@@ -10,11 +10,12 @@
 import * as paths from './paths'
 import * as shell from './shell'
 import * as power from './power'
+import * as fs from './fs'
 
 // eslint-disable-next-line import/no-cycle
-export fs from './fs'
+export { fs }
 export { shell }
 export { paths }
 export { power }
-export utils from 'electron-utils'
+export utils from 'electron-util'
 export { system } from './system'

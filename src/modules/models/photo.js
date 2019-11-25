@@ -3,15 +3,15 @@ import uuid from 'uuid'
 import swal from 'sweetalert'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
-import { activeWindow } from 'electron-utils'
 import Timer from '../timer'
 import PhotoJob from './photo-job'
-import WebError from '../web-error'
+import { WebError } from '../web-error'
 
 const debug = require('debug').default('app:modules:models:photo')
 
 const { settings } = $provider.services
 const { getModelsPath } = $provider.tools.paths
+const { activeWindow } = $provider.util
 
 /**
  * Represents the photo to be processed of a Model.

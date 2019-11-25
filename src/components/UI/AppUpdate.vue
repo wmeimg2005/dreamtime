@@ -14,7 +14,7 @@
 
   <!-- Update available -->
   <box-section-item
-    v-else-if="!updater.updating.active"
+    v-else-if="!updater.update.active"
     :label="`${projectTitle} ${updater.latest.tag_name} available.`"
     icon="🌐"
     class="update-item">
@@ -26,15 +26,15 @@
     </app-external-link>
   </box-section-item>
 
-  <!-- Updating... -->
+  <!-- update... -->
   <!-- eslint-disable-next-line vue/valid-template-root --->
   <box-section-item
     v-else
-    :label="updater.updating.text"
+    :label="updater.update.text"
     icon="🌐">
     <template slot="description">
-      <p v-if="updater.updating.text === 'Downloading...'" class="item-description">
-        <strong>{{ updater.updating.progress | progress }}</strong> - {{ updater.updating.mbWritten | size }}/{{ updater.updating.mbTotal | size }} MB.
+      <p v-if="updater.update.text === 'Downloading...'" class="item-description">
+        <strong>{{ updater.update.progress | progress }}</strong> - {{ updater.update.mbWritten | size }}/{{ updater.update.mbTotal | size }} MB.
       </p>
       <p v-else class="item-description">
         Wait a few minutes, please do not close the program.
@@ -48,7 +48,8 @@
 </template>
 
 <script>
-import { api } from 'electron-utils'
+const { shell } = $provider.api
+const { getPath } = $provider.tools.paths
 
 export default {
   filters: {
@@ -80,16 +81,16 @@ export default {
 
   computed: {
     updater() {
-      return this.$updater[this.project]
+      return $provider.updater[this.project]
     },
 
     downloadURL() {
-      return this.updater.getUpdateDownloadURLs()[0]
+      return this.updater.downloadUrls[0]
     },
   },
 
-  async created() {
-    this.currentVersion = await this.updater.getCurrentVersion()
+  created() {
+    this.currentVersion = this.updater.currentVersion
   },
 
   beforeDestroy() {
@@ -98,7 +99,7 @@ export default {
 
   methods: {
     openDownload() {
-      api.shell.openItem($provider.tools.paths.getPath('downloads'))
+      shell.openItem(getPath('downloads'))
     },
   },
 }

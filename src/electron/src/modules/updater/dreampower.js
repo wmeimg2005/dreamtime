@@ -10,7 +10,7 @@
 import { isNil, get } from 'lodash'
 import compareVersions from 'compare-versions'
 import { app, Notification } from 'electron'
-import { activeWindow } from 'electron-utils'
+import { activeWindow } from 'electron-util'
 import { BaseUpdater } from './base'
 import { AppError } from '../app-error'
 import { settings } from '../services/settings'

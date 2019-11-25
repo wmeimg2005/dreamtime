@@ -8,14 +8,14 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  filter, isString, isNil, isArray, toInteger,
+  filter, isString, isNil, isArray, toInteger, get,
 } from 'lodash'
 import { existsSync, statSync } from 'fs'
 import si from 'systeminformation'
 import isOnline from 'is-online'
 import compareVersions from 'compare-versions'
 import filesize from 'filesize'
-import { is } from 'electron-utils'
+import { is } from 'electron-util'
 import regedit from 'regedit'
 import { nucleus } from '../services'
 import { getAppResourcesPath, getPowerPath, getCheckpointsPath } from './paths'
@@ -65,6 +65,10 @@ class System {
       minimum: false,
       recommended: false,
     },
+    gpuram: {
+      minimum: false,
+      recommended: false,
+    },
   }
 
   /**
@@ -101,16 +105,31 @@ class System {
    *
    */
   async scan() {
-    this.requirements.power.installed = this._hasPower
-    this.requirements.power.compatible = await this._hasCompatiblePower()
-    this.requirements.power.checkpoints = this._hasCheckpoints
+    const { requirements } = this
 
-    this.requirements.windows.media = await this._hasWindowsMedia()
+    // dreampower
+    requirements.power.installed = this._hasPower
+    requirements.power.compatible = await this._hasCompatiblePower()
+    requirements.power.checkpoints = this._hasCheckpoints
 
-    this.requirements.ram.recommended = this.memory.total >= 8589934592 // 8 GB
-    this.requirements.ram.minimum = this.memory.total >= 6442450944 // 6 GB
+    // windows
+    requirements.windows.media = await this._hasWindowsMedia()
+
+    // ram
+    requirements.ram.recommended = this.memory.total >= 8589934592 // 8 GB
+    requirements.ram.minimum = this.memory.total >= 6442450944 // 6 GB
+
+    // gpu ram
+    this.requirements = requirements
 
     logger.info('Requirements:', this.requirements)
+  }
+
+  /**
+   * @type {boolean}
+   */
+  get canNudify() {
+    return this.requirements.power.installed && this.requirements.power.compatible && this.requirements.power.checkpoints
   }
 
   /**
@@ -159,18 +178,16 @@ class System {
     }
 
     const version = await getVersion()
-    const compatibility = nucleus.compatibility[`v${process.env.npm_package_version}`]
 
-    if (!isArray(compatibility)) {
-      return true
+    const minimum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.minimum`, 'v1.2.3')
+    const maximum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.maximum`)
+
+    if (compareVersions.compare(version, minimum, '<')) {
+      return false
     }
 
-    for (const conditions of compatibility) {
-      // v1.2.2 v1.0.0 >= = true
-      // v1.2.2 v.1.0 <= = false
-      if (!compareVersions.compare(version, conditions[0], conditions[1])) {
-        return false
-      }
+    if (!isNil(maximum) && compareVersions.compare(version, maximum, '>')) {
+      return false
     }
 
     return true

@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import { isNil } from 'lodash'
-import { is } from 'electron-utils'
+import { is } from 'electron-util'
 import regedit from 'regedit'
 import { getAppResourcesPath } from './paths'
 

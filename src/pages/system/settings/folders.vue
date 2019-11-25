@@ -37,10 +37,10 @@
 
 <script>
 import _ from 'lodash'
-import { api } from 'electron-utils'
 import { VModel } from '~/mixins'
 
 const { existsSync } = $provider.tools.fs
+const { shell } = $provider.api
 
 export default {
   mixins: [VModel],
@@ -53,7 +53,7 @@ export default {
 
   methods: {
     showOpenDialog(path) {
-      const dir = api.shell.showOpenDialog(null, {
+      const dir = shell.showOpenDialog(null, {
         defaultPath: path,
         properties: ['openDirectory'],
       })

@@ -1,13 +1,10 @@
 import _ from 'lodash'
 import moment from 'moment'
 import Deferred from 'deferred'
-import { activeWindow } from 'electron-utils'
-
 import File from '../file'
 import Timer from '../timer'
 import { rand } from '../helpers'
-import WebError from '~/modules/web-error'
-
+import { WebError } from '~/modules/web-error'
 import cliErrors from '../config/cli-errors'
 import preferencesConfig from '../config/preferences'
 
@@ -15,6 +12,7 @@ const debug = require('debug').default('app:modules:models:photo-job')
 
 const { settings, nucleus } = $provider.services
 const { transform } = $provider.tools.power
+const { activeWindow } = $provider.util
 
 export default class PhotoJob {
   constructor(id, photo) {

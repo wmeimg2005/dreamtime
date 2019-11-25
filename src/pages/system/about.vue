@@ -14,21 +14,21 @@
       <div v-if="alert" class="notification is-warning text-lg" v-html="alert" />
 
       <!-- Limited! -->
-      <section v-if="$platform.isLimited" class="box box-section">
+      <section v-if="!$provider.tools.system.online" class="box box-section">
         <box-section-item
           :description="`It's okay! You can use ${$dream.name} offline, but while you are disconnected we cannot offer you more information about the project, updates or report errors automatically.`"
           label="It seems that you are offline" />
       </section>
 
       <!-- Requirements -->
-      <section v-if="!$platform.requirements.all" class="box box-section">
+      <section v-if="!$provider.tools.system.canNudify" class="box box-section">
         <box-section-item :description="`You need to meet all the requirements below to start using ${$dream.name}. Some require an Internet connection to update.`" icon="📜" label="Requirements" />
 
         <box-section-item
           label="DreamPower"
           description="You have not installed DreamPower or the current version is not compatible.">
           <template slot="icon">
-            <span v-if="$platform.requirements.cli" class="item-icon">✔</span>
+            <span v-if="$provider.tools.system.requirements.power.installed" class="item-icon">✔</span>
             <span v-else class="item-icon">❌</span>
           </template>
 
@@ -42,7 +42,7 @@
           label="Checkpoints"
           description="Data models required by the algorithm.">
           <template slot="icon">
-            <span v-if="$platform.requirements.checkpoints" class="item-icon">✔</span>
+            <span v-if="$provider.tools.system.requirements.power.checkpoints" class="item-icon">✔</span>
             <span v-else class="item-icon">❌</span>
           </template>
 
@@ -53,7 +53,7 @@
           label="Media Feature Pack"
           description="Multimedia package required by some versions of Windows.">
           <template slot="icon">
-            <span v-if="$platform.requirements.windowsMedia" class="item-icon">✔</span>
+            <span v-if="$provider.tools.system.requirements.windows.media" class="item-icon">✔</span>
             <span v-else class="item-icon">❗</span>
           </template>
 
@@ -110,7 +110,7 @@
 
           <app-update id="dreampower" project-title="DreamPower" project="dreampower" />
 
-          <app-update v-if="$platform.requirements.cli" id="checkpoints" project-title="Checkpoints" project="checkpoints" />
+          <app-update v-if="$provider.tools.system.requirements.power.installed" id="checkpoints" project-title="Checkpoints" project="checkpoints" />
 
           <box-section-item
             v-for="(item, index) in cliNavigation"
@@ -187,52 +187,48 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import { api } from 'electron-utils'
+import { get, isNil } from 'lodash'
 
 const { nucleus } = $provider.services
 const { getAppPath, getPowerPath } = $provider.tools.paths
+const { shell } = $provider.api
 
 export default {
   computed: {
     guiNavigation() {
-      return nucleus.enabled ? nucleus.about.dreamtime.navigation : []
+      return get(nucleus, 'about.dreamtime.navigation', [])
     },
 
     guiDescription() {
-      return nucleus.enabled
-        ? nucleus.about.dreamtime.description
-        : 'Friendly user interface for DreamPower.'
+      return get(nucleus, 'about.dreamtime.description', process.env.npm_package_description)
     },
 
     cliNavigation() {
-      return nucleus.enabled ? nucleus.about.dreampower.navigation : []
+      return get(nucleus, 'about.dreampower.navigation', [])
     },
 
     cliTitle() {
-      return nucleus.enabled ? nucleus.about.dreampower.title : 'DreamPower'
+      return get(nucleus, 'about.dreampower.title', 'DreamPower')
     },
 
     cliDescription() {
-      return nucleus.enabled
-        ? nucleus.about.dreampower.description
-        : 'Deep learning algorithm capable of nudify people photos.'
+      return get(nucleus, 'about.dreampower.description', 'Deep learning algorithm capable of nudify people photos.')
     },
 
     dreamNetNavigation() {
-      return nucleus.enabled ? nucleus.about.dreamnet.navigation : []
+      return get(nucleus, 'about.dreamnet.navigation', [])
     },
 
     contributors() {
-      return nucleus.enabled ? nucleus.about.contributors : []
+      return get(nucleus, 'about.contributors', [])
     },
 
     developers() {
-      return nucleus.enabled ? nucleus.about.developers : []
+      return get(nucleus, 'about.developers', [])
     },
 
     alert() {
-      return nucleus.enabled ? nucleus.alerts.about : undefined
+      return get(nucleus, 'alerts.about', [])
     },
   },
 
@@ -242,15 +238,15 @@ export default {
 
   methods: {
     openGUI() {
-      api.shell.openItem(getAppPath())
+      shell.openItem(getAppPath())
     },
 
     openCLI() {
-      api.shell.openItem(getPowerPath())
+      shell.openItem(getPowerPath())
     },
 
     isURL(str) {
-      if (_.isNil(str)) {
+      if (isNil(str)) {
         return false
       }
 

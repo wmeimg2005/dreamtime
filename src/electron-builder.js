@@ -1,10 +1,9 @@
 /* eslint-disable no-template-curly-in-string */
-require('dotenv').config()
 const pkg = require('./package.json')
 
 module.exports = {
   appId: 'com.dreamnet.dreamtime',
-  productName: process.env.APP_NAME,
+  productName: process.env.npm_package_name,
   copyright: 'Copyright (C) DreamNet. All rights reserved.',
   directories: {
     output: '../dist',
@@ -44,7 +43,7 @@ module.exports = {
   },
   linux: {
     target: 'snap',
-    executableName: process.env.APP_NAME,
+    executableName: process.env.npm_package_name,
     synopsis: pkg.description,
     category: 'Graphics',
     extraResources: [

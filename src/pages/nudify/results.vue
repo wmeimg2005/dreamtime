@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { api } from 'electron-utils'
+const { shell } = $provider.api
 
 export default {
   data: () => ({
@@ -105,7 +105,7 @@ export default {
      *
      */
     openFolder() {
-      api.shell.openItem(this.photo.getFolderPath())
+      shell.openItem(this.photo.getFolderPath())
     },
   },
 }

@@ -13,6 +13,7 @@ import Rollbar from 'rollbar'
 import { BaseService } from './base'
 import { settings } from './settings'
 import { nucleus } from './nucleus'
+import { system } from '../tools/system'
 
 const logger = require('logplease').create('services:rollbar')
 
@@ -52,7 +53,7 @@ class RollbarService extends BaseService {
       captureUncaught: false,
       captureUnhandledRejections: false,
       captureIp: 'anonymize',
-      enabled: settings.telemetry.enabled && process.env.NODE_ENV !== 'development',
+      enabled: settings.telemetry.enabled,
       verbose: process.env.NODE_ENV === 'development',
       logLevel: 'info',
       nodeSourceMaps: true,
@@ -69,6 +70,11 @@ class RollbarService extends BaseService {
           },
         },
         settings: settings.payload,
+        system: {
+          graphics: system.graphics,
+          cpu: system.cpu,
+          os: system.os,
+        },
       },
     }
   }

@@ -20,7 +20,7 @@ const logger = require('logplease').create('services:nucleus')
  * https://nucleus.sh
  * Analytics and bug tracking for Javascript desktop apps.
  */
-class NucleusService extends BaseService {
+export class NucleusService extends BaseService {
   /**
    * @type {string}
    */

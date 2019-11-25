@@ -40,7 +40,7 @@ export default {
             return true
           }
 
-          return this.version === $dream.version
+          return this.version === this.$dream.version
         },
       },
       render(createElement) {
