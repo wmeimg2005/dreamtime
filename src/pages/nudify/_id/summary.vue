@@ -35,7 +35,7 @@ export default {
 
   computed: {
     photo() {
-      return this.$nudify.photo
+      return this.$parent.photo
     },
   },
 
@@ -44,8 +44,8 @@ export default {
   },
 
   methods: {
-    async setup() {
-      this.sourceDataURL = await this.photo.file.readAsDataURL()
+    setup() {
+      this.sourceDataURL = this.photo.file.dataUrl
     },
 
     nudify() {

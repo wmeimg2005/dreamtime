@@ -7,7 +7,6 @@
       "label": "Build: Nuxt",
       "type": "npm",
       "script": "start:nuxt",
-      "group": "build",
       "isBackground": true,
       "presentation": {
         "reveal": "always",
@@ -27,7 +26,6 @@
       "label": "Build: Electron",
       "type": "npm",
       "script": "start:babel",
-      "group": "build",
       "isBackground": true,
       "presentation": {
         "reveal": "always",

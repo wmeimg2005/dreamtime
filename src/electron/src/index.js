@@ -7,7 +7,8 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { app, BrowserWindow } from 'electron'
+import { startsWith } from 'lodash'
+import { app, BrowserWindow, shell } from 'electron'
 import http from 'http'
 import { dirname, join } from 'path'
 import { URL } from 'url'
@@ -25,7 +26,7 @@ import config from '~/nuxt.config'
 const logger = Logger.create('electron')
 
 // NuxtJS root directory
-config.rootDir = dirname(__dirname)
+config.rootDir = dirname(dirname(__dirname))
 
 if (!is.development) {
   process.chdir(getPath('exe', '../'))
@@ -127,6 +128,7 @@ class DreamApp {
       height: 700,
       minWidth: 1200,
       minHeight: 700,
+      frame: false,
       icon: join(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
         nodeIntegration: true,
@@ -216,17 +218,34 @@ process.on('unhandledRejection', (err) => {
   return true
 })
 
-app.on('web-contents-created', (event, contents) => {
+app.on('web-contents-created', (e, contents) => {
   contents.on('will-navigate', (event, navigationUrl) => {
-    const parsedUrl = new URL(navigationUrl)
+    const url = new URL(navigationUrl)
 
-    console.log(parsedUrl)
-
-    /**
-    if (parsedUrl.origin !== 'https://example.com') {
-      event.preventDefault()
+    if (url.host === `${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`) {
+      // ok
+      return
     }
-    * */
+
+    event.preventDefault()
+
+    logger.warn('Blocked attempt to load an external page.', {
+      event,
+      url,
+    })
+  })
+
+  contents.on('new-window', (event, url) => {
+    if (startsWith(url, 'http')) {
+      event.preventDefault()
+      shell.openExternal(url)
+      return
+    }
+
+    logger.debug('Opening new window.', {
+      event,
+      url,
+    })
   })
 })
 

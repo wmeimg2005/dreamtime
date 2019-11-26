@@ -50,27 +50,33 @@ export default {
       default: false,
     },
   },
+
   computed: {
     isVisible() {
       return _.isNil(this.version) || this.version === this.app.version
     },
+
     isImageIcon() {
       return this.isURL(this.icon)
     },
+
     cssClass() {
       return {
         'is-link': !_.isNil(this.href) || this.isLink,
       }
     },
   },
+
   methods: {
     click() {
       this.$emit('click')
+
       if (!_.isNil(this.href)) {
         $provider.services.nucleus.track('EXTERNAL_LINK', { href: this.href })
         shell.openExternal(this.href)
       }
     },
+
     isURL(str) {
       if (_.isNil(str)) {
         return false
@@ -101,6 +107,7 @@ export default {
 
   .box__item {
     @apply flex px-4 py-2;
+    min-height: 50px;
     transition: all .1s ease-in-out;
 
     &.box__item--sub {
@@ -133,7 +140,7 @@ export default {
       @apply flex-1 flex;
 
       .item__text {
-        @apply flex-1;
+        @apply flex-1 flex items-center;
 
         .item__label {
           @apply block font-semibold;

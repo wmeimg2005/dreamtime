@@ -16,7 +16,6 @@ module.exports = {
     "plugin:nuxt/recommended"
   ],
   globals: {
-    $dream: false,
     $provider: false,
     Logger: false,
     AppError: false

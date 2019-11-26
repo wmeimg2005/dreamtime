@@ -71,7 +71,7 @@
             :description="guiDescription">
             <template slot="icon">
               <figure class="item-icon">
-                <img src="~/assets/images/dreamtime.png">
+                <img src="/assets/images/dreamtime.png">
               </figure>
             </template>
 
@@ -99,7 +99,7 @@
             :description="cliDescription">
             <template slot="icon">
               <figure class="item-icon">
-                <img src="~/assets/images/dreampower.png">
+                <img src="/assets/images/dreampower.png">
               </figure>
             </template>
 
@@ -129,7 +129,7 @@
             description="Community interested in developing the technology introduced by DeepNude.">
             <template slot="icon">
               <figure class="item-icon">
-                <img src="~/assets/images/dreamnet.png">
+                <img src="/assets/images/dreamnet.png">
               </figure>
             </template>
           </box-section-item>

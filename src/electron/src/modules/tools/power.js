@@ -124,32 +124,36 @@ export const transform = (job) => {
 export const getVersion = () => {
   const def = deferred()
 
-  let process
-  let response = ''
+  try {
+    let process
+    let response = ''
 
-  if (settings.processing.usePython) {
-    // python script
-    process = spawn('python3', ['main.py', '--version'], {
-      cwd: getPowerPath(),
+    if (settings.processing.usePython) {
+      // python script
+      process = spawn('python3', ['main.py', '--version'], {
+        cwd: getPowerPath(),
+      })
+    } else {
+      process = spawn(getPowerPath('dreampower'), ['--version'])
+    }
+
+    process.on('error', () => {
+      def.resolve()
     })
-  } else {
-    process = spawn(getPowerPath('dreampower'), ['--version'])
-  }
 
-  process.on('error', () => {
+    process.stdout.on('data', (data) => {
+      response += data
+    })
+
+    process.on('close', () => {
+      response = semverRegex().exec(response)
+      response = `v${response[0]}`
+
+      def.resolve(response)
+    })
+  } catch (err) {
     def.resolve()
-  })
-
-  process.stdout.on('data', (data) => {
-    response += data
-  })
-
-  process.on('close', () => {
-    response = semverRegex().exec(response)
-    response = `v${response[0]}`
-
-    def.resolve(response)
-  })
+  }
 
   return def.promise
 }

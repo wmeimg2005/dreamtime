@@ -1,166 +1,142 @@
-// eslint-disable-next-line lodash/import-scope
-import _ from 'lodash'
-import path from 'path'
+import { isNil } from 'lodash'
+import { join } from 'path'
 
-/* eslint-disable-next-line */
 const debug = require('debug').default('app:modules:file')
 
 const {
-  writeDataUrl, downloadAsync, getInfo, unlinkSync,
-  read, copySync,
+  writeDataUrl, downloadAsync, getInfo,
+  unlinkSync, read, copySync,
 } = $provider.tools.fs
 
 const { getPath } = $provider.tools.paths
 
-export default class File {
-  constructor(path) {
-    this.reload(path)
-  }
+export class File {
+  name
+
+  extension
+
+  directory
+
+  mimetype
+
+  size = -1
+
+  exists = false
+
+  md5
+
+  dataUrl = ''
 
   /**
    *
-   * @param {*} path
+   * @param {*} filepath
    * @param {*} dataURL
    */
-  static async fromDataURL(path, dataURL) {
-    await writeDataUrl(path, dataURL)
-    return new this(path)
+  static async fromDataURL(filepath, dataURL) {
+    await writeDataUrl(filepath, dataURL)
+    return new this(filepath)
   }
 
   /**
    *
-   * @param {*} path
+   * @param {*} filepath
    */
-  static fromPath(path) {
-    return new this(path)
+  static fromPath(filepath) {
+    return new this(filepath)
   }
 
   /**
    *
    */
-  static async fromURL(url) {
-    const filePath = await downloadAsync(url, {
+  static async fromUrl(url) {
+    const filepath = await downloadAsync(url, {
       directory: getPath('temp'),
     })
 
-    return new this(filePath)
+    return new this(filepath)
+  }
+
+  constructor(filepath) {
+    this.reload(filepath)
   }
 
   /**
    *
-   * @param {*} path
+   * @param {string} [filepath]
    */
-  update(path) {
-    this.reload(path)
-  }
-
-  /**
-   *
-   * @param {*} path
-   */
-  reload(path) {
-    let filePath = path
-
-    if (_.isNil(path)) {
-      filePath = this.getPath()
+  reload(filepath) {
+    if (isNil(filepath)) {
+      // eslint-disable-next-line no-param-reassign
+      filepath = this.path
     }
 
-    const info = getInfo(filePath)
+    const info = getInfo(filepath)
 
     this.name = info.name
-    this.ext = info.ext
-    this.dir = info.dir
+    this.extension = info.ext
+    this.directory = info.dir
     this.mimetype = info.mimetype
     this.size = info.size
-    this._exists = info.exists
+    this.exists = info.exists
+    this.md5 = info.md5
+
+    this.readAsDataUrl().then((data) => {
+      this.dataUrl = data
+      return true
+    }).catch(() => { })
+  }
+
+  /**
+   * @type {string}
+   */
+  get fullname() {
+    return `${this.name}${this.extension}`
+  }
+
+  /**
+   * @type {string}
+   */
+  get path() {
+    return join(this.directory, this.fullname)
   }
 
   /**
    *
    */
-  getPath() {
-    return path.join(this.dir, `${this.name}${this.ext}`)
-  }
-
-  /**
-   *
-   */
-  getName() {
-    return this.name
-  }
-
-  /**
-   *
-   */
-  getExt() {
-    return this.ext
-  }
-
-  /**
-   *
-   */
-  getDir() {
-    return this.dir
-  }
-
-  /**
-   *
-   */
-  getMimetype() {
-    return this.mimetype
-  }
-
-  /**
-   *
-   */
-  getSize() {
-    return this.size
-  }
-
-  /**
-   *
-   */
-  exists() {
-    return this._exists
-  }
-
-  /**
-   *
-   */
-  remove() {
-    if (!this.exists()) {
+  unlink() {
+    if (!this.exists) {
       return
     }
 
-    unlinkSync(this.getPath())
+    unlinkSync(this.path)
     this.reload()
   }
 
   /**
    *
    */
-  async readAsDataURL() {
-    if (!this.exists()) {
-      return undefined
+  async readAsDataUrl() {
+    if (!this.exists) {
+      return null
     }
 
-    const data = await read(this.getPath(), 'base64')
-    return `data:${this.getMimetype()};base64,${data}`
+    const data = await read(this.path, 'base64')
+    return `data:${this.mimetype};base64,${data}`
   }
 
   /**
    *
    */
-  async writeDataURL(dataURL) {
-    await writeDataUrl(this.getPath(), dataURL)
+  async writeDataUrl(data) {
+    await writeDataUrl(this.path, data)
     this.reload()
   }
 
   /**
    *
-   * @param {*} targetPath
+   * @param {*} destination
    */
-  async copy(targetPath) {
-    await copySync(this.getPath(), targetPath)
+  copy(destination) {
+    return copySync(this.path, destination)
   }
 }

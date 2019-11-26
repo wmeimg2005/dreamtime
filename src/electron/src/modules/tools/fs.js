@@ -1,19 +1,21 @@
-import { basename, join } from 'path'
+import { basename, join, parse } from 'path'
 import {
   statSync, readFileSync, writeFileSync, existsSync,
-  unlinkSync, createWriteStream, createReadStream,
+  unlinkSync, createWriteStream, createReadStream, copy,
 } from 'fs-extra'
 import { isNil } from 'lodash'
+import { app, dialog } from 'electron'
+import { is, platform } from 'electron-util'
 import mime from 'mime-types'
 import EventBus from 'js-event-bus'
 import axios from 'axios'
-import { api, is, platform } from 'electron-util'
+import md5File from 'md5-file'
 import filesize from 'filesize'
 import unzipper from 'unzipper'
 import deferred from 'deferred'
 import sevenBin from '7zip-bin'
 import { extractFull } from 'node-7z'
-import { getAppResourcesPath } from './paths'
+import { getPath, getAppResourcesPath } from './paths'
 import { AppError } from '../app-error'
 
 const logger = require('logplease').create('electron:modules:tools:fs')
@@ -37,18 +39,21 @@ export function getBase64Data(dataURL) {
 
 /**
  *
- * @param {string} path
+ * @param {string} filepath
  */
-export function getInfo(path) {
-  const exists = this.exists(path)
-  const mimetype = mime.lookup(path)
-  const { name, ext, dir } = path.parse(path)
+export function getInfo(filepath) {
+  const exists = existsSync(filepath)
+  const mimetype = mime.lookup(filepath)
+  const { name, ext, dir } = parse(filepath)
 
-  let size
+  let size = -1
+  let md5
 
   if (exists) {
-    const stats = statSync(path)
+    const stats = statSync(filepath)
     size = stats.size / 1000000.0
+
+    md5 = md5File.sync(filepath)
   }
 
   return {
@@ -58,6 +63,7 @@ export function getInfo(path) {
     dir,
     mimetype,
     size,
+    md5,
   }
 }
 
@@ -142,7 +148,7 @@ export function extractSeven(path, destinationPath) {
 /**
  *
  * @param {string} url
- * @param {Object} options
+ * @param {Object} [options]
  */
 export function download(url, options = {}) {
   const bus = new EventBus()
@@ -150,39 +156,82 @@ export function download(url, options = {}) {
   // eslint-disable-next-line no-param-reassign
   options = {
     showSaveAs: false,
-    directory: api.app.getPath('downloads'),
+    directory: app.getPath('downloads'),
     filename: basename(url).split('?')[0].split('#')[0],
     ...options,
   }
 
   let filepath = join(options.directory, options.filename)
 
-  /**
-   * @type {ReadStream}
-   */
-  let stream
-
   if (options.showSaveAs) {
-    filepath = api.dialog.showSaveDialogSync({
+    // save as dialog
+    filepath = dialog.showSaveDialogSync({
       defaultPath: filepath,
     })
   }
 
-  const deleteFile = () => {
-    if (existsSync(filepath)) {
-      unlinkSync(filepath)
-    }
-  }
+  const writeStream = createWriteStream(filepath)
 
   axios.request({
     url,
-    timeout: 5000,
+    responseType: 'stream',
+    maxContentLength: -1,
+  }).then(({ data, headers }) => {
+    const contentLength = headers['content-length'] || -1
+
+    data.on('data', () => {
+      const progress = writeStream.bytesWritten / contentLength
+
+      bus.emit('progress', null, {
+        progress,
+        written: (writeStream.bytesWritten / 1048576).toFixed(2),
+        total: (contentLength / 1048576).toFixed(2),
+      })
+    })
+
+    data.on('error', (err) => {
+      throw new AppError(err, { title: 'Download failed.' })
+    })
+
+    writeStream.on('error', (err) => {
+      throw new AppError(err, { title: 'Download failed.' })
+    })
+
+    writeStream.on('finish', () => {
+      if (!existsSync(filepath)) {
+        throw new AppError('The file was not saved correctly.', { title: 'Download failed.' })
+      }
+
+      bus.emit('end', null, filepath)
+    })
+
+    data.pipe(writeStream)
+
+    bus.on('cancel', () => {
+      writeStream.destroy()
+      data.destroy()
+
+      logger.info('Download canceled by user.')
+      bus.emit('end')
+    })
+
+    return true
+  }).catch((err) => {
+    writeStream.destroy(err)
+
+    logger.warn('Download canceled due to an error.', err)
+    bus.emit('error', null, err)
+  })
+
+
+  /*
+  axios.request({
+    url,
     responseType: 'stream',
     maxContentLength: -1,
   }).then((response) => {
     const contentLength = response.data.headers['content-length'] || -1
     const totalSize = filesize(contentLength, { exponent: 2, output: 'object' }).value
-
     const output = createWriteStream(filepath)
 
     stream = response.data
@@ -190,7 +239,7 @@ export function download(url, options = {}) {
     stream.on('data', (chunk) => {
       output.write(Buffer.from(chunk))
 
-      const written = filesize(output.bytesWritten, { exponent: 2, output: 'object' }).value
+      const written = filesize(writeStream.bytesWritten, { exponent: 2, output: 'object' }).value
 
       if (contentLength > 0) {
         const progress = output.bytesWritten / contentLength
@@ -244,6 +293,7 @@ export function download(url, options = {}) {
     logger.warn('Download canceled due to an error.', err)
     bus.emit('error', null, err)
   })
+  */
 
   return bus
 }
@@ -251,11 +301,11 @@ export function download(url, options = {}) {
 /**
  *
  * @param {string} url
- * @param {Object} options
+ * @param {Object} [options]
  */
 export function downloadAsync(url, options = {}) {
   return new Promise((resolve, reject) => {
-    const bus = this.download(url, options)
+    const bus = download(url, options)
 
     bus.on('end', (filepath) => {
       resolve(filepath)

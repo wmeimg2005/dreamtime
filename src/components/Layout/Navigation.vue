@@ -1,31 +1,20 @@
 <template>
-  <div class="layout-navbar">
+  <div class="layout-menu">
     <div :class="{ 'is-active': isActive }" class="navbar">
-      <!-- Welcome! -->
-      <div class="navbar-header">
-        <h1 class="header-title">
-          {{ $dream.name }}
-        </h1>
-
-        <h3 class="header-greetings">
-          {{ greetings }}
-        </h3>
-      </div>
-
       <!-- App Navigation -->
-      <section class="navbar-section">
-        <nav class="navbar-items">
-          <nuxt-link v-if="$provider.tools.system.canNudify" to="/" class="navbar-item">
+      <section class="menu-section">
+        <nav class="menu-items">
+          <nuxt-link v-if="$provider.tools.system.canNudify" to="/" class="menu-item">
             <span class="icon">📷</span>
             <span>Nudify</span>
           </nuxt-link>
 
-          <nuxt-link to="/system/about" class="navbar-item">
+          <nuxt-link to="/system/about" class="menu-item">
             <span class="icon">🌌</span>
             <span>About</span>
           </nuxt-link>
 
-          <nuxt-link to="/system/settings/processing" class="navbar-item">
+          <nuxt-link to="/system/settings/processing" class="menu-item">
             <span class="icon">🔧</span>
             <span>Settings</span>
           </nuxt-link>
@@ -33,19 +22,19 @@
       </section>
 
       <!-- Nice links -->
-      <section v-if="$provider.tools.system.online" class="navbar-section">
-        <nav class="navbar-items">
-          <app-external-link :href="$provider.services.nucleus.urls.web" class="navbar-item">
+      <section v-if="$provider.tools.system.online" class="menu-section">
+        <nav class="menu-items">
+          <app-external-link :href="$provider.services.nucleus.urls.web" class="menu-item">
             <span class="icon">🌎</span>
             <span>Website</span>
           </app-external-link>
 
-          <app-external-link :href="$provider.services.nucleus.urls.chat" class="navbar-item">
+          <app-external-link :href="$provider.services.nucleus.urls.chat" class="menu-item">
             <span class="icon">💬</span>
             <span>Chat</span>
           </app-external-link>
 
-          <app-external-link :href="$provider.services.nucleus.urls.forum" class="navbar-item">
+          <app-external-link :href="$provider.services.nucleus.urls.forum" class="menu-item">
             <span class="icon">👥</span>
             <span>Forum</span>
           </app-external-link>
@@ -53,38 +42,18 @@
       </section>
 
       <!-- Developer Navigation -->
-      <section v-if="isDev" class="navbar-section">
-        <nav class="navbar-items" />
+      <section v-if="isDev" class="menu-section">
+        <nav class="menu-items" />
       </section>
     </div>
   </div>
 </template>
 
 <script>
-import moment from 'moment'
-
 const { settings } = $provider.services
 
 export default {
   computed: {
-    greetings() {
-      const hours = moment().hours()
-
-      if (hours >= 6 && hours <= 11) {
-        return 'Good morning ☕'
-      }
-
-      if (hours >= 12 && hours <= 19) {
-        return 'Good afternoon 🌞'
-      }
-
-      if (hours >= 0 && hours <= 5) {
-        return 'Sweet dreams 🐏'
-      }
-
-      return 'Good night 🌛'
-    },
-
     isDev() {
       return process.env.NODE_ENV === 'development'
     },
@@ -103,19 +72,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@keyframes bgAnim {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 0%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
-
+<style lang="scss" scoped>
 @keyframes navShowAnim {
   0% {
     left: -200px;
@@ -126,11 +83,11 @@ export default {
   }
 }
 
-.layout-navbar {
+.layout-menu {
   @apply pb-6 shadow h-screen bg-dark-500 relative;
   width: 200px;
 
-  .navbar {
+  .menu {
     @apply absolute top-0 bottom-0;
     left: -200px;
     width: inherit;
@@ -143,7 +100,7 @@ export default {
     }
   }
 
-  .navbar-header {
+  .menu-header {
     @apply mb-4 text-gray-300 flex flex-col items-center justify-center;
     animation: 20s ease-in-out infinite bgAnim;
     height: 70px;
@@ -179,7 +136,7 @@ export default {
     }
   }
 
-  .navbar-section {
+  .menu-section {
     @apply mb-4;
   }
 
@@ -187,8 +144,8 @@ export default {
     @apply text-center font-bold;
   }
 
-  .navbar-items {
-    .navbar-item {
+  .menu-items {
+    .menu-item {
       @apply border-l-4 border-transparent pl-4 font-semibold flex items-center;
       height: 50px;
       transition: all 0.1s ease-in-out;
@@ -202,7 +159,7 @@ export default {
 
       &:hover,
       &.nuxt-link-exact-active {
-        @apply text-primary border-primary;
+        @apply text-primary-500 border-primary-500;
 
         .icon {
           filter: unset;

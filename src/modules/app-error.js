@@ -10,10 +10,12 @@
 import {
   isError, isString, isObject, isArray,
 } from 'lodash'
-import { app, dialog } from 'electron'
-import { rollbar } from './services/rollbar'
+import swal from 'sweetalert'
 
-const logger = require('logplease').create('app-error:main')
+const logger = require('logplease').create('app-error:renderer')
+
+const { rollbar } = $provider.services
+const { app } = $provider.api
 
 /**
  * @typedef {Object} ErrorOptions
@@ -88,10 +90,21 @@ export class AppError extends Error {
   }
 
   show() {
-    dialog.showErrorBox(
-      this.options.title || 'A problem has occurred.',
-      this.message,
-    )
+    let icon = 'error'
+
+    if (this.level === 'warning' || this.level === 'warn') {
+      icon = 'warning'
+    }
+
+    if (this.level === 'info') {
+      icon = 'info'
+    }
+
+    swal({
+      title: this.options.title,
+      text: this.message,
+      icon,
+    })
   }
 
   handle() {

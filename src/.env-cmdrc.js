@@ -13,5 +13,9 @@ module.exports = {
   "production": {
     "NODE_ENV": "production",
     "LOG": "info"
+  },
+  "preview": {
+    "DEVTOOLS": true,
+    "ROLLBAR_ACCESS_TOKEN": "6ccfcf317ca54e67830b41570ce23d2a"
   }
 }

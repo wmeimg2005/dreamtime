@@ -2,15 +2,18 @@
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
-import swal from 'sweetalert'
-import { isError } from 'lodash'
-import { ipcRenderer } from 'electron'
+import Logger from 'logplease'
 import BaseMixin from '~/mixins/BaseMixin'
-import {
-  dream, nudify,
-} from '~/modules'
+import { AppError, dream } from '~/modules'
+import { Nudify } from '~/modules/nudify'
 
 const logger = Logger.create('plugins:boot')
+
+const { getPath } = $provider.tools.paths
+
+// logger setup
+Logger.setLogLevel(process.env.LOG || 'info')
+Logger.setLogfile(getPath('userData', 'renderer.log'))
 
 // lift off!
 logger.info('Lift off!')
@@ -27,6 +30,9 @@ tippy.setDefaultProps({
   arrow: true,
 })
 
+// global apperror
+window.AppError = AppError
+
 // eslint-disable-next-line no-unused-vars
 export default async ({ app }, inject) => {
   // provider shortcuts
@@ -34,12 +40,15 @@ export default async ({ app }, inject) => {
   inject('settings', $provider.services.settings)
   inject('nucleus', $provider.services.nucleus)
 
+  /*
   ipcRenderer.on('alert', (event, payload) => {
     swal(payload)
   })
+  */
 
   // error handlers
 
+  /*
   const handleError = (error, quiet = false) => {
     let message
     let stack
@@ -49,7 +58,7 @@ export default async ({ app }, inject) => {
       message = error.message
       stack = error.stack
 
-      if (error instanceof AppError) {
+      if (error.options) {
         options = error.options
       }
     } else {
@@ -57,21 +66,30 @@ export default async ({ app }, inject) => {
       stack = (new Error('dummy')).stack
     }
 
+    console.log(options, options.error)
+
+    logger.debug('Handling error.', {
+      message,
+      stack,
+      options,
+    })
+
     AppError.handleRenderer(message, stack, options)
   }
+  */
 
   window.addEventListener('error', (err) => {
-    handleError(err)
+    AppError.handle(err)
     return true
   })
 
   window.addEventListener('unhandledrejection', (rejection) => {
-    handleError(rejection.reason)
+    AppError.handle(rejection.reason)
     return true
   })
 
   Vue.config.errorHandler = (err) => {
-    handleError(err, true)
+    AppError.handle(err)
     throw err
   }
 
@@ -80,8 +98,8 @@ export default async ({ app }, inject) => {
   inject('dream', dream)
 
   // nudify process
-  nudify.init()
-  inject('nudify', nudify)
+  Nudify.setup()
+  inject('nudify', Nudify)
 
   // ready
   logger.info('The front-end is ready!')

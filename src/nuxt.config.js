@@ -56,7 +56,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/boot.js', '~/components'],
+  plugins: ['~/plugins/boot.js', '~/plugins/fontawesome.js', '~/components'],
 
   /*
    ** Nuxt.js dev-modules
@@ -81,6 +81,10 @@ module.exports = {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {},
+
+  tailwindcss: {
+    cssPath: '~/assets/css/tailwind.scss',
+  },
 
   /**
    *
