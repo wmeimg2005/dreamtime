@@ -1,46 +1,30 @@
 <template>
-  <div class="home">
-    <app-title>
-      <h1 class="title">
-        📷 Nudify: It's {{ $dream.name }}
-      </h1>
+  <div class="home content-body">
+    <div v-if="alert" class="notification is-warning" v-html="alert" />
 
-      <h3 class="subtitle">
-        Select a photo and have a good dream
-      </h3>
-    </app-title>
-
-    <div class="content-body">
-      <div v-if="alert" class="notification is-warning" v-html="alert" />
-
-      <!-- Quick Upload -->
-      <nudity-upload />
+    <div v-if="$nudify.photos.length >= 100" class="notification is-warning">
+      The application may become unstable by keeping {{ $nudify.photos.length }} photos in the queue.
     </div>
+
+    <!-- Quick Upload -->
+    <nudify-upload />
   </div>
 </template>
 
 <script>
-export default {
-  data: () => ({}),
+const { nucleus } = $provider.services
 
+export default {
   computed: {
     alert() {
-      return $nucleus.isEnabled ? $nucleus.alerts.index : undefined
+      return nucleus.alerts?.index
     },
   },
-
-  created() {},
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .home {
-  .home-wip {
-    @apply flex flex-col justify-center items-center;
 
-    a {
-      @apply text-primary underline;
-    }
-  }
 }
 </style>

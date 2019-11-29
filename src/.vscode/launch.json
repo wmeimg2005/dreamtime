@@ -7,64 +7,44 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Active File",
-      "program": "${file}"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "client: electron",
-      "cwd": "${workspaceRoot}",
-      "env": {
-        "NODE_ENV": "development",
-        "DEBUGGING": "true"
+      "name": "Main Process",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "start:electron",
+        "--remote-debugging-port=9223",
+        "--inspect-brk=9222"
+      ],
+      "outputCapture": "std",
+      "port": 9222,
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "electron/dist/*": "${webRoot}/electron/src/*"
       },
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
-      "runtimeArgs": ["--remote-debugging-port=9222", "."],
-      "windows": {
-        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
-      }
+      //"preLaunchTask": "Build: Electron"
     },
     {
       "type": "chrome",
       "request": "attach",
-      "name": "client: electron renderer",
-      "port": 9222,
+      "name": "Renderer Process",
+      "port": 9223,
       "webRoot": "${workspaceRoot}",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "webpack:///./*": "${webRoot}/*",
         "webpack:///*": "${webRoot}/*"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "server: nuxt",
-      "cwd": "${workspaceRoot}",
-      "protocol": "inspector",
-      "args": ["dev"],
-      "env": {
-        "NODE_ENV": "development"
       },
-      "osx": {
-        "program": "${workspaceFolder}/node_modules/.bin/nuxt"
-      },
-      "linux": {
-        "program": "${workspaceFolder}/node_modules/.bin/nuxt"
-      },
-      "windows": {
-        "program": "${workspaceFolder}/node_modules/nuxt/bin/nuxt.js"
-      }
+      //"preLaunchTask": "Build: Nuxt"
     }
   ],
   "compounds": [
     {
-      "name": "fullstack",
+      "name": "Launch",
       "configurations": [
-        "server: nuxt",
-        "client: electron",
-        "client: electron renderer"
+        "Main Process",
+        "Renderer Process"
       ]
     }
   ]

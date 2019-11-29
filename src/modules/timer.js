@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-class Timer {
+export class Timer {
   constructor() {
     this._start = undefined
     this.duration = 0
@@ -27,5 +27,3 @@ class Timer {
     clearInterval(this.interval)
   }
 }
-
-export default Timer

@@ -1,12 +1,12 @@
 .notification {
-  @apply mb-4 p-4 bg-dark-600 border-2 border-dark-300 text-sm text-generic-100 rounded;
+  @apply mb-4 p-2 bg-transparent border-2 border-dark-500 text-sm text-generic-100 rounded-sm;
 
   a {
     @apply underline;
   }
 
   &.is-warning {
-    @apply bg-warning border-warning;
+    @apply text-warning border-warning;
   }
 
   &.is-danger {

@@ -1,6 +1,8 @@
-require('dotenv').config()
+/* eslint-disable no-param-reassign */
+/* eslint-disable nuxt/no-cjs-in-config */
 
-// eslint-disable-next-line nuxt/no-cjs-in-config
+const nodeExternals = require('webpack-node-externals')
+
 module.exports = {
   mode: 'spa',
 
@@ -23,7 +25,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.APP_NAME} v${process.env.APP_VERSION}`,
+    title: `${process.env.npm_package_displayName} v${process.env.npm_package_version}`,
 
     meta: [
       { charset: 'utf-8' },
@@ -54,7 +56,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/boot.client.js', '~/components'],
+  plugins: ['~/plugins/boot.js', '~/plugins/fontawesome.js', '~/components'],
 
   /*
    ** Nuxt.js dev-modules
@@ -80,19 +82,14 @@ module.exports = {
    */
   axios: {},
 
-  /**
-   *
-   */
-  dev: process.env.NODE_ENV === 'development',
+  tailwindcss: {
+    cssPath: '~/assets/css/tailwind.scss',
+  },
 
   /**
    *
    */
-  env: {
-    APP_NAME: process.env.APP_NAME,
-    APP_VERSION: process.env.APP_VERSION,
-    NUCLEUS_APPID: process.env.NUCLEUS_APPID,
-  },
+  dev: process.env.NODE_ENV === 'development',
 
   /*
    ** Build configuration
@@ -104,9 +101,18 @@ module.exports = {
 
     babel: {
       plugins: [
-        '@babel/plugin-proposal-class-properties',
+        ['@babel/plugin-proposal-class-properties', { loose: true }],
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-optional-chaining',
+        [
+          'transform-inline-environment-variables',
+          {
+            exclude: [
+              'LOG',
+              'DEVTOOLS',
+            ],
+          },
+        ],
       ],
     },
 
@@ -114,22 +120,26 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, { isClient, isDev }) {
+      config.target = 'electron-renderer'
+
+      config.externals = [nodeExternals({
+        modulesFromFile: {
+          include: ['dependencies'],
+        },
+      })]
+
+      // exclude browser field resolution
+      const mainFields = ['esnext', 'main']
+      config.resolve.mainFields = mainFields
+      config.resolve.aliasFields = mainFields
+
+      config.node = {
+        __dirname: isDev,
+        __filename: isDev,
+      }
+
       if (isDev) {
         config.devtool = isClient ? 'source-map' : 'inline-source-map'
-
-        // const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin')
-        /*
-        config.plugins.push(
-          new RollbarSourceMapPlugin({
-            accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-            version: process.env.npm_package_version,
-            publicPath: source => {
-              console.log(source)
-              return `@/${source}`
-            }
-          })
-        )
-        */
       } else {
         config.output.publicPath = './_nuxt/'
       }

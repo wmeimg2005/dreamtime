@@ -10,7 +10,7 @@
  */
 
 .box {
-  @apply bg-dark-500 rounded shadow mb-6;
+  @apply bg-dark-500 rounded-sm shadow mb-6;
 
   .box__photo {
     @apply relative;
@@ -24,14 +24,14 @@
   }
 
   .box__header {
-    @apply px-4 pt-2;
+    @apply px-4 pt-4;
 
     .title {
       @apply text-lg font-bold text-white;
     }
 
     .subtitle {
-      @apply text-sm mb-2 font-light text-white;
+      @apply text-sm font-light mb-2;
     }
   }
 

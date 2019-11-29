@@ -1,0 +1,39 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "10",
+          "electron": "7"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-export-default-from",
+    "@babel/plugin-proposal-optional-chaining",
+    [
+      "transform-inline-environment-variables",
+      {
+        "exclude": [
+          "LOG",
+          "DEVTOOLS"
+        ]
+      }
+    ],
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./"
+        ],
+        "alias": {
+          "~": "./",
+          "test": "./test"
+        }
+      }
+    ]
+  ]
+}

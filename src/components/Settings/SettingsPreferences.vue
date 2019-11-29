@@ -321,17 +321,18 @@
             <option value="cropjs">
               Manual Crop (Not recommended)
             </option>
+            <option value="overlay">
+              Overlay
+            </option>
             <option value="auto-rescale">
-              Fixed Scale
+              Fixed scale
             </option>
             <option value="auto-resize">
               Scale and pad
             </option>
-            <!--
             <option value="auto-resize-crop">
               Scale and crop
             </option>
-            -->
           </select>
         </box-item>
 

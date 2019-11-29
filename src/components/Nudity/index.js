@@ -1,8 +1,6 @@
 import Vue from 'vue'
-import NudityPreview from './Preview'
-import NudityUpload from './Upload'
-import Job from './Job'
+import NudifyUpload from './Upload'
+import NudifyPhotoRun from './PhotoRun'
 
-Vue.component('nudity-preview', NudityPreview)
-Vue.component('nudity-upload', NudityUpload)
-Vue.component('nudity-job', Job)
+Vue.component('nudify-upload', NudifyUpload)
+Vue.component('nudify-photo-run', NudifyPhotoRun)

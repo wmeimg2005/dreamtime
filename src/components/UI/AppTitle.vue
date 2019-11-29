@@ -1,16 +1,19 @@
 <template>
-  <div class="app-title">
+  <div class="c-title">
     <slot />
   </div>
 </template>
 
-<style lang="scss">
-.app-title {
-  @apply px-4 py-2 bg-dark-500 shadow flex flex-col justify-center;
-  height: 70px;
+<style lang="scss" scoped>
+.c-title {
+  @apply px-4 bg-dark-500 shadow-lg flex items-center;
+  position: sticky;
+  top: 0;
+  height: 50px;
 
   .title {
-    @apply font-bold text-white text-lg;
+    @apply text-base text-white font-bold pr-2 mr-2;
+    @apply border-r border-dark-100;
 
     sup {
       @apply text-white;
@@ -18,7 +21,7 @@
   }
 
   .subtitle {
-    @apply text-generic-300;
+    @apply text-gray-400 text-sm;
   }
 
   a {

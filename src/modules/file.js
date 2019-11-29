@@ -1,156 +1,115 @@
-import _ from 'lodash'
-import path from 'path'
+import { isString } from 'lodash'
+import { join } from 'path'
 
-/* eslint-disable-next-line */
-const debug = require('debug').default('app:modules:file')
+const {
+  writeDataURL, downloadAsync, getInfo,
+  unlinkSync, copySync,
+} = $provider.tools.fs
 
-export default class File {
-  constructor(path) {
-    this.reload(path)
+const { getPath } = $provider.tools.paths
+
+export class File {
+  name
+
+  fullname
+
+  path
+
+  extension
+
+  directory
+
+  mimetype
+
+  size = -1
+
+  exists = false
+
+  md5
+
+  dataURL = ''
+
+  /**
+   *
+   * @param {*} filepath
+   */
+  static fromPath(filepath) {
+    const file = new this()
+    return file.open(filepath)
   }
 
   /**
    *
-   * @param {*} path
-   * @param {*} dataURL
    */
-  static async fromDataURL(path, dataURL) {
-    await $tools.fs.write(path, dataURL)
-    return new this(path)
-  }
-
-  /**
-   *
-   * @param {*} path
-   */
-  static fromPath(path) {
-    return new this(path)
-  }
-
-  /**
-   *
-   */
-  static async fromURL(url) {
-    const filePath = await $tools.fs.downloadAsync(url, {
-      directory: $tools.paths.get('temp'),
+  static async fromUrl(url) {
+    const filepath = await downloadAsync(url, {
+      directory: getPath('temp'),
     })
 
-    return new this(filePath)
+    const file = new this()
+    await file.open(filepath)
+
+    return file
+  }
+
+  constructor(filepath) {
+    if (isString(filepath)) {
+      this.open(filepath)
+    }
   }
 
   /**
    *
-   * @param {*} path
+   * @param {string} [filepath]
    */
-  update(path) {
-    this.reload(path)
-  }
-
-  /**
-   *
-   * @param {*} path
-   */
-  reload(path) {
-    if (_.isNil(path)) {
-      path = this.getPath()
+  async open(filepath) {
+    if (!isString(filepath)) {
+      // eslint-disable-next-line no-param-reassign
+      filepath = this.path
     }
 
-    const info = $tools.fs.getInfo(path)
+    const info = await getInfo(filepath)
 
     this.name = info.name
-    this.ext = info.ext
-    this.dir = info.dir
+    this.extension = info.ext
+    this.directory = info.dir
     this.mimetype = info.mimetype
     this.size = info.size
-    this._exists = info.exists
+    this.exists = info.exists
+    this.md5 = info.md5
+    this.dataURL = info.dataURL
+
+    this.fullname = `${this.name}${this.extension}`
+    this.path = join(this.directory, this.fullname)
+
+    return this
   }
 
   /**
    *
    */
-  getPath() {
-    return path.join(this.dir, `${this.name}${this.ext}`)
-  }
-
-  /**
-   *
-   */
-  getName() {
-    return this.name
-  }
-
-  /**
-   *
-   */
-  getExt() {
-    return this.ext
-  }
-
-  /**
-   *
-   */
-  getDir() {
-    return this.dir
-  }
-
-  /**
-   *
-   */
-  getMimetype() {
-    return this.mimetype
-  }
-
-  /**
-   *
-   */
-  getSize() {
-    return this.size
-  }
-
-  /**
-   *
-   */
-  exists() {
-    return this._exists
-  }
-
-  /**
-   *
-   */
-  remove() {
-    if (!this.exists()) {
+  async unlink() {
+    if (!this.exists) {
       return
     }
 
-    $tools.fs.unlink(this.getPath())
-    this.reload()
+    unlinkSync(this.path)
+    await this.open()
   }
 
   /**
    *
    */
-  async readAsDataURL() {
-    if (!this.exists()) {
-      return undefined
-    }
-
-    const data = await $tools.fs.read(this.getPath(), 'base64')
-    return `data:${this.getMimetype()};base64,${data}`
+  async writeDataURL(data) {
+    writeDataURL(this.path, data)
+    await this.open()
   }
 
   /**
    *
+   * @param {*} destination
    */
-  async writeDataURL(dataURL) {
-    await $tools.fs.writeDataURL(this.getPath(), dataURL)
-    this.reload()
-  }
-
-  /**
-   *
-   * @param {*} targetPath
-   */
-  async copy(targetPath) {
-    await $tools.fs.copy(this.getPath(), targetPath)
+  copy(destination) {
+    return copySync(this.path, destination)
   }
 }

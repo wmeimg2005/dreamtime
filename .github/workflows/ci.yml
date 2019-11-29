@@ -6,9 +6,6 @@ on:
       - canary
     tags:
       - v*
-    paths:
-      - .github/workflows/*
-      - src/*
 
   pull_request:
     branches:
@@ -36,7 +33,7 @@ jobs:
         include:
           - os: ubuntu-latest # Ubuntu
             os-short: ubuntu
-            os-extension: deb
+            os-extension: snap
           - os: windows-latest # Windows
             os-short: windows
             os-extension: exe
@@ -85,7 +82,9 @@ jobs:
 
       - name: Release
         working-directory: src/scripts
+        continue-on-error: true
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
