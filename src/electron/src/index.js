@@ -272,7 +272,7 @@ class DreamApp {
 }
 
 async function main() {
-  await DreamApp.initialStart()
+  DreamApp.initialStart()
 
   app.on('ready', async () => {
     try {
