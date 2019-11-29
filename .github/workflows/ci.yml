@@ -6,9 +6,6 @@ on:
       - canary
     tags:
       - v*
-    paths:
-      - .github/workflows/*
-      - src/*
 
   pull_request:
     branches:
