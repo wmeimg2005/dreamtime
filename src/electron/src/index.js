@@ -271,16 +271,14 @@ class DreamApp {
   }
 }
 
-async function main() {
-  DreamApp.initialStart()
+app.on('ready', async () => {
+  console.log('Electron ready.')
 
-  app.on('ready', async () => {
-    try {
-      await DreamApp.start()
-    } catch (error) {
-      throw new AppError(error, { title: `Failed to start correctly.`, fatal: true })
-    }
-  })
-}
+  try {
+    await DreamApp.start()
+  } catch (error) {
+    throw new AppError(error, { title: `Failed to start correctly.`, fatal: true })
+  }
+})
 
-main()
+DreamApp.initialStart()
