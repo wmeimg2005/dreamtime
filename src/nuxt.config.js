@@ -134,8 +134,8 @@ module.exports = {
       config.resolve.aliasFields = mainFields
 
       config.node = {
-        __dirname: process.env.NODE_ENV === 'development',
-        __filename: process.env.NODE_ENV === 'development',
+        __dirname: isDev,
+        __filename: isDev,
       }
 
       if (isDev) {

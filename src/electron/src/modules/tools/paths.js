@@ -25,7 +25,7 @@ export const getPath = (name, ...args) => join(app.getPath(name), ...args)
  * @param  {...string} args
  */
 export const getAppPath = (...args) => {
-  return join(app.getAppPath(), ...args)
+  // return join(app.getAppPath(), ...args)
 
   if (process.platform === 'darwin') {
     // /Applications/DreamTime.app/Contents/MacOS/DreamTime

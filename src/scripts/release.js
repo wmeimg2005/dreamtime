@@ -33,7 +33,7 @@ const tagName = isTagRelease
 
 const version = `v${pkg.version}`
 
-const fileName = `DreamTime-${version}-${process.env.BUILD_OS}.${process.env.BUILD_OS_EXTENSION}`
+const fileName = `dreamtime-${version}-${process.env.BUILD_OS}.${process.env.BUILD_OS_EXTENSION}`
 
 const filePath = path.resolve(__dirname, '../../dist', fileName)
 
