@@ -33,7 +33,7 @@ const tagName = isTagRelease
 
 const version = `v${pkg.version}`
 
-const fileName = `dreamtime-${version}-${process.env.BUILD_OS}.${process.env.BUILD_OS_EXTENSION}`
+const fileName = `DreamTime-${version}-${process.env.BUILD_OS}.${process.env.BUILD_OS_EXTENSION}`
 
 const filePath = path.resolve(__dirname, '../../dist', fileName)
 
@@ -202,7 +202,10 @@ function main() {
   if (fs.existsSync(filePath)) {
     upload(filePath, fileName)
   } else {
-    console.log('No release found!')
+    console.log('No release found!', {
+      filePath,
+      fileName,
+    })
   }
 }
 
