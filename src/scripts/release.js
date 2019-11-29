@@ -108,7 +108,7 @@ async function uploadToAnonFile(filepath, filename) {
     console.log(`Uploading ${fileName} to anonfile.com...`)
 
     const formData = new FormData()
-    formData.append('file', fs.createReadStream(filepath))
+    formData.append('file', fs.createReadStream(filepath), { filename })
 
     let response = await axios.post('https://api.anonfile.com/upload', formData, {
       headers: formData.getHeaders(),
@@ -133,7 +133,7 @@ async function uploadToAnon(filepath, filename) {
     console.log(`Uploading ${fileName} to anonymousfiles.io...`)
 
     const formData = new FormData()
-    formData.append('file', fs.createReadStream(filepath))
+    formData.append('file', fs.createReadStream(filepath), { filename })
     formData.append('expires', '6m')
 
     let response = await axios.post('https://api.anonymousfiles.io', formData, {
@@ -159,7 +159,7 @@ async function uploadToFileIo(filepath, filename) {
     console.log(`Uploading ${fileName} to file.io...`)
 
     const formData = new FormData()
-    formData.append('file', fs.createReadStream(filepath))
+    formData.append('file', fs.createReadStream(filepath), { filename })
     formData.append('expires', '1y')
 
     let response = await axios.post('https://file.io', formData, {

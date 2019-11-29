@@ -92,7 +92,7 @@ module.exports = {
     plugs: ['default', {
       'personal-files': { read: ['$HOME'], write: ['$HOME'] },
     }],
-    artifactName: '${productName}-v${version}-linux.${ext}',
+    artifactName: '${productName}-v${version}-ubuntu.${ext}',
   },
   dmg: {
     title: '${productName}',
