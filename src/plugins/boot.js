@@ -5,7 +5,8 @@ import tippy from 'tippy.js'
 import Logger from 'logplease'
 import BaseMixin from '~/mixins/BaseMixin'
 import { AppError, dream } from '~/modules'
-import { Nudify } from '~/modules/nudify'
+import { Nudify, NudifyStore } from '~/modules/nudify'
+import { dreamtime, dreampower, checkpoints } from '~/modules/updater'
 
 const logger = Logger.create('plugins:boot')
 
@@ -35,49 +36,17 @@ window.AppError = AppError
 
 // eslint-disable-next-line no-unused-vars
 export default async ({ app }, inject) => {
+  // update providers
+  dreamtime.setup()
+  dreampower.setup()
+  checkpoints.setup()
+
   // provider shortcuts
   inject('provider', $provider)
   inject('settings', $provider.services.settings)
   inject('nucleus', $provider.services.nucleus)
 
-  /*
-  ipcRenderer.on('alert', (event, payload) => {
-    swal(payload)
-  })
-  */
-
-  // error handlers
-
-  /*
-  const handleError = (error, quiet = false) => {
-    let message
-    let stack
-    let options = { quiet }
-
-    if (isError(error)) {
-      message = error.message
-      stack = error.stack
-
-      if (error.options) {
-        options = error.options
-      }
-    } else {
-      message = error
-      stack = (new Error('dummy')).stack
-    }
-
-    console.log(options, options.error)
-
-    logger.debug('Handling error.', {
-      message,
-      stack,
-      options,
-    })
-
-    AppError.handleRenderer(message, stack, options)
-  }
-  */
-
+  // catch errors
   window.addEventListener('error', (err) => {
     AppError.handle(err)
     return true
@@ -97,9 +66,12 @@ export default async ({ app }, inject) => {
   dream.setup()
   inject('dream', dream)
 
-  // nudify process
+  // nudify
   Nudify.setup()
-  inject('nudify', Nudify)
+
+  // nudify store
+  NudifyStore.setup()
+  inject('nudify', NudifyStore)
 
   // ready
   logger.info('The front-end is ready!')

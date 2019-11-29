@@ -7,41 +7,134 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { clone, isNil } from 'lodash'
-import uuid from 'uuid'
+import {
+  clone, isNil,
+} from 'lodash'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
 import Logger from 'logplease'
+import EventBus from 'js-event-bus'
+import { Nudify } from './nudify'
+import { PhotoRun } from './photo-run'
 import { File } from '../file'
 import { Timer } from '../timer'
 
 const { settings } = $provider.services
+const { activeWindow } = $provider.util
+const { getModelsPath, getCropPath } = $provider.tools.paths
 
 export class Photo {
+  /**
+   * @type {string}
+   */
   id
 
+  /**
+   * @type {File}
+   */
   file
 
+  /**
+   * @type {File}
+   */
+  fileCropped
+
+  /**
+   * @type {EventBus}
+   */
+  events = new EventBus()
+
+  /**
+   * @type {string}
+   */
   model
 
-  status = 'pending'
+  /**
+   * @type {string}
+   */
+  _status = 'pending'
 
+  get status() {
+    return this._status
+  }
+
+  set status(value) {
+    this._status = value
+    Nudify.emitUpdate()
+  }
+
+  /**
+   * @type {Queue}
+   */
   queue
 
-  jobs = []
+  /**
+   * @type {Array}
+   */
+  runs = []
 
+  /**
+   * @type {Object}
+   */
   preferences = {}
 
+  /**
+   * @type {Timer}
+   */
   timer = new Timer()
 
-  _overlay = {
+  /**
+   * @type {Object}
+   */
+  cropper
+
+  /**
+   * @type {Object}
+   */
+  overlay = {
     startX: 0,
     startY: 0,
     endX: 0,
     endY: 0,
   }
 
+  /**
+   * @type {Logger.Logger}
+   */
   _logger
+
+  get folderName() {
+    // todo: implement models
+    return 'Uncategorized'
+  }
+
+  get running() {
+    return this._status === 'running'
+  }
+
+  get finished() {
+    return this._status === 'finished'
+  }
+
+  get pending() {
+    return this._status === 'pending'
+  }
+
+  get waiting() {
+    return this._status === 'waiting'
+  }
+
+  get started() {
+    return this.running || this.finished
+  }
+
+  get inputFile() {
+    if (this.preferences.advanced.scaleMode === 'cropjs') {
+      return this.fileCropped
+    }
+
+    return this.file
+  }
 
   /**
    *
@@ -49,20 +142,26 @@ export class Photo {
    * @param {*} [model]
    */
   constructor(file, model) {
+    this.id = file.md5
+
     this.file = file
 
-    this.id = file.md5
+    this.fileCropped = new File(getCropPath(`${this.id}.png`))
 
     this.preferences = clone(settings.preferences)
 
-    this._logger = Logger.create(`nudify:photo:${this.uuid}`)
+    this._logger = Logger.create(`nudify:photo:${this.id}`)
 
-    this.validate()
+    this._validate()
 
-    this._setupJobs()
+    this._setupQueue()
   }
 
-  validate() {
+  getFolderPath(...args) {
+    return getModelsPath(this.folderName, ...args)
+  }
+
+  _validate() {
     const { exists, mimetype, path } = this.file
 
     if (!exists) {
@@ -74,48 +173,203 @@ export class Photo {
     }
   }
 
-  _setupJobs() {
-    this.jobs = new Queue(this._run, {
+  _setupQueue() {
+    this.queue = new Queue(this._run, {
       maxTimeout: settings.processing.device === 'GPU' ? (2 * 60 * 1000) : (10 * 60 * 1000),
-      maxRetries: 2,
-      retryDelay: 1000,
-      afterProcessDelay: 1000,
+      // maxRetries: 2,
+      // retryDelay: 1000,
+      afterProcessDelay: 500,
       batchSize: 1,
+      concurrent: 1,
       store: new MemoryStore(),
     })
 
-    this.jobs.on('drain', () => {
-      this._logger.debug('All jobs finished.')
+    this.queue.on('drain', () => {
+      this._logger.debug('All runs finished.')
       this._onFinish()
     })
 
-    this.jobs.on('task_started', (jobId, job) => {
-      this._logger.debug(`Job #${jobId} has started!`, { job })
-      job.onStart()
+    this.queue.on('task_started', (runId, run) => {
+      this._logger.debug(`Run #${runId} started!`)
+      run.onStart()
     })
 
-    this.jobs.on('task_finish', (jobId) => {
-      const job = this.getJobById(jobId)
+    this.queue.on('task_finish', (runId) => {
+      const run = this.getRunById(runId)
 
-      this._logger.debug(`Job #${jobId} has finished!`, { job })
-      job.onFinish()
+      this._logger.debug(`Run #${runId} finished!`)
+      run.onFinish()
     })
 
-    this.jobs.on('task_failed', (jobId, error) => {
-      const job = this.getJobById(jobId)
+    this.queue.on('task_failed', (runId, error) => {
+      const run = this.getRunById(runId)
 
-      this._logger.warn(`Job #${jobId} has failed!`, { job })
-      job.onFail()
+      this._logger.warn(`Run #${runId} failed!`, error)
+      run.onFail()
 
-      throw error
+      if (error !== 'cancelled') {
+        AppError.handle(error)
+      }
     })
   }
 
-  _run(job, cb) {
-
+  getRunById(id) {
+    return this.runs[id - 1]
   }
 
-  _onFinish() {
+  addToQueue() {
+    Nudify.addToQueue(this)
+  }
 
+  removeFromQueue() {
+    Nudify.removeFromQueue(this)
+  }
+
+  reset() {
+    this.status = 'pending'
+
+    this.timer = new Timer()
+
+    this.runs = []
+  }
+
+  async start() {
+    const { executions } = this.preferences.body
+    const { scaleMode } = this.preferences.advanced
+
+    if (executions === 0) {
+      return
+    }
+
+    if (scaleMode === 'cropjs') {
+      try {
+        await this.crop()
+      } catch (err) {
+        this.removeFromQueue()
+        throw err
+      }
+    }
+
+    this.reset()
+
+    this._logger.debug(`Transforming ${this.file.fullname} with ${executions} runs.`)
+
+    this._onStart()
+
+    for (let it = 1; it <= executions; it += 1) {
+      const run = new PhotoRun(it, this)
+
+      this.runs.push(run)
+      this.queue.push(run)
+    }
+
+    await new Promise((resolve) => {
+      this.events.on('finish', () => {
+        resolve()
+      })
+    })
+  }
+
+  cancel(status = 'finished') {
+    this.runs.forEach((run) => {
+      this.cancelRun(run)
+    })
+
+    this._onFinish(status)
+  }
+
+  cancelRun(run) {
+    this.queue.cancel(run.id)
+  }
+
+  rerun(run) {
+    run.reset()
+    this.queue.push(run)
+
+    this._onStart()
+  }
+
+  async crop() {
+    if (isNil(this.cropper)) {
+      throw new AppError('This photo has the manual crop selected, you must open the Crop at least once to continue.', { title: `${this.file.fullname} it is not ready.`, level: 'warn' })
+    }
+
+    const canvas = this.cropper.getCroppedCanvas({
+      width: 512,
+      height: 512,
+      minWidth: 512,
+      minHeight: 512,
+      maxWidth: 512,
+      maxHeight: 512,
+      fillColor: 'white',
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high',
+    })
+
+    const dataURL = canvas.toDataURL(this.fileCropped.mimetype, 1)
+    await this.fileCropped.writeDataURL(dataURL)
+  }
+
+  _run(run, cb) {
+    try {
+      run.start().then(() => {
+        cb()
+        return true
+      }).catch((error) => {
+        cb(error)
+      })
+    } catch (error) {
+      cb(error)
+    }
+
+    return {
+      cancel() {
+        run.cancel()
+      },
+    }
+  }
+
+  _onStart() {
+    this.status = 'running'
+    this.timer.start()
+
+    this.events.emit('start')
+  }
+
+  _onFinish(status = 'finished') {
+    this.status = status
+    this.timer.stop()
+
+    this.events.emit('finish')
+
+    this._sendNotification()
+  }
+
+  _sendNotification() {
+    const window = activeWindow()
+
+    if (!isNil(window) && window.isFocused()) {
+      return
+    }
+
+    if (!settings.notifications.allRuns) {
+      return
+    }
+
+    const notification = new Notification(`📷 ${this.file.fullname} has finished.`, {
+      body: 'The photo has completed the transformation process.',
+    })
+
+    /*
+    notification.onclick = () => {
+      const window = activeWindow()
+
+      if (!isNil(window)) {
+        window.focus()
+      }
+
+      window.$router.push(`/nudify/${this.id}/results`)
+    }
+    */
   }
 }

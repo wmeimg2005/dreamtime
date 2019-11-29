@@ -11,7 +11,8 @@
 }
 
 .input {
-  @apply border border-dark-800 bg-dark-600 rounded py-2 px-4 w-full text-generic-300 shadow-inner;
+  @apply border border-dark-300 bg-dark-600; 
+  @apply rounded py-2 px-4 w-full text-generic-300 shadow-inner;
   outline: none !important;
   transition: all .2s ease-in-out;
 
@@ -20,7 +21,7 @@
   }
 
   &::placeholder {
-    @apply text-generic-400;
+    @apply text-generic-700;
   }
 }
 

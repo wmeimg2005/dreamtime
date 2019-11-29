@@ -3,7 +3,7 @@ const pkg = require('./package.json')
 
 module.exports = {
   appId: 'com.dreamnet.dreamtime',
-  productName: process.env.npm_package_name,
+  productName: process.env.npm_package_displayName,
   copyright: 'Copyright (C) DreamNet. All rights reserved.',
   directories: {
     output: '../dist',
@@ -20,12 +20,19 @@ module.exports = {
     '!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}',
     '!**/{appveyor.yml,.travis.yml,circle.yml}',
     '!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}',
-    '!**/{components,cli,layouts,middleware,mixins,pages,patches,plugins,scripts,store,third,nucleus.json,tailwind.config.js}',
+    '!**/{jsconfig.json,electron-builder.js,.eslintrc.js,.env-cmdrc.js,.codeclimate.yml,.babelrc,tailwind.config.js,nucleus.json}',
+    '!**/{components,cli,layouts,middleware,mixins,pages,patches,plugins,scripts,store,third}',
+    '!**/{static,assets}',
+    '!**/electron/src',
   ],
   extraFiles: [
     {
       from: '.env',
       to: '.env',
+    },
+    {
+      from: 'package.copy.json',
+      to: 'package.json',
     },
   ],
   win: {

@@ -9,7 +9,7 @@
         About
       </nuxt-link>
 
-      <nuxt-link class="navbar__item" to="/dreamnet">
+      <nuxt-link v-if="$provider.tools.system.canNudify" class="navbar__item" to="/dreamnet">
         DreamNet
       </nuxt-link>
     </div>
@@ -27,22 +27,29 @@
         <font-awesome-icon icon="code" />
       </nuxt-link>
 
-      <nuxt-link v-tooltip="{placement: 'bottom', content: 'Donate'}" class="navbar__icon" to="/donate">
-        <font-awesome-icon icon="donate" />
-      </nuxt-link>
+      <a v-tooltip="{placement: 'bottom', content: 'Donate and get benefits!'}" class="navbar__icon" :href="donateUrl" target="_blank">
+        <font-awesome-icon :icon="['fab', 'patreon']" />
+      </a>
     </div>
   </div>
 </template>
 
 <script>
-export default {
+const { nucleus } = $provider.services
 
+export default {
+  computed: {
+    donateUrl() {
+      return nucleus.urls?.support?.patreon || 'https://www.patreon.com/dreamnet'
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .layout__navbar {
-  @apply flex bg-dark-500 shadow-lg z-10;
+  @apply flex bg-dark-500 z-10;
+  @apply border-b border-dark-300;
   height: 50px;
 
   .navbar__left,

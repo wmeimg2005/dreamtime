@@ -14,13 +14,11 @@ import { dirname, join } from 'path'
 import { URL } from 'url'
 import contextMenu from 'electron-context-menu'
 import Logger from 'logplease'
-import { enforceMacOSAppLocation, is } from 'electron-util'
+import { enforceMacOSAppLocation } from 'electron-util'
 import { AppError } from './modules/app-error'
-import { settings, nucleus, rollbar } from './modules/services'
 import { system } from './modules/tools/system'
 import { existsSync, mkdirSync } from './modules/tools/fs'
 import { getPath } from './modules/tools/paths'
-import { dreamtime, dreampower, checkpoints } from './modules/updater'
 import config from '~/nuxt.config'
 
 const logger = Logger.create('electron')
@@ -28,29 +26,62 @@ const logger = Logger.create('electron')
 // NuxtJS root directory
 config.rootDir = dirname(dirname(__dirname))
 
-if (!is.development) {
+if (process.env.NODE_ENV === 'production') {
   process.chdir(getPath('exe', '../'))
 }
 
+const { settings, nucleus, rollbar } = require('./modules/services')
+
 class DreamApp {
-  /**
-   * Start the app!
-   */
-  static async start() {
+  static async initialStart() {
     // logger setup
     Logger.setLogLevel(process.env.LOG || 'info')
     Logger.setLogfile(getPath('userData', 'dreamtime.log'))
-
     logger.info('Starting...')
 
     logger.debug({
-      env: process.env.NODE_ENV,
+      env: process.env.name,
       paths: {
         appPath: app.getAppPath(),
         exePath: app.getPath('exe'),
       },
     })
 
+    // catch errors
+    process.on('uncaughtException', (err) => {
+      logger.warn('Unhandled exception!', err)
+      AppError.handle(err)
+
+      return true
+    })
+
+    process.on('unhandledRejection', (err) => {
+      logger.warn('Unhandled rejection!', err)
+      AppError.handle(err)
+
+      return true
+    })
+
+    await this.initialSetup()
+  }
+
+  /**
+   *
+   */
+  static async initialSetup() {
+    // user settings.
+    await settings.initialSetup()
+
+    if (settings.app.disableHardwareAcceleration) {
+      logger.info('Disabling hardware acceleration.')
+      app.disableHardwareAcceleration()
+    }
+  }
+
+  /**
+   * Start the app!
+   */
+  static async start() {
     await this.setup()
 
     this.createWindow()
@@ -67,9 +98,11 @@ class DreamApp {
     enforceMacOSAppLocation()
 
     // macos activate.
+    /*
     app.on('activate', () => {
       this.createWindow()
     })
+    */
 
     // application exit.
     app.on('will-quit', async (event) => {
@@ -80,10 +113,52 @@ class DreamApp {
       app.exit()
     })
 
+    // windows closed, no more to do.
+    app.on('window-all-closed', () => {
+      app.quit()
+    })
+
+    app.on('web-contents-created', (e, contents) => {
+      contents.on('will-navigate', (event, navigationUrl) => {
+        const url = new URL(navigationUrl)
+
+        if (url.host === `${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`) {
+          // ok
+          return
+        }
+
+        event.preventDefault()
+
+        logger.warn('Blocked attempt to load an external page.', {
+          event,
+          url,
+        })
+      })
+
+      contents.on('new-window', (event, url) => {
+        if (startsWith(url, 'http') || startsWith(url, 'mailto')) {
+          event.preventDefault()
+          shell.openExternal(url)
+          return
+        }
+
+        logger.debug('Opening new window.', {
+          event,
+          url,
+        })
+      })
+    })
+
+    // allow save image option
+    contextMenu({
+      showSaveImageAs: true,
+    })
+
     // system stats.
     await system.setup()
 
     // user settings.
+    await settings.initialSetup()
     await settings.setup()
 
     // analytics & app settings.
@@ -95,20 +170,8 @@ class DreamApp {
       system.scan(), // requirements.
     ])
 
-    // update providers
-    await Promise.all([
-      dreamtime.setup(),
-      dreampower.setup(),
-      checkpoints.setup(),
-    ])
-
     //
     this.createDirs()
-
-    //
-    contextMenu({
-      showSaveImageAs: true,
-    })
   }
 
   /**
@@ -135,6 +198,10 @@ class DreamApp {
         preload: join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })
+
+    // maximize
+    // todo: custom preferences
+    this.window.maximize()
 
     // disable menu
     this.window.setMenu(null)
@@ -204,59 +271,16 @@ class DreamApp {
   }
 }
 
-process.on('uncaughtException', (err) => {
-  logger.warn('Unhandled exception!', err)
-  AppError.handle(err)
+async function main() {
+  await DreamApp.initialStart()
 
-  return true
-})
-
-process.on('unhandledRejection', (err) => {
-  logger.warn('Unhandled rejection!', err)
-  AppError.handle(err)
-
-  return true
-})
-
-app.on('web-contents-created', (e, contents) => {
-  contents.on('will-navigate', (event, navigationUrl) => {
-    const url = new URL(navigationUrl)
-
-    if (url.host === `${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`) {
-      // ok
-      return
+  app.on('ready', async () => {
+    try {
+      await DreamApp.start()
+    } catch (error) {
+      throw new AppError(error, { title: `Failed to start correctly.`, fatal: true })
     }
-
-    event.preventDefault()
-
-    logger.warn('Blocked attempt to load an external page.', {
-      event,
-      url,
-    })
   })
+}
 
-  contents.on('new-window', (event, url) => {
-    if (startsWith(url, 'http')) {
-      event.preventDefault()
-      shell.openExternal(url)
-      return
-    }
-
-    logger.debug('Opening new window.', {
-      event,
-      url,
-    })
-  })
-})
-
-app.on('window-all-closed', () => {
-  app.quit()
-})
-
-app.on('ready', async () => {
-  try {
-    await DreamApp.start()
-  } catch (error) {
-    throw new AppError(error, { title: `Failed to start correctly.`, fatal: true })
-  }
-})
+main()

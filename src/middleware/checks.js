@@ -21,20 +21,20 @@ export default function ({ route, redirect }) {
 
   if (settings.welcome) {
     // First time execution!
-    if (route.path !== '/system/welcome') {
-      redirect('/system/welcome')
+    if (route.path !== '/welcome') {
+      redirect('/welcome')
     }
 
     return
   }
 
-  if (!system.requirements.power.installed) {
+  if (!system.requirements.power.installed || !system.requirements.power.compatible) {
     // DreamPower is missing
     if (
-      !route.path.includes('/system/settings')
-      && route.path !== '/system/about'
+      !route.path.includes('/settings')
+      && route.path !== '/about'
     ) {
-      redirect('/system/about')
+      redirect('/about')
     }
 
     return
@@ -42,17 +42,8 @@ export default function ({ route, redirect }) {
 
   if (!system.requirements.power.checkpoints) {
     // Checkpoints are missing
-    if (route.path !== '/system/about') {
-      redirect('/system/about#checkpoints')
+    if (route.path !== '/about') {
+      redirect('/about#checkpoints')
     }
   }
-
-  /* if (!platform.requirements.windowsMedia) {
-    // Windows Media Pack is missing
-    if (route.path !== '/system/about') {
-      redirect('/system/about#wmp')
-    }
-
-    // return
-  } */
 }

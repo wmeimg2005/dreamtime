@@ -1,11 +1,13 @@
 <template>
-  <div class="home">
-    <div class="content-body">
-      <div v-if="alert" class="notification is-warning" v-html="alert" />
+  <div class="home content-body">
+    <div v-if="alert" class="notification is-warning" v-html="alert" />
 
-      <!-- Quick Upload -->
-      <nudity-upload />
+    <div v-if="$nudify.photos.length >= 100" class="notification is-warning">
+      The application may become unstable by keeping {{ $nudify.photos.length }} photos in the queue.
     </div>
+
+    <!-- Quick Upload -->
+    <nudify-upload />
   </div>
 </template>
 
@@ -13,19 +15,15 @@
 const { nucleus } = $provider.services
 
 export default {
-  data: () => ({}),
-
   computed: {
     alert() {
-      return nucleus.enabled ? nucleus.alerts.index : undefined
+      return nucleus.alerts?.index
     },
   },
-
-  created() {},
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .home {
 
 }

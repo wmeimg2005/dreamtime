@@ -82,8 +82,9 @@ export default {
 }
 
 .layout__topbar {
-  @apply flex bg-black text-white z-50;
+  @apply flex bg-black text-white;
   height: 30px;
+  z-index: 9999999;
 
   .topbar__left {
     @apply flex-1 flex;
@@ -120,7 +121,7 @@ export default {
       height: 30px;
 
       &:hover {
-        @apply bg-black-50;
+        @apply bg-gray-700;
 
         &.close {
           @apply bg-danger-500;

@@ -8,7 +8,7 @@
 export default {
   computed: {
     photo() {
-      return this.$nudify.photo
+      return this.$parent.photo
     },
   },
 }

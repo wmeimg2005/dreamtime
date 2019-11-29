@@ -11,6 +11,7 @@ import * as paths from './paths'
 import * as shell from './shell'
 import * as power from './power'
 import * as fs from './fs'
+import * as photo from './photo'
 import * as instagram from './instagram'
 
 // eslint-disable-next-line import/no-cycle
@@ -19,5 +20,6 @@ export { shell }
 export { paths }
 export { power }
 export { instagram }
+export { photo }
 export { system } from './system'
 export utils from 'electron-util'

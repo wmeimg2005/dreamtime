@@ -1,5 +1,25 @@
 <template>
   <div class="c-uploader">
+    <div class="uploader__settings box box--items">
+      <div class="box__content">
+        <box-item
+          label="On Upload"
+          description="Select what should be done when uploading a new photo.">
+          <select v-model="$settings.app.uploadMode" class="input">
+            <option value="none">
+              Stay
+            </option>
+            <option value="add-queue">
+              Start photo transformation
+            </option>
+            <option value="go-preferences">
+              Change photo preferences
+            </option>
+          </select>
+        </box-item>
+      </div>
+    </div>
+
     <!-- Dropzone -->
     <div
       class="uploader__dropzone"
@@ -33,6 +53,7 @@
             ref="photo"
             type="file"
             accept="image/jpeg, image/png"
+            multiple
             @change="openFile">
 
           <button class="button" @click.prevent="$refs.photo.click()">
@@ -54,7 +75,7 @@
         </div>
 
         <div class="box__content">
-          <button class="button" @click.prevent="openDirectory">
+          <button class="button" @click.prevent="openFolder">
             <span>import folder</span>
           </button>
         </div>
@@ -109,14 +130,14 @@
 /* eslint-disable no-param-reassign */
 import {
   isNil, isEmpty, startsWith,
-  map,
+  map, isArray,
 } from 'lodash'
-import swal from 'sweetalert'
-import { Nudify, Photo } from '~/modules/nudify'
-import { File } from '~/modules'
+import Swal from 'sweetalert2'
+import { Nudify } from '~/modules/nudify'
 
-const { nucleus, rollbar } = $provider.services
+const { nucleus } = $provider.services
 const { instagram } = $provider.tools
+const { dialog } = $provider.api
 
 export default {
   props: {
@@ -141,25 +162,29 @@ export default {
      * File selected, start a new transformation process
      */
     addFile(file) {
+      if (isNil(file)) {
+        return
+      }
+
       Nudify.addFile(file.path)
     },
 
     async addFiles(files) {
-      if (files.length > 1) {
-        swal({
-          title: 'Importing files...',
-          text: 'One moment, please.',
-          button: false,
-          closeOnClickOutside: false,
-          closeOnEsc: false,
-        })
+      if (!isArray(files)) {
+        return
       }
+
+      Swal.fire({
+        title: 'Importing files...',
+        text: 'One moment, please.',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      })
 
       await Nudify.addFiles(files)
 
-      if (files.length > 1) {
-        swal.close()
-      }
+      Swal.close()
     },
 
     /**
@@ -172,9 +197,11 @@ export default {
         return
       }
 
+      const paths = map(files, 'path')
+
       nucleus.track('UPLOAD_FILE')
 
-      this.addFile(files[0])
+      this.addFiles(paths)
 
       event.target.value = ''
     },
@@ -182,8 +209,12 @@ export default {
     /**
      *
      */
-    openDirectory() {
+    openFolder() {
+      const paths = dialog.showOpenDialogSync({
+        properties: ['openDirectory'],
+      })
 
+      this.addFiles(paths)
     },
 
     /**
@@ -191,13 +222,14 @@ export default {
      */
     openUrl() {
       if (isEmpty(this.webAddress) || (!startsWith(this.webAddress, 'http://') && !startsWith(this.webAddress, 'https://'))) {
-        swal('Upload failed.', 'Please enter a valid web address.', 'error')
-        return
+        throw new AppError('Please enter a valid web address.', { title: 'Upload failed.', level: 'warning' })
       }
 
       nucleus.track('UPLOAD_URL')
 
       Nudify.addUrl(this.webAddress)
+
+      this.webAddress = ''
     },
 
     /**
@@ -215,6 +247,8 @@ export default {
       }
 
       Nudify.addUrl(post.downloadUrl)
+
+      this.instagramPhoto = ''
     },
 
     /**
@@ -303,7 +337,7 @@ export default {
   .uploader__dropzone {
     @apply flex items-center justify-center;
     @apply bg-dark-500 mb-6;
-    @apply rounded border-2 border-dashed border-dark-400;
+    @apply rounded border-2 border-dashed border-dark-100;
     height: 200px;
     transition: all 0.1s linear;
 

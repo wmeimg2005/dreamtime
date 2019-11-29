@@ -8,9 +8,9 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  set, get, isNil, isPlainObject,
+  set, get, isNil, isPlainObject, isEmpty,
 } from 'lodash'
-import fs from 'fs'
+import { existsSync, readJsonSync, writeJsonSync } from 'fs-extra'
 
 const logger = require('logplease').create('services')
 
@@ -113,9 +113,11 @@ export class BaseService {
       return
     }
 
-    this.payload = JSON.parse(fs.readFileSync(this.path))
+    if (!existsSync(this.path)) {
+      return
+    }
 
-    logger.info('💖 Service loaded.')
+    this.payload = readJsonSync(this.path)
     logger.debug(this.payload)
   }
 
@@ -128,10 +130,7 @@ export class BaseService {
       return
     }
 
-    const payload = JSON.stringify(this.payload, null, 2)
-    fs.writeFileSync(this.getPath(), payload)
-
-    logger.debug('💖 Service saved.')
+    writeJsonSync(this.path, this.payload)
   }
 
   /**
@@ -140,7 +139,7 @@ export class BaseService {
    * @param {string} path
    */
   get(path = '') {
-    if (path.length === 0) {
+    if (isEmpty(path)) {
       return this.payload
     }
 
@@ -156,10 +155,10 @@ export class BaseService {
   set(path, payload) {
     if (isPlainObject(path)) {
       this.payload = path
-      this.save()
+    } else {
+      this.payload = set(this.payload, path, payload)
     }
 
-    this.payload = set(this.payload, path, payload)
     this.save()
   }
 }

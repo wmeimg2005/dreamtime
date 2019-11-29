@@ -87,6 +87,7 @@ jobs:
         working-directory: src/scripts
         continue-on-error: true
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}

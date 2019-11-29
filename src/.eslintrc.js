@@ -40,6 +40,8 @@ module.exports = {
     "import/no-extraneous-dependencies": "off",
     "import/named": "off",
     "import/no-cycle": "off",
+    "promise/no-callback-in-promise": "off",
+    "promise/catch-or-return": "off",
     "linebreak-style": "warn",
     "lodash/import-scope": [
       "off",

@@ -23,6 +23,7 @@ html {
 }
 
 body,
+html,
 #__nuxt,
 #__layout {
   @apply h-full;
@@ -60,5 +61,17 @@ body,
 
   &:hover {
     @apply bg-primary-700;
+  }
+}
+
+.swal2-html-container {
+  pre {
+    @apply text-xs overflow-auto bg-gray-300 p-2;
+  }
+}
+
+.swal2-footer {
+  code {
+    @apply text-sm text-center;
   }
 }

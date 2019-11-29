@@ -9,16 +9,15 @@
 
 import { isNil, get } from 'lodash'
 import compareVersions from 'compare-versions'
-import { app, Notification } from 'electron'
-import { activeWindow } from 'electron-util'
 import { BaseUpdater } from './base'
-import { AppError } from '../app-error'
-import { settings } from '../services/settings'
-import { nucleus } from '../services/nucleus'
-import { system } from '../tools/system'
-import { getVersion } from '../tools/power'
-import { extractSeven } from '../tools/fs'
-import { getPowerPath } from '../tools/paths'
+
+const { nucleus, settings } = $provider.services
+const { system } = $provider.tools
+const { getVersion } = $provider.tools.power
+const { getPowerPath } = $provider.tools.paths
+const { extractSeven } = $provider.tools.fs
+const { activeWindow } = $provider.util
+const { app, Notification } = $provider.api
 
 class DreamPowerUpdater extends BaseUpdater {
   /**
@@ -65,8 +64,8 @@ class DreamPowerUpdater extends BaseUpdater {
    * @param {*} releases
    */
   _getLatestCompatible(releases) {
-    const minimum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.minimum`, 'v1.2.3')
-    const maximum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.maximum`)
+    const minimum = get(nucleus, `v1.projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.minimum`, 'v1.2.3')
+    const maximum = get(nucleus, `v1.projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.maximum`)
 
     for (const release of releases) {
       if (compareVersions.compare(release.tag_name, minimum, '<')) {

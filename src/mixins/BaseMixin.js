@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import tippy from 'tippy.js'
-import { Nudify } from '~/modules/nudify'
+import { NudifyStore } from '~/modules/nudify'
 
 export default {
   directives: {
@@ -20,10 +20,14 @@ export default {
     },
   },
 
+  created() {
+    window.$router = this.$router
+  },
+
   filters: {},
 
   data: () => ({
-    $nudify: Nudify,
+    $nudify: NudifyStore,
     $settings: $provider.services.settings,
   }),
 }

@@ -7,9 +7,9 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import path from 'path'
+import { join } from 'path'
 import fs from 'fs-extra'
-import { api } from 'electron-util'
+import { app } from 'electron'
 import { settings } from '../services'
 
 /**
@@ -18,13 +18,15 @@ import { settings } from '../services'
  * @param {string} name Name of the base path: https://electronjs.org/docs/all#appgetpathname
  * @param {...string} args Series of path segments to join into one path
  */
-export const getPath = (name, ...args) => path.join(api.app.getPath(name), ...args)
+export const getPath = (name, ...args) => join(app.getPath(name), ...args)
 
 /**
  *
  * @param  {...string} args
  */
 export const getAppPath = (...args) => {
+  return join(app.getAppPath(), ...args)
+
   if (process.platform === 'darwin') {
     // /Applications/DreamTime.app/Contents/MacOS/DreamTime
     // /Applications/DreamTime.app/Contents
@@ -49,7 +51,7 @@ export const getPowerPath = (...args) => {
     folder = getPath('userData', 'dreampower')
   }
 
-  return path.join(folder, ...args)
+  return join(folder, ...args)
 }
 
 export const getCheckpointsPath = (...args) => getPowerPath('checkpoints', ...args)
@@ -61,7 +63,7 @@ export const getCropPath = (...args) => {
     folder = getPath('temp')
   }
 
-  return path.join(folder, ...args)
+  return join(folder, ...args)
 }
 
 export const getModelsPath = (...args) => {
@@ -75,7 +77,7 @@ export const getModelsPath = (...args) => {
     folder = getPath('temp')
   }
 
-  return path.join(folder, ...args)
+  return join(folder, ...args)
 }
 
 export const getMasksPath = (...args) => {
@@ -89,5 +91,5 @@ export const getMasksPath = (...args) => {
     folder = getPath('temp')
   }
 
-  return path.join(folder, ...args)
+  return join(folder, ...args)
 }

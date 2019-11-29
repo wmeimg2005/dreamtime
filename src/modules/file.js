@@ -1,17 +1,19 @@
-import { isNil } from 'lodash'
+import { isString } from 'lodash'
 import { join } from 'path'
 
-const debug = require('debug').default('app:modules:file')
-
 const {
-  writeDataUrl, downloadAsync, getInfo,
-  unlinkSync, read, copySync,
+  writeDataURL, downloadAsync, getInfo,
+  unlinkSync, copySync,
 } = $provider.tools.fs
 
 const { getPath } = $provider.tools.paths
 
 export class File {
   name
+
+  fullname
+
+  path
 
   extension
 
@@ -25,24 +27,15 @@ export class File {
 
   md5
 
-  dataUrl = ''
-
-  /**
-   *
-   * @param {*} filepath
-   * @param {*} dataURL
-   */
-  static async fromDataURL(filepath, dataURL) {
-    await writeDataUrl(filepath, dataURL)
-    return new this(filepath)
-  }
+  dataURL = ''
 
   /**
    *
    * @param {*} filepath
    */
   static fromPath(filepath) {
-    return new this(filepath)
+    const file = new this()
+    return file.open(filepath)
   }
 
   /**
@@ -53,24 +46,29 @@ export class File {
       directory: getPath('temp'),
     })
 
-    return new this(filepath)
+    const file = new this()
+    await file.open(filepath)
+
+    return file
   }
 
   constructor(filepath) {
-    this.reload(filepath)
+    if (isString(filepath)) {
+      this.open(filepath)
+    }
   }
 
   /**
    *
    * @param {string} [filepath]
    */
-  reload(filepath) {
-    if (isNil(filepath)) {
+  async open(filepath) {
+    if (!isString(filepath)) {
       // eslint-disable-next-line no-param-reassign
       filepath = this.path
     }
 
-    const info = getInfo(filepath)
+    const info = await getInfo(filepath)
 
     this.name = info.name
     this.extension = info.ext
@@ -79,57 +77,32 @@ export class File {
     this.size = info.size
     this.exists = info.exists
     this.md5 = info.md5
+    this.dataURL = info.dataURL
 
-    this.readAsDataUrl().then((data) => {
-      this.dataUrl = data
-      return true
-    }).catch(() => { })
-  }
+    this.fullname = `${this.name}${this.extension}`
+    this.path = join(this.directory, this.fullname)
 
-  /**
-   * @type {string}
-   */
-  get fullname() {
-    return `${this.name}${this.extension}`
-  }
-
-  /**
-   * @type {string}
-   */
-  get path() {
-    return join(this.directory, this.fullname)
+    return this
   }
 
   /**
    *
    */
-  unlink() {
+  async unlink() {
     if (!this.exists) {
       return
     }
 
     unlinkSync(this.path)
-    this.reload()
+    await this.open()
   }
 
   /**
    *
    */
-  async readAsDataUrl() {
-    if (!this.exists) {
-      return null
-    }
-
-    const data = await read(this.path, 'base64')
-    return `data:${this.mimetype};base64,${data}`
-  }
-
-  /**
-   *
-   */
-  async writeDataUrl(data) {
-    await writeDataUrl(this.path, data)
-    this.reload()
+  async writeDataURL(data) {
+    writeDataURL(this.path, data)
+    await this.open()
   }
 
   /**

@@ -39,21 +39,20 @@
 import _ from 'lodash'
 import { VModel } from '~/mixins'
 
+const { nucleus } = $provider.services
 const { existsSync } = $provider.tools.fs
-const { shell } = $provider.api
+const { dialog } = $provider.api
 
 export default {
   mixins: [VModel],
 
-  data: () => ({}),
-
   created() {
-    $provider.services.nucleus.track('PAGE_SETTINGS_FOLDERS')
+    nucleus.track('PAGE_SETTINGS_FOLDERS')
   },
 
   methods: {
     showOpenDialog(path) {
-      const dir = shell.showOpenDialog(null, {
+      const dir = dialog.showOpenDialogSync({
         defaultPath: path,
         properties: ['openDirectory'],
       })

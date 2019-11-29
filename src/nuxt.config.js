@@ -101,7 +101,7 @@ module.exports = {
 
     babel: {
       plugins: [
-        '@babel/plugin-proposal-class-properties',
+        ['@babel/plugin-proposal-class-properties', { loose: true }],
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-optional-chaining',
         [

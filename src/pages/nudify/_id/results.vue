@@ -1,4 +1,5 @@
 <template>
+  <!-- Results -->
   <div v-if="photo.started" class="nudify-results">
     <div class="results__status">
       <h2 v-if="!photo.running">
@@ -10,102 +11,43 @@
       </h2>
     </div>
 
-    <div class="flex justify-center">
-      <div class="box">
-        <div class="box__content">
-          <div v-if="!photo.running" class="buttons">
-            <button type="button" class="button is-success" @click.prevent="nudify">
-              Nudify again
-            </button>
-
-            <button type="button" class="button" @click.prevent="openFolder">
-              Open Folder
-            </button>
-
-            <nuxt-link to="/" class="button is-danger">
-              Another photo
-            </nuxt-link>
-          </div>
-
-          <div v-else class="buttons">
-            <button type="button" class="button is-danger" @click.prevent="cancel">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Jobs -->
-    <div class="results__jobs">
-      <nudity-job v-for="(job, index) in photo.jobs" :key="index" :job="job" />
+    <!-- Runs -->
+    <div class="results__runs">
+      <nudify-photo-run v-for="(run, index) in photo.runs" :key="index" :run="run" />
     </div>
   </div>
 
+  <!-- Waiting -->
+  <div v-else-if="photo.waiting" class="nudify-results">
+    <div class="results__status">
+      <h2>
+        Waiting for other dreams to end...
+      </h2>
+    </div>
+  </div>
+
+  <!-- Pending -->
   <div v-else class="nudify-results">
     <div class="results__status">
       <h2>
         What are you waiting for? Let's dream together
       </h2>
     </div>
-
-    <div class="flex justify-center">
-      <section class="box">
-        <div class="box__content">
-          <nuxt-link to="/" class="button is-danger">
-            Cancel
-          </nuxt-link>
-
-          <button class="button is-success" @click="nudify">
-            Dream!
-          </button>
-        </div>
-      </section>
-    </div>
   </div>
 </template>
 
 <script>
-const { shell } = $provider.api
-
 export default {
-  data: () => ({
-
-  }),
-
   computed: {
     photo() {
-      return this.$nudify.photo
+      return this.$parent.photo
     },
 
     /**
      *
      */
     preferences() {
-      return this.$nudify.photo.preferences
-    },
-  },
-
-  methods: {
-    /**
-     *
-     */
-    nudify() {
-      this.photo.start()
-    },
-
-    /**
-     *
-     */
-    cancel() {
-      this.photo.cancel()
-    },
-
-    /**
-     *
-     */
-    openFolder() {
-      shell.openItem(this.photo.getFolderPath())
+      return this.photo.preferences
     },
   },
 }
@@ -114,54 +56,6 @@ export default {
 <style lang="scss">
 .nudify-results {
 
-
-  .content-body {
-    @apply flex;
-  }
-
-  .__summary {
-    @apply flex-1 mr-4;
-
-    .__content {
-      @apply sticky top-0;
-    }
-
-    .__status {
-      @apply flex justify-center items-center
-        text-xl;
-    }
-
-    .__photos {
-      @apply flex justify-center
-        mb-4;
-
-      .app-photo {
-        &:not(:last-child) {
-          @apply mr-4;
-        }
-      }
-    }
-
-    .__actions {
-      @apply flex;
-
-      .buttons {
-        @apply flex-1 flex-col justify-center;
-      }
-    }
-  }
-
-  .__jobs {
-    @apply flex-1 flex flex-col;
-
-    .c-nudity-job {
-      @apply mr-4 mb-4;
-    }
-  }
-
-  .c-settings-preferences {
-    @apply flex-1;
-  }
 }
 
 .results__status {
@@ -169,6 +63,14 @@ export default {
 
   h2 {
     @apply text-xl text-white;
+  }
+}
+
+.results__runs {
+  @apply flex flex-wrap justify-between;
+
+  .c-photo-run {
+    width: calc(1/4*100% - (1 - 1/4)*1rem);
   }
 }
 </style>

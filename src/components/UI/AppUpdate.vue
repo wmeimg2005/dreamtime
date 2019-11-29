@@ -1,42 +1,44 @@
 <template>
   <!-- Cannot update, only show the version... -->
-  <box-section-item
+  <box-item
     v-if="!updater.enabled"
     :label="currentVersion"
-    icon="🌐" />
+    icon="globe" />
 
   <!-- Updated! -->
-  <box-section-item
+  <box-item
     v-else-if="!updater.available"
     :label="`${projectTitle} is up to date.`"
     :description="currentVersion"
-    icon="🌐" />
+    icon="globe" />
 
   <!-- Update available -->
-  <box-section-item
+  <box-item
     v-else-if="!updater.update.active"
     :label="`${projectTitle} ${updater.latest.tag_name} available.`"
-    icon="🌐"
+    icon="fire-alt"
     class="update-item">
-    <button v-tooltip="'Download and install the update automatically.'" type="button" class="button is-sm" @click.prevent="updater.download()">
+    <button v-tooltip="'Download and install the update automatically.'" type="button" class="button is-sm" @click.prevent="updater.start()">
       Update
     </button>
-    <app-external-link v-tooltip="'Download the update manually.'" :href="downloadURL" class="button is-sm">
+
+    <a v-tooltip="'Download the update manually.'" :href="downloadURL" target="_blank" class="button is-sm">
       Manual
-    </app-external-link>
-  </box-section-item>
+    </a>
+  </box-item>
 
   <!-- update... -->
   <!-- eslint-disable-next-line vue/valid-template-root --->
-  <box-section-item
+  <box-item
     v-else
-    :label="updater.update.text"
-    icon="🌐">
+    :label="updater.update.status"
+    icon="globe">
     <template slot="description">
-      <p v-if="updater.update.text === 'Downloading...'" class="item-description">
-        <strong>{{ updater.update.progress | progress }}</strong> - {{ updater.update.mbWritten | size }}/{{ updater.update.mbTotal | size }} MB.
+      <p v-if="updater.update.status === 'Downloading...'" class="item__description">
+        <strong>{{ updater.update.progress | progress }}</strong> - {{ updater.update.written | size }}/{{ updater.update.total | size }} MB.
       </p>
-      <p v-else class="item-description">
+
+      <p v-else class="item__description">
         Wait a few minutes, please do not close the program.
       </p>
     </template>
@@ -44,21 +46,36 @@
     <button type="button" class="button is-danger is-sm" @click.prevent="updater.cancel()">
       Cancel
     </button>
-  </box-section-item>
+  </box-item>
 </template>
 
 <script>
+import { isString, toNumber } from 'lodash'
+
+/* eslint import/namespace: ['error', { allowComputed: true }] */
+import * as updateProviders from '~/modules/updater'
+
 const { shell } = $provider.api
 const { getPath } = $provider.tools.paths
 
 export default {
   filters: {
     progress(value) {
+      if (isString(value)) {
+        // eslint-disable-next-line no-param-reassign
+        value = toNumber(value)
+      }
+
       const progress = (value * 100).toFixed(2)
       return `${progress}%`
     },
 
     size(value) {
+      if (isString(value)) {
+        // eslint-disable-next-line no-param-reassign
+        value = toNumber(value)
+      }
+
       return value.toFixed(2)
     },
   },
@@ -77,13 +94,10 @@ export default {
 
   data: () => ({
     currentVersion: 'v0.0.0',
+    updater: {},
   }),
 
   computed: {
-    updater() {
-      return $provider.updater[this.project]
-    },
-
     downloadURL() {
       return this.updater.downloadUrls[0]
     },
@@ -91,6 +105,7 @@ export default {
 
   created() {
     this.currentVersion = this.updater.currentVersion
+    this.updater = updateProviders[this.project]
   },
 
   beforeDestroy() {
@@ -131,11 +146,11 @@ export default {
     background: theme('colors.dark.300') !important;
   }
 
-  .item-label {
+  .item__label {
     @apply text-white;
   }
 
-  .item-description {
+  .item__description {
     @apply text-generic-600;
   }
 }

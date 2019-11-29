@@ -1,21 +1,20 @@
 import { basename, join, parse } from 'path'
 import {
-  statSync, readFileSync, writeFileSync, existsSync,
-  unlinkSync, createWriteStream, createReadStream, copy,
+  stat, readFileSync, writeFileSync,
+  existsSync,
+  createWriteStream, createReadStream,
 } from 'fs-extra'
-import { isNil } from 'lodash'
 import { app, dialog } from 'electron'
 import { is, platform } from 'electron-util'
 import mime from 'mime-types'
 import EventBus from 'js-event-bus'
 import axios from 'axios'
-import md5File from 'md5-file'
-import filesize from 'filesize'
+import md5File from 'md5-file/promise'
 import unzipper from 'unzipper'
 import deferred from 'deferred'
 import sevenBin from '7zip-bin'
 import { extractFull } from 'node-7z'
-import { getPath, getAppResourcesPath } from './paths'
+import { getAppResourcesPath } from './paths'
 import { AppError } from '../app-error'
 
 const logger = require('logplease').create('electron:modules:tools:fs')
@@ -39,36 +38,6 @@ export function getBase64Data(dataURL) {
 
 /**
  *
- * @param {string} filepath
- */
-export function getInfo(filepath) {
-  const exists = existsSync(filepath)
-  const mimetype = mime.lookup(filepath)
-  const { name, ext, dir } = parse(filepath)
-
-  let size = -1
-  let md5
-
-  if (exists) {
-    const stats = statSync(filepath)
-    size = stats.size / 1000000.0
-
-    md5 = md5File.sync(filepath)
-  }
-
-  return {
-    exists,
-    name,
-    ext,
-    dir,
-    mimetype,
-    size,
-    md5,
-  }
-}
-
-/**
- *
  * @param {string} path
  * @param {string} encoding
  */
@@ -78,10 +47,56 @@ export function read(path, encoding = 'utf-8') {
 
 /**
  *
+ * @param {string} filepath
+ */
+export async function getInfo(filepath) {
+  const exists = existsSync(filepath)
+
+  const promises = [
+    new Promise((resolve) => { resolve(mime.lookup(filepath)) }),
+    new Promise((resolve) => { resolve(parse(filepath)) }),
+  ]
+
+  if (exists) {
+    promises.push(
+      stat(filepath),
+      md5File(filepath),
+      read(filepath, 'base64'),
+    )
+  } else {
+    promises.push(
+      Promise.resolve(),
+      Promise.resolve(),
+      Promise.resolve(),
+    )
+  }
+
+  const [
+    mimetype,
+    { name, ext, dir },
+    stats,
+    md5,
+    base64,
+  ] = await Promise.all(promises)
+
+  return {
+    exists,
+    name,
+    ext,
+    dir,
+    mimetype,
+    size: ((stats ?.size || 0) / 1000000.0),
+    md5,
+    dataURL: `data:${mimetype};base64,${base64}`,
+  }
+}
+
+/**
+ *
  * @param {string} path
  * @param {string} dataURL
  */
-export function writeDataUrl(path, dataURL) {
+export function writeDataURL(path, dataURL) {
   const data = this.getBase64Data(dataURL)
   return writeFileSync(path, data, 'base64')
 }
@@ -162,6 +177,7 @@ export function download(url, options = {}) {
   }
 
   let filepath = join(options.directory, options.filename)
+  let cancelled = false
 
   if (options.showSaveAs) {
     // save as dialog
@@ -198,21 +214,28 @@ export function download(url, options = {}) {
     })
 
     writeStream.on('finish', () => {
+      if (cancelled) {
+        bus.emit('cancelled')
+        return
+      }
+
       if (!existsSync(filepath)) {
         throw new AppError('The file was not saved correctly.', { title: 'Download failed.' })
       }
 
-      bus.emit('end', null, filepath)
+      bus.emit('finish', null, filepath)
     })
 
     data.pipe(writeStream)
 
     bus.on('cancel', () => {
+      cancelled = true
+
       writeStream.destroy()
       data.destroy()
 
       logger.info('Download canceled by user.')
-      bus.emit('end')
+      bus.emit('cancelled')
     })
 
     return true
@@ -307,7 +330,7 @@ export function downloadAsync(url, options = {}) {
   return new Promise((resolve, reject) => {
     const bus = download(url, options)
 
-    bus.on('end', (filepath) => {
+    bus.on('finish', (filepath) => {
       resolve(filepath)
     })
 

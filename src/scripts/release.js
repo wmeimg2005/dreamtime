@@ -12,15 +12,14 @@ const mime = require('mime-types')
 const _ = require('lodash')
 const fs = require('fs')
 const path = require('path')
+const axios = require('axios')
+const FormData = require('form-data')
+const Cryptr = require('cryptr')
 const pkg = require('../package.json')
 
+const cryptr = new Cryptr(process.env.SECRET_KEY)
 const GITHUB_ORG = 'dreamnettech'
 const GITHUB_REPO = 'dreamtime'
-
-if (!process.env.GITHUB_TOKEN) {
-  console.log('API keys not found!')
-  process.exit(0)
-}
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -76,35 +75,112 @@ async function getGithubReleaseUrl() {
 }
 
 async function uploadToGithub(filePath, fileName) {
-  const stats = fs.statSync(filePath)
-  const url = await getGithubReleaseUrl()
+  if (!process.env.GITHUB_TOKEN) {
+    console.warn('No GITHUB_TOKEN')
+    return null
+  }
 
-  const response = await octokit.repos.uploadReleaseAsset({
-    url,
-    headers: {
-      'content-length': stats.size,
-      'content-type': mime.lookup(filePath),
-    },
-    name: fileName,
-    file: fs.createReadStream(filePath),
-  })
+  try {
+    console.log(`Uploading ${fileName} to Github...`)
 
-  return response
+    const stats = fs.statSync(filePath)
+    const url = await getGithubReleaseUrl()
+
+    const response = await octokit.repos.uploadReleaseAsset({
+      url,
+      headers: {
+        'content-length': stats.size,
+        'content-type': mime.lookup(filePath),
+      },
+      name: fileName,
+      file: fs.createReadStream(filePath),
+    })
+
+    return response
+  } catch (err) {
+    console.warn('Github error', err)
+    return null
+  }
+}
+
+async function uploadToAnonFile(filepath, filename) {
+  try {
+    console.log(`Uploading ${fileName} to anonfile.com...`)
+
+    const formData = new FormData()
+    formData.append('file', fs.createReadStream(filepath))
+
+    let response = await axios.post('https://api.anonfile.com/upload', formData, { headers: formData.getHeaders(), timeout: (5 * 60 * 1000) })
+    response = response.data
+
+    console.log('anonfile.com:', cryptr.encrypt(_.get(response, 'data.file.url.full', 'null')))
+
+    return response
+  } catch (err) {
+    console.warn('anonfile.com error', err)
+    return null
+  }
+}
+
+async function uploadToAnon(filepath, filename) {
+  try {
+    console.log(`Uploading ${fileName} to anonymousfiles.io...`)
+
+    const formData = new FormData()
+    formData.append('file', fs.createReadStream(filepath))
+    formData.append('expires', '6m')
+
+    let response = await axios.post('https://api.anonymousfiles.io', formData, { headers: formData.getHeaders(), timeout: (5 * 60 * 1000) })
+    response = response.data
+
+    console.log('anonymousfiles.io:', cryptr.encrypt(_.get(response, 'url', 'null')))
+
+    return response
+  } catch (err) {
+    console.warn('anonymousfiles.io error', err)
+    return null
+  }
+}
+
+async function uploadToFileIo(filepath, filename) {
+  try {
+    console.log(`Uploading ${fileName} to file.io...`)
+
+    const formData = new FormData()
+    formData.append('file', fs.createReadStream(filepath))
+    formData.append('expires', '1y')
+
+    let response = await axios.post('https://file.io', formData, { headers: formData.getHeaders(), timeout: (5 * 60 * 1000) })
+    response = response.data
+
+    console.log('file.io:', cryptr.encrypt(_.get(response, 'link', 'null')))
+
+    return response
+  } catch (err) {
+    console.warn('file.io error', err)
+    return null
+  }
 }
 
 async function upload(filePath, fileName) {
-  let response
+  const promises = []
 
   if (isTagRelease) {
-    console.log(`Uploading ${fileName} to Github...`)
-    response = await uploadToGithub(filePath, fileName)
-    console.log('Github say: ', response)
+    promises.push(uploadToGithub(filePath, fileName))
   }
 
+  promises.push([
+    uploadToAnonFile(filePath, fileName),
+    uploadToAnon(filePath, fileName),
+    uploadToFileIo(filePath, fileName),
+  ])
+
   // TODO: Upload to DreamLink
+
+  return Promise.all(promises)
 }
 
-async function main() {
+function main() {
   if (fs.existsSync(filePath)) {
     upload(filePath, fileName)
   } else {

@@ -7,12 +7,13 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { shell, app, Notification } from 'electron'
 import { dirname } from 'path'
 import delay from 'delay'
-import { activeWindow } from 'electron-util'
 import { BaseUpdater } from './base'
 import { AppError } from '../app-error'
+
+const { activeWindow } = $provider.util
+const { shell, app, Notification } = $provider.api
 
 class DreamTimeUpdater extends BaseUpdater {
   /**

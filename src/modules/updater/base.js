@@ -16,14 +16,15 @@ import compareVersions from 'compare-versions'
 import deferred from 'deferred'
 import filesize from 'filesize'
 import delay from 'delay'
-import { dialog } from 'electron'
-import { platform } from 'electron-util'
 import { basename } from 'path'
-import { nucleus } from '../services'
-import { system } from '../tools'
-import { getPath } from '../tools/paths'
-import { existsSync, statSync, download } from '../tools/fs'
 import { AppError } from '../app-error'
+
+const { nucleus } = $provider.services
+const { system } = $provider.tools
+const { getPath } = $provider.tools.paths
+const { existsSync, statSync, download } = $provider.tools.fs
+const { dialog } = $provider.api
+const { platform } = $provider.util
 
 const logplease = require('logplease')
 
@@ -135,7 +136,7 @@ export class BaseUpdater {
    * @type {string}
    */
   get githubRepo() {
-    return get(nucleus, `projects.${this.name}.repository.github`)
+    return get(nucleus, `v1.projects.${this.name}.repository.github`)
   }
 
   /**
@@ -167,7 +168,7 @@ export class BaseUpdater {
     return platform({
       macos: 'macos',
       windows: 'windows',
-      linux: 'linux',
+      linux: 'ubuntu',
     })
   }
 
@@ -233,7 +234,7 @@ export class BaseUpdater {
     let asset
 
     try {
-      urls = clone(nucleus.releases[this.name][this.latestVersion])
+      urls = clone(nucleus.v1.projects[this.name].releases[this.latestVersion].urls)
     } catch (err) {
       // not the best way, but it works
       urls = []
@@ -250,7 +251,7 @@ export class BaseUpdater {
     if (this.latest.assets.length === 1) {
       [asset] = this.latest.assets
     } else {
-      asset = find(this.latest.assets, (asset) => asset.name.includes(platform))
+      asset = find(this.latest.assets, (asset) => asset.name.includes(this.platform))
     }
 
     if (!isNil(asset)) {
@@ -324,7 +325,6 @@ export class BaseUpdater {
         const useLocal = dialog.showMessageBoxSync({
           type: 'question',
           buttons: ['Yes', 'No, download it again'],
-          defaultId: 0,
           title: 'Update.',
           message: 'The update file was found on your computer. Do you want to use it?',
         })
@@ -337,7 +337,9 @@ export class BaseUpdater {
 
       filepath = await this._download()
 
-      await this._install(filepath)
+      if (!isNil(filepath)) {
+        await this._install(filepath)
+      }
     } finally {
       this._stopUpdateProgress()
     }
@@ -407,8 +409,8 @@ export class BaseUpdater {
 
     this._downloadBus.on('progress', (payload) => {
       this.update.progress = payload.progress
-      this.update.total = payload.mbTotal
-      this.update.written = payload.mbWritten
+      this.update.total = payload.total
+      this.update.written = payload.written
     })
 
     this._downloadBus.on('error', (err) => {
@@ -416,7 +418,7 @@ export class BaseUpdater {
       def.reject(err)
     })
 
-    this._downloadBus.on('end', (filepath) => {
+    this._downloadBus.on('finish', (filepath) => {
       const stats = statSync(filepath)
       const size = filesize(stats.size, { exponent: 2, output: 'object' })
 
@@ -429,6 +431,11 @@ export class BaseUpdater {
       def.resolve(filepath)
     })
 
+    this._downloadBus.on('cancelled', () => {
+      this._downloadBus = null
+      def.resolve()
+    })
+
     return def.promise
   }
 
@@ -436,7 +443,7 @@ export class BaseUpdater {
    *
    */
   cancel() {
-    if (isNil(this._download)) {
+    if (isNil(this._downloadBus)) {
       return
     }
 
@@ -447,7 +454,7 @@ export class BaseUpdater {
    *
    * @param {string} filepath
    */
-  // eslint-disable-next-line no-empty-function
+  // eslint-disable-next-line no-unused-vars, no-empty-function
   async install(filepath) { }
 
   /**

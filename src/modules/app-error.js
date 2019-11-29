@@ -10,7 +10,7 @@
 import {
   isError, isString, isObject, isArray,
 } from 'lodash'
-import swal from 'sweetalert'
+import Swal from 'sweetalert2'
 
 const logger = require('logplease').create('app-error:renderer')
 
@@ -33,6 +33,8 @@ export class AppError extends Error {
     fatal: false,
     quiet: false,
   }
+
+  reportUrl
 
   /**
    *
@@ -70,11 +72,16 @@ export class AppError extends Error {
   }
 
   report() {
-    if (!rollbar.enabled) {
+    if (process.env.NODE_ENV === 'development') {
+      this.reportUrl = `https://rollbar.com/occurrence/uuid/?uuid={EXAMPLE}`
       return
     }
 
     const { level } = this.options
+
+    if (!rollbar.enabled || level !== 'error') {
+      return
+    }
 
     try {
       const error = this.options.error || this
@@ -82,7 +89,7 @@ export class AppError extends Error {
       const response = rollbar[level](this.message, error, this.options)
 
       if (response.uuid) {
-        this.message += `\n\nShare this with a developer:\nhttps://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
+        this.reportUrl = `https://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
       }
     } catch (err) {
       logger.warn('Error report fail!', err)
@@ -100,10 +107,11 @@ export class AppError extends Error {
       icon = 'info'
     }
 
-    swal({
+    Swal.fire({
       title: this.options.title,
-      text: this.message,
+      html: this.message,
       icon,
+      footer: this.reportUrl ? `<code>Share this to a developer: ${this.reportUrl}</code>` : null,
     })
   }
 
@@ -117,9 +125,7 @@ export class AppError extends Error {
       error,
     })
 
-    if (process.env.NODE_ENV !== 'development') {
-      this.report()
-    }
+    this.report()
 
     if (!quiet) {
       this.show()
@@ -144,7 +150,7 @@ export class AppError extends Error {
         reportError = new Error(error)
       }
 
-      appError = new AppError(`The application has encountered an unexpected error:\n<code>${reportError ?.message}</code>`,
+      appError = new AppError(`The application has encountered an unexpected error:\n<pre>${reportError ?.message}</pre>`,
         {
           error: reportError,
           title: 'Unexpected error!',

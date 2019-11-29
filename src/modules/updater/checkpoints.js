@@ -7,13 +7,13 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { app, Notification } from 'electron'
-import { activeWindow } from 'electron-util'
 import { BaseUpdater } from './base'
-import { AppError } from '../app-error'
-import { system } from '../tools/system'
-import { getCheckpointsPath, getPowerPath } from '../tools/paths'
-import { existsSync, read, extractZip } from '../tools/fs'
+
+const { system } = $provider.tools
+const { getCheckpointsPath, getPowerPath } = $provider.tools.paths
+const { existsSync, read, extractZip } = $provider.tools.fs
+const { activeWindow } = $provider.util
+const { app, Notification } = $provider.api
 
 class CheckpointsUpdater extends BaseUpdater {
   /**

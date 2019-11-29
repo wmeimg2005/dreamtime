@@ -1,16 +1,17 @@
 .button {
   @apply inline-flex items-center justify-center;
-  @apply px-4 rounded uppercase font-semibold outline-none;
-  @apply text-primary-500 border border-primary-500-30;
+  @apply border border-primary-500-30;
+  @apply px-4 rounded-sm outline-none;
+  @apply text-primary-400 font-semibold uppercase;
   height: 40px;
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    @apply bg-primary-500-10;
+    @apply bg-primary-500-20;
   }
 
   &:active {
-    @apply bg-primary-500-20;
+    @apply bg-primary-500-30;
   }
 
   &.button--xs {
@@ -28,32 +29,32 @@
     height: 51px;
   }
 
-  &.is-active,
+  &.button--active,
   &.nuxt-link-exact-active {
     @apply text-white bg-primary-500;
   }
 
-  &.is-danger {
-    @apply text-danger;
+  &.button--danger {
+    @apply text-danger-400 border-danger-500-30;
 
     &:hover {
-      @apply bg-danger-500-10;
+      @apply bg-danger-500-20;
     }
 
     &:active {
-      @apply bg-danger-500-20;
+      @apply bg-danger-500-30;
     }
   }
 
-  &.is-success {
-    @apply text-success;
+  &.button--success {
+    @apply text-success-400 border-success-500-30;
 
     &:hover {
-      @apply bg-success-500-10;
+      @apply bg-success-500-20;
     }
 
     &:active {
-      @apply bg-success-500-20;
+      @apply bg-success-500-30;
     }
   }
 }

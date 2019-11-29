@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  filter, isString, isNil, isArray, toInteger, get,
+  filter, isString, isNil, toInteger, get,
 } from 'lodash'
 import { existsSync, statSync } from 'fs'
 import si from 'systeminformation'
@@ -136,6 +136,10 @@ class System {
    * @type {Array}
    */
   get graphics() {
+    if (isNil(this._graphics)) {
+      return []
+    }
+
     return filter(this._graphics.controllers, { vendor: 'NVIDIA' })
   }
 
@@ -177,20 +181,25 @@ class System {
       return false
     }
 
-    const version = await getVersion()
+    try {
+      const version = await getVersion()
 
-    const minimum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.minimum`, 'v1.2.3')
-    const maximum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.maximum`)
+      const minimum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.minimum`, 'v1.2.3')
+      const maximum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.maximum`)
 
-    if (compareVersions.compare(version, minimum, '<')) {
+      if (compareVersions.compare(version, minimum, '<')) {
+        return false
+      }
+
+      if (!isNil(maximum) && compareVersions.compare(version, maximum, '>')) {
+        return false
+      }
+
+      return true
+    } catch (err) {
+      logger.warn('An error occurred while verifying the version of DreamPower.', err)
       return false
     }
-
-    if (!isNil(maximum) && compareVersions.compare(version, maximum, '>')) {
-      return false
-    }
-
-    return true
   }
 
   /**

@@ -8,13 +8,17 @@
       <section class="box">
         <div class="box__header">
           <h2 class="title">
-            <font-awesome-icon icon="crop" /> Manual crop.
+            <font-awesome-icon icon="magic" /> Overlay.
           </h2>
         </div>
 
         <div class="box__content">
           <p>
-            This tool allows you to manually crop the photo so that the selected area is resized to 512x512
+            This tool allows you to select which area of the photo you want to cut, transform and then restore to the original photo.
+          </p>
+
+          <p>
+            It is perfect for big photos where you just want to transform a specific area but you don't want to lose everything else.
           </p>
 
           <p>
@@ -33,7 +37,6 @@
         <div class="box__content">
           <p>
             <ul>
-              <li>Only one person should appear in the photo.</li>
               <li>The person is standing in a straight position without crossing arms or legs.</li>
               <li>The person is looking towards the camera.</li>
               <li>The person wears light clothes. Bikinis work better.</li>
@@ -46,13 +49,13 @@
       <section class="box">
         <div class="box__header">
           <h2 class="title">
-            <font-awesome-icon icon="exclamation-triangle" /> Use at your own risk.
+            <font-awesome-icon icon="info-circle" /> Do not leave empty spaces.
           </h2>
         </div>
 
         <div class="box__content">
           <p>
-            This tool can dramatically decrease the quality of the photo, its use is not recommended.
+            Leaving empty spaces will cause the transformation to fail.
           </p>
         </div>
       </section>
@@ -61,16 +64,17 @@
 </template>
 
 <script>
+import { round } from 'lodash'
 import Cropper from 'cropperjs'
 
 export default {
+  data: () => ({
+    cropper: undefined,
+  }),
+
   computed: {
     photo() {
       return this.$parent.photo
-    },
-
-    cropper() {
-      return this.photo.cropper
     },
   },
 
@@ -83,7 +87,18 @@ export default {
      *
      */
     async createCropper() {
-      this.photo.cropper = new Cropper(this.$refs.cropCanvas, {
+      this.$refs.cropCanvas.addEventListener('crop', () => {
+        const data = this.cropper.getData()
+
+        this.photo.overlay = {
+          startX: round(data.x),
+          startY: round(data.y),
+          endX: round(data.x) + round(data.width),
+          endY: round(data.y) + round(data.height),
+        }
+      })
+
+      this.cropper = new Cropper(this.$refs.cropCanvas, {
         viewMode: 0,
         dragMode: 'move',
         cropBoxMovable: false,
@@ -98,7 +113,7 @@ export default {
         guides: true,
         highlight: true,
         autoCropArea: 1,
-        wheelZoomRatio: 0.03,
+        wheelZoomRatio: 0.05,
       })
 
       this.cropper.replace(this.photo.file.dataURL)

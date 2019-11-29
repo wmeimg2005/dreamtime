@@ -85,6 +85,7 @@ export default {
 
 .layout-menu {
   @apply pb-6 shadow h-screen bg-dark-500 relative;
+  @apply border-r border-dark-300;
   width: 200px;
 
   .menu {

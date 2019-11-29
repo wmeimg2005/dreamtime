@@ -17,22 +17,9 @@ import { Image } from 'image-js'
  * @param {Photo} photo
  * @param {HTMLCanvasElement} canvas
  */
-export const crop = async (photo, canvas) => {
+export function crop(canvas, destination) {
   const image = Image.fromCanvas(canvas)
-  const savePath = photo.getCroppedFile().getPath()
-
-  // debug(`Saving cropped photo in ${savePath}`)
-  await image.save(savePath)
-
-  if (!fs.existsSync(savePath)) {
-    console.warn(
-      'It seems that the first crop method has failed, trying the legacy method',
-    )
-
-    await this.legacyCrop(photo, canvas)
-  } else {
-    photo.getCroppedFile().reload()
-  }
+  return image.save(destination)
 }
 
 /**

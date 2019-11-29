@@ -4,7 +4,7 @@
       <div class="box__content">
         <box-item
           label="Telemetry"
-          description="Send anonymous information about the program that will help us to continue improving it. This includes: Errors, GPU information and performance.">
+          description="Send anonymous information about the program that will help us to improving it. Includes: System information, errors, and performance.">
           <select v-model="currentValue.telemetry.enabled" class="input">
             <option :value="false">
               Disabled

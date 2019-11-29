@@ -7,34 +7,60 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
+import { isNil } from 'lodash'
 import { spawn } from 'child_process'
 import EventBus from 'js-event-bus'
 import deferred from 'deferred'
 import semverRegex from 'semver-regex'
+import { existsSync } from './fs'
 import { getPowerPath } from './paths'
 import { settings } from '../services'
 
+const logger = require('logplease').create('electron:power')
+
+export function exec(args, options = {}) {
+  if (settings.processing.usePython) {
+    // python script
+    args.unshift('main.py')
+
+    logger.debug('Spawning Python script.', {
+      args,
+      options,
+    })
+
+    return spawn('python3', args, {
+      cwd: getPowerPath(),
+      ...options,
+    })
+  }
+
+  logger.debug('Spawning executable.', {
+    args,
+    options,
+  })
+
+  return spawn(getPowerPath('dreampower'), args, {
+    cwd: getPowerPath(),
+    ...options,
+  })
+}
+
 /**
  *
- * @param {Object} job
+ * @param {PhotoRun} run
  */
-export const transform = (job) => {
+export const transform = (run) => {
   // Independent preferences for the photo
-  const { preferences } = job
+  const { preferences } = run
 
   // input
-  const photoFilepath = job.photo.file.getPath()
+  const inputFilepath = run.photo.inputFile.path
 
   // output
-  const outputFilepath = job.file.getPath()
+  const outputFilepath = run.outputFile.path
 
   // CLI Args
-  const args = ['run', '--input', photoFilepath, '--output', outputFilepath]
-
-  if (settings.processing.usePython) {
-    // use python script
-    args.unshift('main.py')
-  }
+  const args = ['run', '--input', inputFilepath, '--output', outputFilepath]
 
   // Device preferences
   if (settings.processing.device === 'CPU') {
@@ -48,10 +74,10 @@ export const transform = (job) => {
   // Advanced preferences
   const { scaleMode, useColorTransfer } = preferences.advanced
 
-  if (scaleMode === 'cropjs') {
-    const { crop } = job.photo
-    args.push('--overlay', `${crop.startX},${crop.startY}:${crop.endX},${crop.endY}`)
-  } else if (scaleMode !== 'none') {
+  if (scaleMode === 'overlay') {
+    const { overlay } = run.photo
+    args.push('--overlay', `${overlay.startX},${overlay.startY}:${overlay.endX},${overlay.endY}`)
+  } else if (scaleMode !== 'none' && scaleMode !== 'cropjs') {
     args.push(`--${scaleMode}`)
   }
 
@@ -66,48 +92,44 @@ export const transform = (job) => {
   args.push('--vsize', preferences.body.vagina.size)
   args.push('--hsize', preferences.body.pubicHair.size)
 
-  /*
-  debug('The transformation process has begun!', {
-    input: photoFilepath,
+  logger.info('Spawning DreamPower.', {
+    input: inputFilepath,
     output: outputFilepath,
-    preferences,
     args,
-    job,
   })
-  */
 
-  let process
+  const process = exec(args)
+
   const bus = new EventBus()
 
-  if (settings.processing.usePython) {
-    // python script
-    process = spawn('python3', args, {
-      cwd: getPowerPath(),
-    })
-  } else {
-    process = spawn(getPowerPath('dreampower'), args, {
-      cwd: getPowerPath(),
-    })
-  }
-
   process.on('error', (error) => {
-    console.error(error)
+    logger.error(error)
     bus.emit('error', null, error)
   })
 
-  process.stdout.on('data', (data) => {
-    console.info(`stdout: ${data}`)
-    bus.emit('stdout', null, data)
+  process.stdout.on('data', (output) => {
+    const stdout = output.toString().trim().split('\n')
+    bus.emit('stdout', null, stdout)
   })
 
-  process.stderr.on('data', (data) => {
-    console.warn(`stderr: ${data}`)
-    bus.emit('stderr', null, data)
+  process.stderr.on('data', (output) => {
+    logger.warn(`stderr: ${output}`)
+    bus.emit('stderr', null, output)
   })
 
   process.on('close', (code) => {
-    console.log(`CLI process exited with code ${code}`)
-    bus.emit('ready', null, code)
+    logger.info(`DreamPower exited with code ${code}`)
+    bus.emit('close', null, code)
+
+    if (code === 0 || isNil(code)) {
+      if (existsSync(run.outputFile.path)) {
+        bus.emit('success')
+      } else {
+        bus.emit('fail', null, true)
+      }
+    } else {
+      bus.emit('fail', null, false)
+    }
   })
 
   bus.on('kill', () => {
@@ -125,17 +147,9 @@ export const getVersion = () => {
   const def = deferred()
 
   try {
-    let process
-    let response = ''
+    const process = exec(['--version'])
 
-    if (settings.processing.usePython) {
-      // python script
-      process = spawn('python3', ['main.py', '--version'], {
-        cwd: getPowerPath(),
-      })
-    } else {
-      process = spawn(getPowerPath('dreampower'), ['--version'])
-    }
+    let response = ''
 
     process.on('error', () => {
       def.resolve()
@@ -146,10 +160,13 @@ export const getVersion = () => {
     })
 
     process.on('close', () => {
-      response = semverRegex().exec(response)
-      response = `v${response[0]}`
-
-      def.resolve(response)
+      try {
+        response = semverRegex().exec(response)
+        response = `v${response[0]}`
+        def.resolve(response)
+      } catch (err) {
+        def.resolve()
+      }
     })
   } catch (err) {
     def.resolve()

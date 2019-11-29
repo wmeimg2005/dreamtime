@@ -11,7 +11,7 @@
 
 # DreamTime
 
-DreamTime allows you to use the power of your computer to transform photos of people into **private and FREE entertainment**, better than DeepNude.
+DreamTime allows you to use the power of your computer to to undress photos for free, better than DeepNude.
 
 ![](assets/preview.png)
 
@@ -34,6 +34,7 @@ If you want to share or modify this Software please do it for the same purpose a
 ### GPU Processing
 
   - NVIDIA GPU with minimum [3.5 CUDA compute capability.](https://developer.nvidia.com/cuda-gpus)
+  - **6 GB+** of VRAM.
   - [Latest NVIDIA drivers.](https://www.nvidia.com/Download/index.aspx)
 
 > 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing.
@@ -46,11 +47,11 @@ If you want to share or modify this Software please do it for the same purpose a
 
 ### Mirrors
 
-[![Windows](https://img.shields.io/badge/windows-v1.1.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-windows.exe)
+[![Windows](https://img.shields.io/badge/windows-v1.1.2-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.2/DreamTime-v1.1.2-windows.exe)
 
-[![Ubuntu](https://img.shields.io/badge/ubuntu-v1.1.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-ubuntu.deb)
+[![Ubuntu](https://img.shields.io/badge/ubuntu-v1.1.2-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.2/DreamTime-v1.1.2-ubuntu.deb)
 
-[![macOS](https://img.shields.io/badge/macos-v1.1.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.1/DreamTime-v1.1.1-macos.dmg)
+[![macOS](https://img.shields.io/badge/macos-v1.1.2-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.2/DreamTime-v1.1.2-macos.dmg)
 
 # DreamNet
 
@@ -100,7 +101,7 @@ We do not store any personal information or photos that have been processed with
 - [SCSS](https://sass-lang.com/): CSS Preprocessor
 - [TailwindCSS](https://tailwindcss.com/): CSS Framework
 - [VueJS](https://vuejs.org/), [NuxtJS](https://nuxtjs.org/): The JavaScript frameworks. _(VueJS is the best #changemymind)_
-- [Electron](https://electronjs.org/): The software used to "transform" DreamTime from a website to a desktop program.
+- [Electron](https://electronjs.org/): The software used to "transform" DreamTime from a website to a desktop program. ([Electron Haters](https://youtu.be/OLpeX4RRo28))
 
 ## Setup
 
@@ -114,9 +115,11 @@ Install dependencies:
 
 Start development enviroment:
 
-`yarn dev:nuxt`
+`yarn start:nuxt`
 
-`yarn dev:electron`
+`yarn start:babel`
+
+`yarn start:electron`
 
 Build:
 
@@ -125,10 +128,3 @@ Build:
 ## Pull Requests
 
 Pull Requests of all kinds are welcome! Please make sure you do it in the **canary branch**.
-
-## ⚠ Drastic Changes in v1.0.0+
-
-Because DreamTime has been the **victim of users who take the source code and sell it without complying with the LICENSE conditions**, we are forced to implement certain very unfriendly changes for an open-source project, we apologize for all the inconvenience this may cause, these changes are **temporary** until DreamTime has been noticed on social networks to prevent people from falling into a possible SCAM.
-
-To avoid an alert with information from DreamTime
-when you start your program, please make sure you **don't change the name or type of license** on your fork.

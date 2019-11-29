@@ -1,8 +1,8 @@
 <template>
-  <figure class="app-photo">
+  <figure class="c-photo" :class="{'photo--hover': hover}">
     <img :src="src">
 
-    <p class="app-photo-label">
+    <p v-if="$slots.default" class="photo__label">
       <slot />
     </p>
   </figure>
@@ -12,32 +12,41 @@
 export default {
   props: {
     src: {
-      type: undefined,
+      type: String,
       required: true,
+    },
+
+    hover: {
+      type: Boolean,
+      default: true,
     },
   },
 }
 </script>
 
-<style lang="scss">
-.app-photo {
-  @apply relative flex flex-col;
+<style lang="scss" scoped>
+.c-photo {
+  @apply relative flex flex-col z-50;
   box-sizing: content-box;
-  width: 125px;
+  transition: all 0.2s ease-in-out;
+  max-width: 200px;
 
-  img {
-    @apply w-full rounded-t shadow-md;
-    height: 125px;
-    transition: all 0.15s ease-in-out;
+  &.photo--hover:hover {
+    transform: scale(1.5);
 
-    &:hover {
-      @apply rounded z-50;
-      transform: scale(2.5);
+    img {
+      @apply rounded;
     }
   }
 
-  .app-photo-label {
-    @apply p-2 bg-dark-600 text-generic-300 text-sm rounded-b font-semibold text-center;
+  img {
+    @apply w-full rounded-t shadow-md;
+    height: auto;
+  }
+
+  .photo__label {
+    @apply p-2 rounded-b bg-dark-500;
+    @apply text-generic-300 text-sm font-semibold text-center;
   }
 }
 </style>

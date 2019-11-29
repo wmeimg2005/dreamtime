@@ -1,12 +1,12 @@
 <template>
   <div class="community">
     <div class="community__header">
-      <video src="/assets/videos/dreamnet.mp4" autoplay muted loop />
+      <video src="~/assets/videos/dreamnet.mp4" autoplay muted loop />
 
       <div ref="intro" class="header__overlay">
         <div class="header__content">
           <div class="header__content__logo">
-            <img src="/assets/images/dreamnet.png">
+            <img src="~/assets/images/dreamnet.png">
           </div>
 
           <div class="header__content__body">
@@ -59,7 +59,7 @@ const { nucleus } = $provider.services
 export default {
   computed: {
     community() {
-      return nucleus.community || {
+      return nucleus.v1?.community || {
         name: 'DreamNet',
         slogan: 'Adult entertainment and decentralized applications to combat censorship.',
         sections: [],

@@ -7,9 +7,9 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import fs from 'fs'
+import fs from 'fs-extra'
 import {
-  memoize, round, cloneDeep,
+  round, cloneDeep,
 } from 'lodash'
 import uuid from 'uuid'
 import { BaseService } from './base'
@@ -21,43 +21,46 @@ const logger = require('logplease').create('electron:scripts:services:settings')
  * User settings.
  */
 class SettingsService extends BaseService {
+  _default = {}
+
   /**
    * file where to save the payload.
    *
    * @type {string}
    */
   get path() {
-    return memoize(() => paths.getPath('userData', 'settings.json'))('settings.path')
+    return paths.getPath('userData', 'settings.json')
   }
-
-  /**
-   * settings defaults.
-   *
-   * @type {Object}
-   */
-  _defaults = {}
 
   /**
    * Setup service
    */
   async setup() {
-    this._setupDefaults()
-
     await this._create()
-
-    await this.load()
-
     await this._upgrade()
   }
 
-  _setupDefaults() {
-    const hasGPU = system.graphics.length > 0
-    const cores = round(system.cores / 2)
+  /**
+   *
+   */
+  async initialSetup() {
+    this._loadInitital()
+    await this.load()
+  }
 
-    this._default = {
-      version: 3,
+  _loadInitital() {
+    const hasGPU = system.graphics.length > 0
+    const cores = round(system.cores / 2) || 4
+
+    this.payload = {
+      version: 4,
       welcome: true,
       user: uuid(),
+
+      app: {
+        disableHardwareAcceleration: false,
+        uploadMode: 'add-queue',
+      },
 
       processing: {
         device: hasGPU ? 'GPU' : 'CPU',
@@ -128,6 +131,8 @@ class SettingsService extends BaseService {
         enabled: true,
       },
     }
+
+    this._default = cloneDeep(this.payload)
   }
 
   /**
@@ -139,9 +144,9 @@ class SettingsService extends BaseService {
     }
 
     try {
-      fs.outputFileSync(this.path, JSON.stringify(this._defaults, null, 2))
+      fs.outputFileSync(this.path, JSON.stringify(this._default, null, 2))
     } catch (error) {
-      throw new Error(`Settings creation fail. Please make sure the program has the necessary permissions to write to:\n${this.path}`)
+      throw new Error(`Settings creation fail. Please make sure the program has the necessary permissions to write to:\n${this.path}\n\n${error}`)
     }
   }
 
@@ -156,6 +161,8 @@ class SettingsService extends BaseService {
     if (newVersion === currentVersion) {
       return
     }
+
+    logger.debug(`Upgrading settings file to v${newVersion}`)
 
     const currentSettings = this.payload
     const newSettings = cloneDeep(currentSettings)
@@ -215,6 +222,15 @@ class SettingsService extends BaseService {
           useColorTransfer: false,
           useWaifu: false,
         },
+      }
+    }
+
+    // Upgrade 3 -> 4
+    if (currentVersion === 3 && newVersion === 4) {
+      newSettings.version = 4
+      newSettings.app = {
+        disableHardwareAcceleration: false,
+        uploadMode: 'add-queue',
       }
     }
 
