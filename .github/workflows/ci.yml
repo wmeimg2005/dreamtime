@@ -36,7 +36,7 @@ jobs:
         include:
           - os: ubuntu-latest # Ubuntu
             os-short: ubuntu
-            os-extension: deb
+            os-extension: snap
           - os: windows-latest # Windows
             os-short: windows
             os-extension: exe

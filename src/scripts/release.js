@@ -110,7 +110,13 @@ async function uploadToAnonFile(filepath, filename) {
     const formData = new FormData()
     formData.append('file', fs.createReadStream(filepath))
 
-    let response = await axios.post('https://api.anonfile.com/upload', formData, { headers: formData.getHeaders(), timeout: (5 * 60 * 1000) })
+    let response = await axios.post('https://api.anonfile.com/upload', formData, {
+      headers: formData.getHeaders(),
+      timeout: (5 * 60 * 1000),
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    })
+
     response = response.data
 
     console.log('anonfile.com:', cryptr.encrypt(_.get(response, 'data.file.url.full', 'null')))
@@ -130,7 +136,13 @@ async function uploadToAnon(filepath, filename) {
     formData.append('file', fs.createReadStream(filepath))
     formData.append('expires', '6m')
 
-    let response = await axios.post('https://api.anonymousfiles.io', formData, { headers: formData.getHeaders(), timeout: (5 * 60 * 1000) })
+    let response = await axios.post('https://api.anonymousfiles.io', formData, {
+      headers: formData.getHeaders(),
+      timeout: (5 * 60 * 1000),
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    })
+
     response = response.data
 
     console.log('anonymousfiles.io:', cryptr.encrypt(_.get(response, 'url', 'null')))
@@ -150,7 +162,13 @@ async function uploadToFileIo(filepath, filename) {
     formData.append('file', fs.createReadStream(filepath))
     formData.append('expires', '1y')
 
-    let response = await axios.post('https://file.io', formData, { headers: formData.getHeaders(), timeout: (5 * 60 * 1000) })
+    let response = await axios.post('https://file.io', formData, {
+      headers: formData.getHeaders(),
+      timeout: (5 * 60 * 1000),
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    })
+
     response = response.data
 
     console.log('file.io:', cryptr.encrypt(_.get(response, 'link', 'null')))
