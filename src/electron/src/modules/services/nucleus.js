@@ -8,7 +8,6 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import { isNil } from 'lodash'
-import Nucleus from 'nucleus-nodejs'
 import axios from 'axios'
 import { BaseService } from './base'
 import { system } from '../tools'
@@ -44,6 +43,9 @@ export class NucleusService extends BaseService {
     }
 
     try {
+      // eslint-disable-next-line global-require
+      const Nucleus = require('nucleus-nodejs')
+
       // nucleus configuration
       const config = {
         disableTracking: settings.telemetry.enabled === false,

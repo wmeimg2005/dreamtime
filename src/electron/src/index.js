@@ -19,6 +19,7 @@ import { AppError } from './modules/app-error'
 import { system } from './modules/tools/system'
 import { existsSync, mkdirSync } from './modules/tools/fs'
 import { getPath } from './modules/tools/paths'
+import { settings, rollbar, nucleus } from './modules/services'
 import config from '~/nuxt.config'
 
 const logger = Logger.create('electron')
@@ -30,14 +31,12 @@ if (process.env.NODE_ENV === 'production') {
   process.chdir(getPath('exe', '../'))
 }
 
-const { settings, nucleus, rollbar } = require('./modules/services')
-
 class DreamApp {
   static async initialStart() {
     // logger setup
     Logger.setLogLevel(process.env.LOG || 'info')
     Logger.setLogfile(getPath('userData', 'dreamtime.log'))
-    logger.info('Starting...')
+    logger.info('Booting...')
 
     logger.debug({
       env: process.env.name,
@@ -82,6 +81,8 @@ class DreamApp {
    * Start the app!
    */
   static async start() {
+    logger.info('Starting...')
+
     await this.setup()
 
     this.createWindow()
@@ -106,6 +107,8 @@ class DreamApp {
 
     // application exit.
     app.on('will-quit', async (event) => {
+      logger.debug('Exiting...')
+
       event.preventDefault()
 
       await this.shutdown()
@@ -154,6 +157,8 @@ class DreamApp {
       showSaveImageAs: true,
     })
 
+    logger.info('Starting services...')
+
     // system stats.
     await system.setup()
 
@@ -185,6 +190,8 @@ class DreamApp {
    * Create the program window and load the interface
    */
   static createWindow() {
+    logger.info('Creating window...')
+
     // browser window.
     this.window = new BrowserWindow({
       width: 1200,
@@ -272,8 +279,6 @@ class DreamApp {
 }
 
 app.on('ready', async () => {
-  console.log('Electron ready.')
-
   try {
     await DreamApp.start()
   } catch (error) {
