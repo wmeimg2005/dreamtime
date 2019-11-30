@@ -47,52 +47,6 @@ export function read(path, encoding = 'utf-8') {
 
 /**
  *
- * @param {string} filepath
- */
-export async function getInfo(filepath) {
-  const exists = existsSync(filepath)
-
-  const promises = [
-    new Promise((resolve) => { resolve(mime.lookup(filepath)) }),
-    new Promise((resolve) => { resolve(parse(filepath)) }),
-  ]
-
-  if (exists) {
-    promises.push(
-      stat(filepath),
-      md5File(filepath),
-      read(filepath, 'base64'),
-    )
-  } else {
-    promises.push(
-      Promise.resolve(),
-      Promise.resolve(),
-      Promise.resolve(),
-    )
-  }
-
-  const [
-    mimetype,
-    { name, ext, dir },
-    stats,
-    md5,
-    base64,
-  ] = await Promise.all(promises)
-
-  return {
-    exists,
-    name,
-    ext,
-    dir,
-    mimetype,
-    size: ((stats ?.size || 0) / 1000000.0),
-    md5,
-    dataURL: `data:${mimetype};base64,${base64}`,
-  }
-}
-
-/**
- *
  * @param {string} path
  * @param {string} dataURL
  */

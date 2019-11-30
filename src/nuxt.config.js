@@ -99,6 +99,8 @@ module.exports = {
 
     extractCSS: true,
 
+    parallel: false,
+
     babel: {
       plugins: [
         ['@babel/plugin-proposal-class-properties', { loose: true }],
@@ -122,24 +124,14 @@ module.exports = {
     extend(config, { isClient, isDev }) {
       config.target = 'electron-renderer'
 
-      config.externals = [nodeExternals({
-        modulesFromFile: {
-          include: ['dependencies'],
-        },
-      })]
-
-      // exclude browser field resolution
-      const mainFields = ['esnext', 'main']
-      config.resolve.mainFields = mainFields
-      config.resolve.aliasFields = mainFields
-
-      config.node = {
-        __dirname: isDev,
-        __filename: isDev,
-      }
+      config.module.rules.push({
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' },
+        exclude: /(node_modules)/,
+      })
 
       if (isDev) {
-        config.devtool = isClient ? 'source-map' : 'inline-source-map'
+        config.devtool = 'source-map'
       } else {
         config.output.publicPath = './_nuxt/'
       }

@@ -146,7 +146,7 @@ export class Photo {
 
     this.file = file
 
-    this.fileCropped = new File(getCropPath(`${this.id}.png`))
+    this.fileCropped = file.mimetype === 'image/gif' ? new File(getCropPath(`${this.id}.gif`)) : new File(getCropPath(`${this.id}.png`))
 
     this.preferences = clone(settings.preferences)
 
