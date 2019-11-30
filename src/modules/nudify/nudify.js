@@ -10,7 +10,7 @@
 import {
   startsWith, find, isNil,
   filter, map, debounce,
-  remove,
+  remove, clone,
 } from 'lodash'
 import { join } from 'path'
 import Queue from 'better-queue'
@@ -20,6 +20,7 @@ import delay from 'delay'
 import { events } from '../events'
 import { Photo } from './photo'
 import { File } from '../file'
+import { getFilesMetadata } from '~/workers/fs'
 
 const logger = require('logplease').create('nudify')
 
@@ -43,7 +44,7 @@ export class Nudify {
    */
   static emitUpdate = debounce(() => {
     events.emit('nudify.update')
-  }, 100, { leading: true })
+  }, 300, { leading: true })
 
   /**
    * @type {Array<Photo>}
@@ -118,18 +119,6 @@ export class Nudify {
 
   /**
    *
-   * @param {Photo} photo
-   */
-  static remove(photo) {
-    photo.cancel()
-
-    // eslint-disable-next-line lodash/prefer-immutable-method
-    remove(this.photos, { id: photo.id })
-    this.emitUpdate()
-  }
-
-  /**
-   *
    * @param {File} input
    */
   static add(file) {
@@ -143,7 +132,7 @@ export class Nudify {
 
     this.photos.unshift(photo)
 
-    logger.debug('Photo added!', photo.file.path)
+    logger.debug('Photo added!', photo.file.fullname)
     this.emitUpdate()
 
     if (this.photos.length > MAX_PHOTOS) {
@@ -164,24 +153,22 @@ export class Nudify {
    *
    * @param {string} filepath
    */
-  static async addFile(filepath) {
-    if (!existsSync(filepath)) {
-      throw new AppError('The path does not exist.', { title: 'Upload failed.', level: 'warn' })
-    }
+  static async addFile(filepath, skipErrors = false) {
+    const filesMetadata = await getFilesMetadata(filepath)
 
-    const stat = statSync(filepath)
+    filesMetadata.forEach((metadata) => {
+      const file = File.fromMetadata(metadata)
 
-    if (stat.isDirectory()) {
-      const paths = map(await readdir(filepath), (fpath) => join(filepath, fpath))
-      await this.addFiles(paths)
-      await delay(100)
-
-      return
-    }
-
-    const file = await File.fromPath(filepath)
-
-    this.add(file)
+      try {
+        this.add(file)
+      } catch (err) {
+        if (skipErrors) {
+          logger.warn('Error adding a photo, skipped.', err)
+        } else {
+          throw err
+        }
+      }
+    })
   }
 
   /**
@@ -192,7 +179,7 @@ export class Nudify {
     const promises = []
 
     for (const path of paths) {
-      promises.push(this.addFile(path))
+      promises.push(this.addFile(path, true))
     }
 
     return Promise.all(promises)
@@ -239,8 +226,34 @@ export class Nudify {
    * @param {Photo} photo
    */
   static removeFromQueue(photo) {
-    this.queue.cancel(photo.id, () => {
-      photo.cancel('pending')
+    photo.cancel('pending')
+    this.queue.cancel(photo.id)
+  }
+
+  /**
+   *
+   * @param {Photo} photo
+   */
+  static forget(photo) {
+    this.removeFromQueue(photo)
+
+    // eslint-disable-next-line lodash/prefer-immutable-method
+    remove(this.photos, { id: photo.id })
+
+    this.emitUpdate()
+  }
+
+  /**
+   *
+   * @param {string} status
+   */
+  static startAll(status = 'pending') {
+    this.photos.forEach((photo) => {
+      if (photo.status !== status) {
+        return
+      }
+
+      this.addToQueue(photo)
     })
   }
 
@@ -248,13 +261,40 @@ export class Nudify {
    *
    * @param {string} status
    */
-  static runAll(status = 'pending') {
+  static stopAll(status = 'pending') {
     this.photos.forEach((photo) => {
       if (photo.status !== status) {
         return
       }
 
-      this.addToQueue(photo)
+      this.removeFromQueue(photo)
+    })
+  }
+
+  static async forgetAll(status = 'pending') {
+    const response = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Forgetting will remove all photos from the queue (it will not delete the files) and free up memory.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#F44336',
+      confirmButtonText: 'Yes, forget it!',
+    })
+
+    if (!response.value) {
+      return
+    }
+
+    const photosCopy = clone(this.photos)
+
+    photosCopy.forEach((photo) => {
+      if (photo.status !== status) {
+        return
+      }
+
+      logger.debug(`Forgetting ${photo.file.fullname}...`)
+
+      this.forget(photo)
     })
   }
 }

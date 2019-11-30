@@ -3,7 +3,7 @@
     <div class="uploader__settings box box--items">
       <div class="box__content">
         <box-item
-          label="On Upload"
+          label="Upload Mode"
           description="Select what should be done when uploading a new photo.">
           <select v-model="$settings.app.uploadMode" class="input">
             <option value="none">
@@ -52,7 +52,7 @@
             v-show="false"
             ref="photo"
             type="file"
-            accept="image/jpeg, image/png"
+            accept="image/jpeg, image/png, image/gif"
             multiple
             @change="openFile">
 

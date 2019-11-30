@@ -1,10 +1,12 @@
 import { isString } from 'lodash'
 import { join } from 'path'
+import { getMetadata } from '~/workers/fs'
 
 const {
-  writeDataURL, downloadAsync, getInfo,
+  writeDataURL, downloadAsync,
   unlinkSync, copySync,
 } = $provider.tools.fs
+
 
 const { getPath } = $provider.tools.paths
 
@@ -52,6 +54,18 @@ export class File {
     return file
   }
 
+  /**
+   *
+   */
+  static fromMetadata(metadata) {
+    const file = new this()
+    return file.setMetadata(metadata)
+  }
+
+  /**
+   *
+   * @param {*} filepath
+   */
   constructor(filepath) {
     if (isString(filepath)) {
       this.open(filepath)
@@ -68,20 +82,25 @@ export class File {
       filepath = this.path
     }
 
-    const info = await getInfo(filepath)
+    const metadata = await getMetadata(filepath)
+    return this.setMetadata(metadata)
+  }
 
-    this.name = info.name
-    this.extension = info.ext
-    this.directory = info.dir
-    this.mimetype = info.mimetype
-    this.size = info.size
-    this.exists = info.exists
-    this.md5 = info.md5
-    this.dataURL = info.dataURL
-
+  /**
+   *
+   * @param {Object} metadata
+   */
+  setMetadata(metadata) {
+    this.name = metadata.name
+    this.extension = metadata.ext
+    this.directory = metadata.dir
+    this.mimetype = metadata.mimetype
+    this.size = metadata.size
+    this.exists = metadata.exists
+    this.md5 = metadata.md5
+    this.dataURL = metadata.dataURL
     this.fullname = `${this.name}${this.extension}`
     this.path = join(this.directory, this.fullname)
-
     return this
   }
 
