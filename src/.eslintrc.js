@@ -114,7 +114,9 @@ module.exports = {
   },
   settings: {
     "import/resolver": {
-      nuxt: {}
+      nuxt: {},
+      node: {},
+      webpack: {}
     }
   }
 }

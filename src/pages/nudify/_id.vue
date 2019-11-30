@@ -35,23 +35,27 @@
 
         <!-- Buttons -->
         <button v-show="!photo.running && !photo.waiting" class="button button--success" @click.prevent="start">
-          Nudify
+          <span class="icon"><font-awesome-icon icon="play" /></span>
+          <span>Add to queue</span>
         </button>
 
         <button v-show="photo.waiting" class="button button--danger" @click.prevent="removeFromQueue">
-          Remove from queue
+          <span>Remove from queue</span>
         </button>
 
         <button v-show="photo.running" class="button button--danger" @click.prevent="cancel">
-          Cancel
+          <span class="icon"><font-awesome-icon icon="stop" /></span>
+          <span>Stop</span>
         </button>
 
         <button class="button" @click.prevent="openFolder">
-          Folder
+          <span class="icon"><font-awesome-icon icon="folder-open" /></span>
+          <span>Folder</span>
         </button>
 
         <button class="button button--danger" @click.prevent="forget">
-          Forget
+          <span class="icon"><font-awesome-icon icon="trash-alt" /></span>
+          <span>Forget</span>
         </button>
       </div>
     </div>
@@ -124,9 +128,10 @@ export default {
     async forget() {
       const response = await Swal.fire({
         title: 'Are you sure?',
+        text: 'Forgetting the photo will remove it from the queue (it will not delete the files) and free up memory.',
         icon: 'warning',
         showCancelButton: true,
-        cancelButtonColor: '#F44336',
+        confirmButtonColor: '#F44336',
         confirmButtonText: 'Yes, delete it!',
       })
 

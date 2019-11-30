@@ -89,13 +89,16 @@ export class PhotoRun {
 
   get outputName() {
     const now = moment().unix()
+    const { file } = this.photo
 
     const originalName = truncate(
-      deburr(this.photo.file.name),
+      deburr(file.name),
       { length: 30, omission: '' },
     )
 
-    return `${originalName}-${now}-dreamtime.png`
+    const extension = file.mimetype === 'image/gif' ? 'gif' : 'png'
+
+    return `${originalName}-${now}-dreamtime.${extension}`
   }
 
   constructor(id, photo) {

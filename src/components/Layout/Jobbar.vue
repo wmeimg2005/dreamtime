@@ -2,8 +2,26 @@
   <div class="layout__jobbar">
     <div class="jobs__section">
       <div class="section__title">
-        <span class="icon"><font-awesome-icon icon="running" /></span>
-        <span>Queue</span>
+        <div>
+          <span class="icon"><font-awesome-icon icon="running" /></span>
+          <span>Queue</span>
+        </div>
+
+        <div v-show="$nudify.waiting.length > 0" class="section__actions">
+          <button
+            v-tooltip="'Forget all'"
+            class="button button--danger button--xs"
+            @click.prevent="$nudify.forgetAll('waiting')">
+            <font-awesome-icon icon="trash-alt" />
+          </button>
+
+          <button
+            v-tooltip="'Stop all'"
+            class="button button--xs"
+            @click.prevent="$nudify.stopAll('waiting')">
+            <font-awesome-icon icon="stop" />
+          </button>
+        </div>
       </div>
 
       <div class="jobs__list">
@@ -20,14 +38,26 @@
 
     <div class="jobs__section">
       <div class="section__title">
-        <div class="flex-1">
+        <div>
           <span class="icon"><font-awesome-icon icon="clipboard-list" /></span>
           <span>Pending</span>
         </div>
 
-        <button v-show="$nudify.pending.length > 0" class="button button--xs" @click.prevent="$nudify.runAll()">
-          Run all
-        </button>
+        <div v-show="$nudify.pending.length > 0" class="section__actions">
+          <button
+            v-tooltip="'Forget all'"
+            class="button button--danger button--xs"
+            @click.prevent="$nudify.forgetAll()">
+            <font-awesome-icon icon="trash-alt" />
+          </button>
+
+          <button
+            v-tooltip="'Start all'"
+            class="button button--xs"
+            @click.prevent="$nudify.startAll()">
+            <font-awesome-icon icon="play" />
+          </button>
+        </div>
       </div>
 
       <div class="jobs__list">
@@ -48,9 +78,21 @@
           <span>Finished</span>
         </div>
 
-        <button v-show="$nudify.finished.length > 0" class="button button--xs" @click.prevent="$nudify.runAll('finished')">
-          Rerun all
-        </button>
+        <div v-show="$nudify.finished.length > 0" class="section__actions">
+          <button
+            v-tooltip="'Forget all'"
+            class="button button--danger button--xs"
+            @click.prevent="$nudify.forgetAll('finished')">
+            <font-awesome-icon icon="trash-alt" />
+          </button>
+
+          <button
+            v-tooltip="'Restart all'"
+            class="button button--xs"
+            @click.prevent="$nudify.startAll('finished')">
+            <font-awesome-icon icon="undo" />
+          </button>
+        </div>
       </div>
 
       <div class="jobs__list">
@@ -79,8 +121,8 @@ export default {
 
 <style lang="scss" scoped>
 .layout__jobbar {
-  @apply relative bg-dark-500 z-10;
-  @apply flex flex-col py-2;
+  @apply relative bg-dark-500 py-2 z-10;
+  @apply flex flex-col;
   width: 200px;
 
   &::after {
@@ -94,6 +136,7 @@ export default {
 .jobs__section {
   @apply flex-1 flex flex-col;
   @apply overflow-hidden;
+  height: calc((100vh - 80px) / 3);
 }
 
 .section__title {
@@ -102,6 +145,14 @@ export default {
 
   .icon {
     @apply mr-2;
+  }
+}
+
+.section__actions {
+  @apply flex flex-1 justify-end ml-2;
+
+  .button {
+    @apply ml-2;
   }
 }
 
@@ -116,7 +167,6 @@ export default {
     transition: all .1s ease-in-out;
 
     &.job--running {
-
       img {
         @apply border-primary-500;
       }
@@ -135,44 +185,8 @@ export default {
 
     img {
       @apply border-2 border-transparent;
-      @apply w-full h-full rounded-full;
+      @apply w-full h-full;
     }
-  }
-
-  .job__preview {
-    @apply mr-4 h-full;
-    width: 42px;
-
-    img {
-      width: 42px;
-      height: 42px;
-    }
-  }
-
-  .job__name {
-    @apply flex-1 overflow-hidden whitespace-no-wrap;
-    text-overflow: ellipsis;
-  }
-}
-
-.layout-jobs {
-  @apply p-2 shadow h-screen flex flex-col;
-  width: 200px;
-
-  .jobs-pending {
-    @apply flex-1 border-b border-gray-300 mb-2;
-  }
-
-  .jobs-recent {
-    height: 250px;
-  }
-
-  .job-section {
-    @apply mb-4;
-  }
-
-  .section-title {
-    @apply font-bold;
   }
 }
 </style>

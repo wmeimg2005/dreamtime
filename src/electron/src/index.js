@@ -202,6 +202,7 @@ class DreamApp {
       icon: join(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
         nodeIntegration: true,
+        nodeIntegrationInWorker: true,
         preload: join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })
