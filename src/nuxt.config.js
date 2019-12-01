@@ -71,10 +71,7 @@ module.exports = {
   /*
    ** Nuxt.js modules
    */
-  modules: [
-    // '@nuxtjs/pwa',
-    '@nuxtjs/dotenv',
-  ],
+  modules: [],
 
   /*
    ** Axios module configuration

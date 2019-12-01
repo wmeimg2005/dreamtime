@@ -3,7 +3,8 @@ module.exports = {
     browser: true,
     es2020: true,
     node: true,
-    "shared-node-browser": true
+    "shared-node-browser": true,
+    mocha: true
   },
   extends: [
     "@nuxtjs",
@@ -13,11 +14,11 @@ module.exports = {
     "plugin:promise/recommended",
     "plugin:lodash/recommended",
     "plugin:vue/recommended",
-    "plugin:nuxt/recommended"
+    "plugin:nuxt/recommended",
+    "plugin:mocha/recommended"
   ],
   globals: {
     $provider: false,
-    Logger: false,
     AppError: false
   },
   parserOptions: {
@@ -27,7 +28,8 @@ module.exports = {
     "import",
     "promise",
     "lodash",
-    "vue"
+    "vue",
+    "mocha"
   ],
   root: true,
   rules: {
@@ -54,12 +56,13 @@ module.exports = {
     "lodash/prefer-lodash-typecheck": "warn",
     "lodash/prefer-noop": "off",
     "max-len": "off",
+    "func-names": "off",
     "no-await-in-loop": "warn",
-    "no-console": "off",
+    "no-console": "warn",
     "no-continue": "off",
     "no-debugger": "error",
     "no-lone-blocks": "error",
-    "no-param-reassign": "error",
+    "no-param-reassign": "off",
     "no-restricted-globals": "warn",
     "no-restricted-syntax": "off",
     "no-shadow": "off",
