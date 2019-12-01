@@ -51,7 +51,7 @@ export class NucleusService extends BaseService {
         disableTracking: settings.telemetry.enabled === false,
         disableErrorReports: true,
         userId: settings.user,
-        version: process.env.APP_VERSION,
+        version: process.env.npm_package_version,
         persist: true,
       }
 
