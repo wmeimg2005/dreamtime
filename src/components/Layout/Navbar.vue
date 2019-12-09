@@ -19,16 +19,12 @@
         <font-awesome-icon icon="cog" />
       </nuxt-link>
 
-      <nuxt-link v-if="false" v-tooltip="{placement: 'bottom', content: 'About'}" class="navbar__icon" to="/about">
-        <font-awesome-icon icon="info-circle" />
-      </nuxt-link>
-
-      <nuxt-link v-if="false" v-tooltip="{placement: 'bottom', content: 'DreamNet'}" class="navbar__icon" to="/dreamnet">
-        <font-awesome-icon icon="code" />
-      </nuxt-link>
-
       <a v-tooltip="{placement: 'bottom', content: 'Donate and get benefits!'}" class="navbar__icon" :href="donateUrl" target="_blank">
         <font-awesome-icon :icon="['fab', 'patreon']" />
+      </a>
+
+      <a v-tooltip="{placement: 'bottom', content: 'Manual'}" class="navbar__icon" :href="manualURL" target="_blank">
+        <font-awesome-icon icon="question-circle" />
       </a>
     </div>
   </div>
@@ -41,6 +37,10 @@ export default {
   computed: {
     donateUrl() {
       return nucleus.urls?.support?.patreon || 'https://www.patreon.com/dreamnet'
+    },
+
+    manualURL() {
+      return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
     },
   },
 }

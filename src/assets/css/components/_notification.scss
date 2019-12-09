@@ -1,20 +1,16 @@
 .notification {
-  @apply mb-4 p-2 border-2 border-dark-500 rounded-sm;
-  @apply bg-dark-300 text-sm text-generic-100;
+  @apply mb-4 py-2 px-4 border-2 border-dark-100 rounded-sm;
+  @apply bg-transparent text-generic-100 font-bold;
 
   a {
     @apply underline;
   }
 
-  &.is-warning {
-    @apply text-warning border-warning;
+  &.notification--warning {
+    @apply text-warning-400 border-warning;
   }
 
-  &.is-danger {
-    @apply bg-danger-500-20 border-danger-500;
-  }
-
-  &.is-transparent {
-    @apply bg-transparent border-dark-400;
+  &.notification--danger {
+    @apply text-danger-400 border-danger;
   }
 }

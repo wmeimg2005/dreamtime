@@ -1,6 +1,6 @@
 <template>
   <div class="about content__body">
-    <div v-if="alert" class="notification is-warning text-lg" v-html="alert" />
+    <div v-if="alert" class="notification text-lg" v-html="alert" />
 
     <!-- Offline -->
     <section v-if="!$provider.tools.system.online" class="box box--items">

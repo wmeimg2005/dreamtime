@@ -1,28 +1,34 @@
 <template>
   <div class="c-photo-run" :style="previewStyle">
     <div class="run__content">
-      <div v-show="run.finished" class="content__item">
-        <p class="text-white">
-          <span><font-awesome-icon icon="heart" /></span>
-          <span>{{ run.timer.duration }}s</span>
-        </p>
-      </div>
-
-      <div v-show="run.running" class="content__item">
+      <div v-if="run.running" class="content__item">
         <p class="text-white">
           <span><font-awesome-icon icon="running" /></span>
           <span>{{ run.timer.duration }}s</span>
         </p>
       </div>
 
-      <div v-show="run.failed" class="content__item">
+      <div v-else-if="run.failed" class="content__item">
         <p class="text-danger-500">
           <span><font-awesome-icon icon="exclamation-circle" /></span>
           <span>Error!</span>
         </p>
       </div>
 
-      <div v-show="run.finished" class="content__item">
+      <div v-else-if="run.finished" class="content__item">
+        <p class="text-white">
+          <span><font-awesome-icon icon="heart" /></span>
+          <span>{{ run.timer.duration }}s</span>
+        </p>
+      </div>
+
+      <div v-else class="content__item">
+        <p class="text-white">
+          <span><font-awesome-icon icon="clock" /></span>
+        </p>
+      </div>
+
+      <div v-show="run.finished && !run.failed" class="content__item">
         <button v-tooltip="'Save photo'" class="button button--success button--sm" @click.prevent="save">
           <font-awesome-icon icon="download" />
         </button>
@@ -150,7 +156,7 @@ export default {
     },
 
     manualURL() {
-      return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech'
+      return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
     },
   },
 

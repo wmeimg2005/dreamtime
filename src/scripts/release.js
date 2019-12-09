@@ -217,7 +217,7 @@ async function uploadToDreamLink(filepath, filename) {
     let response = await axios.post('http://api.catalina.dreamnet.tech/api/v0/add', formData, {
       headers: {
         ...formData.getHeaders(),
-        Authorization: `Basic ${process.env.DREAMLINK_AUTH}`,
+        Authorization: `Basic ${process.env.DREAMLINK_TOKEN}`,
       },
       timeout: (5 * 60 * 1000),
       maxContentLength: Infinity,

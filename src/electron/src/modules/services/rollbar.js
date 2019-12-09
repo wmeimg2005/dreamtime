@@ -26,7 +26,7 @@ class RollbarService extends BaseService {
    * @type {string}
    */
   get accessToken() {
-    return process.env.ROLLBAR_ACCESS_TOKEN || get(nucleus, 'keys.rollbar_access_token')
+    return process.env.ROLLBAR_ACCESS_TOKEN || get(nucleus, 'keys.rollbar')
   }
 
   /**
@@ -36,11 +36,14 @@ class RollbarService extends BaseService {
     return isString(this.accessToken)
   }
 
+  /**
+   * @type {string}
+   */
   get codeVersion() {
     try {
-      return process.env.GIT_SHA || execSync('git rev-parse HEAD').toString().trim()
+      return process.env.GITHUB_SHA || execSync('git rev-parse HEAD').toString().trim()
     } catch (err) {
-      return null
+      return process.env.npm_package_version
     }
   }
 

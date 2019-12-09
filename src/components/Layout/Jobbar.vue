@@ -9,14 +9,14 @@
 
         <div v-show="$nudify.waiting.length > 0" class="section__actions">
           <button
-            v-tooltip="'Forget all'"
+            v-tooltip="{placement: 'bottom', content: 'Forget all'}"
             class="button button--danger button--xs"
             @click.prevent="$nudify.forgetAll('waiting')">
             <font-awesome-icon icon="trash-alt" />
           </button>
 
           <button
-            v-tooltip="'Stop all'"
+            v-tooltip="{placement: 'bottom', content: 'Stop all' }"
             class="button button--xs"
             @click.prevent="$nudify.stopAll('waiting')">
             <font-awesome-icon icon="stop" />
