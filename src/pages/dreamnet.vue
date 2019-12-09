@@ -67,10 +67,6 @@ export default {
     },
   },
 
-  created() {
-    nucleus.track('PAGE_COMMUNITY')
-  },
-
   mounted() {
     setTimeout(() => {
       if (_.isNil(this.$refs.intro)) {

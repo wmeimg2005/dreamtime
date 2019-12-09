@@ -157,13 +157,13 @@ export default {
 }
 
 .jobs__list {
-  @apply flex-1 flex flex-wrap justify-between;
+  @apply flex-1;
   @apply px-4 py-2 overflow-y-auto max-h-full;
 
   .job {
-    @apply mb-2 cursor-pointer;
-    width: calc(1/3*100% - (1 - 1/3)*1rem);
-    height: 42px;
+    @apply inline-block mb-2 mr-2 cursor-pointer;
+    width: 48px;
+    height: 48px;
     transition: all .1s ease-in-out;
 
     &.job--running {
@@ -184,7 +184,7 @@ export default {
     }
 
     img {
-      @apply border-2 border-transparent;
+      @apply border-2 border-transparent rounded-full;
       @apply w-full h-full;
     }
   }

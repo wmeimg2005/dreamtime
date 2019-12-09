@@ -1,6 +1,6 @@
 <template>
   <div class="c-preferences">
-    <section class="box box--items">
+    <section v-show="currentValue.advanced.transformMode !== 'import-maskfin'" class="box box--items">
       <div class="box__header">
         <h2 class="title">
           Runs
@@ -63,7 +63,7 @@
       </div>
     </section>
 
-    <section class="box box--items">
+    <section v-show="currentValue.advanced.transformMode !== 'import-maskfin'" class="box box--items">
       <div class="box__header">
         <h2 class="title">
           Body
@@ -312,20 +312,14 @@
 
       <div class="box__content">
         <box-item
-          label="Scale mode"
-          description="Method that will be used to scale your photo to 512x512.">
+          label="Scale method"
+          description="Method to scale the photo to 512x512">
           <select v-model="currentValue.advanced.scaleMode" class="input">
             <option value="none">
               None
             </option>
-            <option value="cropjs">
-              Manual Crop (Not recommended)
-            </option>
-            <option value="overlay">
-              Overlay
-            </option>
             <option value="auto-rescale">
-              Fixed scale
+              Fixed
             </option>
             <option value="auto-resize">
               Scale and pad
@@ -333,12 +327,34 @@
             <option value="auto-resize-crop">
               Scale and crop
             </option>
+            <option value="overlay">
+              Overlay
+            </option>
+            <option value="cropjs">
+              Manual crop (Not recommended)
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
+          label="Transform method"
+          description="Transformation method, only recommended for advanced users.">
+          <select v-model="currentValue.advanced.transformMode" class="input">
+            <option value="normal">
+              Nudify
+            </option>
+            <option value="export-maskfin">
+              Nudify & Maskfin
+            </option>
+            <option value="import-maskfin">
+              Nudify with Maskfin
+            </option>
           </select>
         </box-item>
 
         <box-item
           label="Color transfer"
-          description="(Experimental) At the end of the transformation, a color transfer algorithm will be applied to try to recover the original colors of the photo.">
+          description="Use a experimental color transfer algorithm to try to recover the original colors of the photo.">
           <select v-model="currentValue.advanced.useColorTransfer" class="input">
             <option :value="true">
               Enabled

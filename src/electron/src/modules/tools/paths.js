@@ -7,6 +7,7 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
+import { attempt } from 'lodash'
 import { join } from 'path'
 import fs from 'fs-extra'
 import { app } from 'electron'
@@ -59,6 +60,8 @@ export const getCheckpointsPath = (...args) => getPowerPath('checkpoints', ...ar
 export const getCropPath = (...args) => {
   let folder = settings.folders.cropped
 
+  attempt(() => fs.ensureDirSync(folder))
+
   if (!fs.existsSync(folder)) {
     folder = getPath('temp')
   }
@@ -68,6 +71,8 @@ export const getCropPath = (...args) => {
 
 export const getModelsPath = (...args) => {
   let folder = settings.folders.models
+
+  attempt(() => fs.ensureDirSync(folder))
 
   if (!fs.existsSync(folder)) {
     folder = getPath('userData', 'models')
@@ -82,6 +87,8 @@ export const getModelsPath = (...args) => {
 
 export const getMasksPath = (...args) => {
   let folder = settings.folders.masks
+
+  attempt(() => fs.ensureDirSync(folder))
 
   if (!fs.existsSync(folder)) {
     folder = getPath('userData', 'masks')

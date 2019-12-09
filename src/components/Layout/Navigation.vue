@@ -21,26 +21,6 @@
         </nav>
       </section>
 
-      <!-- Nice links -->
-      <section v-if="$provider.tools.system.online" class="menu-section">
-        <nav class="menu-items">
-          <app-external-link :href="$provider.services.nucleus.urls.web" class="menu-item">
-            <span class="icon">🌎</span>
-            <span>Website</span>
-          </app-external-link>
-
-          <app-external-link :href="$provider.services.nucleus.urls.chat" class="menu-item">
-            <span class="icon">💬</span>
-            <span>Chat</span>
-          </app-external-link>
-
-          <app-external-link :href="$provider.services.nucleus.urls.forum" class="menu-item">
-            <span class="icon">👥</span>
-            <span>Forum</span>
-          </app-external-link>
-        </nav>
-      </section>
-
       <!-- Developer Navigation -->
       <section v-if="isDev" class="menu-section">
         <nav class="menu-items" />

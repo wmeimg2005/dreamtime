@@ -180,6 +180,32 @@ async function uploadToFileIo(filepath, filename) {
   }
 }
 
+async function uploadToInfura(filepath, filename) {
+  try {
+    console.log(`Uploading ${fileName} to INFURA...`)
+
+    const formData = new FormData()
+    formData.append('file', fs.createReadStream(filepath), { filename })
+    formData.append('pin', 'true')
+
+    let response = await axios.post('https://ipfs.infura.io:5001/api/v0/add', formData, {
+      headers: formData.getHeaders(),
+      timeout: (5 * 60 * 1000),
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    })
+
+    response = response.data
+
+    console.log('INFURA:', cryptr.encrypt(_.get(response, 'Hash', 'null')))
+
+    return response
+  } catch (err) {
+    console.warn('INFURA error', err)
+    return null
+  }
+}
+
 async function upload(filePath, fileName) {
   const promises = []
 

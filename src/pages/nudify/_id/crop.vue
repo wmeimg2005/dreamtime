@@ -5,6 +5,11 @@
     </div>
 
     <div class="cropper__help">
+      <button v-tooltip="'Get recent changes from the editor.'" class="button" @click.prevent="reload">
+        <span class="icon"><font-awesome-icon icon="sync" /></span>
+        <span>Reload</span>
+      </button>
+
       <section class="box">
         <div class="box__header">
           <h2 class="title">
@@ -75,14 +80,14 @@ export default {
   },
 
   mounted() {
-    this.createCropper()
+    this.create()
   },
 
   methods: {
     /**
      *
      */
-    async createCropper() {
+    create() {
       this.photo.cropper = new Cropper(this.$refs.cropCanvas, {
         viewMode: 0,
         dragMode: 'move',
@@ -101,7 +106,12 @@ export default {
         wheelZoomRatio: 0.03,
       })
 
-      this.cropper.replace(this.photo.file.dataURL)
+      this.reload()
+    },
+
+    async reload() {
+      await this.photo.syncEditor()
+      this.cropper.replace(this.photo.fileInput.dataURL)
     },
   },
 }
@@ -114,6 +124,10 @@ export default {
 
 .cropper__help {
   @apply w-1/4 ml-4;
+
+  .button {
+    @apply mb-6 w-full;
+  }
 
   .box p {
     @apply text-sm mb-4;

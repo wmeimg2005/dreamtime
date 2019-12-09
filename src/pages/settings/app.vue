@@ -16,17 +16,17 @@
         </box-item>
 
         <box-item
-          label="On Upload"
-          description="Select what should be done when uploading a new photo.">
+          label="Upload mode"
+          description="What will happen when uploading a photo.">
           <select v-model="currentValue.app.uploadMode" class="input">
             <option value="none">
               Stay
             </option>
             <option value="add-queue">
-              Start photo transformation
+              Start transformation
             </option>
             <option value="go-preferences">
-              Change photo preferences
+              Change preferences
             </option>
           </select>
         </box-item>

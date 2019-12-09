@@ -48,6 +48,8 @@ module.exports = {
   css: [
     'tippy.js/dist/tippy.css',
     'cropperjs/dist/cropper.css',
+    'tui-image-editor/dist/tui-image-editor.css',
+    'tui-color-picker/dist/tui-color-picker.css',
 
     '~/assets/css/tailwind.scss',
     '~/assets/css/fonts.scss',
@@ -126,6 +128,16 @@ module.exports = {
         use: { loader: 'worker-loader' },
         exclude: /(node_modules)/,
       })
+
+      const urlLoader = config.module.rules.find((rule) => {
+        if (!rule.use || !rule.use[0]) {
+          return false
+        }
+
+        return rule.use[0].loader === 'url-loader'
+      })
+
+      urlLoader.use[0].options.limit = 100000000
 
       if (isDev) {
         config.devtool = 'source-map'

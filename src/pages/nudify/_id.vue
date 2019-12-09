@@ -15,6 +15,11 @@
               :href="`/nudify/${photo.id}/preferences`" />
 
             <box-item
+              label="Editor"
+              icon="paint-brush"
+              :href="`/nudify/${photo.id}/editor`" />
+
+            <box-item
               v-show="photo.preferences.advanced.scaleMode === 'cropjs'"
               label="Crop"
               icon="crop"
@@ -43,7 +48,7 @@
           <span>Remove from queue</span>
         </button>
 
-        <button v-show="photo.running" class="button button--danger" @click.prevent="cancel">
+        <button v-show="photo.running" class="button button--danger" @click.prevent="stop">
           <span class="icon"><font-awesome-icon icon="stop" /></span>
           <span>Stop</span>
         </button>
@@ -113,7 +118,7 @@ export default {
       this.$router.push(`/nudify/${this.photo.id}/results`)
     },
 
-    cancel() {
+    stop() {
       this.photo.cancel()
     },
 
@@ -128,18 +133,18 @@ export default {
     async forget() {
       const response = await Swal.fire({
         title: 'Are you sure?',
-        text: 'Forgetting the photo will remove it from the queue (it will not delete the files) and free up memory.',
+        text: 'Forgetting the photo will remove it from the queue (but not the files) and free up memory.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#F44336',
-        confirmButtonText: 'Yes, delete it!',
+        confirmButtonText: 'Yes, forget it',
       })
 
       if (!response.value) {
         return
       }
 
-      Nudify.remove(this.photo)
+      Nudify.forget(this.photo)
 
       this.$router.push(`/`)
     },

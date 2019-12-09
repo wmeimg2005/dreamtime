@@ -28,11 +28,17 @@ const logger = Logger.create('electron')
 config.rootDir = dirname(dirname(__dirname))
 
 if (process.env.NODE_ENV === 'production') {
-  process.chdir(getPath('exe', '../'))
+  process.chdir(getPath('exe', '..'))
 }
 
 class DreamApp {
-  static async initialStart() {
+  /**
+   * @type {BrowserWindow}
+   */
+  window
+
+
+  static async boot() {
     // logger setup
     Logger.setLogLevel(process.env.LOG || 'info')
     Logger.setLogfile(getPath('userData', 'dreamtime.log'))
@@ -61,18 +67,17 @@ class DreamApp {
       return true
     })
 
-    await this.initialSetup()
-  }
+    // https://electronjs.org/docs/tutorial/notifications#windows
+    app.setAppUserModelId(process.execPath)
 
-  /**
-   *
-   */
-  static async initialSetup() {
+    // https://pracucci.com/electron-slow-background-performances.html
+    app.commandLine.appendSwitch('disable-renderer-backgrounding')
+
     // user settings.
     await settings.initialSetup()
 
-    if (settings.app.disableHardwareAcceleration) {
-      logger.info('Disabling hardware acceleration.')
+    if (settings.app ?.disableHardwareAcceleration) {
+      logger.info('Hardware acceleration disabled.')
       app.disableHardwareAcceleration()
     }
   }
@@ -92,18 +97,8 @@ class DreamApp {
    * Prepare the application.
    */
   static async setup() {
-    // https://electronjs.org/docs/tutorial/notifications#windows
-    app.setAppUserModelId(process.execPath)
-
     // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
     enforceMacOSAppLocation()
-
-    // macos activate.
-    /*
-    app.on('activate', () => {
-      this.createWindow()
-    })
-    */
 
     // application exit.
     app.on('will-quit', async (event) => {
@@ -142,6 +137,7 @@ class DreamApp {
         if (startsWith(url, 'http') || startsWith(url, 'mailto')) {
           event.preventDefault()
           shell.openExternal(url)
+          nucleus.track('EXTERNAL_LINK', { href: url })
           return
         }
 
@@ -156,8 +152,6 @@ class DreamApp {
     contextMenu({
       showSaveImageAs: true,
     })
-
-    logger.info('Starting services...')
 
     // system stats.
     await system.setup()
@@ -287,4 +281,4 @@ app.on('ready', async () => {
   }
 })
 
-DreamApp.initialStart()
+DreamApp.boot()

@@ -203,10 +203,6 @@ export default {
     },
   },
 
-  created() {
-    nucleus.track('PAGE_ABOUT')
-  },
-
   methods: {
     openAppPath() {
       shell.openItem(getAppPath())

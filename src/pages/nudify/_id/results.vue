@@ -1,18 +1,8 @@
 <template>
   <!-- Results -->
   <div v-if="photo.started" class="nudify-results">
-    <div class="results__status">
-      <h2 v-if="!photo.running">
-        Dream come true, we hope it is pleasant.
-      </h2>
-
-      <h2 v-else>
-        Hurry up, We're Dreaming
-      </h2>
-    </div>
-
     <!-- Runs -->
-    <div class="results__runs">
+    <div class="runs">
       <nudify-photo-run v-for="(run, index) in photo.runs" :key="index" :run="run" />
     </div>
   </div>
@@ -66,11 +56,16 @@ export default {
   }
 }
 
-.results__runs {
+.runs {
   @apply flex flex-wrap justify-between;
 
   .c-photo-run {
-    width: calc(1/4*100% - (1 - 1/4)*1rem);
+    @apply mb-2;
+    width: calc(1/2*100% - (1 - 1/2)*1rem);
+
+    @screen xl {
+      width: calc(1/3*100% - (1 - 1/3)*1rem);
+    }
   }
 }
 </style>

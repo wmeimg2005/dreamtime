@@ -1,0 +1,37 @@
+diff --git a/node_modules/tui-image-editor/dist/tui-image-editor.js b/node_modules/tui-image-editor/dist/tui-image-editor.js
+index 81802aa..c7c95b0 100644
+--- a/node_modules/tui-image-editor/dist/tui-image-editor.js
++++ b/node_modules/tui-image-editor/dist/tui-image-editor.js
+@@ -8383,7 +8383,7 @@ return /******/ (function(modules) { // webpackBootstrap
+ 
+ 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+ 
+-	var DRAW_OPACITY = 0.7;
++	var DRAW_OPACITY = 1.0;
+ 
+ 	/**
+ 	 * Draw ui class
+diff --git a/node_modules/tui-image-editor/src/js/ui/draw.js b/node_modules/tui-image-editor/src/js/ui/draw.js
+index 2a42926..7add9c7 100644
+--- a/node_modules/tui-image-editor/src/js/ui/draw.js
++++ b/node_modules/tui-image-editor/src/js/ui/draw.js
+@@ -3,8 +3,8 @@ import Colorpicker from './tools/colorpicker';
+ import Range from './tools/range';
+ import Submenu from './submenuBase';
+ import templateHtml from './template/submenu/draw';
+-import {defaultDrawRangeValus} from '../consts';
+-const DRAW_OPACITY = 0.7;
++import { defaultDrawRangeValus } from '../consts';
++const DRAW_OPACITY = 1.0;
+ 
+ /**
+  * Draw ui class
+@@ -12,7 +12,7 @@ const DRAW_OPACITY = 0.7;
+  * @ignore
+  */
+ class Draw extends Submenu {
+-    constructor(subMenuElement, {locale, iconStyle, menuBarPosition, usageStatistics}) {
++    constructor(subMenuElement, { locale, iconStyle, menuBarPosition, usageStatistics }) {
+         super(subMenuElement, {
+             locale,
+             name: 'draw',

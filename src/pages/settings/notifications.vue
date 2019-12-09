@@ -50,9 +50,5 @@ import { VModel } from '~/mixins'
 
 export default {
   mixins: [VModel],
-
-  created() {
-    $provider.services.nucleus.track('PAGE_SETTINGS_NOTIFICATIONS')
-  },
 }
 </script>

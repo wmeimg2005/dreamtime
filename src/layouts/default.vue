@@ -8,7 +8,7 @@
 
     <layout-jobbar />
 
-    <div class="layout__content">
+    <div id="layout-content" class="layout__content">
       <nuxt />
     </div>
   </div>
@@ -42,7 +42,7 @@ export default {
   }
 
   .layout__content {
-    @apply overflow-hidden overflow-y-auto;
+    @apply relative overflow-hidden overflow-y-auto;
     grid-area: content;
     height: calc(100vh - 80px);
   }

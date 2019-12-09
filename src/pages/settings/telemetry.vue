@@ -24,12 +24,6 @@ import { VModel } from '~/mixins'
 
 export default {
   mixins: [VModel],
-
-  data: () => ({}),
-
-  created() {
-    $provider.services.nucleus.track('PAGE_SETTINGS_TELEMETRY')
-  },
 }
 </script>
 

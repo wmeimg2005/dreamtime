@@ -25,9 +25,8 @@
         </box-item>
 
         <box-item
-          v-if="false"
           label="Masks"
-          description="Location where the algorithm masks photos will be saved.">
+          description="Location where the algorithm masks photos will be saved. We recommend selecting a temporary folder.">
           <input v-model="currentValue.folders.masks" class="input" readonly title="Change" @click.prevent="changeMasks">
         </box-item>
       </div>
@@ -45,10 +44,6 @@ const { dialog } = $provider.api
 
 export default {
   mixins: [VModel],
-
-  created() {
-    nucleus.track('PAGE_SETTINGS_FOLDERS')
-  },
 
   methods: {
     showOpenDialog(path) {

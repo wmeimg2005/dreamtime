@@ -19,6 +19,8 @@ import { settings } from '../services'
 const logger = require('logplease').create('electron:power')
 
 export function exec(args, options = {}) {
+  args.push('--debug')
+
   if (settings.processing.usePython) {
     // python script
     args.unshift('main.py')
@@ -52,9 +54,10 @@ export function exec(args, options = {}) {
 export const transform = (run) => {
   // Independent preferences for the photo
   const { preferences } = run
+  const { fileFinal, scaleMode, overlay } = run.photo
 
   // input
-  const inputFilepath = run.photo.inputFile.path
+  const inputFilepath = fileFinal.path
 
   // output
   const outputFilepath = run.outputFile.path
@@ -62,7 +65,7 @@ export const transform = (run) => {
   // CLI Args
   const args = ['run', '--input', inputFilepath, '--output', outputFilepath]
 
-  // Device preferences
+  // device preferences
   if (settings.processing.device === 'CPU') {
     args.push('--cpu', '--n-cores', settings.processing.cores)
   } else {
@@ -71,21 +74,26 @@ export const transform = (run) => {
     }
   }
 
-  // Advanced preferences
-  const { scaleMode, useColorTransfer } = preferences.advanced
+  // advanced preferences
+  const { useColorTransfer, transformMode } = preferences.advanced
 
   if (scaleMode === 'overlay') {
-    const { overlay } = run.photo
     args.push('--overlay', `${overlay.startX},${overlay.startY}:${overlay.endX},${overlay.endY}`)
   } else if (scaleMode !== 'none' && scaleMode !== 'cropjs') {
     args.push(`--${scaleMode}`)
+  }
+
+  if (transformMode === 'export-maskfin') {
+    args.push('--export-step', 4, '--export-step-path', run.maskfinFile.path)
+  } else if (transformMode === 'import-maskfin') {
+    args.push('--steps', '5:5')
   }
 
   if (useColorTransfer) {
     args.push('--color-transfer')
   }
 
-  // Body preferences
+  // body preferences
   args.push('--bsize', preferences.body.boobs.size)
   args.push('--asize', preferences.body.areola.size)
   args.push('--nsize', preferences.body.nipple.size)
