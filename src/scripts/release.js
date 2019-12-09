@@ -206,6 +206,35 @@ async function uploadToInfura(filepath, filename) {
   }
 }
 
+async function uploadToDreamLink(filepath, filename) {
+  try {
+    console.log(`Uploading ${fileName} to DreamLink...`)
+
+    const formData = new FormData()
+    formData.append('file', fs.createReadStream(filepath), { filename })
+    formData.append('pin', 'true')
+
+    let response = await axios.post('http://api.catalina.dreamnet.tech/api/v0/add', formData, {
+      headers: {
+        ...formData.getHeaders(),
+        Authorization: `Basic ${process.env.DREAMLINK_AUTH}`,
+      },
+      timeout: (5 * 60 * 1000),
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    })
+
+    response = response.data
+
+    console.log('DreamLink:', cryptr.encrypt(_.get(response, 'Hash', 'null')))
+
+    return response
+  } catch (err) {
+    console.warn('DreamLink error', err)
+    return null
+  }
+}
+
 async function upload(filePath, fileName) {
   const promises = []
 
@@ -214,12 +243,11 @@ async function upload(filePath, fileName) {
   }
 
   promises.push([
-    uploadToAnonFile(filePath, fileName),
     uploadToAnon(filePath, fileName),
     uploadToFileIo(filePath, fileName),
+    uploadToInfura(filePath, fileName),
+    uploadToDreamLink(filePath, fileName),
   ])
-
-  // TODO: Upload to DreamLink
 
   return Promise.all(promises)
 }
