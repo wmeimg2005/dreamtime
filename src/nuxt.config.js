@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable nuxt/no-cjs-in-config */
 
-const nodeExternals = require('webpack-node-externals')
+const dev = process.env.NODE_ENV === 'development'
 
 module.exports = {
   mode: 'spa',
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   /**
-   * Dev-Server settings
+   * Server settings
    */
   server: {
     port: process.env.SERVER_PORT,
@@ -48,6 +48,8 @@ module.exports = {
   css: [
     'tippy.js/dist/tippy.css',
     'cropperjs/dist/cropper.css',
+    'tui-image-editor/dist/tui-image-editor.css',
+    'tui-color-picker/dist/tui-color-picker.css',
 
     '~/assets/css/tailwind.scss',
     '~/assets/css/fonts.scss',
@@ -79,6 +81,9 @@ module.exports = {
    */
   axios: {},
 
+  /**
+   *
+   */
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.scss',
   },
@@ -86,21 +91,41 @@ module.exports = {
   /**
    *
    */
-  dev: process.env.NODE_ENV === 'development',
+  purgeCSS: {
+    enabled: true,
+    whitelistPatterns: [/tooltip/, /cropper/, /tui/, /color-picker/],
+  },
+
+  /**
+   *
+   */
+  eslint: {
+    cache: dev,
+  },
+
+  /**
+   *
+   */
+  dev,
 
   /*
    ** Build configuration
    */
   build: {
-    analyze: false,
+    parallel: true,
 
-    extractCSS: true,
+    hardSource: dev,
 
-    parallel: false,
+    cache: dev,
+
+    extractCSS: !dev,
 
     babel: {
+      sourceType: 'unambiguous',
+
       plugins: [
-        ['@babel/plugin-proposal-class-properties', { loose: true }],
+        'lodash',
+        '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-optional-chaining',
         [
@@ -115,10 +140,32 @@ module.exports = {
       ],
     },
 
+    loaders: {
+      imgUrl: {
+        limit: 10 * 1000,
+      },
+    },
+
+    terser: {
+      parallel: true,
+    },
+
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      },
+    },
+
     /*
      ** You can extend webpack config here
      */
-    extend(config, { isClient, isDev }) {
+    extend(config, { isDev }) {
       config.target = 'electron-renderer'
 
       config.module.rules.push({
@@ -126,6 +173,11 @@ module.exports = {
         use: { loader: 'worker-loader' },
         exclude: /(node_modules)/,
       })
+
+      const webpack = require('webpack')
+
+      // eslint-disable-next-line no-useless-escape
+      config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/))
 
       if (isDev) {
         config.devtool = 'source-map'

@@ -11,7 +11,6 @@ import {
   isNil, isEmpty, truncate, deburr, forIn, cloneDeep,
 } from 'lodash'
 import deferred from 'deferred'
-import moment from 'moment'
 import { File } from '../file'
 import { Timer } from '../timer'
 import { rand } from '../helpers'
@@ -21,6 +20,7 @@ import preferencesConfig from '../config/preferences'
 const { settings, nucleus } = $provider.services
 const { transform } = $provider.tools.power
 const { activeWindow } = $provider.util
+const { getMasksPath } = $provider.tools.paths
 
 export class PhotoRun {
   /**
@@ -42,6 +42,11 @@ export class PhotoRun {
    * @type {File}
    */
   outputFile
+
+  /**
+   * @type {File}
+   */
+  maskfinFile
 
   /**
    * @type {string}
@@ -88,7 +93,7 @@ export class PhotoRun {
   }
 
   get outputName() {
-    const now = moment().unix()
+    const now = Date.now()
     const { file } = this.photo
 
     const originalName = truncate(
@@ -96,9 +101,7 @@ export class PhotoRun {
       { length: 30, omission: '' },
     )
 
-    const extension = file.mimetype === 'image/gif' ? 'gif' : 'png'
-
-    return `${originalName}-${now}-dreamtime.${extension}`
+    return `${originalName}-${this.id}${now}-dreamtime${file.extension}`
   }
 
   constructor(id, photo) {
@@ -107,6 +110,9 @@ export class PhotoRun {
 
     // output file
     this.outputFile = new File(photo.getFolderPath(this.outputName))
+
+    // maskfin file
+    this.maskfinFile = new File(getMasksPath(`maskfin-${this.outputName}`))
 
     // preferences
     this.preferences = cloneDeep(this.photo.preferences)
@@ -129,11 +135,13 @@ export class PhotoRun {
   toObject() {
     return {
       photo: {
-        inputFile: this.photo.inputFile,
+        fileFinal: this.photo.fileFinal,
+        scaleMode: this.photo.scaleMode,
         overlay: this.photo.overlay,
       },
-      outputFile: this.outputFile,
       preferences: this.preferences,
+      outputFile: this.outputFile,
+      maskfinFile: this.maskfinFile,
     }
   }
 
@@ -185,8 +193,13 @@ export class PhotoRun {
     })
 
     this.process.on('success', async () => {
-      await this.outputFile.open()
+      await Promise.all([
+        this.outputFile.open(),
+        this.maskfinFile.open(),
+      ])
+
       nucleus.track('DREAM_COMPLETED')
+
       def.resolve()
     })
 
@@ -194,7 +207,6 @@ export class PhotoRun {
       if (fileError) {
         def.reject(new AppError('DreamPower has transformed the photo but could not save it.', { title: `Run ${this.id} failed!`, level: 'warn' }))
       } else {
-        console.log(this.getPowerError())
         def.reject(this.getPowerError())
       }
     })
@@ -295,7 +307,8 @@ export class PhotoRun {
       return
     }
 
-    const notification = new Notification(`📷 ${this.file.fullname} - Run ${this.id} has finished.`)
+    // eslint-disable-next-line no-new
+    new Notification(`📷 ${this.file.fullname} - Run ${this.id} has finished.`)
 
     /*
     notification.onclick = () => {

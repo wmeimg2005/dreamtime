@@ -11,15 +11,15 @@
 
 # DreamTime
 
-DreamTime allows you to use the power of your computer to to undress photos for free, better than DeepNude.
+DreamTime allows you to use the power of your computer to nudify photos for free and better than DeepNude.
 
 ![](assets/preview.png)
 
-If you want to share or modify this Software please do it for the same purpose as we do and always release the source code of your modifications. Read the [LICENSE](LICENSE) for more information.
+If you want to share or modify this software please do it for the same purpose as we do and always release the source code of your modifications. Read the [LICENSE](LICENSE) for more information.
 
 ---
 
-# 💜 Releases
+# 🎉 Releases
 
 ## Requirements
 
@@ -37,7 +37,7 @@ If you want to share or modify this Software please do it for the same purpose a
   - **6 GB+** of VRAM.
   - [Latest NVIDIA drivers.](https://www.nvidia.com/Download/index.aspx)
 
-> 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing.
+> 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing (slower).
 
 ## Download
 
@@ -47,15 +47,21 @@ If you want to share or modify this Software please do it for the same purpose a
 
 ### Mirrors
 
-[![Windows](https://img.shields.io/badge/windows-v1.1.2-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.2/DreamTime-v1.1.2-windows.exe)
+[![Windows](https://img.shields.io/badge/windows-v1.2.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-windows.exe)
 
-[![Ubuntu](https://img.shields.io/badge/ubuntu-v1.1.2-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.2/DreamTime-v1.1.2-ubuntu.deb)
+[![Ubuntu](https://img.shields.io/badge/ubuntu-v1.2.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-ubuntu.deb)
 
-[![macOS](https://img.shields.io/badge/macos-v1.1.2-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.1.2/DreamTime-v1.1.2-macos.dmg)
+[![macOS](https://img.shields.io/badge/macos-v1.2.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-macos.dmg)
+
+## Manual
+
+In each update we add new features that make the program a bit more complex, we invite you to read the manual so you don't miss out and take advantage of all the features:
+
+https://forum.dreamnet.tech/d/32-dreamtime-manual
 
 # DreamNet
 
-We are a community interested in developing decentralized applications free of censorship and adult entertainment. Join our social networks or repositories:
+We are a community interested in developing adult entertainment and decentralized applications. Join our social networks:
 
 - [Website](https://dreamnet.tech)
 - [GitHub](https://github.com/dreamnettech)
@@ -64,7 +70,7 @@ We are a community interested in developing decentralized applications free of c
 
 ## Support
 
-Developing DreamNet applications is time consuming! Help us accelerate development and offer better updates!
+Developing our applications is time consuming! Help us accelerate development and offer better updates!
 
 [![patreon](https://img.shields.io/badge/become%20a%20patron-fb6c54?logo=patreon&logoColor=white&style=for-the-badge)](https://www.patreon.com/dreamnet)
 
@@ -74,7 +80,7 @@ Developing DreamNet applications is time consuming! Help us accelerate developme
 
 ## Contact
 
-Do you have any problem? Doubts? or you are simply interested in chatting with the main developer, any email (except SPAM) is welcome:
+Problems? Doubts? or you are simply interested in chatting with the main developer, you can contact me at:
 
 `ivan[at]dreamnet.tech`
 

@@ -9,14 +9,13 @@
 
 import {
   startsWith, find, isNil,
-  filter, map, debounce,
+  filter, debounce,
   remove, clone,
 } from 'lodash'
-import { join } from 'path'
+import { basename } from 'path'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
 import Swal from 'sweetalert2'
-import delay from 'delay'
 import { events } from '../events'
 import { Photo } from './photo'
 import { File } from '../file'
@@ -25,9 +24,17 @@ import { getFilesMetadata } from '~/workers/fs'
 const logger = require('logplease').create('nudify')
 
 const { settings } = $provider.services
-const { existsSync, statSync, readdir } = $provider.tools.fs
 
 const MAX_PHOTOS = 1000
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'bottom-end',
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+  target: '#layout-content',
+})
 export class Nudify {
   /**
    * @type {Queue}
@@ -121,8 +128,8 @@ export class Nudify {
    *
    * @param {File} input
    */
-  static add(file) {
-    const photo = new Photo(file)
+  static add(file, params = {}) {
+    const photo = new Photo(file, params)
 
     const exists = find(this.photos, ['id', photo.id])
 
@@ -133,6 +140,7 @@ export class Nudify {
     this.photos.unshift(photo)
 
     logger.debug('Photo added!', photo.file.fullname)
+
     this.emitUpdate()
 
     if (this.photos.length > MAX_PHOTOS) {
@@ -140,12 +148,16 @@ export class Nudify {
       this.photos.pop()
     }
 
-    const { uploadMode } = settings.app
+    if (params.isMaskfin) {
+      window.$router.push(`/nudify/${photo.id}/editor`)
+    } else {
+      const { uploadMode } = settings.app
 
-    if (uploadMode === 'add-queue') {
-      this.addToQueue(photo)
-    } else if (uploadMode === 'go-preferences') {
-      window.$router.push(`/nudify/${photo.id}`)
+      if (uploadMode === 'add-queue') {
+        this.addToQueue(photo)
+      } else if (uploadMode === 'go-preferences') {
+        window.$router.push(`/nudify/${photo.id}/preferences`)
+      }
     }
   }
 
@@ -153,8 +165,9 @@ export class Nudify {
    *
    * @param {string} filepath
    */
-  static async addFile(filepath, skipErrors = false) {
+  static async addFile(filepath) {
     const filesMetadata = await getFilesMetadata(filepath)
+    const multiple = filesMetadata.length > 1
 
     filesMetadata.forEach((metadata) => {
       const file = File.fromMetadata(metadata)
@@ -162,12 +175,17 @@ export class Nudify {
       try {
         this.add(file)
       } catch (err) {
-        if (skipErrors) {
+        if (multiple) {
           logger.warn('Error adding a photo, skipped.', err)
         } else {
           throw err
         }
       }
+    })
+
+    Toast.fire({
+      icon: 'success',
+      title: basename(filepath),
     })
   }
 
@@ -175,14 +193,21 @@ export class Nudify {
    *
    * @param {string} paths
    */
-  static addFiles(paths) {
-    const promises = []
+  static async addFiles(paths) {
+    Swal.fire({
+      title: 'Importing files...',
+      text: 'One moment, please.',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    })
+
+    Swal.showLoading()
 
     for (const path of paths) {
-      promises.push(this.addFile(path, true))
+      // eslint-disable-next-line no-await-in-loop
+      await this.addFile(path)
     }
-
-    return Promise.all(promises)
   }
 
   /**
@@ -278,7 +303,7 @@ export class Nudify {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#F44336',
-      confirmButtonText: 'Yes, forget it!',
+      confirmButtonText: 'Yes, forget it',
     })
 
     if (!response.value) {

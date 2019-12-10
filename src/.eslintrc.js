@@ -22,7 +22,8 @@ module.exports = {
     AppError: false
   },
   parserOptions: {
-    parser: "babel-eslint"
+    parser: "babel-eslint",
+    allowImportExportEverywhere: true
   },
   plugins: [
     "import",
@@ -35,6 +36,7 @@ module.exports = {
   rules: {
     "class-methods-use-this": "off",
     "comma-dangle": "warn",
+    "global-require": "off",
     "import/default": "off",
     "import/no-webpack-loader-syntax": "off",
     "import/order": "error",
@@ -55,6 +57,7 @@ module.exports = {
     "lodash/prefer-lodash-method": "off",
     "lodash/prefer-lodash-typecheck": "warn",
     "lodash/prefer-noop": "off",
+    "import/extensions": "off",
     "max-len": "off",
     "func-names": "off",
     "no-await-in-loop": "warn",

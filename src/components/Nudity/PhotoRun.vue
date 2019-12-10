@@ -1,100 +1,124 @@
 <template>
-  <div class="c-photo-run">
-    <figure class="run__preview">
-      <app-photo v-if="previewDataURL" :src="previewDataURL" />
-    </figure>
+  <div class="c-photo-run" :style="previewStyle">
+    <div class="run__content">
+      <div v-if="run.running" class="content__item">
+        <p class="text-white">
+          <span><font-awesome-icon icon="running" /></span>
+          <span>{{ run.timer.duration }}s</span>
+        </p>
+      </div>
 
-    <div class="box run__content">
-      <div class="box__content">
-        <details v-show="run.running || run.failed" class="run__section" open>
-          <summary class="section__title">
-            Status
-          </summary>
+      <div v-else-if="run.failed" class="content__item">
+        <p class="text-danger-500">
+          <span><font-awesome-icon icon="exclamation-circle" /></span>
+          <span>Error!</span>
+        </p>
+      </div>
 
-          <div class="section__content">
-            <p v-show="run.running" class="text-white font-bold text-xl">
-              <font-awesome-icon icon="running" /> Running ({{ run.timer.duration }}s)
-            </p>
+      <div v-else-if="run.finished" class="content__item">
+        <p class="text-white">
+          <span><font-awesome-icon icon="heart" /></span>
+          <span>{{ run.timer.duration }}s</span>
+        </p>
+      </div>
 
-            <p v-show="run.failed" class="text-danger-500 font-bold text-xl">
-              <font-awesome-icon icon="exclamation-circle" /> Error!
-            </p>
-          </div>
-        </details>
+      <div v-else class="content__item">
+        <p class="text-white">
+          <span><font-awesome-icon icon="clock" /></span>
+        </p>
+      </div>
 
-        <details class="run__section" open>
-          <summary class="section__title">
-            Actions
-          </summary>
+      <div v-show="run.finished && !run.failed" class="content__item">
+        <button v-tooltip="'Save photo'" class="button button--success button--sm" @click.prevent="save">
+          <font-awesome-icon icon="download" />
+        </button>
+      </div>
 
-          <div class="section__content">
-            <button v-show="run.finished" class="button button--success" @click.prevent="save">
-              Save
-            </button>
+      <div v-show="run.finished" class="content__item">
+        <button v-tooltip="'Rerun'" class="button button--danger button--sm" @click.prevent="rerun">
+          <font-awesome-icon icon="undo" />
+        </button>
+      </div>
 
-            <button v-show="run.finished" class="button button--danger" @click.prevent="rerun">
-              Rerun
-            </button>
+      <div v-show="run.running" class="content__item">
+        <button v-tooltip="'Stop'" class="button button--danger button--sm" @click.prevent="cancel">
+          <font-awesome-icon icon="stop" />
+        </button>
+      </div>
 
-            <button v-show="run.running" class="button button--danger" @click.prevent="cancel">
-              Cancel
-            </button>
-          </div>
-        </details>
+      <div v-show="hasMaskfin" class="content__item">
+        <button v-tooltip="'View maskfin'" class="button button--info button--sm" @click.prevent="$refs.maskfinDialog.showModal()">
+          <font-awesome-icon icon="mask" />
+        </button>
+      </div>
 
-        <details class="run__section">
-          <summary class="section__title">
-            Preferences
-          </summary>
+      <div v-if="false" class="content__item">
+        <button v-tooltip="'View preferences'" class="button button--info button--sm">
+          <font-awesome-icon icon="sliders-h" />
+        </button>
+      </div>
 
-          <div class="section__preferences">
-            <p>
-              <span class="preference__name">Boobs size</span>
-              <span class="preference__value">{{ run.preferences.body.boobs.size | size }}</span>
-            </p>
-
-            <p>
-              <span class="preference__name">Areola size</span>
-              <span class="preference__value">{{ run.preferences.body.areola.size | size }}</span>
-            </p>
-
-            <p>
-              <span class="preference__name">Nipple size</span>
-              <span class="preference__value">{{ run.preferences.body.nipple.size | size }}</span>
-            </p>
-
-            <p>
-              <span class="preference__name">Vagina size</span>
-              <span class="preference__value">{{ run.preferences.body.vagina.size | size }}</span>
-            </p>
-
-            <p>
-              <span class="preference__name">Pubic Hair size</span>
-              <span class="preference__value">{{ run.preferences.body.pubicHair.size | size }}</span>
-            </p>
-          </div>
-        </details>
-
-        <details class="run__section">
-          <summary class="section__title">
-            Console
-          </summary>
-
-          <div class="section__console">
-            <li v-for="(item, index) in run.cli.lines" :key="index" :class="item.css">
-              > {{ item.text }}
-            </li>
-          </div>
-        </details>
+      <div class="content__item">
+        <button v-tooltip="'View terminal'" class="button button--sm" @click.prevent="$refs.terminalDialog.showModal()">
+          <font-awesome-icon icon="terminal" />
+        </button>
       </div>
     </div>
+
+    <!-- Maskfin Dialog -->
+    <dialog ref="maskfinDialog">
+      <div class="dialog__content dialog__maskfin">
+        <div class="maskfin__preview">
+          <img :src="run.maskfinFile.dataURL">
+        </div>
+
+        <div class="maskfin__description">
+          <p>This is the Maskfin, a mask that represents in layers the areas that the algorithm will replace with the fake nude.</p>
+          <p>Click on the "Add to queue" button to add it as an additional photo, edit the layers and continue with the nudification. You can also save it to your computer, edit it with an external program and continue the nudification manually.</p>
+          <p>For more information please consult the <a :href="manualURL" target="_blank">manual</a>.</p>
+        </div>
+
+        <div class="dialog__buttons">
+          <button class="button" @click.prevent="addMaskToQueue">
+            Add to queue
+          </button>
+
+          <button class="button button--success" @click.prevent="saveMask">
+            Save
+          </button>
+
+          <button class="button button--danger" @click.prevent="$refs.maskfinDialog.close()">
+            Close
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Terminal Dialog -->
+    <dialog ref="terminalDialog">
+      <div class="dialog__content">
+        <div class="terminal">
+          <li v-for="(item, index) in run.cli.lines" :key="index" :class="item.css">
+            > {{ item.text }}
+          </li>
+        </div>
+
+        <div class="dialog__buttons">
+          <button class="button button--danger" @click.prevent="$refs.terminalDialog.close()">
+            Close
+          </button>
+        </div>
+      </div>
+    </dialog>
   </div>
 </template>
 
 <script>
 import { isNil } from 'lodash'
+import { Nudify } from '~/modules/nudify'
 
 const { showSaveDialogSync } = $provider.api.dialog
+const { nucleus } = $provider.services
 
 export default {
   filters: {
@@ -118,6 +142,22 @@ export default {
     previewDataURL() {
       return this.run.outputFile.dataURL
     },
+
+    previewStyle() {
+      if (!this.previewDataURL) {
+        return {}
+      }
+
+      return { backgroundImage: `url(${this.previewDataURL})` }
+    },
+
+    hasMaskfin() {
+      return this.run.maskfinFile.exists
+    },
+
+    manualURL() {
+      return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
+    },
   },
 
   watch: {
@@ -134,6 +174,8 @@ export default {
         defaultPath: this.run.outputName,
         filters: [
           { name: 'PNG', extensions: ['png'] },
+          { name: 'JPG', extensions: ['jpg'] },
+          { name: 'GIF', extensions: ['gif'] },
         ],
       })
 
@@ -151,115 +193,108 @@ export default {
     cancel() {
       this.run.photo.cancelRun(this.run)
     },
+
+    addMaskToQueue() {
+      Nudify.add(this.run.maskfinFile, { isMaskfin: true })
+    },
+
+    saveMask() {
+      const savePath = showSaveDialogSync({
+        defaultPath: `maskfin-${this.run.outputName}`,
+        filters: [
+          { name: 'PNG', extensions: ['png'] },
+          { name: 'JPG', extensions: ['jpg'] },
+          { name: 'GIF', extensions: ['gif'] },
+        ],
+      })
+
+      if (isNil(savePath)) {
+        return
+      }
+
+      this.run.maskfinFile.copy(savePath)
+    },
+
+    viewPreferences() {
+
+    },
+
+    viewTerminal() {
+
+    },
   },
 }
 </script>
 
 <style lang="scss">
 .c-photo-run {
-  @apply flex flex-col;
+  @apply bg-cover bg-center border border-dark-500;
+  @apply relative;
+  background-image: url('~@/assets/images/background.png');
+  height: 512px;
 
-
-  /*
-  .__preview {
-    @apply flex justify-center items-center
-        rounded rounded-tr-none rounded-br-none
-        border-2 border-dark-500 border-r-0
-        text-3xl;
-    width: 125px;
-    height: 125px;
-
-    img {
-      @apply w-full h-full rounded rounded-tr-none rounded-br-none;
-      transition: all 0.15s ease-in-out;
-
-      &:hover {
-        @apply rounded z-50;
-        transform: scale(3);
-      }
+  &:hover {
+    .run__content {
+      @apply opacity-100;
     }
   }
-
-  .__content {
-    @apply flex-1 flex flex-col
-        bg-dark-500
-        rounded
-        rounded-tl-none
-        rounded-bl-none
-        px-4
-        shadow;
-
-    width: 200px;
-
-    .__section {
-      @apply py-2;
-
-      &:not(:last-child) {
-        @apply border-b border-dark-400;
-      }
-
-      .__title {
-        @apply text-xs uppercase text-generic-300 mb-2 cursor-pointer;
-      }
-
-      .__status {
-        @apply flex justify-center
-          text-xl font-bold;
-      }
-
-      .__buttons {
-        @apply flex justify-center items-center;
-      }
-
-      .__console {
-        @apply p-2 bg-black overflow-auto rounded;
-        height: 150px;
-
-        li {
-          @apply font-mono text-xs text-generic-100 mb-2 block;
-
-          &.text-danger {
-            @apply text-danger;
-          }
-        }
-      }
-
-      .__preferences {
-        p {
-          @apply text-sm;
-
-          .__name {
-            @apply inline-block text-generic-300;
-            width: 150px;
-          }
-
-          .__value {
-            @apply inline-block font-bold text-generic-100;
-          }
-        }
-      }
-    }
-  }
-  */
-}
-
-.run__preview {
-  @apply flex justify-center;
 }
 
 .run__content {
-  .run__section {
-    &:not(:last-child) {
-      @apply mb-4;
+  @apply opacity-0 bg-dark-500-90 w-full;
+  @apply absolute bottom-0;
+  @apply flex;
+  transition: all .1s linear;
+  height: 100px;
+
+  .content__item {
+    @apply flex-1 flex justify-center items-center;
+
+    &:not(:first-child) {
+      @apply mr-2;
+    }
+
+    .button {
+      @apply w-full;
+    }
+
+    p {
+      @apply font-bold text-center;
+
+      span {
+        @apply block;
+      }
     }
   }
+}
 
-  .section__title {
-    @apply text-generic-300 font-semibold cursor-pointer outline-none;
+.dialog__maskfin {
+  a {
+    @apply text-primary-500 underline;
   }
 
-  .section__content {
-    @apply px-4 pt-2 text-center;
+  .maskfin__preview {
+    @apply mb-4;
+  }
+
+  .maskfin__description {
+    @apply text-sm mb-4;
+
+    p {
+      @apply mb-2;
+    }
+  }
+}
+
+.dialog__buttons {
+  @apply flex;
+
+  .button {
+    @apply flex-1;
+
+    &:not(:last-child) {
+      @apply mr-2;
+    }
   }
 }
 
@@ -278,9 +313,9 @@ export default {
   }
 }
 
-.section__console {
-  @apply p-2 bg-black overflow-auto rounded;
-  height: 150px;
+.terminal {
+  @apply p-2 mb-2 bg-black overflow-auto rounded;
+  height: 400px;
 
   li {
     @apply font-mono text-xs text-generic-100 mb-2 block;

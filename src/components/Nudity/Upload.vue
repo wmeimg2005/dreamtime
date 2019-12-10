@@ -3,17 +3,17 @@
     <div class="uploader__settings box box--items">
       <div class="box__content">
         <box-item
-          label="Upload Mode"
-          description="Select what should be done when uploading a new photo.">
+          label="Upload mode"
+          description="What will happen when uploading a photo.">
           <select v-model="$settings.app.uploadMode" class="input">
             <option value="none">
               Stay
             </option>
             <option value="add-queue">
-              Start photo transformation
+              Start transformation
             </option>
             <option value="go-preferences">
-              Change photo preferences
+              Change preferences
             </option>
           </select>
         </box-item>
@@ -40,10 +40,10 @@
         <div class="box__header">
           <h2 class="title">
             <span class="icon"><font-awesome-icon icon="image" /></span>
-            <span>File.</span>
+            <span>Photo.</span>
           </h2>
           <h3 class="subtitle">
-            Select a file from your computer.
+            Select one or more photos from your computer.
           </h3>
         </div>
 
@@ -70,7 +70,7 @@
             <span>Folder.</span>
           </h2>
           <h3 class="subtitle">
-            Select a folder from your computer. All valid photos will be transformed.
+            Select one or more folders on your computer. All valid photos inside will be uploaded.
           </h3>
         </div>
 
@@ -132,7 +132,6 @@ import {
   isNil, isEmpty, startsWith,
   map, isArray,
 } from 'lodash'
-import Swal from 'sweetalert2'
 import { Nudify } from '~/modules/nudify'
 
 const { nucleus } = $provider.services
@@ -174,17 +173,7 @@ export default {
         return
       }
 
-      Swal.fire({
-        title: 'Importing files...',
-        text: 'One moment, please.',
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      })
-
       await Nudify.addFiles(files)
-
-      Swal.close()
     },
 
     /**
@@ -294,7 +283,7 @@ export default {
       } else if (files.length > 0) {
         const paths = map(files, 'path')
         this.addFiles(paths)
-        nucleus.track('UPLOAD_DROP')
+        nucleus.track('UPLOAD_DROP_FILE')
       }
     },
   },

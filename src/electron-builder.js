@@ -21,8 +21,8 @@ module.exports = {
     '!**/{appveyor.yml,.travis.yml,circle.yml}',
     '!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}',
     '!**/{jsconfig.json,electron-builder.js,.eslintrc.js,.env-cmdrc.js,.codeclimate.yml,.babelrc,tailwind.config.js,nucleus.json}',
-    '!**/{components,cli,layouts,middleware,mixins,pages,patches,plugins,scripts,store,third}',
-    '!**/{static,assets}',
+    '!{components,cli,layouts,middleware,mixins,pages,patches,plugins,scripts,store,third,coverage,.nuxt,test,workers}',
+    '!{static,assets}',
     '!**/electron/src',
   ],
   extraFiles: [

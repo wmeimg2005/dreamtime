@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  clone, isNil,
+  cloneDeep, isNil, merge,
 } from 'lodash'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
@@ -37,7 +37,12 @@ export class Photo {
   /**
    * @type {File}
    */
-  fileCropped
+  fileEditor
+
+  /**
+   * @type {File}
+   */
+  fileCrop
 
   /**
    * @type {EventBus}
@@ -84,9 +89,14 @@ export class Photo {
   timer = new Timer()
 
   /**
-   * @type {Object}
+   * @type {require('cropperjs').default}
    */
   cropper
+
+  /**
+   * @type {require('tui-image-editor').default}
+   */
+  editor
 
   /**
    * @type {Object}
@@ -128,9 +138,51 @@ export class Photo {
     return this.running || this.finished
   }
 
-  get inputFile() {
-    if (this.preferences.advanced.scaleMode === 'cropjs') {
-      return this.fileCropped
+  get canModify() {
+    return this.file.mimetype !== 'image/gif'
+  }
+
+  get scaleMode() {
+    const { scaleMode } = this.preferences.advanced
+
+    if (scaleMode === 'cropjs' && !this.fileCrop.exists) {
+      // no crop, automatically rescale for convenience
+      return 'auto-rescale'
+    }
+
+    if ((scaleMode === 'cropjs' || scaleMode === 'overlay') && !this.canModify) {
+      // this file can't be modified
+      return 'auto-rescale'
+    }
+
+    return scaleMode
+  }
+
+  /**
+   * Final file to process.
+   *
+   * @type {File}
+   */
+  get fileFinal() {
+    if (this.scaleMode === 'cropjs') {
+      return this.fileCrop
+    }
+
+    if (this.canModify && this.fileEditor.exists) {
+      return this.fileEditor
+    }
+
+    return this.file
+  }
+
+  /**
+   * File for the croppper.
+   *
+   * @type {File}
+   */
+  get fileInput() {
+    if (this.fileEditor.exists) {
+      return this.fileEditor
     }
 
     return this.file
@@ -141,24 +193,94 @@ export class Photo {
    * @param {File} file
    * @param {*} [model]
    */
-  constructor(file, model) {
+  constructor(file, { isMaskfin = false, model = null } = {}) {
     this.id = file.md5
 
     this.file = file
 
-    this.fileCropped = file.mimetype === 'image/gif' ? new File(getCropPath(`${this.id}.gif`)) : new File(getCropPath(`${this.id}.png`))
+    this.fileEditor = new File(getCropPath(`${this.id}-editor${file.extension}`), 'editor')
 
-    this.preferences = clone(settings.preferences)
+    this.fileCrop = new File(getCropPath(`${this.id}-crop${file.extension}`), 'crop')
 
-    this._logger = Logger.create(`nudify:photo:${this.id}`)
+    this._logger = Logger.create(`nudify:photo:${file.fullname}`)
+
+    this._setupPreferences(isMaskfin)
 
     this._validate()
 
     this._setupQueue()
   }
 
+  async syncEditor() {
+    if (isNil(this.editor)) {
+      return
+    }
+
+    const dataURL = this.editor.toDataURL({
+      format: this.file.extension.substring(1),
+      quality: 1,
+      multiplier: 1,
+    })
+
+    await this.fileEditor.writeDataURL(dataURL)
+    this._logger.debug(`Saved editor photo.`)
+  }
+
+  async syncCrop() {
+    if (isNil(this.cropper)) {
+      return
+    }
+
+    const canvas = this.cropper.getCroppedCanvas({
+      width: 512,
+      height: 512,
+      minWidth: 512,
+      minHeight: 512,
+      maxWidth: 512,
+      maxHeight: 512,
+      fillColor: 'white',
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high',
+    })
+
+    const dataURL = canvas.toDataURL(this.fileCrop.mimetype, 1)
+
+    await this.fileCrop.writeDataURL(dataURL)
+    this._logger.debug(`Saved crop photo.`)
+  }
+
   getFolderPath(...args) {
     return getModelsPath(this.folderName, ...args)
+  }
+
+  _setupPreferences(isMaskfin) {
+    this.preferences = cloneDeep(settings.preferences)
+    let forcedPreferences = {}
+
+    if (isMaskfin) {
+      forcedPreferences = {
+        body: {
+          executions: 1,
+          randomize: false,
+          progressive: {
+            enabled: false,
+          },
+        },
+        advanced: {
+          scaleMode: 'auto-rescale',
+          transformMode: 'import-maskfin',
+          useColorTransfer: false,
+        },
+      }
+    } else if (!this.canModify) {
+      forcedPreferences = {
+        advanced: {
+          transformMode: 'normal',
+        },
+      }
+    }
+
+    this.preferences = merge(this.preferences, forcedPreferences)
   }
 
   _validate() {
@@ -174,8 +296,14 @@ export class Photo {
   }
 
   _setupQueue() {
+    let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (10 * 60 * 1000)
+
+    if (this.file.mimetype === 'image/gif') {
+      maxTimeout += (30 * 60 * 1000)
+    }
+
     this.queue = new Queue(this._run, {
-      maxTimeout: settings.processing.device === 'GPU' ? (2 * 60 * 1000) : (10 * 60 * 1000),
+      maxTimeout,
       // maxRetries: 2,
       // retryDelay: 1000,
       afterProcessDelay: 500,
@@ -235,24 +363,17 @@ export class Photo {
 
   async start() {
     const { executions } = this.preferences.body
-    const { scaleMode } = this.preferences.advanced
 
     if (executions === 0) {
       return
     }
 
-    if (scaleMode === 'cropjs') {
-      try {
-        await this.crop()
-      } catch (err) {
-        this.removeFromQueue()
-        throw err
-      }
-    }
+    await this.syncEditor()
+    await this.syncCrop()
 
     this.reset()
 
-    this._logger.debug(`Transforming ${this.file.fullname} with ${executions} runs.`)
+    this._logger.debug(`Starting ${executions} runs.`)
 
     this._onStart()
 
@@ -287,27 +408,6 @@ export class Photo {
     this.queue.push(run)
 
     this._onStart()
-  }
-
-  async crop() {
-    if (isNil(this.cropper)) {
-      throw new AppError('This photo has the manual crop selected, you must open the Crop at least once to continue.', { title: `${this.file.fullname} it is not ready.`, level: 'warn' })
-    }
-
-    const canvas = this.cropper.getCroppedCanvas({
-      width: 512,
-      height: 512,
-      minWidth: 512,
-      minHeight: 512,
-      maxWidth: 512,
-      maxHeight: 512,
-      fillColor: 'white',
-      imageSmoothingEnabled: true,
-      imageSmoothingQuality: 'high',
-    })
-
-    const dataURL = canvas.toDataURL(this.fileCropped.mimetype, 1)
-    await this.fileCropped.writeDataURL(dataURL)
   }
 
   _run(run, cb) {
@@ -356,7 +456,8 @@ export class Photo {
       return
     }
 
-    const notification = new Notification(`📷 ${this.file.fullname} has finished.`, {
+    // eslint-disable-next-line no-new
+    new Notification(`📷 ${this.file.fullname} has finished.`, {
       body: 'The photo has completed the transformation process.',
     })
 

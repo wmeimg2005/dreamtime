@@ -1,9 +1,11 @@
 <template>
   <div class="home content-body">
-    <div v-if="alert" class="notification is-warning" v-html="alert" />
+    <!-- Global alert -->
+    <div v-if="alert" class="notification" v-html="alert" />
 
-    <div v-if="$nudify.photos.length >= 500" class="notification is-warning">
-      The application may become unstable by keeping {{ $nudify.photos.length }} photos in the queue.
+    <!-- Update alert -->
+    <div v-if="dreamtimeUpdater.available" class="notification notification--warning cursor-pointer" @click="$router.push('/about')">
+      🎉 {{ $dream.name }} {{ dreamtimeUpdater.latest.tag_name }} is available for download, update now!
     </div>
 
     <!-- Quick Upload -->
@@ -12,9 +14,15 @@
 </template>
 
 <script>
+import { dreamtime as dreamtimeUpdater } from '~/modules/updater'
+
 const { nucleus } = $provider.services
 
 export default {
+  data: () => ({
+    dreamtimeUpdater,
+  }),
+
   computed: {
     alert() {
       return nucleus.alerts?.index

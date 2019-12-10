@@ -5,6 +5,11 @@
     </div>
 
     <div class="cropper__help">
+      <button v-tooltip="'Get recent changes from the editor.'" class="button" @click.prevent="reload">
+        <span class="icon"><font-awesome-icon icon="sync" /></span>
+        <span>Reload</span>
+      </button>
+
       <section class="box">
         <div class="box__header">
           <h2 class="title">
@@ -45,20 +50,6 @@
           </p>
         </div>
       </section>
-
-      <section class="box">
-        <div class="box__header">
-          <h2 class="title">
-            <font-awesome-icon icon="info-circle" /> Do not leave empty spaces.
-          </h2>
-        </div>
-
-        <div class="box__content">
-          <p>
-            Leaving empty spaces will cause the transformation to fail.
-          </p>
-        </div>
-      </section>
     </div>
   </div>
 </template>
@@ -79,14 +70,14 @@ export default {
   },
 
   mounted() {
-    this.createCropper()
+    this.create()
   },
 
   methods: {
     /**
      *
      */
-    async createCropper() {
+    async create() {
       this.$refs.cropCanvas.addEventListener('crop', () => {
         const data = this.cropper.getData()
 
@@ -99,7 +90,7 @@ export default {
       })
 
       this.cropper = new Cropper(this.$refs.cropCanvas, {
-        viewMode: 0,
+        viewMode: 1,
         dragMode: 'move',
         cropBoxMovable: false,
         cropBoxResizable: false,
@@ -116,7 +107,12 @@ export default {
         wheelZoomRatio: 0.05,
       })
 
-      this.cropper.replace(this.photo.file.dataURL)
+      this.reload()
+    },
+
+    async reload() {
+      await this.photo.syncEditor()
+      this.cropper.replace(this.photo.fileInput.dataURL)
     },
   },
 }
@@ -129,6 +125,10 @@ export default {
 
 .cropper__help {
   @apply w-1/4 ml-4;
+
+  .button {
+    @apply mb-6 w-full;
+  }
 
   .box p {
     @apply text-sm mb-4;

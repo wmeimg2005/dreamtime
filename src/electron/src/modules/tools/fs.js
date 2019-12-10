@@ -1,15 +1,13 @@
-import { basename, join, parse } from 'path'
+import { basename, join } from 'path'
 import {
-  stat, readFileSync, writeFileSync,
+  readFileSync, writeFileSync,
   existsSync,
   createWriteStream, createReadStream,
 } from 'fs-extra'
 import { app, dialog } from 'electron'
 import { is, platform } from 'electron-util'
-import mime from 'mime-types'
 import EventBus from 'js-event-bus'
 import axios from 'axios'
-import md5File from 'md5-file/promise'
 import unzipper from 'unzipper'
 import deferred from 'deferred'
 import sevenBin from '7zip-bin'

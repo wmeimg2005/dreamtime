@@ -58,7 +58,7 @@ async function getMetadata(filepath) {
     mimetype,
     size: ((stats ?.size || 0) / 1000000.0),
     md5,
-    dataURL: `data:${mimetype};base64,${base64}`,
+    dataURL: exists ? `data:${mimetype};base64,${base64}` : null,
   }
 }
 

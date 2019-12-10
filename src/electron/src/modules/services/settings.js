@@ -53,12 +53,12 @@ class SettingsService extends BaseService {
     const cores = round(system.cores / 2) || 4
 
     this.payload = {
-      version: 4,
+      version: 5,
       welcome: true,
       user: uuid(),
 
       app: {
-        disableHardwareAcceleration: false,
+        disableHardwareAcceleration: true,
         uploadMode: 'add-queue',
       },
 
@@ -66,7 +66,6 @@ class SettingsService extends BaseService {
         device: hasGPU ? 'GPU' : 'CPU',
         gpus: [0],
         cores,
-        disablePersistentGan: false,
         usePython: process.env.NODE_ENV === 'development',
       },
 
@@ -109,6 +108,7 @@ class SettingsService extends BaseService {
 
         advanced: {
           scaleMode: 'auto-rescale',
+          transformMode: 'normal',
           useColorTransfer: false,
           useWaifu: false,
         },
@@ -123,7 +123,7 @@ class SettingsService extends BaseService {
       folders: {
         cropped: paths.getPath('temp'),
         models: paths.getPath('userData', 'models'),
-        masks: paths.getPath('userData', 'masks'),
+        masks: paths.getPath('temp'),
         cli: paths.getPath('userData', 'dreampower'),
       },
 
@@ -167,7 +167,7 @@ class SettingsService extends BaseService {
     const currentSettings = this.payload
     const newSettings = cloneDeep(currentSettings)
 
-    // Upgrade 1 -> 2
+    // 1 -> 2
     if (currentVersion === 1 && newVersion === 2) {
       newSettings.version = 2
       newSettings.preferences = this._default.preferences
@@ -188,7 +188,7 @@ class SettingsService extends BaseService {
       newSettings.preferences.pubicHair.size = pubicHairSize
     }
 
-    // Upgrade 2 -> 3
+    // 2 -> 3
     if (currentVersion === 2 && newVersion === 3) {
       const { processing, preferences } = currentSettings
 
@@ -225,13 +225,19 @@ class SettingsService extends BaseService {
       }
     }
 
-    // Upgrade 3 -> 4
+    // 3 -> 4
     if (currentVersion === 3 && newVersion === 4) {
       newSettings.version = 4
       newSettings.app = {
         disableHardwareAcceleration: false,
         uploadMode: 'add-queue',
       }
+    }
+
+    // 4 -> 5
+    if (currentVersion === 4 && newVersion === 5) {
+      newSettings.version = 5
+      newSettings.preferences.advanced.transformMode = 'normal'
     }
 
     this.set(newSettings)

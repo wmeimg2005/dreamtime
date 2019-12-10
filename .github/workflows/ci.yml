@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - canary
+      - feature/*
+      - hotfix/*
     tags:
       - v*
 
@@ -78,6 +80,8 @@ jobs:
 
       - name: Build
         working-directory: src
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: yarn build
 
       - name: Release
@@ -86,6 +90,7 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          DREAMLINK_TOKEN: ${{ secrets.DREAMLINK_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
           BUILD_OS: ${{ matrix.os-short }}
