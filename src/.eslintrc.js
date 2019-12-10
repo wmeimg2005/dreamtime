@@ -57,6 +57,7 @@ module.exports = {
     "lodash/prefer-lodash-method": "off",
     "lodash/prefer-lodash-typecheck": "warn",
     "lodash/prefer-noop": "off",
+    "import/extensions": "off",
     "max-len": "off",
     "func-names": "off",
     "no-await-in-loop": "warn",
