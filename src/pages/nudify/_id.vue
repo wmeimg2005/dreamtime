@@ -15,18 +15,19 @@
               :href="`/nudify/${photo.id}/preferences`" />
 
             <box-item
+              v-show="photo.canModify"
               label="Editor"
               icon="paint-brush"
               :href="`/nudify/${photo.id}/editor`" />
 
             <box-item
-              v-show="photo.preferences.advanced.scaleMode === 'cropjs'"
+              v-show="photo.canModify && photo.preferences.advanced.scaleMode === 'cropjs'"
               label="Crop"
               icon="crop"
               :href="`/nudify/${photo.id}/crop`" />
 
             <box-item
-              v-show="photo.preferences.advanced.scaleMode === 'overlay'"
+              v-show="photo.canModify && photo.preferences.advanced.scaleMode === 'overlay'"
               label="Overlay"
               icon="magic"
               :href="`/nudify/${photo.id}/overlay`" />

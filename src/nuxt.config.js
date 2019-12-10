@@ -92,8 +92,15 @@ module.exports = {
    *
    */
   purgeCSS: {
-    enabled: false,
-    whitelistPatterns: [/tooltip$/, /cropper$/, /tui$/],
+    enabled: true,
+    whitelistPatterns: [/tooltip/, /cropper/, /tui/, /color-picker/],
+  },
+
+  /**
+   *
+   */
+  eslint: {
+    cache: dev,
   },
 
   /**
@@ -107,14 +114,17 @@ module.exports = {
   build: {
     parallel: true,
 
-    hardSource: true,
+    hardSource: dev,
 
-    optimizeCSS: true,
+    cache: dev,
+
+    extractCSS: !dev,
 
     babel: {
       sourceType: 'unambiguous',
 
       plugins: [
+        'lodash',
         '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-optional-chaining',
@@ -131,12 +141,24 @@ module.exports = {
     },
 
     loaders: {
-      scss: {
-        implementation: require('sass'),
-      },
-
       imgUrl: {
         limit: 10 * 1000,
+      },
+    },
+
+    terser: {
+      parallel: true,
+    },
+
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
       },
     },
 
@@ -151,6 +173,11 @@ module.exports = {
         use: { loader: 'worker-loader' },
         exclude: /(node_modules)/,
       })
+
+      const webpack = require('webpack')
+
+      // eslint-disable-next-line no-useless-escape
+      config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/))
 
       if (isDev) {
         config.devtool = 'source-map'

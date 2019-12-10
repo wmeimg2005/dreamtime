@@ -138,11 +138,20 @@ export class Photo {
     return this.running || this.finished
   }
 
+  get canModify() {
+    return this.file.mimetype !== 'image/gif'
+  }
+
   get scaleMode() {
     const { scaleMode } = this.preferences.advanced
 
     if (scaleMode === 'cropjs' && !this.fileCrop.exists) {
       // no crop, automatically rescale for convenience
+      return 'auto-rescale'
+    }
+
+    if ((scaleMode === 'cropjs' || scaleMode === 'overlay') && !this.canModify) {
+      // this file can't be modified
       return 'auto-rescale'
     }
 
@@ -159,7 +168,7 @@ export class Photo {
       return this.fileCrop
     }
 
-    if (this.fileEditor.exists) {
+    if (this.canModify && this.fileEditor.exists) {
       return this.fileEditor
     }
 
@@ -246,9 +255,10 @@ export class Photo {
 
   _setupPreferences(isMaskfin) {
     this.preferences = cloneDeep(settings.preferences)
+    let forcedPreferences = {}
 
     if (isMaskfin) {
-      const forcedPreferences = {
+      forcedPreferences = {
         body: {
           executions: 1,
           randomize: false,
@@ -262,9 +272,15 @@ export class Photo {
           useColorTransfer: false,
         },
       }
-
-      this.preferences = merge(this.preferences, forcedPreferences)
+    } else if (!this.canModify) {
+      forcedPreferences = {
+        advanced: {
+          transformMode: 'normal',
+        },
+      }
     }
+
+    this.preferences = merge(this.preferences, forcedPreferences)
   }
 
   _validate() {
@@ -280,8 +296,14 @@ export class Photo {
   }
 
   _setupQueue() {
+    let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (10 * 60 * 1000)
+
+    if (this.file.mimetype === 'image/gif') {
+      maxTimeout += (30 * 60 * 1000)
+    }
+
     this.queue = new Queue(this._run, {
-      maxTimeout: settings.processing.device === 'GPU' ? (2 * 60 * 1000) : (10 * 60 * 1000),
+      maxTimeout,
       // maxRetries: 2,
       // retryDelay: 1000,
       afterProcessDelay: 500,
