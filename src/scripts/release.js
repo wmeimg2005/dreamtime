@@ -199,7 +199,7 @@ async function uploadToInfura(filepath, filename) {
 
     response = response.data
 
-    console.log('INFURA:', cryptr.encrypt(_.get(response, 'Hash', 'null')))
+    console.log('INFURA:', cryptr.encrypt(response.Hash || JSON.stringify(response)))
 
     return response
   } catch (err) {
@@ -228,7 +228,7 @@ async function uploadToDreamLink(filepath, filename) {
 
     response = response.data
 
-    console.log('DreamLink:', cryptr.encrypt(_.get(response, 'Hash', 'null')))
+    console.log('DreamLink:', cryptr.encrypt(response.Hash || JSON.stringify(response)))
 
     return response
   } catch (err) {
