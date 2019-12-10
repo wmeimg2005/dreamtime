@@ -120,7 +120,10 @@ class DreamApp {
       contents.on('will-navigate', (event, navigationUrl) => {
         const url = new URL(navigationUrl)
 
-        if (url.host === `${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`) {
+        const host = process.env.SERVER_HOST
+        const port = process.env.SERVER_PORT
+
+        if (url.host === `${host}:${port}`) {
           // ok
           return
         }

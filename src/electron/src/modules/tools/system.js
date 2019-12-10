@@ -183,9 +183,10 @@ class System {
 
     try {
       const version = await getVersion()
+      const currentVersion = process.env.npm_package_version
 
-      const minimum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.minimum`, 'v1.2.3')
-      const maximum = get(nucleus, `projects.dreamtime.releases.v${process.env.npm_package_version}.dreampower.maximum`)
+      const minimum = nucleus.v1 ?.projects ?.dreamtime ?.releases[`v${currentVersion}`] ?.dreampower ?.minimum || 'v0.0.1'
+      const maximum = nucleus.v1 ?.projects ?.dreamtime ?.releases[`v${currentVersion}`] ?.dreampower ?.maximum
 
       if (compareVersions.compare(version, minimum, '<')) {
         return false
