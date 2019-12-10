@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable nuxt/no-cjs-in-config */
 
-const nodeExternals = require('webpack-node-externals')
+const dev = process.env.NODE_ENV === 'development'
 
 module.exports = {
   mode: 'spa',
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   /**
-   * Dev-Server settings
+   * Server settings
    */
   server: {
     port: process.env.SERVER_PORT,
@@ -81,6 +81,9 @@ module.exports = {
    */
   axios: {},
 
+  /**
+   *
+   */
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.scss',
   },
@@ -88,21 +91,31 @@ module.exports = {
   /**
    *
    */
-  dev: process.env.NODE_ENV === 'development',
+  purgeCSS: {
+    enabled: false,
+    whitelistPatterns: [/tooltip$/, /cropper$/, /tui$/],
+  },
+
+  /**
+   *
+   */
+  dev,
 
   /*
    ** Build configuration
    */
   build: {
-    analyze: false,
+    parallel: true,
 
-    extractCSS: true,
+    hardSource: true,
 
-    parallel: false,
+    optimizeCSS: true,
 
     babel: {
+      sourceType: 'unambiguous',
+
       plugins: [
-        ['@babel/plugin-proposal-class-properties', { loose: true }],
+        '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-optional-chaining',
         [
@@ -117,10 +130,20 @@ module.exports = {
       ],
     },
 
+    loaders: {
+      scss: {
+        implementation: require('sass'),
+      },
+
+      imgUrl: {
+        limit: 10 * 1000,
+      },
+    },
+
     /*
      ** You can extend webpack config here
      */
-    extend(config, { isClient, isDev }) {
+    extend(config, { isDev }) {
       config.target = 'electron-renderer'
 
       config.module.rules.push({
@@ -128,16 +151,6 @@ module.exports = {
         use: { loader: 'worker-loader' },
         exclude: /(node_modules)/,
       })
-
-      const urlLoader = config.module.rules.find((rule) => {
-        if (!rule.use || !rule.use[0]) {
-          return false
-        }
-
-        return rule.use[0].loader === 'url-loader'
-      })
-
-      urlLoader.use[0].options.limit = 100000000
 
       if (isDev) {
         config.devtool = 'source-map'

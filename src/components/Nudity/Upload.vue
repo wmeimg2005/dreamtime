@@ -132,7 +132,6 @@ import {
   isNil, isEmpty, startsWith,
   map, isArray,
 } from 'lodash'
-import Swal from 'sweetalert2'
 import { Nudify } from '~/modules/nudify'
 
 const { nucleus } = $provider.services

@@ -307,7 +307,8 @@ export class PhotoRun {
       return
     }
 
-    const notification = new Notification(`📷 ${this.file.fullname} - Run ${this.id} has finished.`)
+    // eslint-disable-next-line no-new
+    new Notification(`📷 ${this.file.fullname} - Run ${this.id} has finished.`)
 
     /*
     notification.onclick = () => {

@@ -38,7 +38,6 @@
 import _ from 'lodash'
 import { VModel } from '~/mixins'
 
-const { nucleus } = $provider.services
 const { existsSync } = $provider.tools.fs
 const { dialog } = $provider.api
 

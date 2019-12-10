@@ -434,7 +434,8 @@ export class Photo {
       return
     }
 
-    const notification = new Notification(`📷 ${this.file.fullname} has finished.`, {
+    // eslint-disable-next-line no-new
+    new Notification(`📷 ${this.file.fullname} has finished.`, {
       body: 'The photo has completed the transformation process.',
     })
 
