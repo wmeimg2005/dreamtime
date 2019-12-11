@@ -93,7 +93,7 @@ module.exports = {
    */
   purgeCSS: {
     enabled: true,
-    whitelistPatterns: [/tooltip/, /cropper/, /tui/, /color-picker/],
+    whitelistPatterns: [/tippy/, /cropper/, /tui/, /color-picker/],
   },
 
   /**
