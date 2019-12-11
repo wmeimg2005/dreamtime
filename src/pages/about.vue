@@ -21,7 +21,7 @@
 
         <box-item
           label="DreamPower"
-          description="You have not installed DreamPower or the current version is not compatible.">
+          description="DreamPower is not installed or the installed version is not compatible.">
           <template slot="icon">
             <span v-if="$provider.tools.system.requirements.power.installed && $provider.tools.system.requirements.power.compatible" class="item__icon">✔</span>
             <span v-else class="item__icon">❌</span>
@@ -35,7 +35,7 @@
 
         <box-item
           label="Checkpoints"
-          description="Data models required by the algorithm.">
+          description="Data models required by DreamPower.">
           <template slot="icon">
             <span v-if="$provider.tools.system.requirements.power.checkpoints" class="item__icon">✔</span>
             <span v-else class="item__icon">❌</span>
