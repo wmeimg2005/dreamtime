@@ -56,7 +56,7 @@ If you want to share or modify this software please do it for the same purpose a
 
 > 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing (slower).
 
-## 🤗 Download
+## Download
 
 > 💕 [Patrons](https://www.patreon.com/dreamnet) get access to the latest versions before everyone else!
 
