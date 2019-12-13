@@ -11,11 +11,29 @@
 
 # DreamTime
 
-DreamTime allows you to use the power of your computer to nudify photos for free and better than DeepNude.
+**DreamTime is an open-source and super-improved version of DeepNude. Is better than DeepNude!**
+
+DreamTime is constantly updated with new features and improvements to make your **dreams come true**.
 
 ![](assets/preview.png)
 
 If you want to share or modify this software please do it for the same purpose as we do and always release the source code of your modifications. Read the [LICENSE](LICENSE) for more information.
+
+## 😎 Features that make it better than DeepNude:
+
+- **Free and open-source forever.** No cracks or premium versions required, you get everything from the start.
+- Compatible with **Windows, Linux and macOS**.
+- Friendly and stable user interface.
+- GPU processing. (Nudify a photo in seconds)
+- GIF support. (Soon videos too!)
+- Import files from your computer, the web or Instagram.
+- Import several photos at once, even entire folders! (Queue system)
+- Modify the preferences of each photo. (Bigger t\*ts? Bigger v\*gina? Pubic hair? We have you covered.)
+- Transform the same photo several times using different preferences. Also available randomize and progressive preferences.
+- Update the application, algorithm and checkpoints from the app itself.
+- Edit, crop or overlay the photo with different tools.
+- Discord and social networks, join the community and always stay informed of updates or even talk to us about suggestions and problems.
+- Every 1 or 2 weeks there is a new version with more features!
 
 ---
 
@@ -33,9 +51,9 @@ If you want to share or modify this software please do it for the same purpose a
 
 ### GPU Processing
 
-  - NVIDIA GPU with minimum [3.5 CUDA compute capability.](https://developer.nvidia.com/cuda-gpus)
-  - **6 GB+** of VRAM.
-  - [Latest NVIDIA drivers.](https://www.nvidia.com/Download/index.aspx)
+- NVIDIA GPU with minimum [3.5 CUDA compute capability.](https://developer.nvidia.com/cuda-gpus)
+- **6 GB+** of VRAM.
+- [Latest NVIDIA drivers.](https://www.nvidia.com/Download/index.aspx)
 
 > 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing (slower).
 
@@ -49,9 +67,10 @@ If you want to share or modify this software please do it for the same purpose a
 
 [![Windows](https://img.shields.io/badge/windows-v1.2.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-windows.exe)
 
-[![Ubuntu](https://img.shields.io/badge/ubuntu-v1.2.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-ubuntu.deb)
+[![Ubuntu Snap](https://img.shields.io/badge/ubuntu+snap-v1.2.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-ubuntu.snap)
 
 [![macOS](https://img.shields.io/badge/macos-v1.2.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-macos.dmg)
+
 
 ## Manual
 
@@ -64,6 +83,7 @@ https://forum.dreamnet.tech/d/32-dreamtime-manual
 We are a community interested in developing adult entertainment and decentralized applications. Join our social networks:
 
 - [Website](https://dreamnet.tech)
+- [Discord](https://discord.gg/6YXT5ZA)
 - [GitHub](https://github.com/dreamnettech)
 - [NotABug](https://notabug.org/DreamNet)
 - [GitGud](https://gitgud.io/dreamnet)
