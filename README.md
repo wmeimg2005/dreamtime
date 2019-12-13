@@ -11,33 +11,32 @@
 
 # DreamTime
 
-**DreamTime is an open-source and super-improved version of DeepNude. Is better than DeepNude!**
-
-DreamTime is constantly updated with new features and improvements to make your **dreams come true**.
+**DreamTime is an open-source and super-improved version of DeepNude to make your dreams come true 💖.**
 
 ![](assets/preview.png)
 
 If you want to share or modify this software please do it for the same purpose as we do and always release the source code of your modifications. Read the [LICENSE](LICENSE) for more information.
 
-## 😎 Features that make it better than DeepNude:
+## 🚀 DreamTime features:
 
 - **Free and open-source forever.** No cracks or premium versions required, you get everything from the start.
 - Compatible with **Windows, Linux and macOS**.
 - Friendly and stable user interface.
-- GPU processing. (Nudify a photo in seconds)
-- GIF support. (Soon videos too!)
-- Import files from your computer, the web or Instagram.
+- **GPU processing.** (Nudify a photo in seconds)
+- **GIF support.** (Videos soon!)
+- Import photos from your computer, the web or Instagram.
 - Import several photos at once, even entire folders! (Queue system)
-- Modify the preferences of each photo. (Bigger t\*ts? Bigger v\*gina? Pubic hair? We have you covered.)
+- **Modify the preferences of each photo.** (Bigger t\*ts? Bigger v\*gina? Pubic hair? We have you covered.)
 - Transform the same photo several times using different preferences. Also available randomize and progressive preferences.
 - Update the application, algorithm and checkpoints from the app itself.
 - Edit, crop or overlay the photo with different tools.
-- Discord and social networks, join the community and always stay informed of updates or even talk to us about suggestions and problems.
+- **Discord and social networks**, join the community and always stay informed or talk to us about suggestions and problems.
 - Every 1 or 2 weeks there is a new version with more features!
+- **Are you still using the old DeepNude?** 🤨
 
 ---
 
-# 🎉 Releases
+# 🎉 What are you waiting for?
 
 ## Requirements
 
@@ -57,7 +56,7 @@ If you want to share or modify this software please do it for the same purpose a
 
 > 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing (slower).
 
-## Download
+## 🤗 Download
 
 > 💕 [Patrons](https://www.patreon.com/dreamnet) get access to the latest versions before everyone else!
 
