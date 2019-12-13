@@ -11,21 +11,25 @@ import {
   isError, isString, isObject, isArray,
 } from 'lodash'
 import Swal from 'sweetalert2'
+import { logrocket } from '~/modules/services'
 
 const logger = require('logplease').create('app-error:renderer')
 
-const { rollbar } = $provider.services
 const { app } = $provider.api
 
 /**
  * @typedef {Object} ErrorOptions
  * @property {string} title
- * @property {Error} error
  * @property {string} level
- * @property {Object} extra
+ * @property {Error} error
+ * @property {boolean} fatal
+ * @property {boolean} quiet
  */
 
 export class AppError extends Error {
+  /**
+   * @type {ErrorOptions}
+   */
   options = {
     title: null,
     level: 'error',
@@ -34,7 +38,10 @@ export class AppError extends Error {
     quiet: false,
   }
 
-  reportUrl
+  /**
+   * @type {boolean}
+   */
+  reported = false
 
   /**
    *
@@ -72,27 +79,31 @@ export class AppError extends Error {
   }
 
   report() {
+    /*
     if (process.env.NODE_ENV === 'development') {
       this.reportUrl = `https://rollbar.com/occurrence/uuid/?uuid={EXAMPLE}`
       return
     }
+    */
 
     const { level } = this.options
 
-    if (!rollbar.enabled || level !== 'error') {
+    if (!logrocket.enabled || level !== 'error') {
       return
     }
 
     try {
       const error = this.options.error || this
 
-      const response = rollbar[level](this.message, error, this.options)
+      console.log(logrocket)
 
-      if (response.uuid) {
-        this.reportUrl = `https://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
-      }
+      logrocket.captureException(error, {
+        extra: this.options,
+      })
+
+      this.reported = true
     } catch (err) {
-      logger.warn('Error report fail!', err)
+      logger.warn('LogRocket report fail!', err)
     }
   }
 
@@ -111,7 +122,7 @@ export class AppError extends Error {
       title: this.options.title,
       html: this.message,
       icon,
-      footer: this.reportUrl ? `<code>Share this to a developer: ${this.reportUrl}</code>` : null,
+      footer: this.reported ? `<code>This problem has been reported to the developers.</code>` : null,
     })
   }
 
@@ -150,7 +161,7 @@ export class AppError extends Error {
         reportError = new Error(error)
       }
 
-      appError = new AppError(`The application has encountered an unexpected error:\n<pre>${reportError ?.message}</pre>`,
+      appError = new AppError(`The application has encountered an unexpected error:\n<pre>${reportError?.message}</pre>`,
         {
           error: reportError,
           title: 'Unexpected error!',

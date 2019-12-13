@@ -9,18 +9,28 @@
 
 import fs from 'fs-extra'
 import {
-  round, cloneDeep,
+  round, cloneDeep, isNil, isEmpty, isPlainObject, get, set,
 } from 'lodash'
 import uuid from 'uuid'
-import { BaseService } from './base'
-import { paths, system } from '../tools'
+import { paths, system } from './tools'
 
 const logger = require('logplease').create('electron:scripts:services:settings')
 
 /**
  * User settings.
  */
-class SettingsService extends BaseService {
+class Settings {
+  /**
+   * the payload.
+   * a proxy will be used to get or set this information.
+   *
+   * @type {Object}
+   */
+  payload = {}
+
+  /**
+   * @type {Object}
+   */
   _default = {}
 
   /**
@@ -30,6 +40,55 @@ class SettingsService extends BaseService {
    */
   get path() {
     return paths.getPath('userData', 'settings.json')
+  }
+
+  /**
+   * Load the service file.
+   */
+  async load() {
+    if (isNil(this.path)) {
+      return
+    }
+
+    if (!fs.existsSync(this.path)) {
+      return
+    }
+
+    this.payload = fs.readJsonSync(this.path)
+    logger.debug(this.payload)
+  }
+
+  /**
+   * Save the service file.
+   * This function is called automatically if you set a first level variable.
+   */
+  async save() {
+    fs.writeJsonSync(this.path, this.payload)
+  }
+
+  /**
+   * @param {string} path
+   */
+  get(path = '') {
+    if (isEmpty(path)) {
+      return this.payload
+    }
+
+    return get(this.payload, path)
+  }
+
+  /**
+   * @param {string} path
+   * @param {any} payload
+   */
+  set(path, payload) {
+    if (isPlainObject(path)) {
+      this.payload = path
+    } else {
+      this.payload = set(this.payload, path, payload)
+    }
+
+    this.save()
   }
 
   /**
@@ -244,4 +303,43 @@ class SettingsService extends BaseService {
   }
 }
 
-export const settings = SettingsService.make()
+/**
+ * Create a new instance with a Proxy.
+ *
+ * @return {Proxy}
+ */
+export function make(obj) {
+  return new Proxy(obj, {
+    get: (obj, prop) => {
+      if (prop in obj) {
+        return obj[prop]
+      }
+
+      if (prop in obj.payload) {
+        return obj.payload[prop]
+      }
+
+      return undefined
+    },
+
+    /* eslint-disable no-param-reassign */
+    set: (obj, prop, value) => {
+      if (!isNil(obj.payload)) {
+        if (prop in obj.payload) {
+          obj.payload[prop] = value
+          obj.save()
+
+          return true
+        }
+      }
+
+      obj[prop] = value
+      return true
+    },
+    /* eslint-enable no-param-reassign */
+  })
+}
+
+export const settingsRaw = new Settings
+
+export const settings = make(settingsRaw)

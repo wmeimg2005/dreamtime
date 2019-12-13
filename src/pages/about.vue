@@ -3,7 +3,7 @@
     <div v-if="alert" class="notification text-lg" v-html="alert" />
 
     <!-- Offline -->
-    <section v-if="!$provider.tools.system.online" class="box box--items">
+    <section v-if="!$provider.system.online" class="box box--items">
       <div class="box__content">
         <box-item
           description="While in offline mode you will not be able to obtain more information about the project or download the latest updates."
@@ -12,7 +12,7 @@
     </section>
 
     <!-- Requirements -->
-    <section v-if="!$provider.tools.system.canNudify" class="box box--items">
+    <section v-if="!requirements.canNudify" class="box box--items">
       <div class="box__content">
         <box-item
           :description="`You need to meet all the requirements below to start using ${$dream.name}. Some require an Internet connection to update.`"
@@ -23,7 +23,7 @@
           label="DreamPower"
           description="DreamPower is not installed or the installed version is not compatible.">
           <template slot="icon">
-            <span v-if="$provider.tools.system.requirements.power.installed && $provider.tools.system.requirements.power.compatible" class="item__icon">✔</span>
+            <span v-if="requirements.power.installed && requirements.power.compatible" class="item__icon">✔</span>
             <span v-else class="item__icon">❌</span>
           </template>
 
@@ -37,7 +37,7 @@
           label="Checkpoints"
           description="Data models required by DreamPower.">
           <template slot="icon">
-            <span v-if="$provider.tools.system.requirements.power.checkpoints" class="item__icon">✔</span>
+            <span v-if="requirements.power.checkpoints" class="item__icon">✔</span>
             <span v-else class="item__icon">❌</span>
           </template>
 
@@ -48,7 +48,7 @@
           label="Media Feature Pack"
           description="Multimedia package required by some versions of Windows.">
           <template slot="icon">
-            <span v-if="$provider.tools.system.requirements.windows.media" class="item__icon">✔</span>
+            <span v-if="requirements.windows.media" class="item__icon">✔</span>
             <span v-else class="item__icon">❗</span>
           </template>
 
@@ -99,7 +99,7 @@
 
           <app-update id="dreampower" project-title="DreamPower" project="dreampower" />
 
-          <app-update v-if="$provider.tools.system.requirements.power.installed" id="checkpoints" project-title="Checkpoints" project="checkpoints" />
+          <app-update v-if="requirements.power.installed" id="checkpoints" project-title="Checkpoints" project="checkpoints" />
 
           <box-item
             v-for="(item, index) in dreampower.about.navigation"
@@ -158,11 +158,17 @@
 </template>
 
 <script>
-const { nucleus } = $provider.services
-const { getAppPath, getPowerPath } = $provider.tools.paths
+import { requirements } from '~/modules/system'
+import { nucleus } from '~/modules/services'
+
+const { getAppPath, getPowerPath } = $provider.paths
 const { shell } = $provider.api
 
 export default {
+  data: () => ({
+    requirements,
+  }),
+
   computed: {
     dreamtime() {
       const online = nucleus.v1?.projects?.dreamtime || {}

@@ -45,7 +45,7 @@
 </template>
 
 <script>
-const { settings } = $provider.services
+const { settings } = $provider
 
 export default {
   middleware: ({ route, redirect }) => {

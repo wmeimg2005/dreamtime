@@ -115,10 +115,10 @@
 
 <script>
 import { isNil } from 'lodash'
+import { nucleus } from '~/modules/services'
 import { Nudify } from '~/modules/nudify'
 
 const { showSaveDialogSync } = $provider.api.dialog
-const { nucleus } = $provider.services
 
 export default {
   filters: {

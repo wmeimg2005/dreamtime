@@ -1,7 +1,7 @@
 <template>
   <div class="layout__navbar">
     <div class="navbar__left">
-      <nuxt-link v-if="$provider.tools.system.canNudify" to="/" class="navbar__item">
+      <nuxt-link v-if="canNudify" to="/" class="navbar__item">
         Nudify
       </nuxt-link>
 
@@ -9,9 +9,13 @@
         About
       </nuxt-link>
 
-      <nuxt-link v-if="$provider.tools.system.canNudify" class="navbar__item" to="/dreamnet">
+      <nuxt-link v-if="canNudify" class="navbar__item" to="/dreamnet">
         DreamNet
       </nuxt-link>
+
+      <a class="navbar__item" @click.prevent="createError">
+        Error
+      </a>
     </div>
 
     <div class="navbar__right">
@@ -31,16 +35,27 @@
 </template>
 
 <script>
-const { nucleus } = $provider.services
+import { requirements } from '~/modules/system'
+import { nucleus } from '~/modules/services'
 
 export default {
   computed: {
+    canNudify() {
+      return requirements.canNudify
+    },
+
     donateUrl() {
       return nucleus.urls?.support?.patreon || 'https://www.patreon.com/dreamnet'
     },
 
     manualURL() {
       return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
+    },
+  },
+
+  methods: {
+    createError() {
+      throw new Error('UI test error.')
     },
   },
 }

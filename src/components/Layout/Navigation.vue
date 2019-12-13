@@ -4,7 +4,7 @@
       <!-- App Navigation -->
       <section class="menu-section">
         <nav class="menu-items">
-          <nuxt-link v-if="$provider.tools.system.canNudify" to="/" class="menu-item">
+          <nuxt-link v-if="canNudify" to="/" class="menu-item">
             <span class="icon">📷</span>
             <span>Nudify</span>
           </nuxt-link>
@@ -30,10 +30,14 @@
 </template>
 
 <script>
-const { settings } = $provider.services
+const { settings } = $provider
 
 export default {
   computed: {
+    canNudify() {
+      return requirements.canNudify
+    },
+
     isDev() {
       return process.env.NODE_ENV === 'development'
     },

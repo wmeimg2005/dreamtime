@@ -27,7 +27,7 @@
 export default {
   methods: {
     next() {
-      $provider.services.settings.welcome = false
+      $provider.settings.welcome = false
       this.$router.push('/')
     },
   },

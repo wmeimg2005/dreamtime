@@ -10,10 +10,12 @@
 import { isNil } from 'lodash'
 import axios from 'axios'
 import { BaseService } from './base'
-import { system } from '../tools'
-import { settings } from './settings'
+
+const { system, settings } = $provider
 
 const logger = require('logplease').create('services:nucleus')
+
+console.log(settings)
 
 /**
  * https://nucleus.sh
@@ -43,7 +45,6 @@ export class NucleusService extends BaseService {
     }
 
     try {
-      // eslint-disable-next-line global-require
       const Nucleus = require('nucleus-nodejs')
 
       // nucleus configuration
@@ -59,7 +60,7 @@ export class NucleusService extends BaseService {
 
       Nucleus.appStarted()
 
-      this._service = Nucleus
+      this.service = Nucleus
 
       await this.fetchData()
       setInterval(this.fetchData.bind(this), 15 * 60 * 1000)

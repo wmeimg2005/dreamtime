@@ -1,9 +1,11 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable nuxt/no-cjs-in-config */
 
 const dev = process.env.NODE_ENV === 'development'
 
 module.exports = {
+  /**
+   *
+   */
   mode: 'spa',
 
   /**
@@ -25,16 +27,12 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.npm_package_displayName} v${process.env.npm_package_version}`,
+    title: process.env.npm_package_displayName,
 
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     ],
-
-    link: [],
-
-    scripts: [],
   },
 
   /*
@@ -50,7 +48,6 @@ module.exports = {
     'cropperjs/dist/cropper.css',
     'tui-image-editor/dist/tui-image-editor.css',
     'tui-color-picker/dist/tui-color-picker.css',
-
     '~/assets/css/tailwind.scss',
     '~/assets/css/fonts.scss',
   ],
@@ -58,7 +55,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/boot.js', '~/plugins/fontawesome.js', '~/components'],
+  plugins: ['~/plugins/boot.js', '~/plugins/setup.js', '~/plugins/fontawesome.js', '~/components'],
 
   /*
    ** Nuxt.js dev-modules
@@ -75,12 +72,6 @@ module.exports = {
    */
   modules: [],
 
-  /*
-   ** Axios module configuration
-   ** See https://axios.nuxtjs.org/options
-   */
-  axios: {},
-
   /**
    *
    */
@@ -92,7 +83,6 @@ module.exports = {
    *
    */
   purgeCSS: {
-    enabled: true,
     whitelistPatterns: [/tippy/, /cropper/, /tui/, /color-picker/],
   },
 
@@ -120,6 +110,9 @@ module.exports = {
 
     extractCSS: !dev,
 
+    /**
+     *
+     */
     babel: {
       sourceType: 'unambiguous',
 
@@ -140,16 +133,25 @@ module.exports = {
       ],
     },
 
+    /**
+     *
+     */
     loaders: {
       imgUrl: {
         limit: 10 * 1000,
       },
     },
 
+    /**
+     *
+     */
     terser: {
       parallel: true,
     },
 
+    /**
+     *
+     */
     optimization: {
       splitChunks: {
         cacheGroups: {
@@ -174,15 +176,15 @@ module.exports = {
         exclude: /(node_modules)/,
       })
 
-      const webpack = require('webpack')
-
-      // eslint-disable-next-line no-useless-escape
-      config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/))
-
       if (isDev) {
         config.devtool = 'source-map'
       } else {
         config.output.publicPath = './_nuxt/'
+
+        const webpack = require('webpack')
+
+        // eslint-disable-next-line no-useless-escape
+        config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/))
       }
     },
   },

@@ -10,12 +10,13 @@
 import { isNil, get } from 'lodash'
 import compareVersions from 'compare-versions'
 import { BaseUpdater } from './base'
+import { requirements } from '../system'
+import { nucleus } from '../services'
 
-const { nucleus, settings } = $provider.services
-const { system } = $provider.tools
-const { getVersion } = $provider.tools.power
-const { getPowerPath } = $provider.tools.paths
-const { extractSeven } = $provider.tools.fs
+const { settings } = $provider
+const { getVersion } = $provider.power
+const { getPowerPath } = $provider.paths
+const { extractSeven } = $provider.fs
 const { activeWindow } = $provider.util
 const { app, Notification } = $provider.api
 
@@ -46,7 +47,7 @@ class DreamPowerUpdater extends BaseUpdater {
    * @return {string}
    */
   async _getCurrentVersion() {
-    if (!system.requirements.power.installed) {
+    if (!requirements.power.installed) {
       return 'v0.0.0'
     }
 
@@ -66,8 +67,8 @@ class DreamPowerUpdater extends BaseUpdater {
   _getLatestCompatible(releases) {
     const currentVersion = process.env.npm_package_version
 
-    const minimum = nucleus.v1 ?.projects ?.dreamtime ?.releases[`v${currentVersion}`] ?.dreampower ?.minimum || 'v0.0.1'
-    const maximum = nucleus.v1 ?.projects ?.dreamtime ?.releases[`v${currentVersion}`] ?.dreampower ?.maximum
+    const minimum = nucleus.v1?.projects?.dreamtime?.releases[`v${currentVersion}`]?.dreampower?.minimum || 'v0.0.1'
+    const maximum = nucleus.v1?.projects?.dreamtime?.releases[`v${currentVersion}`]?.dreampower?.maximum
 
     for (const release of releases) {
       if (compareVersions.compare(release.tag_name, minimum, '<')) {
@@ -125,4 +126,4 @@ class DreamPowerUpdater extends BaseUpdater {
   }
 }
 
-export const dreampower = new DreamPowerUpdater()
+export const dreampower = (new DreamPowerUpdater)

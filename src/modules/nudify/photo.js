@@ -19,9 +19,9 @@ import { PhotoRun } from './photo-run'
 import { File } from '../file'
 import { Timer } from '../timer'
 
-const { settings } = $provider.services
+const { settings } = $provider
 const { activeWindow } = $provider.util
-const { getModelsPath, getCropPath } = $provider.tools.paths
+const { getModelsPath, getCropPath } = $provider.paths
 
 export class Photo {
   /**

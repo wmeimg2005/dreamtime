@@ -92,7 +92,6 @@ class RollbarService extends BaseService {
 
     try {
       this._service = new Rollbar(this.config)
-
       this.enabled = true
 
       logger.info('Rollbar enabled!')

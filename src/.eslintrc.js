@@ -1,9 +1,7 @@
 module.exports = {
   env: {
     browser: true,
-    es2020: true,
     node: true,
-    "shared-node-browser": true,
     mocha: true
   },
   extends: [
@@ -37,16 +35,17 @@ module.exports = {
     "class-methods-use-this": "off",
     "comma-dangle": "warn",
     "global-require": "off",
-    "import/default": "off",
-    "import/no-webpack-loader-syntax": "off",
-    "import/order": "error",
+    "import/default": "warn",
+    "import/no-webpack-loader-syntax": "warn",
+    "import/order": ['error'],
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
-    "import/named": "off",
+    "import/named": "warn",
     "import/no-cycle": "off",
     "promise/no-callback-in-promise": "off",
     "promise/catch-or-return": "off",
     "linebreak-style": "warn",
+    "new-parens": ['error', 'never'],
     "lodash/import-scope": [
       "off",
       "member"
@@ -116,7 +115,8 @@ module.exports = {
     ],
     "vue/html-self-closing": "error",
     "vue/no-v-html": "off",
-    "vue/singleline-html-element-content-newline": "warn"
+    "vue/singleline-html-element-content-newline": "warn",
+    'nuxt/no-cjs-in-config': 'off'
   },
   settings: {
     "import/resolver": {

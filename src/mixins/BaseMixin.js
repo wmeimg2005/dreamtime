@@ -28,6 +28,6 @@ export default {
 
   data: () => ({
     $nudify: NudifyStore,
-    $settings: $provider.services.settings,
+    $settings: $provider.settings,
   }),
 }

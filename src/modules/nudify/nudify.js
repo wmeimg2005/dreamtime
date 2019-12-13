@@ -23,7 +23,7 @@ import { getFilesMetadata } from '~/workers/fs'
 
 const logger = require('logplease').create('nudify')
 
-const { settings } = $provider.services
+const { settings } = $provider
 
 const MAX_PHOTOS = 1000
 

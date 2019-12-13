@@ -1,19 +1,15 @@
 const { remote } = require('electron')
-const { makeServiceProxy } = require('./modules/services')
+const { make } = require('./modules/settings')
 
 const util = remote.require('electron-util')
-const services = remote.require('./modules/services')
+const { settingsRaw } = remote.require('./modules/settings')
 const tools = remote.require('./modules/tools')
 
 // tools provider
 window.$provider = {
-  services: {
-    nucleus: makeServiceProxy(services.nucleus),
-    rollbar: makeServiceProxy(services.rollbar),
-    settings: makeServiceProxy(services.settings),
-  },
+  ...tools,
 
-  tools,
+  settings: make(settingsRaw),
 
   api: util.api,
   util,

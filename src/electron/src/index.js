@@ -19,7 +19,7 @@ import { AppError } from './modules/app-error'
 import { system } from './modules/tools/system'
 import { existsSync, mkdirSync } from './modules/tools/fs'
 import { getPath } from './modules/tools/paths'
-import { settings, rollbar, nucleus } from './modules/services'
+import { settings } from './modules/settings'
 import config from '~/nuxt.config'
 
 const logger = Logger.create('electron')
@@ -77,7 +77,6 @@ class DreamApp {
     await settings.initialSetup()
 
     if (settings.app ?.disableHardwareAcceleration) {
-      logger.info('Hardware acceleration disabled.')
       app.disableHardwareAcceleration()
     }
   }
@@ -140,7 +139,6 @@ class DreamApp {
         if (startsWith(url, 'http') || startsWith(url, 'mailto')) {
           event.preventDefault()
           shell.openExternal(url)
-          nucleus.track('EXTERNAL_LINK', { href: url })
           return
         }
 
@@ -163,15 +161,6 @@ class DreamApp {
     await settings.initialSetup()
     await settings.setup()
 
-    // analytics & app settings.
-    await nucleus.setup()
-
-    // services
-    await Promise.all([
-      rollbar.setup(), // bug tracking.
-      system.scan(), // requirements.
-    ])
-
     //
     this.createDirs()
   }
@@ -180,7 +169,7 @@ class DreamApp {
    *
    */
   static async shutdown() {
-    await rollbar.shutdown()
+
   }
 
   /**

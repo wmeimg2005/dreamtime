@@ -16,11 +16,12 @@ import { Timer } from '../timer'
 import { rand } from '../helpers'
 import cliErrors from '../config/cli-errors'
 import preferencesConfig from '../config/preferences'
+import { nucleus } from '../services'
 
-const { settings, nucleus } = $provider.services
-const { transform } = $provider.tools.power
+const { settings } = $provider
+const { transform } = $provider.power
 const { activeWindow } = $provider.util
-const { getMasksPath } = $provider.tools.paths
+const { getMasksPath } = $provider.paths
 
 export class PhotoRun {
   /**

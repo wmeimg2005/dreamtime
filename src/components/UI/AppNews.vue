@@ -13,7 +13,7 @@
 </template>
 
 <script>
-const { nucleus } = $provider.services
+import { nucleus } from '~/modules/services'
 
 export default {
   computed: {

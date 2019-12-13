@@ -1,78 +1,46 @@
-/* eslint-disable no-param-reassign */
-import Vue from 'vue'
-import moment from 'moment'
-import tippy from 'tippy.js'
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
+
 import Logger from 'logplease'
-import BaseMixin from '~/mixins/BaseMixin'
-import { AppError, dream } from '~/modules'
-import { Nudify, NudifyStore } from '~/modules/nudify'
+import { AppError } from '~/modules'
 import { dreamtime, dreampower, checkpoints } from '~/modules/updater'
+import { nucleus, logrocket } from '~/modules/services'
+import { requirements } from '~/modules/system'
 
-const logger = Logger.create('plugins:boot')
-
-const { getPath } = $provider.tools.paths
+// const logger = Logger.create('plugins:boot')
 
 // logger setup
-Logger.setLogLevel(process.env.LOG || 'info')
-Logger.setLogfile(getPath('userData', 'renderer.log'))
-
-// lift off!
-logger.info('Lift off!')
-
-// base mixin
-Vue.mixin(BaseMixin)
-
-// momentjs
-moment.locale('en')
-
-// tippyjs
-tippy.setDefaultProps({
-  delay: 100,
-  arrow: true,
-})
+Logger.setLogLevel(process.env.LOG || 'debug')
 
 // global apperror
 window.AppError = AppError
 
 // eslint-disable-next-line no-unused-vars
 export default async ({ app }, inject) => {
-  // update providers
+  // analytics.
+  await nucleus.setup()
+
+  // log tracking.
+  await logrocket.setup()
+
+  // dreamtime requirements.
+  await requirements.setup()
+
+  // update providers.
   dreamtime.setup()
   dreampower.setup()
   checkpoints.setup()
 
-  // provider shortcuts
+  console.log('ready')
+
+  // shortcuts.
   inject('provider', $provider)
-  inject('settings', $provider.services.settings)
-  inject('nucleus', $provider.services.nucleus)
-
-  // catch errors
-  window.addEventListener('error', (err) => {
-    AppError.handle(err)
-    return true
-  })
-
-  window.addEventListener('unhandledrejection', (rejection) => {
-    AppError.handle(rejection.reason)
-    return true
-  })
-
-  Vue.config.errorHandler = (err) => {
-    AppError.handle(err)
-    throw err
-  }
-
-  // dreamtime
-  dream.setup()
-  inject('dream', dream)
-
-  // nudify
-  Nudify.setup()
-
-  // nudify store
-  NudifyStore.setup()
-  inject('nudify', NudifyStore)
-
-  // ready
-  logger.info('The front-end is ready!')
+  inject('settings', $provider.settings)
+  inject('nucleus', nucleus)
 }

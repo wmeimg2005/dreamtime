@@ -79,6 +79,7 @@
     "js-event-bus": "^1.0.0",
     "lodash": "^4.17.15",
     "logplease": "^1.2.15",
+    "logrocket": "^1.0.5",
     "md5-file": "^4.0.0",
     "mime-types": "^2.1.25",
     "moment": "^2.24.0",

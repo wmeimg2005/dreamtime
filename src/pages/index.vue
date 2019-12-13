@@ -14,9 +14,8 @@
 </template>
 
 <script>
+import { nucleus } from '~/modules/services'
 import { dreamtime as dreamtimeUpdater } from '~/modules/updater'
-
-const { nucleus } = $provider.services
 
 export default {
   data: () => ({

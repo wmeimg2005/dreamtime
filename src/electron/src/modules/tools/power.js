@@ -7,14 +7,14 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isNil } from 'lodash'
+import { isNil, isString } from 'lodash'
 import { spawn } from 'child_process'
 import EventBus from 'js-event-bus'
 import deferred from 'deferred'
 import semverRegex from 'semver-regex'
-import { existsSync } from './fs'
+import * as fs from 'fs-extra'
 import { getPowerPath } from './paths'
-import { settings } from '../services'
+import { settings } from '../settings'
 
 const logger = require('logplease').create('electron:power')
 
@@ -108,7 +108,7 @@ export const transform = (run) => {
 
   const process = exec(args)
 
-  const bus = new EventBus()
+  const bus = (new EventBus)
 
   process.on('error', (error) => {
     logger.error(error)
@@ -130,7 +130,7 @@ export const transform = (run) => {
     bus.emit('close', null, code)
 
     if (code === 0 || isNil(code)) {
-      if (existsSync(run.outputFile.path)) {
+      if (fs.existsSync(run.outputFile.path)) {
         bus.emit('success')
       } else {
         bus.emit('fail', null, true)
@@ -146,6 +146,36 @@ export const transform = (run) => {
   })
 
   return bus
+}
+
+/**
+ * @return {boolean}
+ */
+export function isInstalled() {
+  const dirpath = getPowerPath()
+
+  if (!isString(dirpath)) {
+    // how the fuck?
+    return false
+  }
+
+  if (!fs.existsSync(dirpath)) {
+    return false
+  }
+
+  const binaries = [
+    'main.py',
+    'dreampower.exe',
+    'dreampower',
+  ]
+
+  for (const bin of binaries) {
+    if (fs.existsSync(getPowerPath(bin))) {
+      return true
+    }
+  }
+
+  return false
 }
 
 /**

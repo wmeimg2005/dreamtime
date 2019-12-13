@@ -56,7 +56,7 @@ import { isString, toNumber } from 'lodash'
 import * as updateProviders from '~/modules/updater'
 
 const { shell } = $provider.api
-const { getPath } = $provider.tools.paths
+const { getPath } = $provider.paths
 
 export default {
   filters: {

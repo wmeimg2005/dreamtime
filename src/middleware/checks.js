@@ -7,8 +7,9 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-const { settings } = $provider.services
-const { system } = $provider.tools
+import { requirements } from '~/modules/system'
+
+const { system, settings } = $provider
 
 /**
  * Detects if the user has what it takes to run the program,
@@ -26,7 +27,7 @@ export default function ({ route, redirect }) {
     return
   }
 
-  if (!system.requirements.power.installed || !system.requirements.power.compatible) {
+  if (!requirements.power.installed || !requirements.power.compatible) {
     // DreamPower is missing
     if (
       !route.path.includes('/settings')
@@ -38,7 +39,7 @@ export default function ({ route, redirect }) {
     return
   }
 
-  if (!system.requirements.power.checkpoints) {
+  if (!requirements.power.checkpoints) {
     // Checkpoints are missing
     if (route.path !== '/about') {
       redirect('/about#checkpoints')

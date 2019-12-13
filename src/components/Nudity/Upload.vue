@@ -132,10 +132,10 @@ import {
   isNil, isEmpty, startsWith,
   map, isArray,
 } from 'lodash'
+import { nucleus } from '~/modules/services'
 import { Nudify } from '~/modules/nudify'
 
-const { nucleus } = $provider.services
-const { instagram } = $provider.tools
+const { instagram } = $provider
 const { dialog } = $provider.api
 
 export default {

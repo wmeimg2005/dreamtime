@@ -17,12 +17,12 @@ import deferred from 'deferred'
 import filesize from 'filesize'
 import delay from 'delay'
 import { basename } from 'path'
+import { nucleus } from '../services'
 import { AppError } from '../app-error'
 
-const { nucleus } = $provider.services
-const { system } = $provider.tools
-const { getPath } = $provider.tools.paths
-const { existsSync, statSync, download } = $provider.tools.fs
+const { system } = $provider
+const { getPath } = $provider.paths
+const { existsSync, statSync, download } = $provider.fs
 const { dialog } = $provider.api
 const { platform } = $provider.util
 

@@ -5,10 +5,10 @@ import { getMetadata } from '~/workers/fs'
 const {
   writeDataURL, downloadAsync,
   unlinkSync, copySync,
-} = $provider.tools.fs
+} = $provider.fs
 
 
-const { getPath } = $provider.tools.paths
+const { getPath } = $provider.paths
 
 export class File {
   name

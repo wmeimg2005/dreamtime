@@ -25,6 +25,7 @@
 
 <script>
 import { isNil, startsWith } from 'lodash'
+import { nucleus } from '~/modules/services'
 import { dream } from '~/modules'
 
 const { shell } = $provider.api
@@ -81,7 +82,7 @@ export default {
         if (startsWith(this.href, '/')) {
           this.$router.push(this.href)
         } else {
-          $provider.services.nucleus.track('EXTERNAL_LINK', { href: this.href })
+          nucleus.track('EXTERNAL_LINK', { href: this.href })
           shell.openExternal(this.href)
         }
       }

@@ -1,17 +1,20 @@
-/* eslint-disable-next-line */
-const debug = require('debug').default('app:modules:app')
+import { nucleus } from './services'
 
 export default {
+  /**
+   * @type {string}
+   */
   name: process.env.npm_package_displayName,
 
+  /**
+   * @type {string}
+   */
   version: `v${process.env.npm_package_version}`,
-
-  status: 'stable',
 
   /**
    *
    */
   setup() {
-    this.settings = $provider.services.nucleus
+    this.settings = nucleus
   },
 }

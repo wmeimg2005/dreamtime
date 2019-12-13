@@ -20,7 +20,7 @@
           label="GPU"
           description="Graphics card that will be used to transform the photos.">
           <select v-model="currentValue.processing.gpus[0]" class="input">
-            <option v-for="(device, index) in $provider.tools.system.graphics" :key="index" :value="index">
+            <option v-for="(device, index) in $provider.system.graphics" :key="index" :value="index">
               {{ device.model }}
             </option>
             <option v-for="n in 5" :key="`slot-${n - 1}`" :value="n - 1">
@@ -33,7 +33,7 @@
           v-if="currentValue.processing.device === 'CPU'"
           label="CPU Cores"
           description="Increasing this can improve transformation speed but decrease system stability.">
-          <input v-model="currentValue.processing.cores" type="number" min="1" :max="$provider.tools.system.cores" class="input">
+          <input v-model="currentValue.processing.cores" type="number" min="1" :max="$provider.system.cores" class="input">
         </box-item>
 
         <box-item

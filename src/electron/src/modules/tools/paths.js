@@ -11,7 +11,7 @@ import { attempt } from 'lodash'
 import { join } from 'path'
 import fs from 'fs-extra'
 import { app } from 'electron'
-import { settings } from '../services'
+import { settings } from '../settings'
 
 /**
  * Returns an absolute path depending on the parameters

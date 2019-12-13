@@ -53,8 +53,7 @@
 <script>
 import _ from 'lodash'
 import { tween, styler } from 'popmotion'
-
-const { nucleus } = $provider.services
+import { nucleus } from '~/modules/services'
 
 export default {
   computed: {

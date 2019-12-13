@@ -11,19 +11,25 @@ import {
   isError, isString, isObject, isArray,
 } from 'lodash'
 import { app, dialog } from 'electron'
-import { rollbar } from './services/rollbar'
 
 const logger = require('logplease').create('app-error:main')
 
 /**
  * @typedef {Object} ErrorOptions
  * @property {string} title
- * @property {Error} error
  * @property {string} level
- * @property {Object} extra
+ * @property {Error} error
+ * @property {boolean} fatal
+ * @property {boolean} quiet
  */
 
+/**
+ * @global
+ */
 export class AppError extends Error {
+  /**
+   * @type {ErrorOptions}
+   */
   options = {
     title: null,
     level: 'error',
@@ -67,26 +73,6 @@ export class AppError extends Error {
     }
   }
 
-  report() {
-    if (!rollbar.enabled) {
-      return
-    }
-
-    const { level } = this.options
-
-    try {
-      const error = this.options.error || this
-
-      const response = rollbar[level](this.message, error, this.options)
-
-      if (response.uuid) {
-        this.message += `\n\nShare this with a developer:\nhttps://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
-      }
-    } catch (err) {
-      logger.warn('Error report fail!', err)
-    }
-  }
-
   show() {
     dialog.showErrorBox(
       this.options.title || 'A problem has occurred.',
@@ -103,10 +89,6 @@ export class AppError extends Error {
     logger[level](this.message, {
       error,
     })
-
-    if (process.env.NODE_ENV !== 'development') {
-      this.report()
-    }
 
     if (!quiet) {
       this.show()
