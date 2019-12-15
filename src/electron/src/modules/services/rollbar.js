@@ -7,7 +7,9 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isNil, isString, get } from 'lodash'
+import {
+  isNil, isString, get,
+} from 'lodash'
 import { execSync } from 'child_process'
 import Rollbar from 'rollbar'
 import { BaseService } from './base'

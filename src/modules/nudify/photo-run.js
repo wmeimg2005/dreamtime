@@ -278,9 +278,10 @@ export class PhotoRun {
       }
     }
 
-    return new AppError('DreamPower has been interrupted by an unknown error, this may be caused by a corrupt installation, please check the console for more information.', {
+    return new AppError(`DreamPower has been interrupted by an unknown error, this may be caused by a corrupt installation, please check the console for more information.\n<pre>${message}</pre>`, {
       title: `Run ${this.id} has failed.`,
       error: new Error(message),
+      terminal: this.cli.lines,
     })
   }
 

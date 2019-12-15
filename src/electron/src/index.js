@@ -71,7 +71,7 @@ class DreamApp {
     // user settings.
     await settings.initialSetup()
 
-    if (settings.app.disableHardwareAcceleration) {
+    if (settings.app?.disableHardwareAcceleration) {
       logger.info('Disabling hardware acceleration.')
       app.disableHardwareAcceleration()
     }

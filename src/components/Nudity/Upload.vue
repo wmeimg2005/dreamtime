@@ -240,7 +240,13 @@ export default {
         throw new AppError('Please enter a valid Instagram photo.', { title: 'Upload failed.', level: 'warning' })
       }
 
-      const post = await instagram.getPost(this.instagramPhoto)
+      let post
+
+      try {
+        post = await instagram.getPost(this.instagramPhoto)
+      } catch (error) {
+        throw new AppError('Unable to download the photo, please verify that the address is correct and that you are connected to the Internet.', { title: 'Upload failed.', error, level: 'warning' })
+      }
 
       if (post.isVideo) {
         throw new AppError('The videos are not supported yet.', { title: 'Upload failed.', level: 'warning' })
