@@ -214,23 +214,19 @@ class Settings {
    * legacy code :WutFaceW:
    */
   async _upgrade() {
-    const currentVersion = this.payload.version || 1
-    const newVersion = this._default.version
-
-    if (newVersion === currentVersion) {
+    if (this.payload?.version === this._default.version) {
       return
     }
 
-    logger.debug(`Upgrading settings file to v${newVersion}`)
+    logger.debug(`Upgrading settings file to v${this._default.version}`)
 
-    const currentSettings = this.payload
-    const newSettings = cloneDeep(currentSettings)
+    const currentSettings = cloneDeep(this.payload)
 
-    // 1 -> 2
-    if (currentVersion === 1 && newVersion === 2) {
-      newSettings.version = 2
-      newSettings.preferences = this._default.preferences
-      newSettings.notifications = this._default.notifications
+    // Upgrade 1 -> 2
+    if (this.payload?.version === 1 && this._default.version >= 2) {
+      this.payload.version = 2
+      this.payload.preferences = this._default.preferences
+      this.payload.notifications = this._default.notifications
 
       const {
         boobsSize,
@@ -240,26 +236,26 @@ class Settings {
         pubicHairSize,
       } = this.payload.preferences
 
-      newSettings.preferences.boobs.size = boobsSize
-      newSettings.preferences.areola.size = areolaSize
-      newSettings.preferences.nipple.size = nippleSize
-      newSettings.preferences.vagina.size = vaginaSize
-      newSettings.preferences.pubicHair.size = pubicHairSize
+      this.payload.preferences.boobs.size = boobsSize
+      this.payload.preferences.areola.size = areolaSize
+      this.payload.preferences.nipple.size = nippleSize
+      this.payload.preferences.vagina.size = vaginaSize
+      this.payload.preferences.pubicHair.size = pubicHairSize
     }
 
-    // 2 -> 3
-    if (currentVersion === 2 && newVersion === 3) {
+    // Upgrade 2 -> 3
+    if (this.payload?.version === 2 && this._default.version >= 3) {
       const { processing, preferences } = currentSettings
 
-      newSettings.version = 3
+      this.payload.version = 3
 
-      newSettings.processing = {
+      this.payload.processing = {
         ...processing,
         cores: 4,
         disablePersistentGan: false,
       }
 
-      newSettings.preferences = {
+      this.payload.preferences = {
         body: {
           executions: preferences.executions,
           randomize: preferences.randomizePreferences,
@@ -284,22 +280,16 @@ class Settings {
       }
     }
 
-    // 3 -> 4
-    if (currentVersion === 3 && newVersion === 4) {
-      newSettings.version = 4
-      newSettings.app = {
+    // Upgrade 3 -> 4
+    if (this.payload?.version === 3 && this._default.version >= 4) {
+      this.payload.version = 4
+      this.payload.app = {
         disableHardwareAcceleration: false,
         uploadMode: 'add-queue',
       }
     }
 
-    // 4 -> 5
-    if (currentVersion === 4 && newVersion === 5) {
-      newSettings.version = 5
-      newSettings.preferences.advanced.transformMode = 'normal'
-    }
-
-    this.set(newSettings)
+    this.save()
   }
 }
 

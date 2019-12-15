@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isError, isString, isObject, isArray,
+  isError, isString, isObject, isArray, pick,
 } from 'lodash'
 import Swal from 'sweetalert2'
 import { logrocket } from '~/modules/services'
@@ -156,7 +156,7 @@ export class AppError extends Error {
       if (isError(error)) {
         reportError = error
       } else if (isObject(error) || isArray(error)) {
-        reportError = JSON.stringify(error)
+        reportError = new Error(JSON.stringify(error))
       } else {
         reportError = new Error(error)
       }
