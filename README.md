@@ -66,11 +66,11 @@ If you want to share or modify this software please do it for the same purpose a
 
 ### Mirrors
 
-[![Windows](https://img.shields.io/badge/windows-v1.2.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-windows.exe)
+[![Windows](https://img.shields.io/badge/windows-v1.2.2-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.2/DreamTime-v1.2.2-windows.exe)
 
-[![Ubuntu Snap](https://img.shields.io/badge/ubuntu+snap-v1.2.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-ubuntu.snap)
+[![Ubuntu Snap](https://img.shields.io/badge/ubuntu+snap-v1.2.2-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.2/DreamTime-v1.2.2-ubuntu.snap)
 
-[![macOS](https://img.shields.io/badge/macos-v1.2.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-macos.dmg)
+[![macOS](https://img.shields.io/badge/macos-v1.2.2-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.2/DreamTime-v1.2.2-macos.dmg)
 
 
 ## Manual
