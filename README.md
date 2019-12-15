@@ -1,3 +1,5 @@
+> ⚠ **NSFW. This page and the application is intended only for adults.**
+
 ![](assets/dreamtime.png)
 
 [![Build Status](https://github.com/dreamnettech/dreamtime/workflows/CI/CD/badge.svg)](https://github.com/dreamnettech/dreamtime/actions)
