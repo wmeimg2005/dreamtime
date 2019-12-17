@@ -47,7 +47,7 @@ export class Photo {
   /**
    * @type {EventBus}
    */
-  events = new EventBus()
+  events = new EventBus
 
   /**
    * @type {string}
@@ -86,7 +86,7 @@ export class Photo {
   /**
    * @type {Timer}
    */
-  timer = new Timer()
+  timer = new Timer
 
   /**
    * @type {require('cropperjs').default}
@@ -309,7 +309,7 @@ export class Photo {
       afterProcessDelay: 500,
       batchSize: 1,
       concurrent: 1,
-      store: new MemoryStore(),
+      store: new MemoryStore,
     })
 
     this.queue.on('drain', () => {
@@ -356,7 +356,7 @@ export class Photo {
   reset() {
     this.status = 'pending'
 
-    this.timer = new Timer()
+    this.timer = new Timer
 
     this.runs = []
   }

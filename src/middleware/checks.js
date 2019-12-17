@@ -9,23 +9,14 @@
 
 import { requirements } from '~/modules/system'
 
-const { system, settings } = $provider
-
 /**
  * Detects if the user has what it takes to run the program,
  * otherwise redirects him to the appropriate page.
  */
 export default function ({ route, redirect }) {
+  /*
   window.$redirect = redirect
 
-  if (settings.welcome) {
-    // First time execution!
-    if (route.path !== '/welcome') {
-      redirect('/welcome')
-    }
-
-    return
-  }
 
   if (!requirements.power.installed || !requirements.power.compatible) {
     // DreamPower is missing
@@ -45,4 +36,5 @@ export default function ({ route, redirect }) {
       redirect('/about#checkpoints')
     }
   }
+  */
 }

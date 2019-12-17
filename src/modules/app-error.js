@@ -8,12 +8,13 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isError, isString, isObject, isArray, pick,
+  isError, isString, isObject, isArray, attempt,
 } from 'lodash'
+import { mapStackTrace } from 'sourcemapped-stacktrace'
 import Swal from 'sweetalert2'
-import { logrocket } from '~/modules/services'
+import { logrocket, rollbar } from '~/modules/services'
 
-const logger = require('logplease').create('app-error:renderer')
+const logger = require('logplease').create('error:renderer')
 
 const { app } = $provider.api
 
@@ -32,6 +33,7 @@ export class AppError extends Error {
    */
   options = {
     title: null,
+    message: null,
     level: 'error',
     error: null,
     fatal: false,
@@ -48,22 +50,25 @@ export class AppError extends Error {
    * @param {string} message
    * @param {ErrorOptions} options
    */
-  constructor(input, options = {}) {
-    if (isString(input)) {
-      super(input)
-    } else if (isError(input)) {
-      super(input.message)
+  constructor(message, options = {}) {
+    if (isError(message)) {
+      // that's better.
+      options.error = message
+      message = message.message
+    }
 
-      this.stack = input.stack
+    const { error } = options
 
-      this.options.error = input
+    if (isError(error)) {
+      // we want this error to be the closest to the original
+      super(error.message)
 
-      if (input.options) {
-        this.options = {
-          ...this.options,
-          ...input.options,
-        }
+      if (error.options) {
+        // inherit error options.
+        this.options = error.options
       }
+    } else if (isString(message)) {
+      super(message)
     } else {
       super()
     }
@@ -71,42 +76,81 @@ export class AppError extends Error {
     this.options = {
       ...this.options,
       ...options,
+      message,
     }
 
     if (this.options.level === 'warning') {
+      // warning does not exist in logger.
       this.options.level = 'warn'
     }
   }
 
+  /**
+   * Copy the original error information.
+   */
+  async copyError() {
+    const { error } = this.options
+
+    if (!isError(error)) {
+      return
+    }
+
+    // transform the original stack to the source-map stack.
+    const getStack = () => new Promise((resolve) => {
+      mapStackTrace(error.stack, (stack) => {
+        resolve(`${error.message}\n${stack.join('\n')}`)
+      }, { cacheGlobally: true })
+    })
+
+    // copy pasta
+    this.name = error.name
+    this.stack = await getStack()
+  }
+
+  /**
+   * Report the error to the logger, bug and session tracking services.
+   */
   report() {
-    /*
-    if (process.env.NODE_ENV === 'development') {
-      this.reportUrl = `https://rollbar.com/occurrence/uuid/?uuid={EXAMPLE}`
-      return
+    const { level, error } = this.options
+    let rollbarResponse
+
+    // logger.
+    logger[level](this)
+
+    // bug tracking.
+    if (rollbar.enabled && level === 'error') {
+      try {
+        rollbarResponse = rollbar[level](this, {
+          ...this.options,
+          sessionURL: logrocket.sessionURL,
+        })
+
+        this.reported = true
+      } catch (err) {
+        logger.warn('Rollbar report fail!', err)
+      }
     }
-    */
 
-    const { level } = this.options
+    // session tracking.
+    if (logrocket.enabled && level === 'error') {
+      try {
+        logrocket.captureException(error || this, {
+          extra: {
+            ...this.options,
+            rollbarURL: `https://rollbar.com/occurrence/uuid/?uuid=${rollbarResponse?.uuid}`,
+          },
+        })
 
-    if (!logrocket.enabled || level !== 'error') {
-      return
-    }
-
-    try {
-      const error = this.options.error || this
-
-      console.log(logrocket)
-
-      logrocket.captureException(error, {
-        extra: this.options,
-      })
-
-      this.reported = true
-    } catch (err) {
-      logger.warn('LogRocket report fail!', err)
+        this.reported = true
+      } catch (err) {
+        logger.warn('LogRocket report fail!', err)
+      }
     }
   }
 
+  /**
+   * Show the error to the user.
+   */
   show() {
     let icon = 'error'
 
@@ -120,52 +164,54 @@ export class AppError extends Error {
 
     Swal.fire({
       title: this.options.title,
-      html: this.message,
+      html: `${this.options.message}<br><br><pre>${this.message}</pre>`,
       icon,
-      footer: this.reported ? `<code>This problem has been reported to the developers.</code>` : null,
+      footer: this.reported ? `<code>🐞 This problem has been reported to DreamNet.<br>It will be fixed as soon as possible.</code>` : null,
     })
   }
 
-  handle() {
-    const {
-      level, quiet, fatal, error,
-    } = this.options
+  /**
+   *
+   */
+  async handle() {
+    const { quiet, fatal, error } = this.options
 
-    // logger
-    logger[level](this.message, {
-      error,
+    await this.copyError(error)
+
+    attempt(() => {
+      this.report()
+
+      if (!quiet) {
+        this.show()
+      }
     })
-
-    this.report()
-
-    if (!quiet) {
-      this.show()
-    }
 
     if (fatal) {
       app.quit()
     }
   }
 
+  /**
+   *
+   */
   static handle(error) {
     let appError = error
 
     if (!(error instanceof AppError)) {
-      let reportError
+      let exception
 
       if (isError(error)) {
-        reportError = error
+        exception = error
       } else if (isObject(error) || isArray(error)) {
-        reportError = new Error(JSON.stringify(error))
+        exception = new Error(JSON.stringify(error))
       } else {
-        reportError = new Error(error)
+        exception = new Error(error)
       }
 
-      appError = new AppError(`The application has encountered an unexpected error:\n<pre>${reportError?.message}</pre>`,
-        {
-          error: reportError,
-          title: 'Unexpected error!',
-        })
+      appError = new AppError(`Woah! An error has occurred and we do not know why.<br>Please try again.`, {
+        error: exception,
+        title: 'Unexpected error!',
+      })
     }
 
     appError.handle()

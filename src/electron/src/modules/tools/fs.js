@@ -5,13 +5,8 @@ import {
   createWriteStream, createReadStream,
 } from 'fs-extra'
 import { app, dialog } from 'electron'
-import { is, platform } from 'electron-util'
-import EventBus from 'js-event-bus'
 import axios from 'axios'
-import unzipper from 'unzipper'
 import deferred from 'deferred'
-import sevenBin from '7zip-bin'
-import { extractFull } from 'node-7z'
 import { getAppResourcesPath } from './paths'
 import { AppError } from '../app-error'
 
@@ -59,6 +54,8 @@ export function writeDataURL(path, dataURL) {
  * @param {string} destinationPath
  */
 export function extractZip(path, destinationPath) {
+  const unzipper = require('unzipper')
+
   const def = deferred()
 
   const stream = createReadStream(path).pipe(unzipper.Extract({ path: destinationPath }))
@@ -80,11 +77,15 @@ export function extractZip(path, destinationPath) {
  * @param {string} destinationPath
  */
 export function extractSeven(path, destinationPath) {
+  const { is, platform } = require('electron-util')
+  const { extractFull } = require('node-7z')
+
   const def = deferred()
 
   let pathTo7zip
 
   if (is.development) {
+    const sevenBin = require('7zip-bin')
     pathTo7zip = sevenBin.path7za
   } else {
     const binName = platform({
@@ -118,7 +119,8 @@ export function extractSeven(path, destinationPath) {
  * @param {Object} [options]
  */
 export function download(url, options = {}) {
-  const bus = new EventBus()
+  const EventBus = require('js-event-bus')
+  const bus = new EventBus
 
   // eslint-disable-next-line no-param-reassign
   options = {

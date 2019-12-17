@@ -109,7 +109,7 @@ async function uploadToAnonFile(filepath, filename) {
   try {
     console.log(`Uploading ${fileName} to anonfile.com...`)
 
-    const formData = new FormData()
+    const formData = new FormData
     formData.append('file', fs.createReadStream(filepath), { filename })
 
     let response = await axios.post('https://api.anonfile.com/upload', formData, {
@@ -134,7 +134,7 @@ async function uploadToAnon(filepath, filename) {
   try {
     console.log(`Uploading ${fileName} to anonymousfiles.io...`)
 
-    const formData = new FormData()
+    const formData = new FormData
     formData.append('file', fs.createReadStream(filepath), { filename })
     formData.append('expires', '6m')
 
@@ -160,7 +160,7 @@ async function uploadToFileIo(filepath, filename) {
   try {
     console.log(`Uploading ${fileName} to file.io...`)
 
-    const formData = new FormData()
+    const formData = new FormData
     formData.append('file', fs.createReadStream(filepath), { filename })
     formData.append('expires', '1y')
 
@@ -186,7 +186,7 @@ async function uploadToInfura(filepath, filename) {
   try {
     console.log(`Uploading ${fileName} to INFURA...`)
 
-    const formData = new FormData()
+    const formData = new FormData
     formData.append('file', fs.createReadStream(filepath), { filename })
     formData.append('pin', 'true')
 
@@ -212,7 +212,7 @@ async function uploadToDreamLink(filepath, filename) {
   try {
     console.log(`Uploading ${fileName} to DreamLink...`)
 
-    const formData = new FormData()
+    const formData = new FormData
     formData.append('file', fs.createReadStream(filepath), { filename })
     formData.append('pin', 'true')
 

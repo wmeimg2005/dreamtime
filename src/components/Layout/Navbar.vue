@@ -55,7 +55,7 @@ export default {
 
   methods: {
     createError() {
-      throw new Error('UI test error.')
+      throw new Error('User Interface test error.')
     },
   },
 }

@@ -8,11 +8,11 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isError, isString, isObject, isArray,
+  isError, isString, isObject, isArray, attempt,
 } from 'lodash'
 import { app, dialog } from 'electron'
 
-const logger = require('logplease').create('app-error:main')
+const logger = require('logplease').create('error:main')
 
 /**
  * @typedef {Object} ErrorOptions
@@ -32,9 +32,8 @@ export class AppError extends Error {
    */
   options = {
     title: null,
-    level: 'error',
+    level: 'warn',
     error: null,
-    fatal: false,
     quiet: false,
   }
 
@@ -76,25 +75,24 @@ export class AppError extends Error {
   show() {
     dialog.showErrorBox(
       this.options.title || 'A problem has occurred.',
-      this.message,
+      `${this.message}\n\n<code>${this.options.error?.message}</code>`,
     )
   }
 
   handle() {
     const {
-      level, quiet, fatal, error,
+      level, quiet, error,
     } = this.options
 
-    // logger
-    logger[level](this.message, {
-      error,
+    attempt(() => {
+      logger[level](this.message, { error })
+
+      if (!quiet) {
+        this.show()
+      }
     })
 
-    if (!quiet) {
-      this.show()
-    }
-
-    if (fatal) {
+    if (level === 'error') {
       app.quit()
     }
   }
@@ -103,21 +101,21 @@ export class AppError extends Error {
     let appError = error
 
     if (!(error instanceof AppError)) {
-      let reportError
+      let exception
 
       if (isError(error)) {
-        reportError = error
+        exception = error
       } else if (isObject(error) || isArray(error)) {
-        reportError = new Error(JSON.stringify(error))
+        exception = attempt(() => new Error(JSON.stringify(error)))
       } else {
-        reportError = new Error(error)
+        exception = new Error(error)
       }
 
-      appError = new AppError(`The application has encountered an unexpected error:\n<code>${reportError?.message}</code>`,
-        {
-          error: reportError,
-          title: 'Unexpected error!',
-        })
+      appError = new AppError(`The application has encountered an unexpected error.`, {
+        error: exception,
+        title: 'Unexpected error!',
+        level: 'error',
+      })
     }
 
     appError.handle()

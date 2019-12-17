@@ -9,4 +9,4 @@
 
 import EventBus from 'js-event-bus'
 
-export const events = new EventBus()
+export const events = new EventBus

@@ -32,7 +32,68 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      // { 'http-equiv': 'Content-Security-Policy', content: 'default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://cdn.logrocket.io https://cdn.lr-ingest.io; worker-src \'self\' \'unsafe-inline\' data: blob:; object-src \'none\'; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; img-src \'self\' data:; media-src \'self\' data:; frame-src \'self\' https://*.dreamnet.tech; font-src *; connect-src \'self\' http://localhost:* https://*.dreamnet.tech wss://app.nucleus.sh https://nucleus.sh https://*.logrocket.io https://r.lr-ingest.io https://*.github.com' },
     ],
+  },
+
+  /**
+   *
+   */
+  render: {
+    csp: {
+      hashAlgorithm: 'sha256',
+      policies: {
+        'default-src': [
+          'self',
+        ],
+        'script-src': [
+          'self',
+          'unsafe-inline',
+          'https://cdn.logrocket.io',
+          'https://cdn.lr-ingest.io',
+        ],
+        'worker-src': [
+          'self',
+          'unsafe-inline',
+          'data:',
+          'blob:',
+        ],
+        'object-src': [
+          'none',
+        ],
+        'style-src': [
+          'self',
+          'unsafe-inline',
+          'https://fonts.googleapis.com',
+        ],
+        'img-src': [
+          'self',
+          'data:',
+        ],
+        'media-src': [
+          'self',
+          'data:',
+        ],
+        'frame-src': [
+          'self',
+          'https://*.dreamnet.tech',
+        ],
+        'font-src': [
+          '*',
+        ],
+        'connect-src': [
+          'self',
+          'http://localhost:*',
+          'https://*.dreamnet.tech',
+          'wss://app.nucleus.sh',
+          'https://nucleus.sh',
+          'https://*.logrocket.io',
+          'https://r.lr-ingest.io',
+          'https://*.github.com',
+        ],
+      },
+      addMeta: true,
+    },
   },
 
   /*
@@ -48,14 +109,23 @@ module.exports = {
     'cropperjs/dist/cropper.css',
     'tui-image-editor/dist/tui-image-editor.css',
     'tui-color-picker/dist/tui-color-picker.css',
+
     '~/assets/css/tailwind.scss',
+    '~/assets/css/reset.scss',
+    '~/assets/css/components/_all.scss',
+    '~/assets/css/utilities/_all.scss',
     '~/assets/css/fonts.scss',
   ],
 
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/boot.js', '~/plugins/setup.js', '~/plugins/fontawesome.js', '~/components'],
+  plugins: [
+    '~/plugins/boot.js',
+    '~/plugins/setup.js',
+    '~/plugins/fontawesome.js',
+    '~/components',
+  ],
 
   /*
    ** Nuxt.js dev-modules
@@ -63,6 +133,8 @@ module.exports = {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    // Doc: https://github.com/Developmint/nuxt-purgecss
+    'nuxt-purgecss',
     // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
     '@nuxtjs/tailwindcss',
   ],
@@ -83,7 +155,8 @@ module.exports = {
    *
    */
   purgeCSS: {
-    whitelistPatterns: [/tippy/, /cropper/, /tui/, /color-picker/],
+    enabled: !dev,
+    whitelistPatterns: [/tippy/, /cropper/, /tui/, /color-picker/, /swal2/, /text-/, /nuxt/, /pre/, /svg/],
   },
 
   /**
@@ -104,11 +177,11 @@ module.exports = {
   build: {
     parallel: true,
 
-    hardSource: dev,
+    hardSource: false,
 
-    cache: dev,
+    cache: false,
 
-    extractCSS: !dev,
+    extractCSS: true,
 
     /**
      *
@@ -154,11 +227,14 @@ module.exports = {
      */
     optimization: {
       splitChunks: {
+        // minSize: 30000,
+        // maxSize: 3000000,
         cacheGroups: {
-          commons: {
+          vendors: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
+            reuseExistingChunk: true,
           },
         },
       },
@@ -168,6 +244,8 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, { isDev }) {
+      const webpack = require('webpack')
+
       config.target = 'electron-renderer'
 
       config.module.rules.push({
@@ -176,15 +254,13 @@ module.exports = {
         exclude: /(node_modules)/,
       })
 
+      // eslint-disable-next-line no-useless-escape
+      config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/))
+
       if (isDev) {
-        config.devtool = 'source-map'
+        config.devtool = 'inline-source-map'
       } else {
         config.output.publicPath = './_nuxt/'
-
-        const webpack = require('webpack')
-
-        // eslint-disable-next-line no-useless-escape
-        config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/))
       }
     },
   },

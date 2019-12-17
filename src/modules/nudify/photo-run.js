@@ -67,7 +67,7 @@ export class PhotoRun {
   /**
    * @type {Timer}
    */
-  timer = new Timer()
+  timer = new Timer
 
   /**
    * @type {Object}
@@ -130,7 +130,7 @@ export class PhotoRun {
     this.status = 'pending'
     this.failed = false
 
-    this.timer = new Timer()
+    this.timer = new Timer
   }
 
   toObject() {

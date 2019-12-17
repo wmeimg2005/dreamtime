@@ -45,6 +45,16 @@ export default async ({ app }, inject) => {
 
   Vue.config.errorHandler = (err) => {
     AppError.handle(err)
+
+    /*
+    const { logrocket, rollbar } = require('~/modules/services')
+
+    console.warn(err.stack)
+
+    logrocket.captureException(err)
+    rollbar.error(err)
+    */
+
     throw err
   }
 

@@ -7,16 +7,16 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isNil, isString, toInteger } from 'lodash'
+import { isNil, startsWith } from 'lodash'
+import { remote } from 'electron'
 import { nucleus } from '../services'
 
 const logger = require('logplease').create('app:system:requirements')
 
 const { system, fs } = $provider
 const { is } = $provider.util
-const { remote } = $provider.api
 const { getVersion, isInstalled } = $provider.power
-const { getAppResourcesPath, getPowerPath, getCheckpointsPath } = $provider.paths
+const { getAppResourcesPath, getCheckpointsPath } = $provider.paths
 
 export const requirements = {
   power: {
@@ -74,9 +74,10 @@ export const requirements = {
     }
 
     const compareVersions = require('compare-versions')
+    let version
 
     try {
-      const version = await getVersion()
+      version = await getVersion()
       const currentVersion = process.env.npm_package_version
 
       const minimum = nucleus.v1?.projects?.dreamtime?.releases[`v${currentVersion}`]?.dreampower?.minimum || 'v0.0.1'
@@ -92,7 +93,7 @@ export const requirements = {
 
       return true
     } catch (err) {
-      logger.warn('An error occurred while verifying the version of DreamPower.', err)
+      logger.warn(`DreamPower version verification failed. (${version}).`, err)
       return false
     }
   },
@@ -140,8 +141,8 @@ export const requirements = {
 
     const version = system.os.release
 
-    if (toInteger(version) < 10) {
-      // no windows 10
+    if (!startsWith(version, '10')) {
+      // no windows 10.
       return true
     }
 

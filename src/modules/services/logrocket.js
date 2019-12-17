@@ -7,15 +7,22 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isString, get } from 'lodash'
+import { isString, endsWith } from 'lodash'
 import LogRocket from 'logrocket'
 import { BaseService } from './base'
 import { nucleus } from './nucleus'
 
 const { settings, system } = $provider
+const { telemetry } = settings
 
 const logger = require('logplease').create('services:logrocket')
 
+const privateExtensions = ['.jpg', '.jpeg', '.png', '.gif']
+
+/**
+ * https://logrocket.com/
+ * Session tracking.
+ */
 class LogRocketService extends BaseService {
   /**
    * @type {string}
@@ -31,6 +38,9 @@ class LogRocketService extends BaseService {
     return isString(this.accessToken)
   }
 
+  /**
+   * @type {string}
+   */
   get release() {
     return process.env.GITHUB_SHA || process.env.npm_package_version
   }
@@ -42,9 +52,26 @@ class LogRocketService extends BaseService {
     return {
       release: this.release,
       shouldCaptureIP: false,
-      /*dom: {
-        baseHref: nucleus.urls?.internal?.cdn || '',
-      }, */
+      network: {
+        requestSanitizer(request) {
+          if (!telemetry.domPrivate) {
+            // the user does not want to send private dom.
+            privateExtensions.forEach((extension) => {
+              if (endsWith(request.url.toLowerCase(), extension)) {
+                // scrub web address photo.
+                request.url = '[private-photo]'
+              }
+            })
+          }
+        },
+        responseSanitizer(request) {
+          console.log(request)
+        },
+      },
+      dom: {
+        isEnabled: telemetry.dom,
+        baseHref: $provider.ngrok.getAddress() || nucleus.urls?.internal?.cdn || null,
+      },
     }
   }
 
@@ -54,10 +81,9 @@ class LogRocketService extends BaseService {
     }
 
     try {
-      LogRocket.init(this.accessToken)
+      LogRocket.init(this.accessToken, this.config)
       LogRocket.identify(settings.user || 'unknown', {
         settings: settings.payload,
-
       })
 
       this.service = LogRocket

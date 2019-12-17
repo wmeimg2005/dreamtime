@@ -83,7 +83,7 @@ export class Nudify {
       afterProcessDelay: 500,
       batchSize: 1,
       concurrent: 1,
-      store: new MemoryStore(),
+      store: new MemoryStore,
     })
 
     this.queue.on('task_queued', (photoId, photo) => {

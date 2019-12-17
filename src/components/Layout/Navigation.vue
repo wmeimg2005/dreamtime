@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { requirements } from '~/modules/system'
+
 const { settings } = $provider
 
 export default {

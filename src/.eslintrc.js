@@ -32,7 +32,9 @@ module.exports = {
   ],
   root: true,
   rules: {
+    "no-param-reassign": "off",
     "class-methods-use-this": "off",
+    "no-trailing-spaces": "warn",
     "comma-dangle": "warn",
     "global-require": "off",
     "import/default": "warn",

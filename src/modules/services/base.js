@@ -36,7 +36,7 @@ export class BaseService {
    * @return {BaseService}
    */
   static make() {
-    return new Proxy(new this(), {
+    return new Proxy(new this, {
       get: (obj, prop) => {
         if (prop in obj) {
           return obj[prop]

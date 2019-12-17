@@ -92,7 +92,7 @@ export class BaseService {
   static make(obj) {
     if (!obj) {
       // eslint-disable-next-line no-param-reassign
-      obj = new this()
+      obj = new this
     }
 
     return makeServiceProxy(obj)

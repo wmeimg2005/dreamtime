@@ -36,7 +36,7 @@ export class File {
    * @param {*} filepath
    */
   static fromPath(filepath) {
-    const file = new this()
+    const file = new this
     return file.open(filepath)
   }
 
@@ -48,7 +48,7 @@ export class File {
       directory: getPath('temp'),
     })
 
-    const file = new this()
+    const file = new this
     await file.open(filepath)
 
     return file
@@ -58,7 +58,7 @@ export class File {
    *
    */
   static fromMetadata(metadata) {
-    const file = new this()
+    const file = new this
     return file.setMetadata(metadata)
   }
 

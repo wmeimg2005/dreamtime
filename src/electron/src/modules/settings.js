@@ -11,7 +11,7 @@ import fs from 'fs-extra'
 import {
   round, cloneDeep, isNil, isEmpty, isPlainObject, get, set,
 } from 'lodash'
-import uuid from 'uuid'
+import { AppError } from './app-error'
 import { paths, system } from './tools'
 
 const logger = require('logplease').create('electron:scripts:services:settings')
@@ -50,12 +50,12 @@ class Settings {
       return
     }
 
-    if (!fs.existsSync(this.path)) {
-      return
+    try {
+      this.payload = fs.readJsonSync(this.path)
+      logger.debug('Settings:', this.payload)
+    } catch (error) {
+      console.error(error)
     }
-
-    this.payload = fs.readJsonSync(this.path)
-    logger.debug(this.payload)
   }
 
   /**
@@ -63,7 +63,7 @@ class Settings {
    * This function is called automatically if you set a first level variable.
    */
   async save() {
-    fs.writeJsonSync(this.path, this.payload)
+    fs.writeJsonSync(this.path, this.payload, { spaces: 2 })
   }
 
   /**
@@ -102,23 +102,53 @@ class Settings {
   /**
    *
    */
-  async initialSetup() {
-    this._loadInitital()
+  async boot() {
+    this._loadDefault()
     await this.load()
   }
 
-  _loadInitital() {
+  /**
+   * Load the default configuration (and the current version)
+   */
+  _loadDefault() {
     const hasGPU = system.graphics.length > 0
-    const cores = round(system.cores / 2) || 4
+    const cores = round(system.cores / 2) || 1
+
+    const uuid = require('uuid')
 
     this.payload = {
-      version: 5,
-      welcome: true,
+      version: 6,
       user: uuid(),
+
+      wizard: {
+        welcome: false,
+        tos: false,
+        user: false,
+        telemetry: false,
+      },
 
       app: {
         disableHardwareAcceleration: true,
-        uploadMode: 'add-queue',
+        uploadMode: 'none',
+      },
+
+      notifications: {
+        run: false,
+        allRuns: true,
+        update: true,
+      },
+
+      folders: {
+        cropped: paths.getPath('temp'),
+        models: paths.getPath('pictures', 'DreamTime'),
+        masks: paths.getPath('temp'),
+        cli: paths.getPath('userData', 'dreampower'),
+      },
+
+      telemetry: {
+        bugs: true,
+        dom: true,
+        domPrivate: false,
       },
 
       processing: {
@@ -166,28 +196,11 @@ class Settings {
         },
 
         advanced: {
-          scaleMode: 'auto-rescale',
+          scaleMode: 'auto-resize',
           transformMode: 'normal',
           useColorTransfer: false,
           useWaifu: false,
         },
-      },
-
-      notifications: {
-        run: false,
-        allRuns: true,
-        update: true,
-      },
-
-      folders: {
-        cropped: paths.getPath('temp'),
-        models: paths.getPath('userData', 'models'),
-        masks: paths.getPath('temp'),
-        cli: paths.getPath('userData', 'dreampower'),
-      },
-
-      telemetry: {
-        enabled: true,
       },
     }
 
@@ -195,7 +208,7 @@ class Settings {
   }
 
   /**
-   * Create the settings file if it does not exist
+   * Create the settings file if it does not exist.
    */
   async _create() {
     if (fs.existsSync(this.path)) {
@@ -205,13 +218,12 @@ class Settings {
     try {
       fs.outputFileSync(this.path, JSON.stringify(this._default, null, 2))
     } catch (error) {
-      throw new Error(`Settings creation fail. Please make sure the program has the necessary permissions to write to:\n${this.path}\n\n${error}`)
+      throw new AppError(`Could not create settings file. Please make sure the program has the necessary permissions to write to:\n${this.path}`, { fatal: true, error })
     }
   }
 
   /**
-   * Check if it is necessary to update the settings file.
-   * legacy code :WutFaceW:
+   * Upgrade the settings file.
    */
   async _upgrade() {
     if (this.payload?.version === this._default.version) {
@@ -222,7 +234,7 @@ class Settings {
 
     const currentSettings = cloneDeep(this.payload)
 
-    // Upgrade 1 -> 2
+    // 1 -> 2
     if (this.payload?.version === 1 && this._default.version >= 2) {
       this.payload.version = 2
       this.payload.preferences = this._default.preferences
@@ -243,7 +255,7 @@ class Settings {
       this.payload.preferences.pubicHair.size = pubicHairSize
     }
 
-    // Upgrade 2 -> 3
+    // 2 -> 3
     if (this.payload?.version === 2 && this._default.version >= 3) {
       const { processing, preferences } = currentSettings
 
@@ -280,12 +292,38 @@ class Settings {
       }
     }
 
-    // Upgrade 3 -> 4
+    // 3 -> 4
     if (this.payload?.version === 3 && this._default.version >= 4) {
       this.payload.version = 4
       this.payload.app = {
         disableHardwareAcceleration: false,
         uploadMode: 'add-queue',
+      }
+    }
+
+    // 4 -> 5
+    if (this.payload?.version === 4 && this._default.version === 5) {
+      this.payload.version = 5
+      this.payload.preferences.advanced.transformMode = 'normal'
+    }
+
+    // 5 -> 6
+    if (this.payload?.version === 5 && this._default.version === 6) {
+      this.payload.version = 6
+
+      delete this.payload.welcome
+
+      this.payload.wizard = {
+        welcome: false,
+        tos: false,
+        user: false,
+        telemetry: false,
+      }
+
+      this.payload.telemetry = {
+        bugs: this.payload.enabled,
+        dom: true,
+        domPrivate: false,
       }
     }
 
@@ -312,7 +350,6 @@ export function make(obj) {
       return undefined
     },
 
-    /* eslint-disable no-param-reassign */
     set: (obj, prop, value) => {
       if (!isNil(obj.payload)) {
         if (prop in obj.payload) {
@@ -326,7 +363,6 @@ export function make(obj) {
       obj[prop] = value
       return true
     },
-    /* eslint-enable no-param-reassign */
   })
 }
 

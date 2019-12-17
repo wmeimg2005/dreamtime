@@ -9,17 +9,13 @@
 
 import { startsWith } from 'lodash'
 import { app, BrowserWindow, shell } from 'electron'
-import http from 'http'
-import { dirname, join } from 'path'
-import { URL } from 'url'
-import contextMenu from 'electron-context-menu'
+import { dirname, resolve } from 'path'
 import Logger from 'logplease'
-import { enforceMacOSAppLocation } from 'electron-util'
+import fs from 'fs-extra'
 import { AppError } from './modules/app-error'
 import { system } from './modules/tools/system'
-import { existsSync, mkdirSync } from './modules/tools/fs'
 import { getPath } from './modules/tools/paths'
-import { settings } from './modules/settings'
+import { settings, ngrok } from './modules'
 import config from '~/nuxt.config'
 
 const logger = Logger.create('electron')
@@ -27,7 +23,8 @@ const logger = Logger.create('electron')
 // NuxtJS root directory
 config.rootDir = dirname(dirname(__dirname))
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.name === 'production') {
+  // make sure that the working directory is where the executable is
   process.chdir(getPath('exe', '..'))
 }
 
@@ -37,20 +34,21 @@ class DreamApp {
    */
   window
 
-
+  /**
+   *
+   */
   static async boot() {
     // logger setup
-    Logger.setLogLevel(process.env.LOG || 'info')
-    Logger.setLogfile(getPath('userData', 'dreamtime.log'))
+    Logger.setOptions({
+      filename: getPath('userData', 'dreamtime.main.log'),
+      logLevel: process.env.LOG || 'debug',
+    })
+
     logger.info('Booting...')
 
-    logger.debug({
-      env: process.env.name,
-      paths: {
-        appPath: app.getAppPath(),
-        exePath: app.getPath('exe'),
-      },
-    })
+    logger.debug(`Enviroment: ${process.env.name}`)
+    logger.debug(`App Path: ${app.getAppPath()}`)
+    logger.debug(`Exe Path: ${app.getPath('exe')}`)
 
     // catch errors
     process.on('uncaughtException', (err) => {
@@ -74,9 +72,10 @@ class DreamApp {
     app.commandLine.appendSwitch('disable-renderer-backgrounding')
 
     // user settings.
-    await settings.initialSetup()
+    await settings.boot()
 
-    if (settings.app ?.disableHardwareAcceleration) {
+    // this may increase performance on some systems.
+    if (settings.app?.disableHardwareAcceleration) {
       app.disableHardwareAcceleration()
     }
   }
@@ -96,8 +95,12 @@ class DreamApp {
    * Prepare the application.
    */
   static async setup() {
-    // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
-    enforceMacOSAppLocation()
+    if (process.platform === 'darwin') {
+      const { enforceMacOSAppLocation } = require('electron-util')
+
+      // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
+      enforceMacOSAppLocation()
+    }
 
     // application exit.
     app.on('will-quit', async (event) => {
@@ -110,13 +113,15 @@ class DreamApp {
       app.exit()
     })
 
-    // windows closed, no more to do.
+    // windows closed, exit.
     app.on('window-all-closed', () => {
       app.quit()
     })
 
     app.on('web-contents-created', (e, contents) => {
       contents.on('will-navigate', (event, navigationUrl) => {
+        const { URL } = require('url')
+
         const url = new URL(navigationUrl)
 
         const host = process.env.SERVER_HOST
@@ -149,6 +154,8 @@ class DreamApp {
       })
     })
 
+    const contextMenu = require('electron-context-menu')
+
     // allow save image option
     contextMenu({
       showSaveImageAs: true,
@@ -158,18 +165,25 @@ class DreamApp {
     await system.setup()
 
     // user settings.
-    await settings.initialSetup()
     await settings.setup()
 
     //
     this.createDirs()
+
+    if (process.env.name === 'development') {
+      const address = await ngrok.connect()
+      logger.debug(`Proxy for debugging: ${address}`)
+    }
   }
 
   /**
    *
    */
+  // eslint-disable-next-line no-empty-function
   static async shutdown() {
-
+    if (process.env.name === 'development') {
+      await ngrok.disconnect()
+    }
   }
 
   /**
@@ -185,11 +199,11 @@ class DreamApp {
       minWidth: 1200,
       minHeight: 700,
       frame: false,
-      icon: join(config.rootDir, 'dist', 'icon.ico'),
+      icon: resolve(config.rootDir, 'dist', 'icon.ico'),
       webPreferences: {
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
-        preload: join(app.getAppPath(), 'electron', 'dist', 'provider.js'),
+        preload: resolve(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })
 
@@ -221,6 +235,8 @@ class DreamApp {
   static pollUi() {
     logger.debug(`Requesting status from the server: ${this.uiUrl}`)
 
+    const http = require('http')
+
     http
       .get(this.uiUrl, (response) => {
         if (response.statusCode === 200) {
@@ -244,7 +260,7 @@ class DreamApp {
    */
   static getUiUrl() {
     if (!config.dev) {
-      return join(config.rootDir, 'dist', 'index.html')
+      return resolve(config.rootDir, 'dist', 'index.html')
     }
 
     return `http://localhost:${config.server.port}`
@@ -254,14 +270,18 @@ class DreamApp {
    * Create required directories.
    */
   static createDirs() {
-    const modelsPath = join(settings.folders.models, 'Uncategorized')
+    const dirs = [
+      resolve(settings.folders.models, 'Uncategorized'),
+      settings.folders.masks,
+    ]
 
-    if (!existsSync(modelsPath)) {
-      mkdirSync(modelsPath, { recursive: true },
-        (error) => {
-          throw new AppError(`Models directory creation fail.`, { error })
-        })
-    }
+    dirs.forEach((dir) => {
+      try {
+        fs.ensureDirSync(dir)
+      } catch (error) {
+        throw new AppError(`Could not create the directory:\n${dir}`, { error })
+      }
+    })
   }
 }
 
@@ -269,7 +289,7 @@ app.on('ready', async () => {
   try {
     await DreamApp.start()
   } catch (error) {
-    throw new AppError(error, { title: `Failed to start correctly.`, fatal: true })
+    throw new AppError(error, { title: `Failed to start correctly.`, level: 'error' })
   }
 })
 

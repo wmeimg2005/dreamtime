@@ -7,6 +7,7 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-export { nucleus } from './nucleus'
-export { logrocket } from './logrocket'
-export { rollbar } from './rollbar'
+import * as ngrok from './ngrok'
+
+export { settings } from './settings'
+export { ngrok }

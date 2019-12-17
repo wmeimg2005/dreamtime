@@ -10,13 +10,18 @@
 import Logger from 'logplease'
 import { AppError } from '~/modules'
 import { dreamtime, dreampower, checkpoints } from '~/modules/updater'
-import { nucleus, logrocket } from '~/modules/services'
+import { nucleus, logrocket, rollbar } from '~/modules/services'
 import { requirements } from '~/modules/system'
+
+const { getPath } = $provider.paths
 
 // const logger = Logger.create('plugins:boot')
 
 // logger setup
-Logger.setLogLevel(process.env.LOG || 'debug')
+Logger.setOptions({
+  filename: getPath('userData', 'dreamtime.renderer.log'),
+  logLevel: process.env.LOG || 'debug',
+})
 
 // global apperror
 window.AppError = AppError
@@ -26,7 +31,8 @@ export default async ({ app }, inject) => {
   // analytics.
   await nucleus.setup()
 
-  // log tracking.
+  // bug and session tracking.
+  await rollbar.setup()
   await logrocket.setup()
 
   // dreamtime requirements.
@@ -36,8 +42,6 @@ export default async ({ app }, inject) => {
   dreamtime.setup()
   dreampower.setup()
   checkpoints.setup()
-
-  console.log('ready')
 
   // shortcuts.
   inject('provider', $provider)

@@ -21,7 +21,7 @@
 
         <box-item
           label="DreamPower"
-          description="DreamPower is not installed or the installed version is not compatible.">
+          :description="`DreamPower is not installed or the installed version is not compatible. ${$settings.processing.usePython ? '<b class=\'text-warning\'>Python enabled!</b>' : ''}`">
           <template slot="icon">
             <span v-if="requirements.power.installed && requirements.power.compatible" class="item__icon">✔</span>
             <span v-else class="item__icon">❌</span>
