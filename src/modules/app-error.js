@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isError, isString, isObject, isArray,
+  isError, isString, isObject, isArray, pick,
 } from 'lodash'
 import Swal from 'sweetalert2'
 
@@ -72,10 +72,12 @@ export class AppError extends Error {
   }
 
   report() {
+    /*
     if (process.env.NODE_ENV === 'development') {
       this.reportUrl = `https://rollbar.com/occurrence/uuid/?uuid={EXAMPLE}`
       return
     }
+    */
 
     const { level } = this.options
 
@@ -86,7 +88,11 @@ export class AppError extends Error {
     try {
       const error = this.options.error || this
 
-      const response = rollbar[level](this.message, error, this.options)
+      const response = rollbar[level](error.message, {
+        ...this.options,
+        message: this.message,
+        error: pick(error, 'message', 'name', 'filename', 'line', 'column', 'stack'),
+      })
 
       if (response.uuid) {
         this.reportUrl = `https://rollbar.com/occurrence/uuid/?uuid=${response.uuid}`
@@ -145,12 +151,12 @@ export class AppError extends Error {
       if (isError(error)) {
         reportError = error
       } else if (isObject(error) || isArray(error)) {
-        reportError = JSON.stringify(error)
+        reportError = new Error(JSON.stringify(error))
       } else {
         reportError = new Error(error)
       }
 
-      appError = new AppError(`The application has encountered an unexpected error:\n<pre>${reportError ?.message}</pre>`,
+      appError = new AppError(`The application has encountered an unexpected error:\n<pre>${reportError?.message}</pre>`,
         {
           error: reportError,
           title: 'Unexpected error!',

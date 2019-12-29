@@ -126,12 +126,12 @@ export class AppError extends Error {
       if (isError(error)) {
         reportError = error
       } else if (isObject(error) || isArray(error)) {
-        reportError = JSON.stringify(error)
+        reportError = new Error(JSON.stringify(error))
       } else {
         reportError = new Error(error)
       }
 
-      appError = new AppError(`The application has encountered an unexpected error:\n<code>${reportError ?.message}</code>`,
+      appError = new AppError(`The application has encountered an unexpected error:\n<code>${reportError?.message}</code>`,
         {
           error: reportError,
           title: 'Unexpected error!',

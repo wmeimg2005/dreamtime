@@ -1,3 +1,5 @@
+> 🔞 **NSFW. This page and the application is intended for adults only.**
+
 ![](assets/dreamtime.png)
 
 [![Build Status](https://github.com/dreamnettech/dreamtime/workflows/CI/CD/badge.svg)](https://github.com/dreamnettech/dreamtime/actions)
@@ -46,13 +48,17 @@ If you want to share or modify this software please do it for the same purpose a
 - macOS Catalina 10.15+
 - **8 GB+** of RAM.
 
-> ⚠ **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
+> 👉 Systems with less RAM could work with occasional problems.
 
-### GPU Processing
+> 👉 **N versions of Windows 10** require installing the [Media Feature Pack](https://www.microsoft.com/en-us/software-download/mediafeaturepack).
+
+### GPU Processing (Optional)
 
 - NVIDIA GPU with minimum [3.5 CUDA compute capability.](https://developer.nvidia.com/cuda-gpus)
 - **6 GB+** of VRAM.
 - [Latest NVIDIA drivers.](https://www.nvidia.com/Download/index.aspx)
+
+> 👉 Devices with less VRAM could work with occasional problems.
 
 > 👉 If you do not have an NVIDIA or compatible GPU you can use CPU processing (slower).
 
@@ -64,12 +70,32 @@ If you want to share or modify this software please do it for the same purpose a
 
 ### Mirrors
 
-[![Windows](https://img.shields.io/badge/windows-v1.2.1-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-windows.exe)
+[![Windows](https://img.shields.io/badge/windows-v1.3.0-0078D6?logo=windows&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.3.0/DreamTime-v1.3.0-windows.exe)
 
-[![Ubuntu Snap](https://img.shields.io/badge/ubuntu+snap-v1.2.1-E95420?logo=ubuntu&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-ubuntu.snap)
+[![Ubuntu Snap](https://img.shields.io/badge/snap-v1.3.0-E95420?logo=linux&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.3.0/DreamTime-v1.3.0-ubuntu.snap)
 
-[![macOS](https://img.shields.io/badge/macos-v1.2.1-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.2.1/DreamTime-v1.2.1-macos.dmg)
+[![macOS](https://img.shields.io/badge/macos-v1.3.0-999999?logo=Apple&logoColor=white&style=for-the-badge)](https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Releases/DreamTime/v1.3.0/DreamTime-v1.3.0-macos.dmg)
 
+## Installation
+
+- **Windows:** Just click on the installer. ![](https://cdn.frankerfacez.com/emoticon/382463/1)
+- **Linux:** Install using [Snap](https://snapcraft.io/docs/installing-snapd). You can use the command: `sudo snap install <DreamTime>.snap --dangerous`. 
+  - The `dangerous` argument is required to allow the installation of an application without a certificate, we will try to solve this in later versions.
+- **macOS:** Install in the way other applications are installed. You may have to start DreamTime manually using the context menu while pressing the `shift` key.
+
+## Common problems.
+
+- **The installer displays the message "Installation aborted"**
+  - Platform: **Windows**.
+  - Cause: Known issue when upgrading from version 1.2 (or earlier) to a new version.
+  - Solution:
+    - Uninstall any instance of the application and try to re-install in both modes (`Only for me` or `For all users`)
+    - Install [Bulk Crap Uninstaller](https://www.bcuninstaller.com/) and remove any trace of DreamTime using the program, then try to re-install.
+
+- **Errors related to `disableHardwareAcceleration` and `uploadMode`**
+  - Platform: **Any**.
+  - Cause: DreamTime was unable to update the user settings file with additional options required by the new version.
+  - Solution: Open `%appdata%/dreamtime` (Windows) or click on the `App` button of DreamTime in the `About` section within the application and delete the `settings.json` file, then open DreamTime again.
 
 ## Manual
 

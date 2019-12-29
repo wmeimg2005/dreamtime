@@ -78,9 +78,12 @@ export class NucleusService extends BaseService {
       return
     }
 
-    this.payload = (await axios.get(
-      `https://nucleus.sh/app/${this.appId}/customdata`,
-    )).data
+    try {
+      this.payload = (await axios.get(
+        `https://nucleus.sh/app/${this.appId}/customdata`,
+      )).data
+      // eslint-disable-next-line no-empty
+    } catch (error) { }
   }
 }
 
