@@ -71,7 +71,7 @@
       </div>
 
       <div v-if="run.preferences.body.randomize ||  run.preferences.body.progressive.enabled" class="content__item">
-        <button v-tooltip="'View preferences'" class="button button--info button--sm">
+        <button v-tooltip="'View preferences'" class="button button--info button--sm" @click.prevent="$refs.preferencesDialog.showModal()">
           <font-awesome-icon icon="sliders-h" />
         </button>
       </div>
@@ -132,7 +132,7 @@
     <!-- Preferences Dialog -->
     <dialog ref="preferencesDialog">
       <div class="dialog__content">
-        <table class="table">
+        <table class="table mb-2">
           <tr>
             <th>Boobs size</th>
             <td>{{ Number(run.preferences.body.boobs.size).toFixed(2) }}</td>
@@ -267,7 +267,7 @@ export default {
     },
 
     viewPreferences() {
-      this.run.showPreferences()
+      //$refs.preferencesDialog.showModal()
     },
 
     viewTerminal() {
