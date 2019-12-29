@@ -1,6 +1,6 @@
 <template>
   <div class="c-photo-run" :style="previewStyle">
-    <div v-if="run.preferences.body.randomize" class="run__details">
+    <div v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled" class="run__details">
       <table class="table">
         <tr>
           <th>Boobs size</th>
@@ -70,7 +70,7 @@
         </button>
       </div>
 
-      <div v-if="run.preferences.body.randomize" class="content__item">
+      <div v-if="run.preferences.body.randomize ||  run.preferences.body.progressive.enabled" class="content__item">
         <button v-tooltip="'View preferences'" class="button button--info button--sm">
           <font-awesome-icon icon="sliders-h" />
         </button>
