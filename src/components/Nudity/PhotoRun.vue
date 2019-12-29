@@ -1,5 +1,23 @@
 <template>
   <div class="c-photo-run" :style="previewStyle">
+    <div v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled" class="run__details">
+      <table class="table">
+        <tr>
+          <th>Boobs size</th>
+          <th>Areola size</th>
+          <th>Nipple size</th>
+          <th>Vagina size</th>
+          <th>Pubic hair</th>
+        </tr>
+        <tr>
+          <td>{{ Number(run.preferences.body.boobs.size).toFixed(2) }}</td>
+          <td>{{ Number(run.preferences.body.areola.size).toFixed(2) }}</td>
+          <td>{{ Number(run.preferences.body.nipple.size).toFixed(2) }}</td>
+          <td>{{ Number(run.preferences.body.vagina.size).toFixed(2) }}</td>
+          <td>{{ Number(run.preferences.body.pubicHair.size).toFixed(2) }}</td>
+        </tr>
+      </table>
+    </div>
     <div class="run__content">
       <div v-if="run.running" class="content__item">
         <p class="text-white">
@@ -52,8 +70,8 @@
         </button>
       </div>
 
-      <div v-if="false" class="content__item">
-        <button v-tooltip="'View preferences'" class="button button--info button--sm">
+      <div v-if="run.preferences.body.randomize ||  run.preferences.body.progressive.enabled" class="content__item">
+        <button v-tooltip="'View preferences'" class="button button--info button--sm" @click.prevent="$refs.preferencesDialog.showModal()">
           <font-awesome-icon icon="sliders-h" />
         </button>
       </div>
@@ -105,6 +123,39 @@
 
         <div class="dialog__buttons">
           <button class="button button--danger" @click.prevent="$refs.terminalDialog.close()">
+            Close
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Preferences Dialog -->
+    <dialog ref="preferencesDialog">
+      <div class="dialog__content">
+        <table class="table mb-2">
+          <tr>
+            <th>Boobs size</th>
+            <td>{{ Number(run.preferences.body.boobs.size).toFixed(2) }}</td>
+          </tr>
+          <tr>
+            <th>Areola size</th>
+            <td>{{ Number(run.preferences.body.areola.size).toFixed(2) }}</td>
+          </tr>
+          <tr>
+            <th>Nipple size</th>
+            <td>{{ Number(run.preferences.body.nipple.size).toFixed(2) }}</td>
+          </tr>
+          <tr>
+            <th>Vagina size</th>
+            <td>{{ Number(run.preferences.body.vagina.size).toFixed(2) }}</td>
+          </tr>
+          <tr>
+            <th>Pubic hair</th>
+            <td>{{ Number(run.preferences.body.pubicHair.size).toFixed(2) }}</td>
+          </tr>
+        </table>
+        <div class="dialog__buttons">
+          <button class="button button--danger" @click.prevent="$refs.preferencesDialog.close()">
             Close
           </button>
         </div>
@@ -216,11 +267,11 @@ export default {
     },
 
     viewPreferences() {
-
+      //$refs.preferencesDialog.showModal()
     },
 
     viewTerminal() {
-
+      //$refs.terminalDialog.showModal()
     },
   },
 }
@@ -236,6 +287,27 @@ export default {
   &:hover {
     .run__content {
       @apply opacity-100;
+    }
+    .run__details {
+      @apply opacity-100;
+    }
+  }
+}
+
+.run__details {
+  @apply opacity-0 bg-dark-500-90 w-full;
+  @apply absolute top-0;
+  @apply flex;
+  transition: all 0.1s linear;
+  height: 80px;
+  table{
+    margin-left:auto;
+    margin-right:auto;
+    th{
+      padding:4px;
+    }
+    td{
+      @apply text-center;
     }
   }
 }
