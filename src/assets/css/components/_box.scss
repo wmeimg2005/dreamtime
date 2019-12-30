@@ -10,7 +10,7 @@
  */
 
 .box {
-  @apply bg-dark-500 rounded-sm shadow mb-6;
+  @apply bg-dark-600 shadow mb-6 border-t border-l border-r border-dark-100;
 
   .box__photo {
     @apply relative;

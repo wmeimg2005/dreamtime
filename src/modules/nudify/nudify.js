@@ -21,7 +21,7 @@ import { Photo } from './photo'
 import { File } from '../file'
 import { getFilesMetadata } from '~/workers/fs'
 
-const logger = require('logplease').create('nudify')
+const consola = Consola.create('nudify')
 
 const { settings } = $provider
 
@@ -139,7 +139,7 @@ export class Nudify {
 
     this.photos.unshift(photo)
 
-    logger.debug('Photo added!', photo.file.fullname)
+    consola.debug(`Photo ${photo.file.fullname} added!`)
 
     this.emitUpdate()
 
@@ -176,7 +176,7 @@ export class Nudify {
         this.add(file)
       } catch (err) {
         if (multiple) {
-          logger.warn('Error adding a photo, skipped.', err)
+          consola.warn('Error adding a photo.', err)
         } else {
           throw err
         }
@@ -216,7 +216,7 @@ export class Nudify {
    */
   static async addUrl(url) {
     if (!startsWith(url, 'http://') && !startsWith(url, 'https://')) {
-      throw new AppError('Please enter a valid web address.', { title: 'Upload failed.', level: 'warning' })
+      throw new Warning('Upload failed.', 'Please enter a valid web address.')
     }
 
     Swal.fire({
@@ -234,7 +234,7 @@ export class Nudify {
 
       this.add(file)
     } catch (error) {
-      throw new AppError('There was a problem trying to download the file. Make sure you have an Internet connection.', { title: 'Upload failed.', level: 'warning', error })
+      throw new Warning('Upload failed.', 'Unable to download the photo, please verify that the address is correct and that you are connected to the Internet.', error)
     }
   }
 
@@ -317,7 +317,7 @@ export class Nudify {
         return
       }
 
-      logger.debug(`Forgetting ${photo.file.fullname}...`)
+      consola.debug(`Forgetting ${photo.file.fullname}...`)
 
       this.forget(photo)
     })

@@ -14,6 +14,7 @@ import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
 import Logger from 'logplease'
 import EventBus from 'js-event-bus'
+import { Consola } from '../system'
 import { Nudify } from './nudify'
 import { PhotoRun } from './photo-run'
 import { File } from '../file'
@@ -113,6 +114,11 @@ export class Photo {
    */
   _logger
 
+  /**
+   * @type {Consola}
+   */
+  consola
+
   get folderName() {
     // todo: implement models
     return 'Uncategorized'
@@ -202,7 +208,9 @@ export class Photo {
 
     this.fileCrop = new File(getCropPath(`${this.id}-crop${file.extension}`), 'crop')
 
-    this._logger = Logger.create(`nudify:photo:${file.fullname}`)
+    this._logger = Logger.create(file.fullname)
+
+    this.consola = Consola.create(file.fullname)
 
     this._setupPreferences(isMaskfin)
 
@@ -287,16 +295,16 @@ export class Photo {
     const { exists, mimetype, path } = this.file
 
     if (!exists) {
-      throw new AppError(`The file "${path}" does not exists.`, { title: 'Upload failed.', level: 'warn' })
+      throw new Warning('Upload failed.', `The file "${path}" does not exists.`)
     }
 
     if (mimetype !== 'image/jpeg' && mimetype !== 'image/png' && mimetype !== 'image/gif') {
-      throw new AppError(`The file "${path}" is not a valid photo. Only jpeg, png or gif.`, { title: 'Upload failed.', level: 'warn' })
+      throw new Warning('Upload failed.', `The file "${path}" is not a valid photo. Only jpeg, png or gif.`)
     }
   }
 
   _setupQueue() {
-    let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (10 * 60 * 1000)
+    let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (20 * 60 * 1000)
 
     if (this.file.mimetype === 'image/gif') {
       maxTimeout += (30 * 60 * 1000)
@@ -304,8 +312,6 @@ export class Photo {
 
     this.queue = new Queue(this._run, {
       maxTimeout,
-      // maxRetries: 2,
-      // retryDelay: 1000,
       afterProcessDelay: 500,
       batchSize: 1,
       concurrent: 1,
@@ -335,9 +341,11 @@ export class Photo {
       this._logger.warn(`Run #${runId} failed!`, error)
       run.onFail()
 
+      /*
       if (error !== 'cancelled') {
         AppError.handle(error)
       }
+      */
     })
   }
 

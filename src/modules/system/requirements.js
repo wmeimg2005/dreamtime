@@ -34,9 +34,8 @@ export const requirements = {
     recommended: false,
   },
 
-  gpuram: {
+  vram: {
     minimum: false,
-    recommended: false,
   },
 
   /**
@@ -61,6 +60,7 @@ export const requirements = {
     // ram
     this.ram.recommended = system.memory.total >= 8589934592 // 8 GB
     this.ram.minimum = system.memory.total >= 6442450944 // 6 GB
+    this.vram.minimum = system.graphics[0]?.vram >= 4095 // Win32_VideoController does not scan VRAM above 4GB
 
     logger.info('Requirements:', this)
   },

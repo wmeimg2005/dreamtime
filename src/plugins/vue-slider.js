@@ -7,8 +7,7 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-export { requirements } from './requirements'
-export { consola, Consola } from './consola'
-export {
-  HandledError, Warning, Exception, LogError,
-} from './errors'
+import Vue from 'vue'
+import VueSlider from 'vue-slider-component'
+
+Vue.component('VueSlider', VueSlider)

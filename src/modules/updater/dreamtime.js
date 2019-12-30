@@ -10,7 +10,6 @@
 import { dirname } from 'path'
 import delay from 'delay'
 import { BaseUpdater } from './base'
-import { AppError } from '../app-error'
 
 const { activeWindow } = $provider.util
 const { shell, app, Notification } = $provider.api
@@ -36,15 +35,14 @@ class DreamTimeUpdater extends BaseUpdater {
    */
   async install(filepath) {
     try {
-      shell.openExternal(filepath)
-
+      await shell.openExternal(filepath)
       await delay(1500)
 
       // close the program to update correctly
       app.quit()
     } catch (error) {
       shell.openItem(dirname(filepath))
-      throw new AppError('Update installation failed. The folder where the update is located will open.', { error })
+      throw error
     }
   }
 
@@ -54,7 +52,7 @@ class DreamTimeUpdater extends BaseUpdater {
   sendNotification() {
     const notification = new Notification(
       {
-        title: `🎉 DreamTime ${this.latestCompatibleVersion} available!`,
+        title: `🎉 DreamTime ${this.latestCompatibleVersion}`,
         body: 'A new version of DreamTime is available.',
       },
     )
@@ -62,8 +60,11 @@ class DreamTimeUpdater extends BaseUpdater {
     notification.show()
 
     notification.on('click', () => {
-      // window.$redirect('/system/about')
-      activeWindow().focus()
+      window.$redirect('/wizard/dreamtime')
+
+      if (activeWindow()) {
+        activeWindow().focus()
+      }
     })
   }
 }

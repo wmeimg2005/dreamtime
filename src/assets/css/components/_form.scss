@@ -11,17 +11,21 @@
 }
 
 .input {
-  @apply border border-dark-300 bg-dark-600; 
+  @apply border border-dark-300 bg-dark-700; 
   @apply rounded py-2 px-4 w-full text-generic-300 shadow-inner;
   outline: none !important;
   transition: all .2s ease-in-out;
 
   &:hover, &:focus {
-    @apply text-generic-100;
+    @apply text-generic-100 shadow-inner-md;
   }
 
   &::placeholder {
     @apply text-generic-700;
+  }
+
+  &[disabled] {
+    @apply opacity-75 cursor-not-allowed;
   }
 }
 

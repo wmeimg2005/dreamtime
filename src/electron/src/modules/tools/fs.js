@@ -1,9 +1,6 @@
+import { attempt } from 'lodash'
 import { basename, join } from 'path'
-import {
-  readFileSync, writeFileSync,
-  existsSync,
-  createWriteStream, createReadStream,
-} from 'fs-extra'
+import fs from 'fs-extra'
 import { app, dialog } from 'electron'
 import axios from 'axios'
 import deferred from 'deferred'
@@ -35,7 +32,7 @@ export function getBase64Data(dataURL) {
  * @param {string} encoding
  */
 export function read(path, encoding = 'utf-8') {
-  return readFileSync(path, { encoding })
+  return fs.readFileSync(path, { encoding })
 }
 
 /**
@@ -45,7 +42,7 @@ export function read(path, encoding = 'utf-8') {
  */
 export function writeDataURL(path, dataURL) {
   const data = this.getBase64Data(dataURL)
-  return writeFileSync(path, data, 'base64')
+  return fs.writeFileSync(path, data, 'base64')
 }
 
 /**
@@ -58,7 +55,7 @@ export function extractZip(path, destinationPath) {
 
   const def = deferred()
 
-  const stream = createReadStream(path).pipe(unzipper.Extract({ path: destinationPath }))
+  const stream = fs.createReadStream(path).pipe(unzipper.Extract({ path: destinationPath }))
 
   stream.on('close', () => {
     def.resolve()
@@ -140,7 +137,7 @@ export function download(url, options = {}) {
     })
   }
 
-  const writeStream = createWriteStream(filepath)
+  const writeStream = fs.createWriteStream(filepath)
 
   axios.request({
     url,
@@ -173,7 +170,7 @@ export function download(url, options = {}) {
         return
       }
 
-      if (!existsSync(filepath)) {
+      if (!fs.existsSync(filepath)) {
         throw new AppError('The file was not saved correctly.', { title: 'Download failed.' })
       }
 
@@ -185,18 +182,24 @@ export function download(url, options = {}) {
     bus.on('cancel', () => {
       cancelled = true
 
-      writeStream.destroy()
-      data.destroy()
+      attempt(() => {
+        writeStream.destroy()
+        data.destroy()
+        fs.unlinkSync(filepath)
+      })
 
-      logger.info('Download canceled by user.')
+      logger.info('Download cancelled by user.')
       bus.emit('cancelled')
     })
 
     return true
   }).catch((err) => {
-    writeStream.destroy(err)
+    attempt(() => {
+      writeStream.destroy(err)
+      fs.unlinkSync(filepath)
+    })
 
-    logger.warn('Download canceled due to an error.', err)
+    logger.warn('Download cancelled due to an error.', err)
     bus.emit('error', null, err)
   })
 

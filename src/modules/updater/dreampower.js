@@ -112,7 +112,7 @@ class DreamPowerUpdater extends BaseUpdater {
   sendNotification() {
     const notification = new Notification(
       {
-        title: `🎉 DreamPower ${this.latestCompatibleVersion} available!`,
+        title: `🎉 DreamPower ${this.latestCompatibleVersion}`,
         body: 'A new version of DreamPower is available.',
       },
     )
@@ -120,8 +120,11 @@ class DreamPowerUpdater extends BaseUpdater {
     notification.show()
 
     notification.on('click', () => {
-      // window.$redirect('/system/about')
-      activeWindow().focus()
+      window.$redirect('/wizard/power')
+
+      if (activeWindow()) {
+        activeWindow().focus()
+      }
     })
   }
 }

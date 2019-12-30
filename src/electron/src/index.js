@@ -18,6 +18,12 @@ import { getPath } from './modules/tools/paths'
 import { settings, ngrok } from './modules'
 import config from '~/nuxt.config'
 
+// logger setup
+Logger.setOptions({
+  filename: getPath('userData', 'dreamtime.main.log'),
+  logLevel: process.env.LOG || 'debug',
+})
+
 const logger = Logger.create('electron')
 
 // NuxtJS root directory
@@ -38,12 +44,6 @@ class DreamApp {
    *
    */
   static async boot() {
-    // logger setup
-    Logger.setOptions({
-      filename: getPath('userData', 'dreamtime.main.log'),
-      logLevel: process.env.LOG || 'debug',
-    })
-
     logger.info('Booting...')
 
     logger.debug(`Enviroment: ${process.env.name}`)
@@ -76,6 +76,7 @@ class DreamApp {
 
     // this may increase performance on some systems.
     if (settings.app?.disableHardwareAcceleration) {
+      logger.debug('Hardware Acceleration disabled.')
       app.disableHardwareAcceleration()
     }
   }
@@ -104,12 +105,13 @@ class DreamApp {
 
     // application exit.
     app.on('will-quit', async (event) => {
-      logger.debug('Exiting...')
+      logger.debug('Received exit event.')
 
       event.preventDefault()
 
       await this.shutdown()
 
+      logger.debug('Bye!')
       app.exit()
     })
 
@@ -134,7 +136,7 @@ class DreamApp {
 
         event.preventDefault()
 
-        logger.warn('Blocked attempt to load an external page.', {
+        logger.warn('Illegal page load blocked!', {
           event,
           url,
         })
@@ -181,6 +183,8 @@ class DreamApp {
    */
   // eslint-disable-next-line no-empty-function
   static async shutdown() {
+    logger.debug('Shutting down services...')
+
     if (process.env.name === 'development') {
       await ngrok.disconnect()
     }
@@ -233,7 +237,7 @@ class DreamApp {
    * Wait until the NuxtJS server is ready.
    */
   static pollUi() {
-    logger.debug(`Requesting status from the server: ${this.uiUrl}`)
+    logger.debug(`Requesting server (${this.uiUrl})...`)
 
     const http = require('http')
 
@@ -243,12 +247,12 @@ class DreamApp {
           logger.debug('Server ready, dream time!')
           this.window.loadURL(this.uiUrl)
         } else {
-          logger.warn(`The server reported: ${response.statusCode}`)
+          logger.warn(`Server reported: ${response.statusCode}`)
           setTimeout(this.pollUi.bind(this), 300)
         }
       })
       .on('error', (error) => {
-        logger.warn('Poll error', error)
+        logger.warn('Server error', error)
         setTimeout(this.pollUi.bind(this), 300)
       })
   }

@@ -6,10 +6,9 @@
 }
 
 html {
-  @apply bg-black text-generic-500;
-  font-family: theme('fontFamily.sans');
+  @apply bg-black text-generic-500 font-sans;
+  background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/papyrus-dark.png'); /* Background pattern from Toptal Subtle Patterns */
   font-size: 16px;
-  word-spacing: 1px;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   -moz-osx-font-smoothing: grayscale;
@@ -38,10 +37,26 @@ dialog {
     @apply p-4 bg-dark-500 rounded;
     @apply flex flex-col justify-center;
   }
+
+  .dialog__buttons {
+    @apply flex mt-4;
+
+    .button {
+      @apply flex-1;
+
+      &:not(:last-child) {
+        @apply mr-2;
+      }
+    }
+  }
 }
 
 dialog::backdrop {
   background: rgba(25, 25, 26, 0.75);
+}
+
+.title {
+  @apply font-serif;
 }
 
 .swal-content {
@@ -71,7 +86,7 @@ dialog::backdrop {
 
 *::-webkit-scrollbar-thumb
 {
-  @apply bg-dark-100 rounded-sm;
+  @apply bg-dark-100;
   transition: all .1s ease-in-out;
 
   &:hover {
@@ -89,4 +104,12 @@ dialog::backdrop {
   code {
     @apply text-sm text-center;
   }
+}
+
+.vue-slider {
+  @apply w-full #{!important};
+}
+
+.vue-slider-process {
+  @apply bg-primary-500 #{!important};
 }

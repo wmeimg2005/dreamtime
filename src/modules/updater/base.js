@@ -18,7 +18,7 @@ import filesize from 'filesize'
 import delay from 'delay'
 import { basename } from 'path'
 import { nucleus } from '../services'
-import { AppError } from '../app-error'
+import { WarnAlert, Consola } from '../system'
 
 const { system } = $provider
 const { getPath } = $provider.paths
@@ -46,6 +46,11 @@ export class BaseUpdater {
    * @type {logplease.Logger}
    */
   _logger
+
+  /**
+   * @type {Consola}
+   */
+  _consola
 
   /**
    * @type {axios.AxiosInstance}
@@ -107,7 +112,7 @@ export class BaseUpdater {
    */
   get latestVersion() {
     // eslint-disable-next-line camelcase
-    return this.latest ?.tag_name || 'v0.0.0'
+    return this.latest?.tag_name || 'v0.0.0'
   }
 
   /**
@@ -115,7 +120,7 @@ export class BaseUpdater {
    */
   get latestCompatibleVersion() {
     // eslint-disable-next-line camelcase
-    return this.latestCompatible ?.tag_name || 'v0.0.0'
+    return this.latestCompatible?.tag_name || 'v0.0.0'
   }
 
   /**
@@ -174,6 +179,7 @@ export class BaseUpdater {
 
   constructor() {
     this._logger = logplease.create(`updater:${this.name}`)
+    this._consola = Consola.create(`updater:${this.name}`)
   }
 
   /**
@@ -183,17 +189,17 @@ export class BaseUpdater {
     this.enabled = false
 
     if (!system.online) {
-      this._logger.warn('Updater disabled due of Internet connection.')
+      this._consola.warn('No internet connection.')
       return
     }
 
     if (!nucleus.enabled) {
-      this._logger.warn('Updater disabled due of nucleus service.')
+      this._consola.warn('No connection with Nucleus.')
       return
     }
 
     if (!this.can) {
-      this._logger.warn('Updater disabled due of requirements.')
+      this._consola.warn('Disabled.')
       return
     }
 
@@ -209,12 +215,12 @@ export class BaseUpdater {
 
       this._logger.info(`Current: ${this.currentVersion} - Latest Compatible: ${this.latestCompatibleVersion}`)
       this.enabled = true
-    } catch (err) {
-      this._logger.warn('Fetching releases failed!', err)
-    }
 
-    if (this.available) {
-      this.sendNotification()
+      if (this.available) {
+        this.sendNotification()
+      }
+    } catch (err) {
+      this._consola.warn('Unable to fetch the latest version information.', err)
     }
   }
 
@@ -303,14 +309,14 @@ export class BaseUpdater {
     })
 
     if (releases.length === 0) {
-      throw new AppError('No releases found!', { level: 'warning' })
+      throw new Exception('Github has returned that there are no releases!')
     }
 
     [this.latest] = releases
     this.latestCompatible = this._getLatestCompatible(releases)
 
     if (isNil(this.latestCompatible)) {
-      throw new AppError('No compatible release found!', { level: 'warning ' })
+      throw new Exception('Unable to fetch the latest version information.')
     }
   }
 
@@ -350,15 +356,14 @@ export class BaseUpdater {
    */
   async _install(filepath) {
     try {
-      this._setUpdateProgress('Installing...')
+      this._setUpdateProgress('installing')
 
       // avoid opening it while it is in use
       await delay(1500)
 
       await this.install(filepath)
     } catch (err) {
-      this._logger.warn(`Error installing update from: ${filepath}`, err)
-      throw new AppError(err, { title: 'Update installation failed.', level: 'warning' })
+      throw new Exception('The installation failed.', err)
     }
   }
 
@@ -367,13 +372,13 @@ export class BaseUpdater {
    */
   async _download() {
     if (!system.online) {
-      throw new AppError('You need to be connected to the Internet to download the updates.', { title: 'Update download failed.', level: 'warning' })
+      throw new Warning('Update download failed.', 'You need an Internet connection to download the update.')
     }
 
     let filepath
 
     for (const url of this.downloadUrls) {
-      this._setUpdateProgress('Downloading...')
+      this._setUpdateProgress('downloading')
 
       try {
         // eslint-disable-next-line no-await-in-loop
@@ -387,12 +392,12 @@ export class BaseUpdater {
 
         return filepath
       } catch (err) {
-        this._logger.warn(`Error downloading update from: ${url}`, err)
+        this._consola.warn(`Unable to download update from: ${url}`, err).report()
         continue
       }
     }
 
-    throw new AppError('Please download the update manually or verify the configuration of your VPN/Firewall.', { title: 'Update download failed.', level: 'warning' })
+    throw new Warning('Unable to download update.', 'Please download the update manually or verify the configuration of your VPN/Firewall.')
   }
 
   /**
@@ -400,7 +405,7 @@ export class BaseUpdater {
    * @param {string} url
    */
   _downloadFrom(url) {
-    this._logger.info(`Downloading update from: ${url}`)
+    this._consola.info(`Downloading update from: ${url}`)
     const def = deferred()
 
     this._downloadBus = download(url, {
@@ -408,7 +413,7 @@ export class BaseUpdater {
     })
 
     this._downloadBus.on('progress', (payload) => {
-      this.update.progress = payload.progress
+      this.update.progress = (payload.progress * 100).toFixed(2)
       this.update.total = payload.total
       this.update.written = payload.written
     })
@@ -424,7 +429,7 @@ export class BaseUpdater {
 
       if (size.value < 20) {
         // todo: better corrupt detection
-        def.reject(new AppError('The file is corrupt.', { title: 'Update download failed.', level: 'warning' }))
+        def.reject(new Warning('Unable to download update.', 'The file is corrupt.'))
       }
 
       this._downloadBus = null

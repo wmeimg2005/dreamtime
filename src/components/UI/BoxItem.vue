@@ -36,22 +36,27 @@ export default {
       type: [String, Array],
       default: undefined,
     },
+
     label: {
       type: String,
       required: true,
     },
+
     description: {
       type: String,
       default: undefined,
     },
+
     version: {
       type: String,
       default: undefined,
     },
+
     href: {
       type: String,
       default: undefined,
     },
+
     isLink: {
       type: Boolean,
       default: false,
@@ -69,7 +74,7 @@ export default {
 
     cssClass() {
       return {
-        'is-link': !isNil(this.href) || this.isLink,
+        'box__item--link': !isNil(this.href) || this.isLink,
       }
     },
   },
@@ -125,16 +130,12 @@ export default {
       @apply pl-8;
     }
 
-    &:hover {
-      @apply bg-dark-400 text-white;
-    }
-
-    &.is-link {
+    &.box__item--link {
       @apply cursor-pointer;
       transition: all .1s ease-in-out;
 
       &:hover {
-        @apply bg-dark-600;
+        @apply bg-dark-600 text-white;
       }
     }
 
@@ -163,7 +164,7 @@ export default {
       }
 
       .item__action {
-        @apply w-1/3 ml-4 flex flex-col justify-center;
+        @apply w-1/3 ml-4 flex items-center justify-center;
       }
     }
   }

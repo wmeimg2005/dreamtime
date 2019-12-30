@@ -36,7 +36,7 @@ class RollbarService extends BaseService {
    * @type {boolean}
    */
   get can() {
-    return isString(this.accessToken)
+    return isString(this.accessToken) && process.env.name === 'production'
   }
 
   /**

@@ -1,4 +1,3 @@
-export { AppError } from './app-error'
 export { events } from './events'
 export { File } from './file'
 export { Timer } from './timer'

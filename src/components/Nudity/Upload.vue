@@ -30,7 +30,7 @@
       @drop="openDrop">
       <p class="dropzone-hint">
         <font-awesome-icon icon="camera" />
-        Drop the photo(s)/folder here!
+        Drop the photos here!
       </p>
     </div>
 
@@ -76,7 +76,7 @@
 
         <div class="box__content">
           <button class="button" @click.prevent="openFolder">
-            <span>import folder</span>
+            <span>Open folder</span>
           </button>
         </div>
       </div>
@@ -97,7 +97,7 @@
           <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://">
 
           <button class="button" @click="openUrl">
-            Go!
+            Submit
           </button>
         </div>
       </div>
@@ -118,7 +118,7 @@
           <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/">
 
           <button class="button" @click="openInstagramPhoto">
-            Go!
+            Submit
           </button>
         </div>
       </div>
@@ -132,8 +132,11 @@ import {
   isNil, isEmpty, startsWith,
   map, isArray,
 } from 'lodash'
+import Swal from 'sweetalert2'
 import { nucleus } from '~/modules/services'
 import { Nudify } from '~/modules/nudify'
+
+const consola = Consola.create('upload')
 
 const { instagram } = $provider
 const { dialog } = $provider.api
@@ -152,9 +155,6 @@ export default {
     isDragging: false,
   }),
 
-  created() {
-
-  },
 
   methods: {
     /**
@@ -168,6 +168,9 @@ export default {
       Nudify.addFile(file.path)
     },
 
+    /**
+     *
+     */
     async addFiles(files) {
       if (!isArray(files)) {
         return
@@ -188,7 +191,7 @@ export default {
 
       const paths = map(files, 'path')
 
-      nucleus.track('UPLOAD_FILE')
+      consola.track('FILE')
 
       this.addFiles(paths)
 
@@ -211,12 +214,12 @@ export default {
      */
     openUrl() {
       if (isEmpty(this.webAddress) || (!startsWith(this.webAddress, 'http://') && !startsWith(this.webAddress, 'https://'))) {
-        throw new AppError('Please enter a valid web address.', { title: 'Upload failed.', level: 'warning' })
+        throw new Warning('Upload failed.', 'Please enter a valid web address.')
       }
 
-      nucleus.track('UPLOAD_URL')
-
       Nudify.addUrl(this.webAddress)
+
+      consola.track('URL')
 
       this.webAddress = ''
     },
@@ -226,7 +229,7 @@ export default {
      */
     async openInstagramPhoto() {
       if (isEmpty(this.instagramPhoto)) {
-        throw new AppError('Please enter a valid Instagram photo.', { title: 'Upload failed.', level: 'warning' })
+        throw new Warning('Upload failed.', 'Please enter a valid Instagram photo.')
       }
 
       let post
@@ -234,14 +237,16 @@ export default {
       try {
         post = await instagram.getPost(this.instagramPhoto)
       } catch (error) {
-        throw new AppError('Unable to download the photo, please verify that the address is correct and that you are connected to the Internet.', { title: 'Upload failed.', error, level: 'warning' })
+        throw new Warning('Upload failed.', 'Unable to download the photo, please verify that the address is correct and that you are connected to the Internet.', error)
       }
 
       if (post.isVideo) {
-        throw new AppError('The videos are not supported yet.', { title: 'Upload failed.', level: 'warning' })
+        throw new Warning('Upload failed.', 'Videos are not supported yet.')
       }
 
       Nudify.addUrl(post.downloadUrl)
+
+      consola.track('INSTAGRAM')
 
       this.instagramPhoto = ''
     },
@@ -284,12 +289,12 @@ export default {
       const url = event.dataTransfer.getData('url')
 
       if (url.length > 0) {
-        nucleus.track('UPLOAD_DROP_URL')
         Nudify.addUrl(url)
+        consola.track('DROP_URL')
       } else if (files.length > 0) {
         const paths = map(files, 'path')
         this.addFiles(paths)
-        nucleus.track('UPLOAD_DROP_FILE')
+        consola.track('DROP_FILE')
       }
     },
   },
@@ -332,7 +337,7 @@ export default {
   .uploader__dropzone {
     @apply flex items-center justify-center;
     @apply bg-dark-500 mb-6;
-    @apply rounded border-2 border-dashed border-dark-100;
+    @apply border-2 border-dashed border-dark-100;
     height: 200px;
     transition: all 0.1s linear;
 

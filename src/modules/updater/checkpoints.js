@@ -58,18 +58,25 @@ class CheckpointsUpdater extends BaseUpdater {
    *
    */
   sendNotification() {
+    if (!requirements.power.installed) {
+      return
+    }
+
     const notification = new Notification(
       {
-        title: `🎉 Checkpoints ${this.latestCompatibleVersion} available!`,
-        body: 'A new version of the Checkpoints is available.',
+        title: `🎉 Checkpoints ${this.latestCompatibleVersion}`,
+        body: 'A new version of the checkpoints is available.',
       },
     )
 
     notification.show()
 
     notification.on('click', () => {
-      // window.$redirect('/system/about')
-      activeWindow().focus()
+      window.$redirect('/wizard/checkpoints')
+
+      if (activeWindow()) {
+        activeWindow().focus()
+      }
     })
   }
 }

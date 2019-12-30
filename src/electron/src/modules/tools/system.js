@@ -37,6 +37,19 @@ class System {
   memory
 
   /**
+   * @type {Object}
+   */
+  snapshot = {
+    load: null,
+    cpu: {
+      speed: null,
+      temperature: null,
+    },
+    memory: null,
+    online: false,
+  }
+
+  /**
    * @type {boolean}
    */
   online
@@ -45,11 +58,13 @@ class System {
    *
    */
   async setup() {
+    logger.debug('Collecting system information...')
+
     const [
       graphics,
       os,
       cpu,
-      mem,
+      memory,
       online,
     ] = await Promise.all([
       si.graphics(),
@@ -62,13 +77,43 @@ class System {
     this._graphics = graphics
     this.os = os
     this.cpu = cpu
-    this.memory = mem
+    this.memory = memory
     this.online = online
 
-    logger.info(`GPU devices: ${this.graphics.length}`)
-    logger.info(`RAM: ${this.memory.total} bytes.`)
-    logger.info(`Internet connection: ${this.online}`)
-    logger.debug(this)
+    logger.info(`GPU:`, this.graphics)
+    logger.info(`RAM: ${memory.total} bytes.`)
+    logger.info(`Online: ${online}`)
+  }
+
+  /**
+   *
+   */
+  async takeSnapshot() {
+    logger.info('Taking snapshot...')
+
+    const [load, cpuSpeed, cpuTemperature, memory, online] = await Promise.all([
+      si.currentLoad(),
+      si.cpuCurrentspeed(),
+      si.cpuTemperature(),
+      si.mem(),
+      isOnline(),
+    ])
+
+    this.snapshot = {
+      load,
+      cpu: {
+        speed: cpuSpeed,
+        temperature: cpuTemperature,
+      },
+      memory,
+      online,
+    }
+
+    logger.info(`Current load:`, load)
+    logger.info(`CPU Speed:`, cpuSpeed)
+    logger.info(`CPU Temperature:`, cpuTemperature)
+    logger.info(`Memory:`, memory)
+    logger.info(`Online: ${online}`)
   }
 
   /**

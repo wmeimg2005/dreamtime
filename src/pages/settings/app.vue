@@ -3,20 +3,20 @@
     <section class="box box--items">
       <div class="box__content">
         <box-item
-          label="Disable Hardware Acceleration"
-          description="It can improve application performance on some systems. (Requires restart to take effect.)">
+          label="Hardware Acceleration"
+          description="It can improve performance on some systems. (Requires restart to take effect)">
           <select v-model="currentValue.app.disableHardwareAcceleration" class="input">
             <option :value="false">
-              No
+              Enabled
             </option>
             <option :value="true">
-              Yes
+              Disabled
             </option>
           </select>
         </box-item>
 
         <box-item
-          label="Upload mode"
+          label="Upload mode."
           description="What will happen when uploading a photo.">
           <select v-model="currentValue.app.uploadMode" class="input">
             <option value="none">

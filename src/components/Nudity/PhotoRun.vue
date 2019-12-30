@@ -277,7 +277,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .c-photo-run {
   @apply bg-cover bg-center border border-dark-500;
   @apply relative;
@@ -313,9 +313,10 @@ export default {
 }
 
 .run__content {
-  @apply opacity-0 bg-dark-500-90 w-full;
+  @apply opacity-0 bg-dark-500-80 w-full;
   @apply absolute bottom-0;
   @apply flex;
+  backdrop-filter: blur(5px);
   transition: all .1s linear;
   height: 100px;
 
@@ -354,18 +355,6 @@ export default {
 
     p {
       @apply mb-2;
-    }
-  }
-}
-
-.dialog__buttons {
-  @apply flex;
-
-  .button {
-    @apply flex-1;
-
-    &:not(:last-child) {
-      @apply mr-2;
     }
   }
 }

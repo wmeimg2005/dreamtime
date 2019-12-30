@@ -9,7 +9,7 @@
         About
       </nuxt-link>
 
-      <nuxt-link v-if="canNudify" class="navbar__item" to="/dreamnet">
+      <nuxt-link class="navbar__item" to="/dreamnet">
         DreamNet
       </nuxt-link>
 
@@ -55,7 +55,8 @@ export default {
 
   methods: {
     createError() {
-      throw new Error('User Interface test error.')
+      // throw new Error('User Interface test error.')
+      throw new Warning('Warning Test')
     },
   },
 }

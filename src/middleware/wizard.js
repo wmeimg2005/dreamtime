@@ -50,10 +50,9 @@ export default function ({ route, redirect }) {
     if (route.path !== '/wizard/telemetry') {
       redirect('/wizard/telemetry')
     }
-
-    return
   }
 
+  /*
   if (!wizard.user) {
     if (route.path !== '/wizard/user') {
       redirect('/wizard/user')
@@ -61,10 +60,5 @@ export default function ({ route, redirect }) {
 
     return
   }
-
-  if (!wizard.telemetry) {
-    if (route.path !== '/wizard/telemetry') {
-      redirect('/wizard/telemetry')
-    }
-  }
+  */
 }

@@ -9,8 +9,6 @@
 </template>
 
 <script>
-
-
 export default {
 
 }
@@ -31,7 +29,7 @@ export default {
 
   .layout__content {
     @apply relative overflow-hidden overflow-y-auto;
-    @apply p-6;
+    @apply p-6 border-t border-dark-500;
     grid-area: content;
     height: calc(100vh - 30px);
   }
@@ -40,12 +38,16 @@ export default {
 
 <style lang="scss">
 .layout__header {
-  @apply flex justify-center items-center;
-  @apply text-3xl font-semibold mb-6;
-  height: 60px;
+  @apply flex flex-col justify-center items-center;
+  @apply text-3xl font-semibold mb-8;
+  height: 80px;
 
-  h1 {
+  .title {
     @apply text-xl text-white;
+  }
+
+  .subtitle {
+    @apply text-lg;
   }
 }
 </style>

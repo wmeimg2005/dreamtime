@@ -10,8 +10,9 @@
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
-import { AppError, dream } from '~/modules'
+import { dream } from '~/modules'
 import { Nudify, NudifyStore } from '~/modules/nudify'
+import { HandledError, LogError } from '~/modules/system'
 import BaseMixin from '~/mixins/BaseMixin'
 
 const logger = require('logplease').create('plugins:setup')
@@ -33,29 +34,12 @@ tippy.setDefaultProps({
 
 export default async ({ app }, inject) => {
   // catch errors
-  window.addEventListener('error', (err) => {
-    AppError.handle(err)
-    return true
-  })
-
-  window.addEventListener('unhandledrejection', (rejection) => {
-    AppError.handle(rejection.reason)
-    return true
-  })
-
   Vue.config.errorHandler = (err) => {
-    AppError.handle(err)
+    if (err instanceof HandledError || err instanceof LogError) {
+      return
+    }
 
-    /*
-    const { logrocket, rollbar } = require('~/modules/services')
-
-    console.warn(err.stack)
-
-    logrocket.captureException(err)
-    rollbar.error(err)
-    */
-
-    throw err
+    consola.error(err)
   }
 
   // dreamtime.

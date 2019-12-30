@@ -17,7 +17,12 @@ module.exports = {
   ],
   globals: {
     $provider: false,
-    AppError: false
+    AppError: false,
+    LogError: false,
+    Warning: false,
+    Exception: false,
+    consola: false,
+    Consola: false,
   },
   parserOptions: {
     parser: "babel-eslint",
@@ -47,7 +52,7 @@ module.exports = {
     "promise/no-callback-in-promise": "off",
     "promise/catch-or-return": "off",
     "linebreak-style": "warn",
-    "new-parens": ['error', 'never'],
+    "new-parens": "off",
     "lodash/import-scope": [
       "off",
       "member"
@@ -88,6 +93,7 @@ module.exports = {
       "error",
       "never"
     ],
+    "prefer-spread": "off",
     "quote-props": [
       "error",
       "as-needed"

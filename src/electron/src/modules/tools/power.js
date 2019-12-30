@@ -16,7 +16,7 @@ import * as fs from 'fs-extra'
 import { getPowerPath } from './paths'
 import { settings } from '../settings'
 
-const logger = require('logplease').create('electron:power')
+const logger = require('logplease').create('power')
 
 export function exec(args, options = {}) {
   args.push('--debug')

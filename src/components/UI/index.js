@@ -13,9 +13,11 @@ import Update from './AppUpdate'
 import BoxItem from './BoxItem'
 import AppPhoto from './AppPhoto'
 import AppNews from './AppNews'
+import ProjectUpdate from './ProjectUpdate'
 
 Vue.component('app-title', Title)
 Vue.component('app-update', Update)
 Vue.component('app-photo', AppPhoto)
 Vue.component('app-news', AppNews)
 Vue.component('box-item', BoxItem)
+Vue.component('ProjectUpdate', ProjectUpdate)

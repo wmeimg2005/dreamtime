@@ -15,8 +15,6 @@ const { system, settings } = $provider
 
 const logger = require('logplease').create('services:nucleus')
 
-console.log(settings)
-
 /**
  * https://nucleus.sh
  * Analytics and bug tracking for Javascript desktop apps.

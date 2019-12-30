@@ -3,14 +3,27 @@
     <section class="box box--items">
       <div class="box__content">
         <box-item
-          label="Telemetry"
-          description="Send anonymous information about the program that will help us to improving it. Includes: System information, errors, and performance.">
-          <select v-model="currentValue.telemetry.enabled" class="input">
+          label="Bug report."
+          description="Allow to report errors automatically.">
+          <select v-model="currentValue.telemetry.bugs" class="input">
+            <option :value="true">
+              Enabled
+            </option>
             <option :value="false">
               Disabled
             </option>
+          </select>
+        </box-item>
+
+        <box-item
+          label="Session tracking."
+          description="Allow to send detailed information about how you use the application. (No sensitive information or photos will be sent)">
+          <select v-model="currentValue.telemetry.bugs" class="input">
             <option :value="true">
               Enabled
+            </option>
+            <option :value="false">
+              Disabled
             </option>
           </select>
         </box-item>

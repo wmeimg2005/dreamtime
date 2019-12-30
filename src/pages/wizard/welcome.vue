@@ -5,23 +5,21 @@
     </h1>
 
     <h2 class="welcome__subtitle">
-      Thanks for installing!
+      Thanks for installing.
     </h2>
 
     <h2 class="welcome__message">
-      Now we will take a few minutes of your time to prepare the dream machine.<br>It will be worth it, we promise.
+      We will take a few minutes of your time to prepare the dream machine.<br>It will be worth it, we promise.
     </h2>
 
     <button class="button button--xl" @click.prevent="next">
-      Go!
+      Continue
     </button>
   </div>
 </template>
 
 <script>
 import { tween, styler } from 'popmotion'
-
-const { settings } = $provider
 
 export default {
   layout: 'wizard',
@@ -40,8 +38,8 @@ export default {
 
   methods: {
     next() {
-      settings.wizard.welcome = true
-      settings.save()
+      this.$settings.wizard.welcome = true
+      this.$settings.save()
 
       this.$router.push('/wizard/tos')
     },

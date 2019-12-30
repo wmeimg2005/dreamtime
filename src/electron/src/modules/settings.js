@@ -14,7 +14,7 @@ import {
 import { AppError } from './app-error'
 import { paths, system } from './tools'
 
-const logger = require('logplease').create('electron:scripts:services:settings')
+const logger = require('logplease').create('settings')
 
 /**
  * User settings.
@@ -64,6 +64,7 @@ class Settings {
    */
   async save() {
     fs.writeJsonSync(this.path, this.payload, { spaces: 2 })
+    logger.debug('Settings saved!')
   }
 
   /**
@@ -92,14 +93,6 @@ class Settings {
   }
 
   /**
-   * Setup service
-   */
-  async setup() {
-    await this._create()
-    await this._upgrade()
-  }
-
-  /**
    *
    */
   async boot() {
@@ -108,13 +101,20 @@ class Settings {
   }
 
   /**
+   * Setup service
+   */
+  async setup() {
+    await this._create()
+    await this._upgrade()
+  }
+
+  /**
    * Load the default configuration (and the current version)
    */
   _loadDefault() {
-    const hasGPU = system.graphics.length > 0
-    const cores = round(system.cores / 2) || 1
-
     const uuid = require('uuid')
+    const hasGPU = system.graphics.length > 0
+    const cores = round(system.cpu?.cores / 2) || 1
 
     this.payload = {
       version: 6,
@@ -148,7 +148,6 @@ class Settings {
       telemetry: {
         bugs: true,
         dom: true,
-        domPrivate: false,
       },
 
       processing: {
@@ -169,28 +168,48 @@ class Settings {
           },
 
           boobs: {
-            size: '1',
-            randomize: true,
+            size: 1,
+            randomize: {
+              enabled: true,
+              min: 0.3,
+              max: 2,
+            },
             progressive: true,
           },
           areola: {
-            size: '1',
-            randomize: false,
+            size: 1,
+            randomize: {
+              enabled: true,
+              min: 0.3,
+              max: 2,
+            },
             progressive: true,
           },
           nipple: {
-            size: '1',
-            randomize: false,
+            size: 1,
+            randomize: {
+              enabled: true,
+              min: 0.3,
+              max: 2,
+            },
             progressive: true,
           },
           vagina: {
-            size: '0.75',
-            randomize: true,
+            size: 0.75,
+            randomize: {
+              enabled: true,
+              min: 0.3,
+              max: 1.5,
+            },
             progressive: true,
           },
           pubicHair: {
-            size: '1',
-            randomize: true,
+            size: 1,
+            randomize: {
+              enabled: true,
+              min: 0,
+              max: 2,
+            },
             progressive: true,
           },
         },
@@ -214,6 +233,9 @@ class Settings {
     if (fs.existsSync(this.path)) {
       return
     }
+
+    // default settings now with the system information.
+    this._loadDefault()
 
     try {
       fs.outputFileSync(this.path, JSON.stringify(this._default, null, 2))
@@ -323,12 +345,76 @@ class Settings {
       this.payload.telemetry = {
         bugs: this.payload.enabled,
         dom: true,
-        domPrivate: false,
+      }
+
+      const { body } = this.payload.preferences
+
+      body.boobs.randomize = {
+        enabled: true,
+        min: 0.3,
+        max: 2,
+      }
+
+      body.areola.randomize = {
+        enabled: true,
+        min: 0.3,
+        max: 2,
+      }
+
+      body.nipple.randomize = {
+        enabled: true,
+        min: 0.3,
+        max: 2,
+      }
+
+      body.vagina.randomize = {
+        enabled: true,
+        min: 0.3,
+        max: 1.5,
+      }
+
+      body.pubicHair.randomize = {
+        enabled: true,
+        min: 0,
+        max: 2,
       }
     }
 
     this.save()
   }
+}
+
+export const settingsRaw = new Settings
+
+const saveHandler = {
+  get(target, property, receiver) {
+    try {
+      return new Proxy(target[property], saveHandler)
+    } catch (err) {
+      return Reflect.get(target, property, receiver)
+    }
+  },
+  defineProperty(target, property, descriptor) {
+    settingsRaw.save()
+    return Reflect.defineProperty(target, property, descriptor)
+  },
+}
+
+const settingsHandler = {
+  get(target, property, receiver) {
+    try {
+      if (property in target) {
+        return target[property]
+      }
+
+      if (property in target.payload) {
+        return new Proxy(target.payload[property], saveHandler)
+      }
+      // eslint-disable-next-line no-empty
+    } catch (err) { }
+
+    return Reflect.get(target, property, receiver)
+  },
 }
 
 /**
@@ -337,6 +423,8 @@ class Settings {
  * @return {Proxy}
  */
 export function make(obj) {
+  return new Proxy(obj, settingsHandler)
+  /*
   return new Proxy(obj, {
     get: (obj, prop) => {
       if (prop in obj) {
@@ -351,6 +439,11 @@ export function make(obj) {
     },
 
     set: (obj, prop, value) => {
+      console.log({
+        prop,
+        value,
+      })
+
       if (!isNil(obj.payload)) {
         if (prop in obj.payload) {
           obj.payload[prop] = value
@@ -364,8 +457,7 @@ export function make(obj) {
       return true
     },
   })
+  */
 }
-
-export const settingsRaw = new Settings
 
 export const settings = make(settingsRaw)

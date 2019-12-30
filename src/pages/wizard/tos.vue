@@ -1,7 +1,13 @@
 <template>
   <div class="tos">
     <div class="layout__header">
-      <h1>Setup Wizard ~ Important things.</h1>
+      <h1 class="title">
+        <font-awesome-icon icon="magic" /> Setup Wizard
+      </h1>
+
+      <h2 class="subtitle">
+        Important things
+      </h2>
     </div>
 
     <ul>
@@ -9,7 +15,7 @@
         <figure><font-awesome-icon icon="user-slash" /></figure>
         <p>
           <strong>{{ $dream.name }} is an application for adults.</strong>
-          <span>If you have not reached adulthood please close and uninstall it.</span>
+          <span>If you are not of legal age, please close and uninstall the application.</span>
         </p>
       </li>
 
@@ -57,15 +63,13 @@
 </template>
 
 <script>
-const { settings } = $provider
-
 export default {
   layout: 'wizard',
 
   methods: {
     next() {
-      settings.wizard.tos = true
-      settings.save()
+      this.$settings.wizard.tos = true
+      this.$settings.save()
 
       this.$router.push('/wizard/power')
     },
@@ -80,7 +84,7 @@ export default {
       @apply mb-10 flex items-center;
 
       figure {
-        @apply text-5xl mr-4;
+        @apply text-5xl mr-6;
       }
 
       strong {

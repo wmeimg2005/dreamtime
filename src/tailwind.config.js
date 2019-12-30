@@ -25,13 +25,20 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          'Catamaran',
+          'Roboto',
           '-apple-system',
           'BlinkMacSystemFont',
           'system-ui',
-          'Helvetica Neue',
           'Arial',
           'sans-serif',
+        ],
+        serif: [
+          'Roboto Slab',
+          'Georgia',
+          'Cambria',
+          '"Times New Roman"',
+          'Times',
+          'serif',
         ],
       },
 
@@ -55,10 +62,10 @@ module.exports = {
           300: '#1b2026',
           400: '#191d22',
           500: '#161a1f',
-          600: '#12161b',
-          700: '#0d1017',
-          800: '#070912',
-          900: '#00010c',
+          600: '#14171C',
+          700: '#0D1013',
+          800: '#0A0C0E',
+          900: '#070809',
         },
 
         /*
@@ -176,6 +183,13 @@ module.exports = {
           800: '#603408',
           900: '#402305',
         },
+      },
+
+      boxShadow: {
+        'inner-md': 'inset 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'inner-lg': 'inset 0 10px 15px -3px rgba(0, 0, 0, 0.1), inset 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        'inner-xl': 'inset 0 20px 25px -5px rgba(0, 0, 0, 0.1), inset 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        'inner-2xl': 'inset 0 25px 50px -12px rgba(0, 0, 0, 0.25)',
       },
     },
   },

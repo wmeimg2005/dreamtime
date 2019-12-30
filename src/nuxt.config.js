@@ -109,6 +109,7 @@ module.exports = {
     'cropperjs/dist/cropper.css',
     'tui-image-editor/dist/tui-image-editor.css',
     'tui-color-picker/dist/tui-color-picker.css',
+    'vue-slider-component/theme/default.css',
 
     '~/assets/css/tailwind.scss',
     '~/assets/css/reset.scss',
@@ -124,6 +125,7 @@ module.exports = {
     '~/plugins/boot.js',
     '~/plugins/setup.js',
     '~/plugins/fontawesome.js',
+    '~/plugins/vue-slider.js',
     '~/components',
   ],
 

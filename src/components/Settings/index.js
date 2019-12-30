@@ -11,5 +11,7 @@
 
 import Vue from 'vue'
 import SettingsPreferences from './SettingsPreferences'
+import Preference from './Preference'
 
 Vue.component('settings-preferences', SettingsPreferences)
+Vue.component('Preference', Preference)
