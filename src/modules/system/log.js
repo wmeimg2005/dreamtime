@@ -7,7 +7,7 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isError } from 'lodash'
+import { isError, escape } from 'lodash'
 import Swal from 'sweetalert2'
 import { HandledError } from './errors'
 import { rollbar, logrocket } from '../services'
@@ -104,8 +104,6 @@ export class Log {
       delete options.error
     }
 
-    console.log(this.logger)
-
     this.handle().catch((err) => {
       // eslint-disable-next-line no-console
       console.error('Something incredibly bad has happened:', err)
@@ -199,7 +197,7 @@ export class Log {
     let html = message
 
     if (isError(error)) {
-      html = `${html}<br><br><pre>${error.stack}</pre>`
+      html = `${html}<br><br><pre>${escape(error.stack)}</pre>`
     }
 
     Swal.fire({

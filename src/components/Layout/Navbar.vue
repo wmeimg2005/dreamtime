@@ -5,30 +5,30 @@
         Nudify
       </nuxt-link>
 
-      <nuxt-link class="navbar__item" to="/about">
-        About
+      <nuxt-link class="navbar__item" to="/settings">
+        Settings
       </nuxt-link>
 
-      <nuxt-link class="navbar__item" to="/dreamnet">
-        DreamNet
-      </nuxt-link>
+      <a class="navbar__item" :href="manualURL" target="_blank">
+        Help
+      </a>
 
-      <a class="navbar__item" @click.prevent="createError">
+      <a v-if="isDev" class="navbar__item" @click.prevent="createError">
         Error
       </a>
     </div>
 
     <div class="navbar__right">
-      <nuxt-link v-tooltip="{placement: 'bottom', content: 'Settings'}" class="navbar__icon" to="/settings">
-        <font-awesome-icon icon="cog" />
+      <nuxt-link v-tooltip="{placement: 'bottom', content: 'About'}" class="navbar__icon" to="/about">
+        <font-awesome-icon icon="info-circle" />
+      </nuxt-link>
+
+      <nuxt-link v-tooltip="{placement: 'bottom', content: 'DreamNet'}" class="navbar__icon" to="/dreamnet">
+        <font-awesome-icon icon="users" />
       </nuxt-link>
 
       <a v-tooltip="{placement: 'bottom', content: 'Donate and get benefits!'}" class="navbar__icon" :href="donateUrl" target="_blank">
         <font-awesome-icon :icon="['fab', 'patreon']" />
-      </a>
-
-      <a v-tooltip="{placement: 'bottom', content: 'Manual'}" class="navbar__icon" :href="manualURL" target="_blank">
-        <font-awesome-icon icon="question-circle" />
       </a>
     </div>
   </div>
@@ -51,6 +51,10 @@ export default {
     manualURL() {
       return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
     },
+
+    isDev() {
+      return process.env.name === 'development'
+    },
   },
 
   methods: {
@@ -65,7 +69,7 @@ export default {
 <style lang="scss" scoped>
 .layout__navbar {
   @apply flex bg-dark-500 z-10;
-  @apply border-b border-dark-300;
+  @apply border-b border-dark-100;
   height: 50px;
 
   .navbar__left,

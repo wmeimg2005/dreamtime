@@ -106,16 +106,16 @@ module.exports = {
    */
   css: [
     'tippy.js/dist/tippy.css',
+    '@sweetalert2/theme-dark/dark.css',
     'cropperjs/dist/cropper.css',
     'tui-image-editor/dist/tui-image-editor.css',
     'tui-color-picker/dist/tui-color-picker.css',
     'vue-slider-component/theme/default.css',
 
     '~/assets/css/tailwind.scss',
-    '~/assets/css/reset.scss',
-    '~/assets/css/components/_all.scss',
-    '~/assets/css/utilities/_all.scss',
-    '~/assets/css/fonts.scss',
+    '~/assets/css/reset/all.scss',
+    '~/assets/css/components/all.scss',
+    '~/assets/css/utilities/all.scss',
   ],
 
   /*

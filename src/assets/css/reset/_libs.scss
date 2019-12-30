@@ -9,19 +9,35 @@
  * Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
  */
 
-.notification {
-  @apply mb-4 py-2 px-4 border-2 border-dark-100 rounded-sm;
-  @apply bg-transparent text-generic-100 font-bold;
+.swal-content {
+  font-size: 16px;
+
+  p {
+    @apply mb-2;
+  }
 
   a {
-    @apply underline;
+    @apply text-primary-500 underline;
   }
+}
 
-  &.notification--warning {
-    @apply text-warning-400 border-warning;
+.swal2-html-container {
+  pre {
+    @apply text-xs overflow-auto bg-gray-300 p-2;
+    max-height: 100px;
   }
+}
 
-  &.notification--danger {
-    @apply text-danger-400 border-danger;
+.swal2-footer {
+  code {
+    @apply text-sm text-center;
   }
+}
+
+.vue-slider {
+  @apply w-full #{!important};
+}
+
+.vue-slider-process {
+  @apply bg-primary-500 #{!important};
 }

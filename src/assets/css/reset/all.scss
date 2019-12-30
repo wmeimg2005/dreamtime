@@ -9,19 +9,8 @@
  * Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
  */
 
-.notification {
-  @apply mb-4 py-2 px-4 border-2 border-dark-100 rounded-sm;
-  @apply bg-transparent text-generic-100 font-bold;
-
-  a {
-    @apply underline;
-  }
-
-  &.notification--warning {
-    @apply text-warning-400 border-warning;
-  }
-
-  &.notification--danger {
-    @apply text-danger-400 border-danger;
-  }
-}
+@import './base';
+@import './dialog';
+@import './libs';
+@import './scrollbar';
+@import './fonts';

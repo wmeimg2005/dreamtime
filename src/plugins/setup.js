@@ -10,6 +10,7 @@
 import Vue from 'vue'
 import moment from 'moment'
 import tippy from 'tippy.js'
+import Combokeys from 'combokeys'
 import { dream } from '~/modules'
 import { Nudify, NudifyStore } from '~/modules/nudify'
 import { HandledError, LogError } from '~/modules/system'
@@ -32,7 +33,7 @@ tippy.setDefaultProps({
   arrow: true,
 })
 
-export default async ({ app }, inject) => {
+export default async ({ app, redirect }, inject) => {
   // catch errors
   Vue.config.errorHandler = (err) => {
     if (err instanceof HandledError || err instanceof LogError) {
@@ -44,6 +45,7 @@ export default async ({ app }, inject) => {
 
   // dreamtime.
   dream.setup()
+  app.$dream = dream
   inject('dream', dream)
 
   // nudify.
@@ -52,6 +54,13 @@ export default async ({ app }, inject) => {
   // nudify store.
   NudifyStore.setup()
   inject('nudify', NudifyStore)
+
+  // easter eggs!
+  const combokeys = new Combokeys(document.documentElement)
+
+  combokeys.bind('b a d t i m e', () => {
+    redirect('/games/badtime')
+  })
 
   // ready
   logger.info('The front-end is ready!')

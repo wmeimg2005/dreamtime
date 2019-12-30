@@ -78,8 +78,6 @@ export class Consola {
   constructor(category = 'dreamtime') {
     this.category = category
     this.logger = Logger.create(category)
-
-    console.log(this.category, this.logger)
   }
 
   /**
@@ -98,8 +96,6 @@ export class Consola {
       message,
       options,
     })
-
-    console.log(this.logger)
 
     const log = new Log(this.logger, level, message, { ...this.defaultOptions, ...options })
     this.defaultOptions = {}

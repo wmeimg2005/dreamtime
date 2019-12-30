@@ -1,0 +1,42 @@
+/*
+ * DreamTime.
+ * Copyright (C) DreamNet. All rights reserved.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License 3.0 as published by
+ * the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+ * 
+ * Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
+ */
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  @apply bg-black text-generic-500 font-sans;
+  background-image: url('~assets/images/papyrus-dark.webp'); /* Background pattern from Toptal Subtle Patterns */
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  @apply overflow-hidden;
+}
+
+body,
+html,
+#__nuxt,
+#__layout {
+  @apply h-full;
+}
+
+.title {
+  @apply font-serif;
+}

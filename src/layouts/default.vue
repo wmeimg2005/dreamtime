@@ -27,7 +27,7 @@ export default {
   display: grid;
   grid-template-columns: 200px 1fr 200px;
   grid-template-rows: 30px 50px 1fr;
-  grid-template-areas: "topbar topbar topbar" "jobbar navbar navbar" "jobbar content content";
+  grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "content content jobbar";
 
   .layout__topbar {
     grid-area: topbar;
