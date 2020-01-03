@@ -1,23 +1,32 @@
 <template>
-  <div class="c-photo-run" :style="previewStyle">
-    <div v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled" class="run__details">
-      <table class="table">
-        <tr>
-          <th>Boobs size</th>
-          <th>Areola size</th>
-          <th>Nipple size</th>
-          <th>Vagina size</th>
-          <th>Pubic hair</th>
-        </tr>
-        <tr>
-          <td>{{ Number(run.preferences.body.boobs.size).toFixed(2) }}</td>
-          <td>{{ Number(run.preferences.body.areola.size).toFixed(2) }}</td>
-          <td>{{ Number(run.preferences.body.nipple.size).toFixed(2) }}</td>
-          <td>{{ Number(run.preferences.body.vagina.size).toFixed(2) }}</td>
-          <td>{{ Number(run.preferences.body.pubicHair.size).toFixed(2) }}</td>
-        </tr>
-      </table>
+  <div class="c-photo-run" :style="previewStyle" data-private>
+    <div v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled" class="run__preferences">
+      <div class="preference">
+        <span>Boobs</span>
+        <span>{{ run.preferences.body.boobs.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Areola</span>
+        <span>{{ run.preferences.body.areola.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Nipple</span>
+        <span>{{ run.preferences.body.nipple.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Vagina</span>
+        <span>{{ run.preferences.body.vagina.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Pubic hair</span>
+        <span>{{ run.preferences.body.pubicHair.size | fixedValue }}</span>
+      </div>
     </div>
+
     <div class="run__content">
       <div v-if="run.running" class="content__item">
         <p class="text-white">
@@ -70,12 +79,6 @@
         </button>
       </div>
 
-      <div v-if="run.preferences.body.randomize ||  run.preferences.body.progressive.enabled" class="content__item">
-        <button v-tooltip="'View preferences'" class="button button--info button--sm" @click.prevent="$refs.preferencesDialog.showModal()">
-          <font-awesome-icon icon="sliders-h" />
-        </button>
-      </div>
-
       <div class="content__item">
         <button v-tooltip="'View terminal'" class="button button--sm" @click.prevent="$refs.terminalDialog.showModal()">
           <font-awesome-icon icon="terminal" />
@@ -87,13 +90,13 @@
     <dialog ref="maskfinDialog">
       <div class="dialog__content dialog__maskfin">
         <div class="maskfin__preview">
-          <img :src="run.maskfinFile.dataURL">
+          <img :src="run.maskfinFile.path">
         </div>
 
         <div class="maskfin__description">
           <p>This is the Maskfin, a mask that represents in layers the areas that the algorithm will replace with the fake nude.</p>
           <p>Click on the "Add to queue" button to add it as an additional photo, edit the layers and continue with the nudification. You can also save it to your computer, edit it with an external program and continue the nudification manually.</p>
-          <p>For more information please consult the <a :href="manualURL" target="_blank">manual</a>.</p>
+          <p>For more information please consult the <a :href="manualURL" target="_blank">guide</a>.</p>
         </div>
 
         <div class="dialog__buttons">
@@ -128,39 +131,6 @@
         </div>
       </div>
     </dialog>
-
-    <!-- Preferences Dialog -->
-    <dialog ref="preferencesDialog">
-      <div class="dialog__content">
-        <table class="table mb-2">
-          <tr>
-            <th>Boobs size</th>
-            <td>{{ Number(run.preferences.body.boobs.size).toFixed(2) }}</td>
-          </tr>
-          <tr>
-            <th>Areola size</th>
-            <td>{{ Number(run.preferences.body.areola.size).toFixed(2) }}</td>
-          </tr>
-          <tr>
-            <th>Nipple size</th>
-            <td>{{ Number(run.preferences.body.nipple.size).toFixed(2) }}</td>
-          </tr>
-          <tr>
-            <th>Vagina size</th>
-            <td>{{ Number(run.preferences.body.vagina.size).toFixed(2) }}</td>
-          </tr>
-          <tr>
-            <th>Pubic hair</th>
-            <td>{{ Number(run.preferences.body.pubicHair.size).toFixed(2) }}</td>
-          </tr>
-        </table>
-        <div class="dialog__buttons">
-          <button class="button button--danger" @click.prevent="$refs.preferencesDialog.close()">
-            Close
-          </button>
-        </div>
-      </div>
-    </dialog>
   </div>
 </template>
 
@@ -176,6 +146,10 @@ export default {
     size(value) {
       return Number.parseFloat(value).toFixed(2)
     },
+
+    fixedValue(value) {
+      return Number(value).toFixed(2)
+    },
   },
 
   props: {
@@ -185,21 +159,13 @@ export default {
     },
   },
 
-  data: () => ({
-    outputDataURL: undefined,
-  }),
-
   computed: {
-    previewDataURL() {
-      return this.run.outputFile.dataURL
-    },
-
     previewStyle() {
-      if (!this.previewDataURL) {
+      if (!this.run.outputFile.exists) {
         return {}
       }
 
-      return { backgroundImage: `url(${this.previewDataURL})` }
+      return { backgroundImage: `url(${this.run.outputFile.path})` }
     },
 
     hasMaskfin() {
@@ -207,15 +173,7 @@ export default {
     },
 
     manualURL() {
-      return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
-    },
-  },
-
-  watch: {
-    'run.finished'(value) {
-      if (value) {
-        this.outputDataURL = this.run.outputFile.dataURL
-      }
+      return nucleus.urls?.docs?.manual || 'https://time.dreamnet.tech/docs/guide/upload'
     },
   },
 
@@ -265,14 +223,6 @@ export default {
 
       this.run.maskfinFile.copy(savePath)
     },
-
-    viewPreferences() {
-      //$refs.preferencesDialog.showModal()
-    },
-
-    viewTerminal() {
-      //$refs.terminalDialog.showModal()
-    },
   },
 }
 </script>
@@ -285,39 +235,42 @@ export default {
   height: 512px;
 
   &:hover {
-    .run__content {
-      @apply opacity-100;
-    }
-    .run__details {
+    .run__content,
+    .run__preferences {
       @apply opacity-100;
     }
   }
 }
 
-.run__details {
-  @apply opacity-0 bg-dark-500-90 w-full;
-  @apply absolute top-0;
+.run__content,
+.run__preferences {
+  @apply absolute opacity-0 bg-dark-500-80 w-full;
   @apply flex;
-  transition: all 0.1s linear;
+  backdrop-filter: blur(6px);
+  transition: all .1s linear;
+}
+
+.run__preferences {
+  @apply flex top-0;
   height: 80px;
-  table{
-    margin-left:auto;
-    margin-right:auto;
-    th{
-      padding:4px;
-    }
-    td{
-      @apply text-center;
+
+  .preference {
+    @apply flex flex-col flex-1 items-center justify-center;
+
+    span {
+      &:first-child {
+        @apply text-xs;
+      }
+
+      &:last-child {
+        @apply text-sm text-white font-bold;
+      }
     }
   }
 }
 
 .run__content {
-  @apply opacity-0 bg-dark-500-80 w-full;
-  @apply absolute bottom-0;
-  @apply flex;
-  backdrop-filter: blur(5px);
-  transition: all .1s linear;
+  @apply bottom-0;
   height: 100px;
 
   .content__item {

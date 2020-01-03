@@ -2,8 +2,8 @@ import Vue from 'vue'
 
 import LayoutTopbar from './Topbar'
 import LayoutNavbar from './Navbar'
-import LayoutJobbar from './Jobbar'
+import LayoutQueuebar from './Queuebar'
 
-Vue.component('layout-topbar', LayoutTopbar)
-Vue.component('layout-navbar', LayoutNavbar)
-Vue.component('layout-jobbar', LayoutJobbar)
+Vue.component('LayoutTopbar', LayoutTopbar)
+Vue.component('LayoutNavbar', LayoutNavbar)
+Vue.component('LayoutQueuebar', LayoutQueuebar)

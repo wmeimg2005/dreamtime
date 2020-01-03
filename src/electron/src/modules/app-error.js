@@ -12,7 +12,7 @@ import {
 } from 'lodash'
 import { app, dialog } from 'electron'
 
-const logger = require('logplease').create('error:main')
+const logger = require('@dreamnet/logplease').create('error:main')
 
 /**
  * @typedef {Object} ErrorOptions

@@ -1,8 +1,7 @@
 const { remote } = require('electron')
-const { make } = require('./modules/settings')
 
 const util = remote.require('electron-util')
-const { settingsRaw } = remote.require('./modules/settings')
+const { settings } = remote.require('./modules/settings')
 const tools = remote.require('./modules/tools')
 const ngrok = remote.require('./modules/ngrok')
 
@@ -10,7 +9,7 @@ const ngrok = remote.require('./modules/ngrok')
 window.$provider = {
   ...tools,
 
-  settings: make(settingsRaw),
+  settings,
   ngrok,
 
   api: util.api,

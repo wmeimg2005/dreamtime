@@ -9,6 +9,7 @@
 
 import { dirname } from 'path'
 import delay from 'delay'
+import { exec } from 'child_process'
 import { BaseUpdater } from './base'
 
 const { activeWindow } = $provider.util
@@ -35,10 +36,11 @@ class DreamTimeUpdater extends BaseUpdater {
    */
   async install(filepath) {
     try {
-      await shell.openExternal(filepath)
-      await delay(1500)
+      exec(filepath)
 
-      // close the program to update correctly
+      await delay(1000)
+
+      // Quit to update
       app.quit()
     } catch (error) {
       shell.openItem(dirname(filepath))

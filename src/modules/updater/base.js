@@ -18,15 +18,13 @@ import filesize from 'filesize'
 import delay from 'delay'
 import { basename } from 'path'
 import { nucleus } from '../services'
-import { WarnAlert, Consola } from '../system'
+import { Consola } from '../consola'
 
 const { system } = $provider
 const { getPath } = $provider.paths
 const { existsSync, statSync, download } = $provider.fs
 const { dialog } = $provider.api
 const { platform } = $provider.util
-
-const logplease = require('logplease')
 
 const extRegex = /(?:\.([^.]+))?$/
 
@@ -41,11 +39,6 @@ export class BaseUpdater {
    * @type {boolean}
    */
   enabled = false
-
-  /**
-   * @type {logplease.Logger}
-   */
-  _logger
 
   /**
    * @type {Consola}
@@ -105,6 +98,13 @@ export class BaseUpdater {
    */
   get name() {
     return null
+  }
+
+  /**
+   * @type {string}
+   */
+  get displayName() {
+    return nucleus.v1?.projects[this.name]?.about?.title || this.name
   }
 
   /**
@@ -178,7 +178,6 @@ export class BaseUpdater {
   }
 
   constructor() {
-    this._logger = logplease.create(`updater:${this.name}`)
     this._consola = Consola.create(`updater:${this.name}`)
   }
 
@@ -210,10 +209,10 @@ export class BaseUpdater {
       })
 
       await this._fetchReleases()
+      this._consola.info(`Current: ${this.currentVersion} - Latest Compatible: ${this.latestCompatibleVersion}`)
 
-      this.downloadUrls = this._getDownloadUrls()
+      this.refresh()
 
-      this._logger.info(`Current: ${this.currentVersion} - Latest Compatible: ${this.latestCompatibleVersion}`)
       this.enabled = true
 
       if (this.available) {
@@ -222,6 +221,10 @@ export class BaseUpdater {
     } catch (err) {
       this._consola.warn('Unable to fetch the latest version information.', err)
     }
+  }
+
+  refresh() {
+    this.downloadUrls = this._getDownloadUrls()
   }
 
   /**
@@ -358,8 +361,8 @@ export class BaseUpdater {
     try {
       this._setUpdateProgress('installing')
 
-      // avoid opening it while it is in use
-      await delay(1500)
+      // Avoid opening it while it is in use.
+      await delay(3000)
 
       await this.install(filepath)
     } catch (err) {

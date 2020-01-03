@@ -1,3 +1,4 @@
+/* eslint-disable import/default */
 // DreamTime.
 // Copyright (C) DreamNet. All rights reserved.
 //

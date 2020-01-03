@@ -10,19 +10,13 @@
 import { startsWith } from 'lodash'
 import { app, BrowserWindow, shell } from 'electron'
 import { dirname, resolve } from 'path'
-import Logger from 'logplease'
+import Logger from '@dreamnet/logplease'
 import fs from 'fs-extra'
 import { AppError } from './modules/app-error'
 import { system } from './modules/tools/system'
 import { getPath } from './modules/tools/paths'
 import { settings, ngrok } from './modules'
 import config from '~/nuxt.config'
-
-// logger setup
-Logger.setOptions({
-  filename: getPath('userData', 'dreamtime.main.log'),
-  logLevel: process.env.LOG || 'debug',
-})
 
 const logger = Logger.create('electron')
 
@@ -44,6 +38,15 @@ class DreamApp {
    *
    */
   static async boot() {
+    const logDir = getPath('userData', 'logs', new Date().toJSON().slice(0, 10))
+    fs.ensureDirSync(logDir)
+
+    // logger setup
+    Logger.setOptions({
+      filename: resolve(logDir, 'main.log'),
+      logLevel: process.env.LOG || 'debug',
+    })
+
     logger.info('Booting...')
 
     logger.debug(`Enviroment: ${process.env.name}`)
@@ -137,7 +140,6 @@ class DreamApp {
         event.preventDefault()
 
         logger.warn('Illegal page load blocked!', {
-          event,
           url,
         })
       })
@@ -172,10 +174,12 @@ class DreamApp {
     //
     this.createDirs()
 
+    /*
     if (process.env.name === 'development') {
       const address = await ngrok.connect()
       logger.debug(`Proxy for debugging: ${address}`)
     }
+    */
   }
 
   /**
@@ -207,12 +211,13 @@ class DreamApp {
       webPreferences: {
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
+        webSecurity: false, // Necessary to load local photos and not put them in memory.
         preload: resolve(app.getAppPath(), 'electron', 'dist', 'provider.js'),
       },
     })
 
     // maximize
-    // todo: custom preferences
+    // TODO: custom preferences
     this.window.maximize()
 
     // disable menu

@@ -14,11 +14,13 @@ import Rollbar from 'rollbar'
 import { remote } from 'electron'
 import { BaseService } from './base'
 import { nucleus } from './nucleus'
+import { Consola } from '../consola'
+import { settings } from '../system/settings'
 
-const { settings, system } = $provider
+const { system } = $provider
 const { execSync } = remote.require('child_process')
 
-const logger = require('logplease').create('services:rollbar')
+const consola = Consola.create('rollbar')
 
 /**
  * https://rollbar.com
@@ -29,14 +31,14 @@ class RollbarService extends BaseService {
    * @type {string}
    */
   get accessToken() {
-    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys?.rollbar
+    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys?.rollbarKey
   }
 
   /**
    * @type {boolean}
    */
   get can() {
-    return isString(this.accessToken) && process.env.name === 'production'
+    return isString(this.accessToken) && settings.telemetry.bugs && process.env.name === 'production'
   }
 
   /**
@@ -79,7 +81,6 @@ class RollbarService extends BaseService {
             code_version: this.release,
           },
         },
-        settings: settings.payload,
         system: {
           graphics: system.graphics,
           cpu: system.cpu,
@@ -101,10 +102,10 @@ class RollbarService extends BaseService {
       this.service = new Rollbar(this.config)
       this.enabled = true
 
-      logger.info('Rollbar started!')
-      logger.debug(this.accessToken)
+      consola.info('Rollbar started!')
+      consola.debug(`Access Token: ${this.accessToken}`)
     } catch (err) {
-      logger.warn('Rollbar setup failed!', err)
+      consola.warn('Rollbar setup failed!', err)
     }
   }
 

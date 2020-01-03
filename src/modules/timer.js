@@ -1,24 +1,27 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
+import { Consola } from './consola'
+
+const consola = Consola.create('timer')
 
 export class Timer {
   constructor() {
-    this._start = undefined
+    this.startTime = undefined
     this.duration = 0
     this.interval = undefined
   }
 
   start() {
-    this._start = moment()
+    this.startTime = dayjs()
     this.duration = 0
-
     this.interval = setInterval(this.handle.bind(this), 1000)
   }
 
   handle() {
-    this.duration = moment().diff(this._start, 'seconds')
+    this.duration = dayjs().diff(this.startTime, 'second')
 
-    if (this.duration > 300) {
-      // timeout wtf
+    if (this.duration > 3600) {
+      // this does not seem normal.
+      consola.warn('Timer out of control.').report()
       this.stop()
     }
   }

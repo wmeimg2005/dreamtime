@@ -8,24 +8,18 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import Vue from 'vue'
-import moment from 'moment'
 import tippy from 'tippy.js'
-import Combokeys from 'combokeys'
-import { dream } from '~/modules'
-import { Nudify, NudifyStore } from '~/modules/nudify'
-import { HandledError, LogError } from '~/modules/system'
+import { Consola } from '~/modules/consola'
+import { achievements } from '~/modules/system'
 import BaseMixin from '~/mixins/BaseMixin'
 
-const logger = require('logplease').create('plugins:setup')
+const consola = Consola.create('setup')
 
 // lift off!
-logger.info('Lift off!')
+consola.info('Lift off!')
 
-// base mixin
+// base mixin.
 Vue.mixin(BaseMixin)
-
-// momentjs
-moment.locale('en')
 
 // tippyjs
 tippy.setDefaultProps({
@@ -33,18 +27,16 @@ tippy.setDefaultProps({
   arrow: true,
 })
 
-export default async ({ app, redirect }, inject) => {
-  // catch errors
-  Vue.config.errorHandler = (err) => {
-    if (err instanceof HandledError || err instanceof LogError) {
-      return
-    }
+export default ({ app }, inject) => {
+  const { dream } = require('~/modules')
+  const { Nudify, NudifyStore } = require('~/modules/nudify')
+  const { settings } = require('~/modules/system')
 
-    consola.error(err)
-  }
+  // settings.
+  app.$settings = settings
+  inject('settings', settings)
 
   // dreamtime.
-  dream.setup()
   app.$dream = dream
   inject('dream', dream)
 
@@ -55,13 +47,9 @@ export default async ({ app, redirect }, inject) => {
   NudifyStore.setup()
   inject('nudify', NudifyStore)
 
-  // easter eggs!
-  const combokeys = new Combokeys(document.documentElement)
-
-  combokeys.bind('b a d t i m e', () => {
-    redirect('/games/badtime')
-  })
+  // achievements!
+  achievements.setup()
 
   // ready
-  logger.info('The front-end is ready!')
+  consola.info('The front-end is ready!')
 }

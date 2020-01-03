@@ -38,8 +38,7 @@
           :description="`Min: ${currentValue.randomize.min} - Max: ${currentValue.randomize.max}`">
           <VueSlider
             v-model="randomizeRange"
-            :min-range="minRange"
-            :max-range="maxRange"
+            :min-range="0.05"
             :min="minRange"
             :max="maxRange"
             :interval="0.05" />

@@ -8,17 +8,15 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isNil, isEmpty, truncate, deburr, forIn, cloneDeep,
+  isNil, isEmpty, truncate, deburr, forIn, cloneDeep, random, toString,
 } from 'lodash'
 import deferred from 'deferred'
 import { File } from '../file'
 import { Timer } from '../timer'
-import { rand } from '../helpers'
 import cliErrors from '../config/cli-errors'
 import preferencesConfig from '../config/preferences'
-import { nucleus } from '../services'
+import { settings, achievements } from '../system'
 
-const { settings } = $provider
 const { transform } = $provider.power
 const { activeWindow } = $provider.util
 const { getMasksPath } = $provider.paths
@@ -152,15 +150,9 @@ export class PhotoRun {
 
   start() {
     const def = deferred()
-    const { consola } = this.photo
 
     const onSpawnError = (error) => {
-      consola
-        .withError(error)
-        .warn('There was a problem trying to start DreamPower, make sure you have everything set up correctly.')
-        .show('DreamPower failed!')
-
-      def.reject()
+      def.reject(new Warning('Failed to start.', 'There was a problem trying to start DreamPower, make sure the installation is not corrupt.', error))
     }
 
     this.beforeStart()
@@ -172,6 +164,8 @@ export class PhotoRun {
       return def.promise
     }
 
+    const { consola } = this.photo
+
     this.process.on('error', (error) => {
       // spawn error
       onSpawnError(error)
@@ -180,23 +174,31 @@ export class PhotoRun {
     this.process.on('stdout', (output) => {
       // cli output
       output.forEach((text) => {
+        text = toString(text)
+
         this.cli.lines.unshift({
           text,
           css: {},
         })
+
+        consola.debug(text)
       })
     })
 
     this.process.on('stderr', (output) => {
+      const text = toString(output)
+
       // cli error
       this.cli.lines.unshift({
-        text: output,
+        text,
         css: {
           'text-danger': true,
         },
       })
 
-      this.cli.error += `${output}\n`
+      this.cli.error += `${text}\n`
+
+      consola.debug(text)
     })
 
     this.process.on('success', async () => {
@@ -218,6 +220,10 @@ export class PhotoRun {
       }
     })
 
+    this.process.on('cancelled', () => {
+      def.resolve()
+    })
+
     return def.promise
   }
 
@@ -226,7 +232,7 @@ export class PhotoRun {
       return
     }
 
-    this.process.emit('kill')
+    this.process.emit('cancel')
   }
 
   setupPreferences() {
@@ -238,7 +244,7 @@ export class PhotoRun {
         const { enabled, min, max } = preferences[key].randomize
 
         if (enabled) {
-          preferences[key].size = rand(min, max)
+          preferences[key].size = random(min, max, true)
         }
       })
     } else if (preferences.progressive.enabled) {
@@ -270,8 +276,9 @@ export class PhotoRun {
     this.timer.stop()
 
     this._sendNotification()
-
     this.photo.events.emit('update')
+
+    achievements.probability()
   }
 
   onFail() {
@@ -283,28 +290,25 @@ export class PhotoRun {
   }
 
   getPowerError() {
-    const message = this.cli.error
+    const errorMessage = this.cli.error
 
-    if (isEmpty(message)) {
+    if (isEmpty(errorMessage)) {
       return null
     }
 
-    const { consola } = this.photo
-
     const title = `Run ${this.id} has failed.`
 
-    const options = {
-      error: new Error(message),
-      terminal: this.cli.lines,
+    const extra = {
+      terminal: this.cli.lines.map((item) => item.text),
     }
 
     for (const payload of cliErrors) {
-      if (message.includes(payload.error)) {
-        return new LogError(consola, title, payload.message, payload.level, options)
+      if (errorMessage.toLowerCase().includes(payload.query.toLowerCase())) {
+        return new LogEvent('warn', title, payload.message, new Error(errorMessage), extra)
       }
     }
 
-    return new Exception(consola, title, 'DreamPower has been interrupted by an unknown error.', options)
+    return new Exception(title, 'The algorithm has been interrupted by an unknown problem.', new Error(errorMessage), extra)
   }
 
   _sendNotification() {

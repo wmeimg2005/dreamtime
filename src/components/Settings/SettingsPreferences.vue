@@ -100,7 +100,7 @@
               Overlay
             </option>
             <option value="cropjs">
-              Manual crop (Not recommended)
+              Manual crop
             </option>
           </select>
         </box-item>
@@ -123,7 +123,7 @@
 
         <box-item
           label="Color transfer."
-          description="Use a experimental color transfer algorithm to try to recover the original colors of the photo.">
+          description="Use a experimental algorithm to try to recover the original colors of the photo.">
           <select v-model="currentValue.advanced.useColorTransfer" class="input">
             <option :value="true">
               Enabled

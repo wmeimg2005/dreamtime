@@ -58,12 +58,6 @@ const macos = {
         to: '7zip-bin',
       },
     ],
-    extraFiles: [
-      {
-        from: '.env',
-        to: 'MacOS/.env',
-      },
-    ],
   },
   dmg: {
     title: '${productName}',
@@ -94,7 +88,7 @@ module.exports = {
     '!**/{jsconfig.json,electron-builder.js,.eslintrc.js,.env-cmdrc.js,.codeclimate.yml,.babelrc,tailwind.config.js,nucleus.json}',
     '!{components,cli,layouts,middleware,mixins,pages,patches,plugins,scripts,store,third,coverage,.nuxt,test,workers}',
     '!{static,assets}',
-    '!**/electron/src',
+    '!electron/src',
   ],
   extraFiles: [
     {

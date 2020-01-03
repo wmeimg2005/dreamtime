@@ -19,7 +19,9 @@ import { settings } from '../settings'
  * @param {string} name Name of the base path: https://electronjs.org/docs/all#appgetpathname
  * @param {...string} args Series of path segments to join into one path
  */
-export const getPath = (name, ...args) => join(app.getPath(name), ...args)
+export function getPath(name, ...args) {
+  return join(app.getPath(name), ...args)
+}
 
 /**
  *

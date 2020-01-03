@@ -7,16 +7,13 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-/**
- * Pages that include this middleware will only be accessible
- * if the user has selected a photo to transform.
- */
-export default function ({ route, redirect, $nudify }) {
-  if (!$nudify.hasPhoto()) {
-    redirect('/')
-  }
+import { Consola } from './consola'
 
-  if (route.fullPath === '/nudify') {
-    redirect('/nudify/summary')
-  }
-}
+export { Consola }
+
+export const consola = (new Consola)
+
+export {
+  HandledError, LogEvent, Warning, Exception,
+  handleError,
+} from './errors'

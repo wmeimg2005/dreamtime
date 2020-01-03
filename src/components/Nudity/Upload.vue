@@ -1,19 +1,19 @@
 <template>
-  <div class="c-uploader">
-    <div class="uploader__settings box box--items">
+  <div id="uploader" class="c-uploader">
+    <div id="uploader-settings" class="uploader__settings box box--items">
       <div class="box__content">
         <box-item
           label="Upload mode"
           description="What will happen when uploading a photo.">
           <select v-model="$settings.app.uploadMode" class="input">
             <option value="none">
-              Stay
+              Put in Pending
             </option>
             <option value="add-queue">
-              Start transformation
+              Put in Queue
             </option>
             <option value="go-preferences">
-              Change preferences
+              Put in Pending and open preferences
             </option>
           </select>
         </box-item>
@@ -22,6 +22,7 @@
 
     <!-- Dropzone -->
     <div
+      id="uploader-dropzone"
       class="uploader__dropzone"
       :class="{'is-dragging': isDragging}"
       @dragenter="onDragEnter"
@@ -30,11 +31,11 @@
       @drop="openDrop">
       <p class="dropzone-hint">
         <font-awesome-icon icon="camera" />
-        Drop the photos here!
+        Drop the dream here!
       </p>
     </div>
 
-    <div class="uploader__alt">
+    <div id="uploader-alternatives" class="uploader__alt">
       <!-- File -->
       <div class="box">
         <div class="box__header">
@@ -94,7 +95,7 @@
         </div>
 
         <div class="box__content">
-          <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://">
+          <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://" data-private="lipsum">
 
           <button class="button" @click="openUrl">
             Submit
@@ -115,7 +116,7 @@
         </div>
 
         <div class="box__content">
-          <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/">
+          <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/" data-private="lipsum">
 
           <button class="button" @click="openInstagramPhoto">
             Submit
@@ -127,14 +128,13 @@
 </template>
 
 <script>
-/* eslint-disable no-param-reassign */
 import {
   isNil, isEmpty, startsWith,
   map, isArray,
 } from 'lodash'
-import Swal from 'sweetalert2'
-import { nucleus } from '~/modules/services'
 import { Nudify } from '~/modules/nudify'
+import { Consola } from '~/modules/consola'
+import { tutorial } from '~/modules'
 
 const consola = Consola.create('upload')
 
@@ -155,6 +155,9 @@ export default {
     isDragging: false,
   }),
 
+  mounted() {
+    tutorial.upload()
+  },
 
   methods: {
     /**

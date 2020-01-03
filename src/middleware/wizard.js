@@ -7,12 +7,10 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { requirements } from '~/modules/system'
-
-const { wizard } = $provider.settings
+import { settings, requirements } from '~/modules/system'
 
 export default function ({ route, redirect }) {
-  window.$redirect = redirect
+  const { wizard } = settings
 
   if (!wizard.welcome) {
     if (route.path !== '/wizard/welcome') {
@@ -51,14 +49,4 @@ export default function ({ route, redirect }) {
       redirect('/wizard/telemetry')
     }
   }
-
-  /*
-  if (!wizard.user) {
-    if (route.path !== '/wizard/user') {
-      redirect('/wizard/user')
-    }
-
-    return
-  }
-  */
 }

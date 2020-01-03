@@ -13,11 +13,11 @@
     <div class="user__content">
       <section class="mb-10">
         <p>
-          DreamNet respects the privacy of its users, <strong>the photos you transform using DreamTime do not abandon your computer in any way</strong>, we only collect anonymous information with the only objective of improving the application.
+          DreamNet respects the privacy of its users, <strong>the photos you nudify using DreamTime do not abandon your computer in any way</strong>, we only collect anonymous information with the exclusive objective of improving the application.
         </p>
 
         <p>
-          Below you can get more information about what we could collect:
+          Below you can get more information about what we collect:
         </p>
       </section>
 
@@ -37,7 +37,7 @@
             <li>Important events.</li>
           </ul>
 
-          <a href="https://i.gyazo.com/1e772f1298772068db782b0c29af4ca1.png" target="_blank" class="button button--info">Preview</a>
+          <a href="https://i.gyazo.com/1e772f1298772068db782b0c29af4ca1.png" target="_blank" class="button button--info">Example</a>
         </div>
 
         <div class="right">
@@ -60,11 +60,11 @@
           </h2>
 
           <p>
-            Information of the state of the application at the time that an error occurred.
+            Detailed information of the exact moment an error occurred.
           </p>
 
           <p>
-            This helps us fix errors and problems easily.
+            This helps us solve errors faster.
           </p>
 
           <ul>
@@ -74,7 +74,7 @@
             <li>Console log.</li>
           </ul>
 
-          <a href="https://i.gyazo.com/30972dbc8c2396b58928b5100a016e2d.png" target="_blank" class="button button--info">Preview</a>
+          <a href="https://i.gyazo.com/30972dbc8c2396b58928b5100a016e2d.png" target="_blank" class="button button--info">Example</a>
         </div>
 
         <div class="right">
@@ -104,21 +104,21 @@
           </h2>
 
           <p>
-            Information on how you use the application from the beginning of the session.
+            Detailed information on how you use the application.
           </p>
 
           <p>
-            This helps us know how we can make the application easier and more accessible, also provides additional information to fix errors.
+            This helps us know how we can make the application more accessible, also provides additional data to solve errors.
           </p>
 
           <ul>
             <li>Operating system.</li>
-            <li>Actions that the user took.</li>
-            <li>Mouse movement inside the application. (The photos and delicate information are censored.)</li>
+            <li>Actions you have taken.</li>
+            <li>Mouse movement inside the application. (Photos and sensitive information are censored.)</li>
             <li>Console log.</li>
           </ul>
 
-          <a href="https://i.gyazo.com/30972dbc8c2396b58928b5100a016e2d.png" target="_blank" class="button button--info">Preview</a>
+          <a href="https://catalina.dreamnet.tech/ipfs/QmQd5LKLVs73et1CvchHkq1J99PssoWfa5zRZD4ayqTrML" target="_blank" class="button button--info">Example</a>
         </div>
 
         <div class="right">
@@ -149,22 +149,20 @@
 </template>
 
 <script>
-const { wizard } = $provider.settings
+import { settings } from '~/modules/system'
 
 export default {
   layout: 'wizard',
 
   middleware({ redirect }) {
-    if (wizard.telemetry) {
+    if (settings.wizard.telemetry) {
       redirect('/')
     }
   },
 
   methods: {
     next() {
-      this.$settings.wizard.telemetry = true
-      this.$settings.save()
-
+      settings.wizard.telemetry = true
       this.$router.push('/')
     },
   },

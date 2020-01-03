@@ -7,14 +7,22 @@
       frameborder="0"
       marginheight="0px"
       marginwidth="0px"
-      allowfullscreen />
+      sandbox="allow-scripts allow-same-origin" />
   </div>
 </template>
 
 <script>
+import { events } from '~/modules'
+
 export default {
   mounted() {
-    consola.track('BADTIME')
+    this.unlock()
+  },
+
+  methods: {
+    unlock() {
+      events.emit('achievements.badtime')
+    },
   },
 }
 </script>

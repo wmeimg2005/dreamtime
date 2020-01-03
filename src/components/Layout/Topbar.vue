@@ -11,7 +11,7 @@
 
       <div v-show="badTime" class="topbar__badtime">
         <img src="~/assets/images/games/sans.png">
-        here we go.
+        i don't like what you are doing.
       </div>
     </div>
 
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 const { activeWindow, api } = $provider.util
 
@@ -43,7 +43,7 @@ export default {
 
   computed: {
     greetings() {
-      const hours = moment().hours()
+      const hours = dayjs().hour()
 
       if (hours >= 6 && hours <= 11) {
         return '☕ Good morning'
@@ -62,7 +62,7 @@ export default {
   },
 
   mounted() {
-    this.$router.afterEach((to, from) => {
+    this.$router.afterEach((to) => {
       if (to.path === '/games/badtime') {
         this.$dream.name = 'BadDreamTime'
         this.badTime = true

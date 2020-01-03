@@ -10,10 +10,12 @@
 import { isNil } from 'lodash'
 import axios from 'axios'
 import { BaseService } from './base'
+import { settings } from '../system'
+import { Consola } from '../consola'
 
-const { system, settings } = $provider
+const { system } = $provider
 
-const logger = require('logplease').create('services:nucleus')
+const consola = Consola.create('nucleus')
 
 /**
  * https://nucleus.sh
@@ -65,10 +67,10 @@ export class NucleusService extends BaseService {
 
       this.enabled = true
 
-      logger.info('Nucleus enabled!')
-      logger.debug(this.appId)
+      consola.info('Nucleus enabled!')
+      consola.debug(`App ID: ${this.appId}`)
     } catch (err) {
-      logger.warn('Nucleus setup failed!', err)
+      consola.warn('Nucleus setup failed!', err)
     }
   }
 

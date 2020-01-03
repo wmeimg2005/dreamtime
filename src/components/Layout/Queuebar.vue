@@ -1,6 +1,6 @@
 <template>
-  <div class="layout__jobbar">
-    <section>
+  <div id="queuebar" class="layout__jobbar">
+    <section id="queuebar-running">
       <div class="section__header">
         <div class="section__title">
           <span class="icon"><font-awesome-icon icon="running" /></span>
@@ -31,12 +31,12 @@
           class="job"
           :class="{ 'job--running': photo.running }"
           @click.prevent="openJob(photo.id)">
-          <img :src="photo.file.dataURL">
+          <img :src="photo.file.path" data-private>
         </figure>
       </div>
     </section>
 
-    <section>
+    <section id="queuebar-pending">
       <div class="section__header">
         <div class="section__title">
           <span class="icon"><font-awesome-icon icon="clipboard-list" /></span>
@@ -66,12 +66,12 @@
           :key="index"
           class="job"
           @click.prevent="openJob(photo.id)">
-          <img :src="photo.file.dataURL">
+          <img :src="photo.file.path" data-private>
         </figure>
       </div>
     </section>
 
-    <section>
+    <section id="queuebar-finished">
       <div class="section__header">
         <div class="section__title">
           <span class="icon"><font-awesome-icon icon="clipboard-check" /></span>
@@ -102,7 +102,7 @@
           class="job"
           :class="{ 'job--failed': photo.failed }"
           @click.prevent="openJob(photo.id)">
-          <img :src="photo.file.dataURL">
+          <img :src="photo.file.path" data-private>
         </figure>
       </div>
     </section>
@@ -167,7 +167,7 @@ section {
   }
 
   .section__actions {
-    @apply flex flex-1 justify-end ml-2;
+    @apply flex flex-1 justify-end ml-2 z-10 bg-dark-500;
 
     .button {
       @apply ml-2;
@@ -180,10 +180,14 @@ section {
   @apply px-4 py-2 overflow-y-auto max-h-full;
 
   .job {
-    @apply inline-block mb-2 mr-2 cursor-pointer;
-    width: 48px;
-    height: 48px;
+    @apply inline-block mb-2 cursor-pointer;
+    width: 47px;
+    height: 47px;
     transition: all .1s ease-in-out;
+
+    &:not(:nth-child(3n)) {
+      @apply mr-2;
+    }
 
     &.job--running {
       img {
@@ -199,7 +203,7 @@ section {
 
     &:hover {
       @apply z-30;
-      transform: scale(1.5)
+      transform: scale(1.3)
     }
 
     img {

@@ -69,8 +69,6 @@ export default {
   methods: {
     next() {
       this.$settings.wizard.tos = true
-      this.$settings.save()
-
       this.$router.push('/wizard/power')
     },
   },

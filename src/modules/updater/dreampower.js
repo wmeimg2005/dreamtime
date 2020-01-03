@@ -7,13 +7,12 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isNil, get } from 'lodash'
+import { isNil } from 'lodash'
 import compareVersions from 'compare-versions'
 import { BaseUpdater } from './base'
-import { requirements } from '../system'
+import { requirements, settings } from '../system'
 import { nucleus } from '../services'
 
-const { settings } = $provider
 const { getVersion } = $provider.power
 const { getPowerPath } = $provider.paths
 const { extractSeven } = $provider.fs

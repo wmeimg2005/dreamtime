@@ -2,7 +2,7 @@
   <div class="wizard-project">
     <div class="layout__header">
       <h1 class="title">
-        <font-awesome-icon icon="magic" /> Setup Wizard
+        <font-awesome-icon icon="sync-alt" /> Updater
       </h1>
 
       <h2 class="subtitle">
@@ -24,7 +24,7 @@
       </div>
 
       <div class="project__description">
-        <p>Now you need the {{ checkpoints.title }}, the data models required by the AI to carry out the nudification process.</p>
+        <p>Now you need the {{ checkpoints.title }}, the data models required by the algorithm to carry out the nudification process.</p>
         <p>Approximately <strong>2 GB</strong> will be downloaded.</p>
         <p>If the download fails please click on the "Mirrors" button to see a list of links where you can download it manually.</p>
         <p>All downloads are saved in the <strong>Downloads</strong> folder of your operating system.</p>

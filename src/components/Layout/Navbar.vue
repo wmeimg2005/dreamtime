@@ -5,16 +5,28 @@
         Nudify
       </nuxt-link>
 
-      <nuxt-link class="navbar__item" to="/settings">
+      <nuxt-link id="settings" class="navbar__item" to="/settings">
         Settings
       </nuxt-link>
 
-      <a class="navbar__item" :href="manualURL" target="_blank">
+      <a id="guide" class="navbar__item" :href="manualURL" target="_blank">
         Help
       </a>
 
+      <nuxt-link v-if="unlockedBadTime" class="navbar__item" to="/games/badtime">
+        Bad Time
+      </nuxt-link>
+
       <a v-if="isDev" class="navbar__item" @click.prevent="createError">
-        Error
+        Force Error
+      </a>
+
+      <a v-if="isDev" href="https://google.com" class="navbar__item">
+        External Page
+      </a>
+
+      <a v-if="isDev" href="https://google.com" target="_blank" class="navbar__item">
+        Popup
       </a>
     </div>
 
@@ -35,10 +47,15 @@
 </template>
 
 <script>
-import { requirements } from '~/modules/system'
+import { requirements, settings } from '~/modules/system'
 import { nucleus } from '~/modules/services'
+import { events } from '~/modules'
 
 export default {
+  data: () => ({
+    unlockedBadTime: settings.achievements.badtime,
+  }),
+
   computed: {
     canNudify() {
       return requirements.canNudify
@@ -49,7 +66,7 @@ export default {
     },
 
     manualURL() {
-      return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
+      return nucleus.urls?.docs?.manual || 'https://time.dreamnet.tech/docs/guide/upload'
     },
 
     isDev() {
@@ -57,10 +74,15 @@ export default {
     },
   },
 
+  mounted() {
+    events.on('achievements.badtime', () => {
+      this.unlockedBadTime = true
+    })
+  },
+
   methods: {
     createError() {
-      // throw new Error('User Interface test error.')
-      throw new Warning('Warning Test')
+      throw new Error('UI TEST ERROR')
     },
   },
 }
@@ -74,7 +96,11 @@ export default {
 
   .navbar__left,
   .navbar__right {
-    @apply flex-1 flex items-center;
+    @apply flex items-center;
+  }
+
+  .navbar__left {
+    @apply flex-1 mr-2;
   }
 
   .navbar__right {

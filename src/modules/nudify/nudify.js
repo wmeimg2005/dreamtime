@@ -15,33 +15,47 @@ import {
 import { basename } from 'path'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2/dist/sweetalert2.js'
 import { events } from '../events'
 import { Photo } from './photo'
 import { File } from '../file'
+import { settings } from '../system'
+import { Consola } from '../consola'
 import { getFilesMetadata } from '~/workers/fs'
 
 const consola = Consola.create('nudify')
 
-const { settings } = $provider
-
+/**
+ * Maximum number of photos open at the same time.
+ * TODO: Measure the real impact of this value.
+ * @type {Number}
+ */
 const MAX_PHOTOS = 1000
 
+/**
+ * @type {Swal}
+ */
 const Toast = Swal.mixin({
   toast: true,
   position: 'bottom-end',
   showConfirmButton: false,
   timer: 1500,
   timerProgressBar: true,
-  target: '#layout-content',
 })
+
+/**
+ * Entry point for photo nudification.
+ * TODO: Refactor. Separate the entry points and the Queue.
+ */
 export class Nudify {
   /**
+   * Queue. Photos that are waiting transformation.
    * @type {Queue}
    */
   static queue
 
   /**
+   * All open photos.
    * @type {Array<Photo>}
    */
   static photos = []
@@ -79,15 +93,14 @@ export class Nudify {
    */
   static setup() {
     this.queue = new Queue(this._run, {
-      maxTimeout: (60 * 60 * 1000),
-      afterProcessDelay: 500,
+      maxTimeout: (3 * 60 * 60 * 1000), // 3 hours.
+      afterProcessDelay: 1000,
       batchSize: 1,
       concurrent: 1,
       store: new MemoryStore,
     })
 
     this.queue.on('task_queued', (photoId, photo) => {
-      // eslint-disable-next-line no-param-reassign
       photo.status = 'waiting'
     })
   }
@@ -125,13 +138,13 @@ export class Nudify {
   }
 
   /**
-   *
+   * Add a new file to the Queue.
    * @param {File} input
    */
   static add(file, params = {}) {
     const photo = new Photo(file, params)
 
-    const exists = find(this.photos, ['id', photo.id])
+    const exists = this.getPhoto(photo.id)
 
     if (!isNil(exists)) {
       return
@@ -139,12 +152,12 @@ export class Nudify {
 
     this.photos.unshift(photo)
 
-    consola.debug(`Photo ${photo.file.fullname} added!`)
+    consola.debug(`Photo added: ${file.fullname}`)
 
     this.emitUpdate()
 
     if (this.photos.length > MAX_PHOTOS) {
-      // release the oldest photo
+      // Delete the oldest photo.
       this.photos.pop()
     }
 
@@ -264,6 +277,7 @@ export class Nudify {
 
     // eslint-disable-next-line lodash/prefer-immutable-method
     remove(this.photos, { id: photo.id })
+    consola.debug(`Forgotten: ${photo.file.fullname}`)
 
     this.emitUpdate()
   }
@@ -317,11 +331,7 @@ export class Nudify {
         return
       }
 
-      consola.debug(`Forgetting ${photo.file.fullname}...`)
-
       this.forget(photo)
     })
   }
 }
-
-window.Nudify = Nudify // debugging

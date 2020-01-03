@@ -7,11 +7,11 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isNil, startsWith } from 'lodash'
+import { isNil, startsWith, pick } from 'lodash'
 import { remote } from 'electron'
-import { nucleus } from '../services'
+import { Consola } from '../consola'
 
-const logger = require('logplease').create('app:system:requirements')
+const consola = Consola.create('requirements')
 
 const { system, fs } = $provider
 const { is } = $provider.util
@@ -29,13 +29,13 @@ export const requirements = {
     media: false,
   },
 
-  ram: {
-    minimum: false,
-    recommended: false,
+  recommended: {
+    ram: false,
+    vram: false,
   },
 
-  vram: {
-    minimum: false,
+  get values() {
+    return pick(this, 'power', 'windows', 'recommended')
   },
 
   /**
@@ -58,11 +58,10 @@ export const requirements = {
     this.windows.media = await this._hasWindowsMedia()
 
     // ram
-    this.ram.recommended = system.memory.total >= 8589934592 // 8 GB
-    this.ram.minimum = system.memory.total >= 6442450944 // 6 GB
-    this.vram.minimum = system.graphics[0]?.vram >= 4095 // Win32_VideoController does not scan VRAM above 4GB
+    this.recommended.ram = system.memory.total >= 8589934592 // 8 GB
+    this.recommended.vram = system.graphics[0]?.vram >= 4000 // Win32_VideoController does not scan VRAM above 4GB
 
-    logger.info('Requirements:', this)
+    consola.info(this.values)
   },
 
   /**
@@ -72,6 +71,8 @@ export const requirements = {
     if (!this.power.installed) {
       return false
     }
+
+    const { nucleus } = require('../services')
 
     const compareVersions = require('compare-versions')
     let version
@@ -93,7 +94,7 @@ export const requirements = {
 
       return true
     } catch (err) {
-      logger.warn(`DreamPower version verification failed. (${version}).`, err)
+      consola.warn(`DreamPower version verification failed. (${version}).`, err)
       return false
     }
   },

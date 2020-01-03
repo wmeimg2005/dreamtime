@@ -45,32 +45,30 @@
 </template>
 
 <script>
-const { settings } = $provider
+import { cloneDeep } from 'lodash'
 
 export default {
-  middleware: ({ route, redirect }) => {
-    const { fullPath } = route
-
-    if (fullPath === `/settings`) {
-      redirect('/settings/app')
-    }
-  },
-
   data: () => ({
     settings: {},
   }),
 
   watch: {
     settings: {
-      handler: (value) => {
-        settings.set(value)
-      },
       deep: true,
+      handler(value) {
+        this.$settings.set(value)
+      },
     },
   },
 
   created() {
-    this.settings = settings.get()
+    this.settings = cloneDeep(this.$settings.payload)
+  },
+
+  middleware: ({ route, redirect }) => {
+    if (route.fullPath === `/settings`) {
+      redirect('/settings/app')
+    }
   },
 }
 </script>

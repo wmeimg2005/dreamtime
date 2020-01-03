@@ -111,7 +111,7 @@ export default {
 
     async reload() {
       await this.photo.syncEditor()
-      this.cropper.replace(this.photo.fileInput.dataURL)
+      this.cropper.replace(this.photo.fileInput.path)
     },
   },
 }

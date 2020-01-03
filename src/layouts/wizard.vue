@@ -1,7 +1,9 @@
 <template>
   <div class="layout">
-    <layout-topbar />
+    <!-- Window Buttons -->
+    <LayoutTopbar />
 
+    <!-- Content -->
     <div id="layout-content" class="layout__content">
       <nuxt />
     </div>

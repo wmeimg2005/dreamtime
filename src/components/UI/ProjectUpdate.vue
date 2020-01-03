@@ -55,25 +55,19 @@
 </template>
 
 <script>
-import { isString, toNumber } from 'lodash'
+import { toNumber } from 'lodash'
 import * as providers from '~/modules/updater'
 
 export default {
   filters: {
     progress(value) {
-      if (isString(value)) {
-        value = toNumber(value)
-      }
-
+      value = toNumber(value).toFixed(2)
       return `${value}%`
     },
 
     size(value) {
-      if (isString(value)) {
-        value = toNumber(value)
-      }
-
-      return value.toFixed(2)
+      value = toNumber(value).toFixed(2)
+      return value
     },
 
     domain(value) {
@@ -136,7 +130,7 @@ export default {
     border-radius: 9px;
 
     &::-webkit-progress-bar {
-      @apply bg-dark-800;
+      @apply bg-dark-500;
       border-radius: 9px;
     }
 

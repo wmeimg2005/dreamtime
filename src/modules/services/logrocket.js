@@ -11,11 +11,10 @@ import { isString, endsWith } from 'lodash'
 import LogRocket from 'logrocket'
 import { BaseService } from './base'
 import { nucleus } from './nucleus'
+import { settings } from '../system/settings'
+import { Consola } from '../consola'
 
-const { settings, system } = $provider
-const { telemetry } = settings
-
-const logger = require('logplease').create('services:logrocket')
+const consola = Consola.create('logrocket')
 
 const privateExtensions = ['.jpg', '.jpeg', '.png', '.gif']
 
@@ -35,7 +34,7 @@ class LogRocketService extends BaseService {
    * @type {boolean}
    */
   get can() {
-    return isString(this.accessToken) && process.env.name === 'production'
+    return isString(this.accessToken) && settings.telemetry.dom && process.env.name === 'production'
   }
 
   /**
@@ -54,22 +53,20 @@ class LogRocketService extends BaseService {
       shouldCaptureIP: false,
       network: {
         requestSanitizer(request) {
-          if (!telemetry.domPrivate) {
-            // the user does not want to send private dom.
-            privateExtensions.forEach((extension) => {
-              if (endsWith(request.url.toLowerCase(), extension)) {
-                // scrub web address photo.
-                request.url = '[private-photo]'
-              }
-            })
-          }
+          // the user does not want to send private dom.
+          privateExtensions.forEach((extension) => {
+            if (endsWith(request.url.toLowerCase(), extension)) {
+              // scrub web address photo.
+              request.url = '[private-photo]'
+            }
+          })
         },
         responseSanitizer(request) {
+          // eslint-disable-next-line no-console
           console.log(request)
         },
       },
       dom: {
-        isEnabled: telemetry.dom,
         baseHref: $provider.ngrok.getAddress() || nucleus.urls?.internal?.cdn || null,
       },
     }
@@ -82,17 +79,18 @@ class LogRocketService extends BaseService {
 
     try {
       LogRocket.init(this.accessToken, this.config)
-      LogRocket.identify(settings.user || 'unknown', {
+
+      LogRocket.identify(settings.payload.user, {
         settings: settings.payload,
       })
 
       this.service = LogRocket
       this.enabled = true
 
-      logger.info('LogRocket enabled!')
-      logger.debug(this.accessToken)
+      consola.info('LogRocket enabled!')
+      consola.debug(`Access Token: ${this.accessToken}`)
     } catch (err) {
-      logger.warn('LogRocket setup failed!', err)
+      consola.warn('LogRocket setup failed!', err)
     }
   }
 }

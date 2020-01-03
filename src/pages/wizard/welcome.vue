@@ -39,8 +39,6 @@ export default {
   methods: {
     next() {
       this.$settings.wizard.welcome = true
-      this.$settings.save()
-
       this.$router.push('/wizard/tos')
     },
   },

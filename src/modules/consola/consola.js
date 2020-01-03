@@ -7,12 +7,8 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import {
-  isError, isString, isNil, isPlainObject,
-} from 'lodash'
-import Logger from 'logplease'
+import Logger from '@dreamnet/logplease'
 import { Log } from './log'
-import { nucleus, logrocket } from '../services'
 
 export class Consola {
   /**
@@ -35,44 +31,6 @@ export class Consola {
 
   /**
    *
-   * @param  {Array} args
-   */
-  static parseArgs(args) {
-    let title
-    let message
-    let error
-    let options = {}
-
-    args.forEach((value) => {
-      if (isError(value)) {
-        error = value
-      } else if (isPlainObject(value)) {
-        options = value
-      } else if (isString(value) && isNil(message)) {
-        message = value
-      } else if (isString(value) && isNil(title)) {
-        title = message
-        message = value
-      }
-    })
-
-    if (isNil(message) && isError(error)) {
-      message = error
-      error = null
-    }
-
-    return {
-      message,
-      options: {
-        title,
-        error,
-        ...options,
-      },
-    }
-  }
-
-  /**
-   *
    * @param {string} [category]
    */
   constructor(category = 'dreamtime') {
@@ -87,20 +45,10 @@ export class Consola {
    * @param {LogOptions} options
    */
   log(level, ...args) {
-    const { message, options } = Consola.parseArgs(args)
+    args.push(this.logger)
+    args.push(level)
 
-    // eslint-disable-next-line no-console
-    console.log('Logging', {
-      args,
-      level,
-      message,
-      options,
-    })
-
-    const log = new Log(this.logger, level, message, { ...this.defaultOptions, ...options })
-    this.defaultOptions = {}
-
-    return log
+    return new Log(...args)
   }
 
   /**
@@ -145,6 +93,8 @@ export class Consola {
    * @param {Object} payload
    */
   track(event, payload = {}) {
+    const { nucleus, logrocket } = require('../services')
+
     const category = this.category.toUpperCase()
 
     if (nucleus.enabled) {
@@ -158,14 +108,3 @@ export class Consola {
     return this
   }
 }
-
-/**
- * Default consola
- */
-export const consola = (new Consola)
-
-/**
- * Global
- */
-window.consola = consola
-window.Consola = Consola

@@ -26,9 +26,6 @@
 /* eslint import/namespace: ['error', { allowComputed: true }] */
 import * as providers from '~/modules/updater'
 
-const { shell } = $provider.api
-const { getPath } = $provider.paths
-
 export default {
   props: {
     project: {
@@ -63,7 +60,6 @@ export default {
 
   methods: {
     next() {
-      console.log(this.href)
       this.$router.push(this.href)
     },
   },

@@ -155,7 +155,7 @@ export default {
         @apply flex-1 flex flex-col justify-center;
 
         .item__label {
-          @apply block font-semibold;
+          @apply block font-semibold text-generic-400;
         }
 
         .item__description {

@@ -1,13 +1,15 @@
 <template>
   <div class="layout">
-    <layout-topbar />
+    <!-- Window Buttons -->
+    <LayoutTopbar />
 
-    <layout-navbar />
+    <!-- Navigation -->
+    <LayoutNavbar />
 
-    <layout-navigation v-if="false" />
+    <!-- Queue -->
+    <LayoutQueuebar />
 
-    <layout-jobbar />
-
+    <!-- Content -->
     <div id="layout-content" class="layout__content">
       <nuxt />
     </div>

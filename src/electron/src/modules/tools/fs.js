@@ -7,7 +7,7 @@ import deferred from 'deferred'
 import { getAppResourcesPath } from './paths'
 import { AppError } from '../app-error'
 
-const logger = require('logplease').create('electron:modules:tools:fs')
+const logger = require('@dreamnet/logplease').create('electron:modules:tools:fs')
 
 // eslint-disable-next-line node/no-deprecated-api
 export * from 'fs-extra'

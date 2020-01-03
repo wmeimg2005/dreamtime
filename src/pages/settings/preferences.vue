@@ -1,8 +1,8 @@
 <template>
   <div class="settings-fields">
-    <p class="notification">
-      Preferences are applied as default and can be customized in each photo.
-    </p>
+    <h1 class="title">
+      Default preferences
+    </h1>
 
     <settings-preferences v-model="currentValue.preferences" />
   </div>
@@ -17,4 +17,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.title {
+  @apply text-white text-lg font-bold mb-4 mt-0;
+}
 </style>

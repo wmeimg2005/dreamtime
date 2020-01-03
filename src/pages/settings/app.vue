@@ -3,6 +3,22 @@
     <section class="box box--items">
       <div class="box__content">
         <box-item
+          label="Upload mode."
+          description="What will happen when uploading a photo.">
+          <select v-model="currentValue.app.uploadMode" class="input">
+            <option value="none">
+              Put in Pending
+            </option>
+            <option value="add-queue">
+              Put in Queue
+            </option>
+            <option value="go-preferences">
+              Put in Pending and open preferences
+            </option>
+          </select>
+        </box-item>
+
+        <box-item
           label="Hardware Acceleration"
           description="It can improve performance on some systems. (Requires restart to take effect)">
           <select v-model="currentValue.app.disableHardwareAcceleration" class="input">
@@ -11,22 +27,6 @@
             </option>
             <option :value="true">
               Disabled
-            </option>
-          </select>
-        </box-item>
-
-        <box-item
-          label="Upload mode."
-          description="What will happen when uploading a photo.">
-          <select v-model="currentValue.app.uploadMode" class="input">
-            <option value="none">
-              Stay
-            </option>
-            <option value="add-queue">
-              Start transformation
-            </option>
-            <option value="go-preferences">
-              Change preferences
             </option>
           </select>
         </box-item>

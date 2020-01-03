@@ -13,7 +13,7 @@ import {
 import si from 'systeminformation'
 import isOnline from 'is-online'
 
-const logger = require('logplease').create('system')
+const logger = require('@dreamnet/logplease').create('system')
 
 class System {
   /**

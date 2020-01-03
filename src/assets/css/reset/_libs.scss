@@ -23,9 +23,14 @@
 
 .swal2-html-container {
   pre {
-    @apply text-xs overflow-auto bg-gray-300 p-2;
+    @apply text-xs overflow-auto bg-black p-2;
     max-height: 100px;
   }
+}
+
+.swal2-container.swal2-backdrop-show {
+  backdrop-filter: blur(6px);
+  transition: all 0.1s;
 }
 
 .swal2-footer {
@@ -34,10 +39,32 @@
   }
 }
 
+.swal2-popup {
+  @apply bg-dark-600 border border-dark-100 border-solid shadow-lg;
+}
+
 .vue-slider {
   @apply w-full #{!important};
 }
 
 .vue-slider-process {
   @apply bg-primary-500 #{!important};
+}
+
+.introjs-tooltip {
+  @apply bg-dark-500-90 #{!important};
+  min-width: 350px !important;
+  max-width: 400px !important;
+}
+
+.introjs-arrow {
+  //@apply bg-dark-500-90 #{!important};
+}
+
+.introjs-helperLayer {
+  background-color: transparent !important;
+}
+
+.introjs-overlay {
+  backdrop-filter: blur(10px);
 }

@@ -12,7 +12,7 @@ import {
 } from 'lodash'
 import { existsSync, readJsonSync, writeJsonSync } from 'fs-extra'
 
-const logger = require('logplease').create('services')
+const logger = require('@dreamnet/logplease').create('services')
 
 export function makeServiceProxy(obj) {
   return new Proxy(obj, {

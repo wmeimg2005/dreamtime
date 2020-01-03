@@ -14,7 +14,7 @@ import {
 import { AppError } from './app-error'
 import { paths, system } from './tools'
 
-const logger = require('logplease').create('settings')
+const logger = require('@dreamnet/logplease').create('settings')
 
 /**
  * User settings.
@@ -43,7 +43,7 @@ class Settings {
   }
 
   /**
-   * Load the service file.
+   * Load the settings.
    */
   async load() {
     if (isNil(this.path)) {
@@ -54,13 +54,14 @@ class Settings {
       this.payload = fs.readJsonSync(this.path)
       logger.debug('Settings:', this.payload)
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error)
     }
   }
 
   /**
-   * Save the service file.
-   * This function is called automatically if you set a first level variable.
+   * Save the settings file.
+   * This function is called automatically.
    */
   async save() {
     fs.writeJsonSync(this.path, this.payload, { spaces: 2 })
@@ -88,8 +89,6 @@ class Settings {
     } else {
       this.payload = set(this.payload, path, payload)
     }
-
-    this.save()
   }
 
   /**
@@ -127,8 +126,12 @@ class Settings {
         telemetry: false,
       },
 
+      achievements: {
+        badtime: false,
+      },
+
       app: {
-        disableHardwareAcceleration: true,
+        disableHardwareAcceleration: false,
         uploadMode: 'none',
       },
 
@@ -347,6 +350,10 @@ class Settings {
         dom: true,
       }
 
+      this.payload.achievements = {
+        badtime: false,
+      }
+
       const { body } = this.payload.preferences
 
       body.boobs.randomize = {
@@ -384,7 +391,7 @@ class Settings {
   }
 }
 
-export const settingsRaw = new Settings
+export const theSettings = new Settings
 
 const saveHandler = {
   get(target, property, receiver) {
@@ -394,13 +401,19 @@ const saveHandler = {
       return Reflect.get(target, property, receiver)
     }
   },
+  set(target, property, value, receiver) {
+    const response = Reflect.set(target, property, value, receiver)
+    theSettings.save()
+    return response
+  },
   defineProperty(target, property, descriptor) {
-    settingsRaw.save()
-    return Reflect.defineProperty(target, property, descriptor)
+    const response = Reflect.defineProperty(target, property, descriptor)
+    theSettings.save()
+    return response
   },
 }
 
-const settingsHandler = {
+const handler = {
   get(target, property, receiver) {
     try {
       if (property in target) {
@@ -413,51 +426,12 @@ const settingsHandler = {
       // eslint-disable-next-line no-empty
     } catch (err) { }
 
+    if (property in target.payload) {
+      return target.payload[property]
+    }
+
     return Reflect.get(target, property, receiver)
   },
 }
 
-/**
- * Create a new instance with a Proxy.
- *
- * @return {Proxy}
- */
-export function make(obj) {
-  return new Proxy(obj, settingsHandler)
-  /*
-  return new Proxy(obj, {
-    get: (obj, prop) => {
-      if (prop in obj) {
-        return obj[prop]
-      }
-
-      if (prop in obj.payload) {
-        return obj.payload[prop]
-      }
-
-      return undefined
-    },
-
-    set: (obj, prop, value) => {
-      console.log({
-        prop,
-        value,
-      })
-
-      if (!isNil(obj.payload)) {
-        if (prop in obj.payload) {
-          obj.payload[prop] = value
-          obj.save()
-
-          return true
-        }
-      }
-
-      obj[prop] = value
-      return true
-    },
-  })
-  */
-}
-
-export const settings = make(settingsRaw)
+export const settings = new Proxy(theSettings, handler)

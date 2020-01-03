@@ -7,41 +7,20 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import Logger from 'logplease'
+import Vue from 'vue'
 import { dreamtime, dreampower, checkpoints } from '~/modules/updater'
 import { nucleus, logrocket, rollbar } from '~/modules/services'
-import {
-  requirements, consola, HandledError, LogError,
-} from '~/modules/system'
-
-const { getPath } = $provider.paths
-
-// logger setup
-Logger.setOptions({
-  filename: getPath('userData', 'dreamtime.renderer.log'),
-  logLevel: process.env.LOG || 'debug',
-})
+import { requirements } from '~/modules/system'
+import { handleError } from '~/modules/consola'
 
 // eslint-disable-next-line no-unused-vars
 export default async ({ app }, inject) => {
   // catch errors.
-  window.addEventListener('error', (err) => {
-    if (err instanceof HandledError || err instanceof LogError) {
-      return true
-    }
+  window.addEventListener('error', (event) => handleError(event))
 
-    consola.error(err)
-    return true
-  })
+  window.addEventListener('unhandledrejection', (rejection) => handleError(rejection.reason))
 
-  window.addEventListener('unhandledrejection', (rejection) => {
-    if (rejection.reason instanceof HandledError || rejection.reason instanceof LogError) {
-      return true
-    }
-
-    consola.error(rejection.reason)
-    return true
-  })
+  Vue.config.errorHandler = (err) => handleError(err)
 
   // analytics.
   await nucleus.setup()
@@ -64,6 +43,5 @@ export default async ({ app }, inject) => {
 
   // shortcuts.
   inject('provider', $provider)
-  inject('settings', $provider.settings)
   inject('nucleus', nucleus)
 }

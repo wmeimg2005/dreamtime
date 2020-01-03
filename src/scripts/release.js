@@ -105,6 +105,7 @@ async function uploadToGithub(filePath, fileName) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 async function uploadToAnonFile(filepath, filename) {
   try {
     console.log(`Uploading ${fileName} to anonfile.com...`)

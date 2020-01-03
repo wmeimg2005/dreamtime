@@ -2,7 +2,7 @@
   <div class="wizard-project">
     <div class="layout__header">
       <h1 class="title">
-        <font-awesome-icon icon="magic" /> Setup Wizard
+        <font-awesome-icon icon="sync-alt" /> Updater
       </h1>
 
       <h2 class="subtitle">
@@ -28,7 +28,7 @@
       </div>
 
       <div class="project__description">
-        <p>To make your dreams come true it is necessary to download and install {{ power.title }}, the algorithm/AI that will handle the entire nudification process.</p>
+        <p>To make your dreams come true it is necessary to install {{ power.title }}, the algorithm that will handle the entire nudification process.</p>
         <p>Approximately <strong>1 GB</strong> will be downloaded. (Depending on your system)</p>
         <p>If the download fails please click on the "Mirrors" button to see a list of links where you can download it manually.</p>
         <p>All downloads are saved in the <strong>Downloads</strong> folder of your operating system.</p>
@@ -57,7 +57,7 @@
                   CPU
                 </option>
                 <option value="GPU">
-                  GPU
+                  NVIDIA GPU
                 </option>
               </select>
             </box-item>
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { isNil } from 'lodash'
+import { isNil, cloneDeep } from 'lodash'
 import { nucleus } from '~/modules/services'
 import { requirements } from '~/modules/system'
 import { dreampower } from '~/modules/updater'
@@ -104,6 +104,10 @@ export default {
       redirect('/wizard/checkpoints')
     }
   },
+
+  data: () => ({
+    settings: {},
+  }),
 
   computed: {
     power() {
@@ -126,6 +130,20 @@ export default {
         ],
       }
     },
+  },
+
+  watch: {
+    settings: {
+      deep: true,
+      handler(value) {
+        this.$settings.set(value)
+        dreampower.refresh()
+      },
+    },
+  },
+
+  created() {
+    this.settings = cloneDeep(this.$settings.payload)
   },
 
   methods: {
@@ -154,61 +172,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.wizard-project {
-  .project__content {
-    @apply flex mb-6 pb-6 border-b border-dark-500;
-
-    .project__overview {
-      @apply flex-1 flex flex-col justify-center items-center;
-
-      figure {
-        @apply mb-6 text-6xl;
-
-        img {
-          height: 100px;
-        }
-      }
-
-      h1 {
-        @apply text-2xl text-white font-bold;
-      }
-
-      h2 {
-        @apply text-lg;
-      }
-
-      .project__navigation {
-        @apply mt-6;
-
-        .button {
-          &:not(:last-child) {
-            @apply mr-2;
-          }
-        }
-      }
-    }
-
-    .project__description {
-      @apply flex-1 flex flex-col justify-center;
-
-      p {
-        @apply text-xl mb-6;
-      }
-    }
-  }
-
-  .project__installation {
-    @apply flex;
-
-    .project__update {
-      @apply flex-1;
-    }
-
-    .project__settings {
-      @apply flex-1;
-    }
-  }
-}
-</style>

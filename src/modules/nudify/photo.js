@@ -12,15 +12,14 @@ import {
 } from 'lodash'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
-import Logger from 'logplease'
 import EventBus from 'js-event-bus'
-import { Consola } from '../system'
+import { settings } from '../system'
+import { Consola, handleError } from '../consola'
 import { Nudify } from './nudify'
 import { PhotoRun } from './photo-run'
 import { File } from '../file'
 import { Timer } from '../timer'
 
-const { settings } = $provider
 const { activeWindow } = $provider.util
 const { getModelsPath, getCropPath } = $provider.paths
 
@@ -110,11 +109,6 @@ export class Photo {
   }
 
   /**
-   * @type {Logger.Logger}
-   */
-  _logger
-
-  /**
    * @type {Consola}
    */
   consola
@@ -199,16 +193,15 @@ export class Photo {
    * @param {File} file
    * @param {*} [model]
    */
+  // eslint-disable-next-line no-unused-vars
   constructor(file, { isMaskfin = false, model = null } = {}) {
     this.id = file.md5
 
     this.file = file
 
-    this.fileEditor = new File(getCropPath(`${this.id}-editor${file.extension}`), 'editor')
+    this.fileEditor = new File(getCropPath(`${this.id}-editor${file.extension}`), true)
 
-    this.fileCrop = new File(getCropPath(`${this.id}-crop${file.extension}`), 'crop')
-
-    this._logger = Logger.create(file.fullname)
+    this.fileCrop = new File(getCropPath(`${this.id}-crop${file.extension}`), true)
 
     this.consola = Consola.create(file.fullname)
 
@@ -231,7 +224,7 @@ export class Photo {
     })
 
     await this.fileEditor.writeDataURL(dataURL)
-    this._logger.debug(`Saved editor photo.`)
+    this.consola.debug(`Saved editor changes.`)
   }
 
   async syncCrop() {
@@ -252,9 +245,9 @@ export class Photo {
     })
 
     const dataURL = canvas.toDataURL(this.fileCrop.mimetype, 1)
-
     await this.fileCrop.writeDataURL(dataURL)
-    this._logger.debug(`Saved crop photo.`)
+
+    this.consola.debug(`Saved crop changes.`)
   }
 
   getFolderPath(...args) {
@@ -262,7 +255,7 @@ export class Photo {
   }
 
   _setupPreferences(isMaskfin) {
-    this.preferences = cloneDeep(settings.preferences)
+    this.preferences = cloneDeep(settings.payload.preferences)
     let forcedPreferences = {}
 
     if (isMaskfin) {
@@ -319,33 +312,28 @@ export class Photo {
     })
 
     this.queue.on('drain', () => {
-      this._logger.debug('All runs finished.')
+      this.consola.debug('All runs finished.')
       this._onFinish()
     })
 
     this.queue.on('task_started', (runId, run) => {
-      this._logger.debug(`Run #${runId} started!`)
+      this.consola.debug(`Run #${runId} started!`)
       run.onStart()
     })
 
     this.queue.on('task_finish', (runId) => {
       const run = this.getRunById(runId)
 
-      this._logger.debug(`Run #${runId} finished!`)
+      this.consola.debug(`Run #${runId} finished!`)
       run.onFinish()
     })
 
     this.queue.on('task_failed', (runId, error) => {
       const run = this.getRunById(runId)
 
-      this._logger.warn(`Run #${runId} failed!`, error)
       run.onFail()
 
-      /*
-      if (error !== 'cancelled') {
-        AppError.handle(error)
-      }
-      */
+      handleError(error)
     })
   }
 
@@ -381,7 +369,7 @@ export class Photo {
 
     this.reset()
 
-    this._logger.debug(`Starting ${executions} runs.`)
+    this.consola.debug(`Starting ${executions} runs.`)
 
     this._onStart()
 

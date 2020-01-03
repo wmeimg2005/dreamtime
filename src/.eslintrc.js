@@ -18,11 +18,10 @@ module.exports = {
   globals: {
     $provider: false,
     AppError: false,
-    LogError: false,
+    LogEvent: false,
     Warning: false,
     Exception: false,
-    consola: false,
-    Consola: false,
+    consola: false
   },
   parserOptions: {
     parser: "babel-eslint",
@@ -43,7 +42,7 @@ module.exports = {
     "comma-dangle": "warn",
     "global-require": "off",
     "import/default": "warn",
-    "import/no-webpack-loader-syntax": "warn",
+    "import/no-webpack-loader-syntax": "off",
     "import/order": ['error'],
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
@@ -72,7 +71,6 @@ module.exports = {
     "no-continue": "off",
     "no-debugger": "error",
     "no-lone-blocks": "error",
-    "no-param-reassign": "off",
     "no-restricted-globals": "warn",
     "no-restricted-syntax": "off",
     "no-shadow": "off",
