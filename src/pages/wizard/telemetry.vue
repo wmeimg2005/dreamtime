@@ -127,7 +127,7 @@
               <box-item
                 label="Session tracking."
                 description="Allow to send detailed information about how you use the application.">
-                <select v-model="$settings.telemetry.bugs" class="input">
+                <select v-model="$settings.telemetry.dom" class="input">
                   <option :value="true">
                     Enabled
                   </option>
