@@ -25,6 +25,7 @@
 
 <script>
 import { isNil, startsWith } from 'lodash'
+import { nucleus } from '~/modules/services'
 import { dream } from '~/modules'
 
 const { shell } = $provider.api
@@ -35,22 +36,27 @@ export default {
       type: [String, Array],
       default: undefined,
     },
+
     label: {
       type: String,
       required: true,
     },
+
     description: {
       type: String,
       default: undefined,
     },
+
     version: {
       type: String,
       default: undefined,
     },
+
     href: {
       type: String,
       default: undefined,
     },
+
     isLink: {
       type: Boolean,
       default: false,
@@ -68,7 +74,7 @@ export default {
 
     cssClass() {
       return {
-        'is-link': !isNil(this.href) || this.isLink,
+        'box__item--link': !isNil(this.href) || this.isLink,
       }
     },
   },
@@ -81,7 +87,7 @@ export default {
         if (startsWith(this.href, '/')) {
           this.$router.push(this.href)
         } else {
-          $provider.services.nucleus.track('EXTERNAL_LINK', { href: this.href })
+          nucleus.track('EXTERNAL_LINK', { href: this.href })
           shell.openExternal(this.href)
         }
       }
@@ -124,16 +130,12 @@ export default {
       @apply pl-8;
     }
 
-    &:hover {
-      @apply bg-dark-400 text-white;
-    }
-
-    &.is-link {
+    &.box__item--link {
       @apply cursor-pointer;
       transition: all .1s ease-in-out;
 
       &:hover {
-        @apply bg-dark-600;
+        @apply bg-dark-600 text-white;
       }
     }
 
@@ -153,7 +155,7 @@ export default {
         @apply flex-1 flex flex-col justify-center;
 
         .item__label {
-          @apply block font-semibold;
+          @apply block font-semibold text-generic-400;
         }
 
         .item__description {
@@ -162,7 +164,7 @@ export default {
       }
 
       .item__action {
-        @apply w-1/3 ml-4 flex flex-col justify-center;
+        @apply w-1/3 ml-4 flex items-center justify-center;
       }
     }
   }

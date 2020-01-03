@@ -25,49 +25,56 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          'Catamaran',
+          'Roboto',
           '-apple-system',
           'BlinkMacSystemFont',
           'system-ui',
-          'Helvetica Neue',
           'Arial',
           'sans-serif',
+        ],
+        serif: [
+          'Roboto Slab',
+          'Georgia',
+          'Cambria',
+          '"Times New Roman"',
+          'Times',
+          'serif',
         ],
       },
 
       // https://javisperez.github.io/tailwindcolorshades/
       colors: {
         generic: {
-          100: '#F7F7F8',
-          200: '#ECECEE',
-          300: '#E0E0E3',
-          400: '#C8C8CE',
-          500: '#B1B1B9',
-          600: '#9F9FA7',
-          700: '#6A6A6F',
-          800: '#505053',
-          900: '#353538',
+          100: '#fcfcfc',
+          200: '#efeff0',
+          300: '#e2e2e5',
+          400: '#d5d5d9',
+          500: '#C8C8CE',
+          600: '#bbbbc3',
+          700: '#aeaeb7',
+          800: '#a1a1ac',
+          900: '#9494a0',
         },
 
+        dark: {
+          100: '#232a32',
+          200: '#20262d',
+          300: '#1d2228',
+          400: '#191e24',
+          500: '#161a1f',
+          600: '#13161a',
+          700: '#0f1216',
+          800: '#0c0e11',
+          900: '#090a0c',
+        },
+
+        /*
         dark: {
           100: '#21262d',
           200: '#1e2329',
           300: '#1b2026',
           400: '#191d22',
           500: '#161a1f',
-          600: '#12161b',
-          700: '#0d1017',
-          800: '#070912',
-          900: '#00010c',
-        },
-
-        /*
-        dark: {
-          100: '#E8E8E9',
-          200: '#C5C6C7',
-          300: '#A2A3A5',
-          400: '#5C5F62',
-          500: '#161A1F',
           600: '#14171C',
           700: '#0D1013',
           800: '#0A0C0E',
@@ -176,6 +183,13 @@ module.exports = {
           800: '#603408',
           900: '#402305',
         },
+      },
+
+      boxShadow: {
+        'inner-md': 'inset 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'inner-lg': 'inset 0 10px 15px -3px rgba(0, 0, 0, 0.1), inset 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        'inner-xl': 'inset 0 20px 25px -5px rgba(0, 0, 0, 0.1), inset 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        'inner-2xl': 'inset 0 25px 50px -12px rgba(0, 0, 0, 0.25)',
       },
     },
   },

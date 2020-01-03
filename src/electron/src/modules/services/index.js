@@ -7,7 +7,10 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
+/*
 export { makeServiceProxy } from './base'
 export { settings } from './settings'
 export { nucleus } from './nucleus'
 export { rollbar } from './rollbar'
+export { logrocket } from './logrocket'
+*/

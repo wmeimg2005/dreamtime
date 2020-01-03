@@ -12,16 +12,16 @@ import {
 } from 'lodash'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
-import Logger from 'logplease'
 import EventBus from 'js-event-bus'
+import { settings } from '../system'
+import { Consola, handleError } from '../consola'
 import { Nudify } from './nudify'
 import { PhotoRun } from './photo-run'
 import { File } from '../file'
 import { Timer } from '../timer'
 
-const { settings } = $provider.services
 const { activeWindow } = $provider.util
-const { getModelsPath, getCropPath } = $provider.tools.paths
+const { getModelsPath, getCropPath } = $provider.paths
 
 export class Photo {
   /**
@@ -47,7 +47,7 @@ export class Photo {
   /**
    * @type {EventBus}
    */
-  events = new EventBus()
+  events = new EventBus
 
   /**
    * @type {string}
@@ -86,7 +86,7 @@ export class Photo {
   /**
    * @type {Timer}
    */
-  timer = new Timer()
+  timer = new Timer
 
   /**
    * @type {require('cropperjs').default}
@@ -109,9 +109,9 @@ export class Photo {
   }
 
   /**
-   * @type {Logger.Logger}
+   * @type {Consola}
    */
-  _logger
+  consola
 
   get folderName() {
     // todo: implement models
@@ -193,16 +193,17 @@ export class Photo {
    * @param {File} file
    * @param {*} [model]
    */
+  // eslint-disable-next-line no-unused-vars
   constructor(file, { isMaskfin = false, model = null } = {}) {
     this.id = file.md5
 
     this.file = file
 
-    this.fileEditor = new File(getCropPath(`${this.id}-editor${file.extension}`), 'editor')
+    this.fileEditor = new File(getCropPath(`${this.id}-editor${file.extension}`), true)
 
-    this.fileCrop = new File(getCropPath(`${this.id}-crop${file.extension}`), 'crop')
+    this.fileCrop = new File(getCropPath(`${this.id}-crop${file.extension}`), true)
 
-    this._logger = Logger.create(`nudify:photo:${file.fullname}`)
+    this.consola = Consola.create(file.fullname)
 
     this._setupPreferences(isMaskfin)
 
@@ -223,7 +224,7 @@ export class Photo {
     })
 
     await this.fileEditor.writeDataURL(dataURL)
-    this._logger.debug(`Saved editor photo.`)
+    this.consola.debug(`Saved editor changes.`)
   }
 
   async syncCrop() {
@@ -244,9 +245,9 @@ export class Photo {
     })
 
     const dataURL = canvas.toDataURL(this.fileCrop.mimetype, 1)
-
     await this.fileCrop.writeDataURL(dataURL)
-    this._logger.debug(`Saved crop photo.`)
+
+    this.consola.debug(`Saved crop changes.`)
   }
 
   getFolderPath(...args) {
@@ -254,7 +255,7 @@ export class Photo {
   }
 
   _setupPreferences(isMaskfin) {
-    this.preferences = cloneDeep(settings.preferences)
+    this.preferences = cloneDeep(settings.payload.preferences)
     let forcedPreferences = {}
 
     if (isMaskfin) {
@@ -287,16 +288,16 @@ export class Photo {
     const { exists, mimetype, path } = this.file
 
     if (!exists) {
-      throw new AppError(`The file "${path}" does not exists.`, { title: 'Upload failed.', level: 'warn' })
+      throw new Warning('Upload failed.', `The file "${path}" does not exists.`)
     }
 
     if (mimetype !== 'image/jpeg' && mimetype !== 'image/png' && mimetype !== 'image/gif') {
-      throw new AppError(`The file "${path}" is not a valid photo. Only jpeg, png or gif.`, { title: 'Upload failed.', level: 'warn' })
+      throw new Warning('Upload failed.', `The file "${path}" is not a valid photo. Only jpeg, png or gif.`)
     }
   }
 
   _setupQueue() {
-    let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (10 * 60 * 1000)
+    let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (20 * 60 * 1000)
 
     if (this.file.mimetype === 'image/gif') {
       maxTimeout += (30 * 60 * 1000)
@@ -304,40 +305,35 @@ export class Photo {
 
     this.queue = new Queue(this._run, {
       maxTimeout,
-      // maxRetries: 2,
-      // retryDelay: 1000,
       afterProcessDelay: 500,
       batchSize: 1,
       concurrent: 1,
-      store: new MemoryStore(),
+      store: new MemoryStore,
     })
 
     this.queue.on('drain', () => {
-      this._logger.debug('All runs finished.')
+      this.consola.debug('All runs finished.')
       this._onFinish()
     })
 
     this.queue.on('task_started', (runId, run) => {
-      this._logger.debug(`Run #${runId} started!`)
+      this.consola.debug(`Run #${runId} started!`)
       run.onStart()
     })
 
     this.queue.on('task_finish', (runId) => {
       const run = this.getRunById(runId)
 
-      this._logger.debug(`Run #${runId} finished!`)
+      this.consola.debug(`Run #${runId} finished!`)
       run.onFinish()
     })
 
     this.queue.on('task_failed', (runId, error) => {
       const run = this.getRunById(runId)
 
-      this._logger.warn(`Run #${runId} failed!`, error)
       run.onFail()
 
-      if (error !== 'cancelled') {
-        AppError.handle(error)
-      }
+      handleError(error)
     })
   }
 
@@ -356,7 +352,7 @@ export class Photo {
   reset() {
     this.status = 'pending'
 
-    this.timer = new Timer()
+    this.timer = new Timer
 
     this.runs = []
   }
@@ -373,7 +369,7 @@ export class Photo {
 
     this.reset()
 
-    this._logger.debug(`Starting ${executions} runs.`)
+    this.consola.debug(`Starting ${executions} runs.`)
 
     this._onStart()
 

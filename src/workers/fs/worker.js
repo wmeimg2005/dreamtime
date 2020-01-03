@@ -11,7 +11,7 @@ import registerPromiseWorker from 'promise-worker/register'
 import { map, flattenDeep } from 'lodash'
 import { join, parse } from 'path'
 import {
-  existsSync, statSync, stat, readFile, readdir,
+  existsSync, statSync, stat, readdir,
 } from 'fs-extra'
 import mime from 'mime-types'
 import md5File from 'md5-file/promise'
@@ -23,20 +23,18 @@ import md5File from 'md5-file/promise'
 async function getMetadata(filepath) {
   const exists = existsSync(filepath)
 
-  const promises = [
+  const workload = [
     new Promise((resolve) => { resolve(mime.lookup(filepath)) }),
     new Promise((resolve) => { resolve(parse(filepath)) }),
   ]
 
   if (exists) {
-    promises.push(
+    workload.push(
       stat(filepath),
       md5File(filepath),
-      readFile(filepath, 'base64'),
     )
   } else {
-    promises.push(
-      Promise.resolve(),
+    workload.push(
       Promise.resolve(),
       Promise.resolve(),
     )
@@ -47,8 +45,7 @@ async function getMetadata(filepath) {
     { name, ext, dir },
     stats,
     md5,
-    base64,
-  ] = await Promise.all(promises)
+  ] = await Promise.all(workload)
 
   return {
     exists,
@@ -56,9 +53,8 @@ async function getMetadata(filepath) {
     ext,
     dir,
     mimetype,
-    size: ((stats ?.size || 0) / 1000000.0),
+    size: ((stats?.size || 0) / 1000000.0),
     md5,
-    dataURL: exists ? `data:${mimetype};base64,${base64}` : null,
   }
 }
 

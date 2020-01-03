@@ -1,5 +1,70 @@
 /* eslint-disable no-template-curly-in-string */
+
 const pkg = require('./package.json')
+
+const windows = {
+  win: {
+    target: 'nsis',
+    extraResources: [
+      {
+        from: 'node_modules/regedit/vbs',
+        to: 'vbs',
+      },
+      {
+        from: 'node_modules/7zip-bin/win/x64',
+        to: '7zip-bin',
+      },
+    ],
+  },
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowToChangeInstallationDirectory: true,
+    uninstallDisplayName: '${productName}',
+    deleteAppDataOnUninstall: true,
+    displayLanguageSelector: true,
+    menuCategory: true,
+    artifactName: '${productName}-v${version}-windows.${ext}',
+  },
+}
+
+const linux = {
+  linux: {
+    target: 'snap',
+    executableName: process.env.npm_package_name,
+    synopsis: pkg.description,
+    category: 'Graphics',
+    extraResources: [
+      {
+        from: 'node_modules/7zip-bin/linux/x64',
+        to: '7zip-bin',
+      },
+    ],
+  },
+  snap: {
+    artifactName: '${productName}-v${version}-ubuntu.${ext}',
+  },
+}
+
+const macos = {
+  mac: {
+    target: 'dmg',
+    darkModeSupport: true,
+    category: 'public.app-category.graphics-design',
+    minimumSystemVersion: '10.15.0',
+    extraResources: [
+      {
+        from: 'node_modules/7zip-bin/mac',
+        to: '7zip-bin',
+      },
+    ],
+  },
+  dmg: {
+    title: '${productName}',
+    artifactName: '${productName}-v${version}-macos.${ext}',
+    backgroundColor: '#000',
+  },
+}
 
 module.exports = {
   appId: 'com.dreamnet.dreamtime',
@@ -23,7 +88,7 @@ module.exports = {
     '!**/{jsconfig.json,electron-builder.js,.eslintrc.js,.env-cmdrc.js,.codeclimate.yml,.babelrc,tailwind.config.js,nucleus.json}',
     '!{components,cli,layouts,middleware,mixins,pages,patches,plugins,scripts,store,third,coverage,.nuxt,test,workers}',
     '!{static,assets}',
-    '!**/electron/src',
+    '!electron/src',
   ],
   extraFiles: [
     {
@@ -31,72 +96,11 @@ module.exports = {
       to: '.env',
     },
     {
-      from: 'package.copy.json',
+      from: 'package.min.json',
       to: 'package.json',
     },
   ],
-  win: {
-    target: 'nsis',
-    extraResources: [
-      {
-        from: 'node_modules/regedit/vbs',
-        to: 'vbs',
-      },
-      {
-        from: 'node_modules/7zip-bin/win/x64',
-        to: '7zip-bin',
-      },
-    ],
-  },
-  linux: {
-    target: 'snap',
-    executableName: process.env.npm_package_name,
-    synopsis: pkg.description,
-    category: 'Graphics',
-    extraResources: [
-      {
-        from: 'node_modules/7zip-bin/linux/x64',
-        to: '7zip-bin',
-      },
-    ],
-  },
-  mac: {
-    target: 'dmg',
-    darkModeSupport: true,
-    category: 'public.app-category.graphics-design',
-    minimumSystemVersion: '10.15.0',
-    extraResources: [
-      {
-        from: 'node_modules/7zip-bin/mac',
-        to: '7zip-bin',
-      },
-    ],
-    extraFiles: [
-      {
-        from: '.env',
-        to: 'MacOS/.env',
-      },
-    ],
-  },
-  nsis: {
-    oneClick: false,
-    perMachine: false,
-    allowToChangeInstallationDirectory: true,
-    uninstallDisplayName: '${productName}',
-    deleteAppDataOnUninstall: true,
-    displayLanguageSelector: true,
-    menuCategory: true,
-    artifactName: '${productName}-v${version}-windows.${ext}',
-  },
-  snap: {
-    plugs: ['default', {
-      'personal-files': { read: ['$HOME'], write: ['$HOME'] },
-    }],
-    artifactName: '${productName}-v${version}-ubuntu.${ext}',
-  },
-  dmg: {
-    title: '${productName}',
-    artifactName: '${productName}-v${version}-macos.${ext}',
-    backgroundColor: '#000',
-  },
+  ...windows,
+  ...linux,
+  ...macos,
 }

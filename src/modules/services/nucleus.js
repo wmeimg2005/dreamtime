@@ -10,10 +10,12 @@
 import { isNil } from 'lodash'
 import axios from 'axios'
 import { BaseService } from './base'
-import { system } from '../tools'
-import { settings } from './settings'
+import { settings } from '../system'
+import { Consola } from '../consola'
 
-const logger = require('logplease').create('services:nucleus')
+const { system } = $provider
+
+const consola = Consola.create('nucleus')
 
 /**
  * https://nucleus.sh
@@ -43,7 +45,6 @@ export class NucleusService extends BaseService {
     }
 
     try {
-      // eslint-disable-next-line global-require
       const Nucleus = require('nucleus-nodejs')
 
       // nucleus configuration
@@ -59,17 +60,17 @@ export class NucleusService extends BaseService {
 
       Nucleus.appStarted()
 
-      this._service = Nucleus
+      this.service = Nucleus
 
       await this.fetchData()
       setInterval(this.fetchData.bind(this), 15 * 60 * 1000)
 
       this.enabled = true
 
-      logger.info('Nucleus enabled!')
-      logger.debug(this.appId)
+      consola.info('Nucleus enabled!')
+      consola.debug(`App ID: ${this.appId}`)
     } catch (err) {
-      logger.warn('Nucleus setup failed!', err)
+      consola.warn('Nucleus setup failed!', err)
     }
   }
 

@@ -17,7 +17,6 @@ export default {
 
   methods: {
     openExternal() {
-      $provider.services.nucleus.track('EXTERNAL_LINK', { href: this.href })
       shell.openExternal(this.href)
     },
   },

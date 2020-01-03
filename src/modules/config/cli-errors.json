@@ -1,62 +1,54 @@
 [
   {
-    "error": "Found no NVIDIA driver on your system",
-    "message": "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed a driver from [here](http://www.nvidia.com/Download/index.aspx). If you don't have an NVIDIA GPU please change the Device option in **Settings** to **CPU**.",
-    "level": "debug"
+    "query": "Found no NVIDIA driver on your system",
+    "message": "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed the latest driver."
   },
   {
-    "error": "The NVIDIA driver on your system is too old",
-    "message": "The NVIDIA driver installed on your system is too old! If the drivers are up to date then your GPU may not be compatible. You can also change the device option in **Settings** to **CPU**.",
-    "level": "debug"
+    "query": "The NVIDIA driver on your system is too old",
+    "message": "The NVIDIA driver installed on your system is too old! If the drivers are up to date then your GPU is not compatible."
   },
   {
-    "error": "no longer supports this GPU",
-    "message": "DreamTime does not have support for your GPU. Please change the device option in **Settings** to **CPU**.",
-    "level": "debug"
+    "query": "no longer supports this GPU",
+    "message": "DreamTime no longer supports your GPU."
   },
   {
-    "error": "Buy new RAM!",
-    "message": "You have run out of RAM on your system! Try a photo of smaller size or free all possible memory.",
-    "level": "debug"
+    "query": "Buy new RAM!",
+    "message": "You have run out of RAM on your system! Try a photo of smaller size or close all the programs you can."
   },
   {
-    "error": "CUDA out of memory",
-    "message": "You have run out of VRAM on your GPU! Try a photo of smaller size or free all possible GPU use.",
-    "level": "debug"
+    "query": "CUDA out of memory",
+    "message": "You have run out of VRAM on your GPU! Try a photo of smaller size or close all the programs you can."
   },
   {
-    "error": "codec can't decode byte",
-    "message": "The algorithm had a problem decoding some characters, this is usually caused by being installed in a location with special characters (accents, spaces, etc.). Please reinstall the program in another location.",
-    "level": "debug"
+    "query": "codec can't decode byte",
+    "message": "The algorithm had a problem decoding some characters, this may be because one of the folders is in a path with characters that do not belong to the English alphabet. You can change this in the Folders section of Settings."
   },
   {
-    "error": "invalid device ordinal",
-    "message": "A valid GPU was not found, please try another. You can also change the device option in **Settings** to **CPU**.",
-    "level": "debug"
+    "query": "invalid device ordinal",
+    "message": "The selected GPU is not a valid device, please make sure that the GPU option in Settings is valid."
   },
   {
-    "error": "image is not 512 x 512",
-    "message": "The photo is not 512x512.",
-    "level": "debug"
+    "query": "Image is not 512 x 512",
+    "message": "It is not possible to transform photos other than 512x512, please resize the photo with any of the DreamTime options or manually before uploading."
   },
   {
-    "error": "loading Python",
-    "message": "There was a problem loading a necessary DreamPower file. It is possible that your installation is corrupt, download the program again and reinstall.",
-    "level": "debug"
+    "query": "loading Python",
+    "message": "There was a problem loading the algorithm. Please reinstall DreamPower or make sure your operating system has the latest updates."
   },
   {
-    "error": "DLL",
-    "message": "There was a problem loading a necessary DreamPower file. It is possible that your installation is corrupt, download the program again and reinstall.",
-    "level": "debug"
+    "query": "DLL",
+    "message": "There was a problem loading the algorithm. Please reinstall DreamPower or make sure your operating system has the latest updates."
   },
   {
-    "error": "file is not valid image",
-    "message": "There was a problem loading the photo, please make sure the photo is not corrupt.",
-    "level": "debug"
+    "query": "file is not valid image",
+    "message": "There was a problem loading the photo, please make sure it is not corrupt."
   },
   {
-    "error": "cv2.error",
-    "message": "There was a problem loading the photo, please make sure the photo is not corrupt.",
-    "level": "debug"
+    "query": "cv2.error",
+    "message": "There was a problem loading the photo, please make sure it is not corrupt."
+  },
+  {
+    "query": "not compiled with CUDA",
+    "message": "You have installed the CPU-only version of DreamPower. Please reinstall DreamPower to obtain GPU support."
   }
 ]

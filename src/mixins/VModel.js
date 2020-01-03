@@ -1,8 +1,7 @@
-import _ from 'lodash'
-
-const debug = require('debug').default('app:mixins:vmodel')
+import { cloneDeep, isEqual, isNative } from 'lodash'
 
 /**
+ * Helper to handle custom v-model
  * @mixin
  */
 export default {
@@ -17,66 +16,44 @@ export default {
 
   data: () => ({
     /**
-     * Contains the current value, this variable must be changed within the component.
+     * Current value, this is the variable that must be changed.
      */
     currentValue: null,
   }),
 
   created() {
-    // Initial value
-    this.currentValue = _.cloneDeep(this.value)
-  },
-
-  methods: {
-    onChange() {
-      // nothing
-    },
-
-    $forceCurrentValueUpdate() {
-      debug('$currentValue has changed, updating the v-model', {
-        oldValue: this.value,
-        newValue: this.currentValue,
-      })
-
-      this.$emit('input', this.currentValue)
-      this.onChange(this.currentValue)
-    },
+    // initial value.
+    if (!isNative(this.value)) {
+      this.currentValue = this.value
+    } else {
+      this.currentValue = cloneDeep(this.value)
+    }
   },
 
   watch: {
-    // The local value has changed, update the v-model
+    /**
+     * Local value changed, update the v-model.
+     */
     currentValue: {
       handler(value) {
-        if (_.isEqual(this.value, value)) {
+        if (isEqual(this.value, value)) {
           return
         }
 
-        // this.$forceCurrentValueUpdate()
-
-        debug('$currentValue has changed, updating the v-model', {
-          oldValue: this.value,
-          newValue: value,
-        })
-
         this.$emit('input', value)
-        this.onChange(value)
       },
       deep: true,
     },
 
-    // The v-model value has changed, update the local value
+    /**
+     * v-model value changed, update the local value.
+     */
     value(value) {
-      if (_.isEqual(this.currentValue, value)) {
+      if (isEqual(this.currentValue, value)) {
         return
       }
 
-      debug('v-model value has changed, updating currentValue', {
-        oldValue: this.currentValue,
-        newValue: value,
-      })
-
       this.currentValue = value
-      this.onChange(value)
     },
   },
 }

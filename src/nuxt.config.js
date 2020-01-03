@@ -1,9 +1,13 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable nuxt/no-cjs-in-config */
-
 const dev = process.env.NODE_ENV === 'development'
 
+const analyze = false
+const uglify = !dev
+const cache = !uglify && dev
+
 module.exports = {
+  /**
+   *
+   */
   mode: 'spa',
 
   /**
@@ -25,16 +29,79 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: `${process.env.npm_package_displayName} v${process.env.npm_package_version}`,
+    title: process.env.npm_package_displayName,
 
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      // { 'http-equiv': 'Content-Security-Policy', content: 'default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://cdn.logrocket.io https://cdn.lr-ingest.io; worker-src \'self\' \'unsafe-inline\' data: blob:; object-src \'none\'; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; img-src \'self\' data:; media-src \'self\' data:; frame-src \'self\' https://*.dreamnet.tech; font-src *; connect-src \'self\' http://localhost:* https://*.dreamnet.tech wss://app.nucleus.sh https://nucleus.sh https://*.logrocket.io https://r.lr-ingest.io https://*.github.com' },
     ],
 
-    link: [],
+    link: [
+      {
+        rel: 'preload', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700|Roboto+Slab:300,400,500,600,700', as: 'style', onload: 'this.rel = \'stylesheet\'',
+      },
+    ],
+  },
 
-    scripts: [],
+  /**
+   *
+   */
+  render: {
+    csp: {
+      hashAlgorithm: 'sha256',
+      policies: {
+        'default-src': [
+          'self',
+        ],
+        'script-src': [
+          'self',
+          'unsafe-inline',
+          'https://cdn.logrocket.io',
+          'https://cdn.lr-ingest.io',
+        ],
+        'worker-src': [
+          'self',
+          'unsafe-inline',
+          'data:',
+          'blob:',
+        ],
+        'object-src': [
+          'none',
+        ],
+        'style-src': [
+          'self',
+          'unsafe-inline',
+          'https://fonts.googleapis.com',
+        ],
+        'img-src': [
+          'self',
+          'data:',
+        ],
+        'media-src': [
+          'self',
+          'data:',
+        ],
+        'frame-src': [
+          'self',
+          'https://*.dreamnet.tech',
+        ],
+        'font-src': [
+          '*',
+        ],
+        'connect-src': [
+          'self',
+          'http://localhost:*',
+          'https://*.dreamnet.tech',
+          'wss://app.nucleus.sh',
+          'https://nucleus.sh',
+          'https://*.logrocket.io',
+          'https://r.lr-ingest.io',
+          'https://*.github.com',
+        ],
+      },
+      addMeta: true,
+    },
   },
 
   /*
@@ -48,17 +115,34 @@ module.exports = {
   css: [
     'tippy.js/dist/tippy.css',
     'cropperjs/dist/cropper.css',
+    'vue-slider-component/theme/default.css',
+
+    'sweetalert2/src/sweetalert2.scss',
+    '@sweetalert2/theme-dark/dark.css',
+
     'tui-image-editor/dist/tui-image-editor.css',
     'tui-color-picker/dist/tui-color-picker.css',
 
+    'intro.js/introjs.css',
+    'intro.js/themes/introjs-modern.css',
+
     '~/assets/css/tailwind.scss',
-    '~/assets/css/fonts.scss',
+    '~/assets/css/reset/all.scss',
+    '~/assets/css/components/all.scss',
+    '~/assets/css/utilities/all.scss',
   ],
 
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/boot.js', '~/plugins/fontawesome.js', '~/components'],
+  plugins: [
+    '~/plugins/binds.js',
+    '~/plugins/boot.js',
+    '~/plugins/setup.js',
+    '~/plugins/fontawesome.js',
+    '~/plugins/vue-slider.js',
+    '~/components',
+  ],
 
   /*
    ** Nuxt.js dev-modules
@@ -66,6 +150,8 @@ module.exports = {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    // Doc: https://github.com/Developmint/nuxt-purgecss
+    'nuxt-purgecss',
     // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
     '@nuxtjs/tailwindcss',
   ],
@@ -74,12 +160,6 @@ module.exports = {
    ** Nuxt.js modules
    */
   modules: [],
-
-  /*
-   ** Axios module configuration
-   ** See https://axios.nuxtjs.org/options
-   */
-  axios: {},
 
   /**
    *
@@ -92,8 +172,23 @@ module.exports = {
    *
    */
   purgeCSS: {
-    enabled: true,
-    whitelistPatterns: [/tippy/, /cropper/, /tui/, /color-picker/],
+    enabled: uglify,
+    mode: 'postcss',
+
+    paths: [
+      'components/**/*.vue',
+      'layouts/**/*.vue',
+      'pages/**/*.vue',
+      'plugins/**/*.js',
+      'modules/**/*.js',
+      'assets/css/**/*.scss',
+    ],
+
+    whitelistPatterns: [
+      /(tippy|vue-slider|cropper|tui|color-picker|swal2|introjs|nuxt)/,
+      /(text|top|bottom)/,
+      /(body|html|pre|svg)/,
+    ],
   },
 
   /**
@@ -108,20 +203,70 @@ module.exports = {
    */
   dev,
 
+  /**
+   * Enable the profiler in WebpackBar.
+   */
+  profile: analyze,
+
   /*
    ** Build configuration
    */
   build: {
+    /**
+     * Visualize bundles and how to optimize them.
+     */
+    analyze,
+
+    /**
+     * Enable thread-loader in webpack building.
+     */
     parallel: true,
 
-    hardSource: dev,
+    /**
+     * Enables the HardSourceWebpackPlugin for improved caching.
+     */
+    hardSource: cache,
 
-    cache: dev,
+    /**
+     * Enable cache of terser-webpack-plugin and cache-loader.
+     */
+    cache,
 
-    extractCSS: !dev,
+    /**
+     * Enables Common CSS Extraction using Vue Server Renderer guidelines.
+     */
+    extractCSS: false,
 
+    /**
+     * Customize Babel configuration for JavaScript and Vue files.
+     */
     babel: {
       sourceType: 'unambiguous',
+
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            debug: false,
+            targets: {
+              chrome: '78',
+            },
+            modules: false,
+            useBuiltIns: 'usage',
+            corejs: {
+              version: 3,
+            },
+            /*
+            exclude: [
+              'es6.array.iterator',
+              'es6.promise',
+              'es6.object.assign',
+              'es7.promise.finally'
+            ],
+            */
+          },
+        ],
+      ],
 
       plugins: [
         'lodash',
@@ -140,44 +285,100 @@ module.exports = {
       ],
     },
 
+    /**
+     * Customize options of Nuxt.js integrated webpack loaders.
+     * https://nuxtjs.org/api/configuration-build#loaders
+     */
     loaders: {
+      scss: dev ? {
+        implementation: require('sass'),
+      } : {},
+
+      vue: {
+        prettify: false,
+      },
+
       imgUrl: {
         limit: 10 * 1000,
       },
     },
 
-    terser: {
-      parallel: true,
-    },
-
+    /**
+     * Webpack Optimization.
+     * https://nuxtjs.org/api/configuration-build#optimization
+     */
     optimization: {
       splitChunks: {
+        name: false,
+        automaticNameMaxLength: 30,
+        maxSize: 500 * 1000,
+
         cacheGroups: {
+          // Disable the built-in cacheGroups.
+          default: false,
+
           commons: {
-            test: /[\\/]node_modules[\\/]/,
+            name: 'commons',
+            priority: 10,
+            test: /node_modules[\\/](vue|vue-loader|vue-router|vuex|vue-meta|core-js|@babel\/runtime|axios|webpack|setimmediate|timers-browserify|process|regenerator-runtime|cookie|js-cookie|is-buffer|dotprop|nuxt\.js)[\\/]/,
+            chunks: 'all',
+          },
+
+          vendors: {
             name: 'vendors',
+            test: /node_modules[\\/]/,
+            priority: 20,
+            chunks: 'all',
+          },
+
+          modules: {
+            name: 'modules',
+            test: /(modules|workers|mixins|)[\\/]/,
+            priority: 30,
             chunks: 'all',
           },
         },
       },
     },
 
+    postcss: {
+      plugins: {
+        tailwindcss: './tailwind.config.js',
+      },
+    },
+
     /*
-     ** You can extend webpack config here
+     ** You can extend webpack config here.
      */
     extend(config, { isDev }) {
       config.target = 'electron-renderer'
 
+      // Don't throw warning when asset created is over 250kb
+      config.performance.hints = false
+
+      // Disable handling of requires with a single expression.
+      config.module.exprContextCritical = false
+
       config.module.rules.push({
         test: /\.worker\.js$/,
-        use: { loader: 'worker-loader' },
+        use: {
+          loader: 'worker-loader',
+          options: {
+            name: ({ isDev }) => (isDev ? '[name].[ext]' : 'workers/[contenthash:7].[ext]'),
+          },
+        },
         exclude: /(node_modules)/,
       })
 
-      const webpack = require('webpack')
-
-      // eslint-disable-next-line no-useless-escape
-      config.plugins.push(new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/))
+      config.module.rules.push({
+        test: /\.(ogg|mp3|wav|mpe?g)$/i,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: ({ isDev }) => (isDev ? '[name].[ext]' : 'sounds/[contenthash:7].[ext]'),
+          },
+        },
+      })
 
       if (isDev) {
         config.devtool = 'source-map'

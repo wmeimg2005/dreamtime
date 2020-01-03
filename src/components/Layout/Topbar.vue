@@ -5,8 +5,13 @@
         {{ $dream.name }} {{ $dream.version }}
       </div>
 
-      <div class="topbar__greetings">
+      <div v-show="!badTime" class="topbar__greetings">
         {{ greetings }}
+      </div>
+
+      <div v-show="badTime" class="topbar__badtime">
+        <img src="~/assets/images/games/sans.png">
+        i don't like what you are doing.
       </div>
     </div>
 
@@ -27,14 +32,18 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 const { activeWindow, api } = $provider.util
 
 export default {
+  data: () => ({
+    badTime: false,
+  }),
+
   computed: {
     greetings() {
-      const hours = moment().hours()
+      const hours = dayjs().hour()
 
       if (hours >= 6 && hours <= 11) {
         return '☕ Good morning'
@@ -50,6 +59,18 @@ export default {
 
       return '🌛 Good night'
     },
+  },
+
+  mounted() {
+    this.$router.afterEach((to) => {
+      if (to.path === '/games/badtime') {
+        this.$dream.name = 'BadDreamTime'
+        this.badTime = true
+      } else {
+        this.$dream.name = process.env.npm_package_displayName
+        this.badTime = false
+      }
+    })
   },
 
   methods: {
@@ -93,7 +114,7 @@ export default {
   }
 
   .topbar__logo {
-    @apply flex flex-col items-center justify-center;
+    @apply flex flex-col items-center justify-center mr-4;
     @apply font-bold px-4;
     background: rgb(99, 66, 245);
 
@@ -107,8 +128,19 @@ export default {
   }
 
   .topbar__greetings {
-    @apply flex flex-col items-center justify-center;
-    @apply font-light px-4;
+    @apply flex items-center justify-center;
+    @apply font-light;
+  }
+
+  .topbar__badtime {
+    @apply flex items-center justify-center;
+    @apply lowercase font-bold text-sm;
+    font-family: "Comic Sans MS", serif;
+
+    img {
+      @apply mr-2;
+      height: 18px;
+    }
   }
 
   .topbar__buttons {

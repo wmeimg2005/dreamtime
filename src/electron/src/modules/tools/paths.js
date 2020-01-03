@@ -11,7 +11,7 @@ import { attempt } from 'lodash'
 import { join } from 'path'
 import fs from 'fs-extra'
 import { app } from 'electron'
-import { settings } from '../services'
+import { settings } from '../settings'
 
 /**
  * Returns an absolute path depending on the parameters
@@ -19,7 +19,9 @@ import { settings } from '../services'
  * @param {string} name Name of the base path: https://electronjs.org/docs/all#appgetpathname
  * @param {...string} args Series of path segments to join into one path
  */
-export const getPath = (name, ...args) => join(app.getPath(name), ...args)
+export function getPath(name, ...args) {
+  return join(app.getPath(name), ...args)
+}
 
 /**
  *

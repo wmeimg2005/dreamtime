@@ -3,59 +3,11 @@
     <div v-if="alert" class="notification text-lg" v-html="alert" />
 
     <!-- Offline -->
-    <section v-if="!$provider.tools.system.online" class="box box--items">
+    <section v-if="!$provider.system.online" class="box box--items">
       <div class="box__content">
         <box-item
           description="While in offline mode you will not be able to obtain more information about the project or download the latest updates."
           label="Offline mode." />
-      </div>
-    </section>
-
-    <!-- Requirements -->
-    <section v-if="!$provider.tools.system.canNudify" class="box box--items">
-      <div class="box__content">
-        <box-item
-          :description="`You need to meet all the requirements below to start using ${$dream.name}. Some require an Internet connection to update.`"
-          icon="scroll"
-          label="Requirements" />
-
-        <box-item
-          label="DreamPower"
-          description="DreamPower is not installed or the installed version is not compatible.">
-          <template slot="icon">
-            <span v-if="$provider.tools.system.requirements.power.installed && $provider.tools.system.requirements.power.compatible" class="item__icon">✔</span>
-            <span v-else class="item__icon">❌</span>
-          </template>
-
-          <a href="#dreampower" class="button is-sm">Update</a>
-          <nuxt-link to="/settings/folders" class="button is-sm">
-            Settings
-          </nuxt-link>
-        </box-item>
-
-        <box-item
-          label="Checkpoints"
-          description="Data models required by DreamPower.">
-          <template slot="icon">
-            <span v-if="$provider.tools.system.requirements.power.checkpoints" class="item__icon">✔</span>
-            <span v-else class="item__icon">❌</span>
-          </template>
-
-          <a href="#checkpoints" class="button">Update</a>
-        </box-item>
-
-        <box-item
-          label="Media Feature Pack"
-          description="Multimedia package required by some versions of Windows.">
-          <template slot="icon">
-            <span v-if="$provider.tools.system.requirements.windows.media" class="item__icon">✔</span>
-            <span v-else class="item__icon">❗</span>
-          </template>
-
-          <a href="https://www.microsoft.com/en-us/software-download/mediafeaturepack" target="_blank" class="button">
-            Download
-          </a>
-        </box-item>
       </div>
     </section>
 
@@ -65,14 +17,19 @@
         <div class="box__content">
           <box-item
             :label="$dream.name"
-            :description="dreamtime.about.description"
-            icon="https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Assets/logos/time/png/512x512.png">
-            <button type="button" class="button" @click="openAppPath">
+            :description="dreamtime.about.description">
+            <template slot="icon">
+              <div class="item__icon">
+                <img src="~/assets/images/apps/dreamtime.png">
+              </div>
+            </template>
+
+            <button type="button" class="button w-full" @click="openAppPath">
               App
             </button>
           </box-item>
 
-          <app-update :project-title="$dream.name" project="dreamtime" />
+          <app-update :project-title="$dream.name" project="dreamtime" href="/wizard/dreamtime" />
 
           <box-item
             v-for="(item, index) in dreamtime.about.navigation"
@@ -90,16 +47,21 @@
         <div class="box__content">
           <box-item
             :label="dreampower.about.title"
-            :description="dreampower.about.description"
-            icon="https://catalina.dreamnet.tech/ipns/QmUvudWPzRa7hgDSVFiwzFzviAZJohTrvHJNhnvytuPv3H/Assets/logos/power/png/512x512.png">
-            <button type="button" class="button" @click="openPowerPath">
+            :description="dreampower.about.description">
+            <template slot="icon">
+              <div class="item__icon">
+                <img src="~/assets/images/apps/dreampower.png">
+              </div>
+            </template>
+
+            <button type="button" class="button w-full" @click="openPowerPath">
               App
             </button>
           </box-item>
 
-          <app-update id="dreampower" project-title="DreamPower" project="dreampower" />
+          <app-update project-title="DreamPower" project="dreampower" href="/wizard/power" />
 
-          <app-update v-if="$provider.tools.system.requirements.power.installed" id="checkpoints" project-title="Checkpoints" project="checkpoints" />
+          <app-update project-title="Checkpoints" project="checkpoints" href="/wizard/checkpoints" />
 
           <box-item
             v-for="(item, index) in dreampower.about.navigation"
@@ -145,11 +107,9 @@
             :description="item.description"
             :icon="item.icon"
             :class="item.role">
-            <div class="buttons">
-              <a v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" target="_blank" class="button button--sm">
-                {{ link.name }}
-              </a>
-            </div>
+            <a v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" target="_blank" class="button button--sm mr-2">
+              {{ link.name }}
+            </a>
           </box-item>
         </div>
       </section>
@@ -158,11 +118,17 @@
 </template>
 
 <script>
-const { nucleus } = $provider.services
-const { getAppPath, getPowerPath } = $provider.tools.paths
+import { requirements } from '~/modules/system'
+import { nucleus } from '~/modules/services'
+
+const { getAppPath, getPowerPath } = $provider.paths
 const { shell } = $provider.api
 
 export default {
+  data: () => ({
+    requirements,
+  }),
+
   computed: {
     dreamtime() {
       const online = nucleus.v1?.projects?.dreamtime || {}

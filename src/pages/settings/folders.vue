@@ -38,7 +38,7 @@
 import _ from 'lodash'
 import { VModel } from '~/mixins'
 
-const { existsSync } = $provider.tools.fs
+const { existsSync } = $provider.fs
 const { dialog } = $provider.api
 
 export default {

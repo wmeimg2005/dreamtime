@@ -1,5 +1,32 @@
 <template>
-  <div class="c-photo-run" :style="previewStyle">
+  <div class="c-photo-run" :style="previewStyle" data-private>
+    <div v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled" class="run__preferences">
+      <div class="preference">
+        <span>Boobs</span>
+        <span>{{ run.preferences.body.boobs.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Areola</span>
+        <span>{{ run.preferences.body.areola.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Nipple</span>
+        <span>{{ run.preferences.body.nipple.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Vagina</span>
+        <span>{{ run.preferences.body.vagina.size | fixedValue }}</span>
+      </div>
+
+      <div class="preference">
+        <span>Pubic hair</span>
+        <span>{{ run.preferences.body.pubicHair.size | fixedValue }}</span>
+      </div>
+    </div>
+
     <div class="run__content">
       <div v-if="run.running" class="content__item">
         <p class="text-white">
@@ -52,12 +79,6 @@
         </button>
       </div>
 
-      <div v-if="false" class="content__item">
-        <button v-tooltip="'View preferences'" class="button button--info button--sm">
-          <font-awesome-icon icon="sliders-h" />
-        </button>
-      </div>
-
       <div class="content__item">
         <button v-tooltip="'View terminal'" class="button button--sm" @click.prevent="$refs.terminalDialog.showModal()">
           <font-awesome-icon icon="terminal" />
@@ -69,13 +90,13 @@
     <dialog ref="maskfinDialog">
       <div class="dialog__content dialog__maskfin">
         <div class="maskfin__preview">
-          <img :src="run.maskfinFile.dataURL">
+          <img :src="run.maskfinFile.path">
         </div>
 
         <div class="maskfin__description">
           <p>This is the Maskfin, a mask that represents in layers the areas that the algorithm will replace with the fake nude.</p>
           <p>Click on the "Add to queue" button to add it as an additional photo, edit the layers and continue with the nudification. You can also save it to your computer, edit it with an external program and continue the nudification manually.</p>
-          <p>For more information please consult the <a :href="manualURL" target="_blank">manual</a>.</p>
+          <p>For more information please consult the <a :href="manualURL" target="_blank">guide</a>.</p>
         </div>
 
         <div class="dialog__buttons">
@@ -115,15 +136,19 @@
 
 <script>
 import { isNil } from 'lodash'
+import { nucleus } from '~/modules/services'
 import { Nudify } from '~/modules/nudify'
 
 const { showSaveDialogSync } = $provider.api.dialog
-const { nucleus } = $provider.services
 
 export default {
   filters: {
     size(value) {
       return Number.parseFloat(value).toFixed(2)
+    },
+
+    fixedValue(value) {
+      return Number(value).toFixed(2)
     },
   },
 
@@ -134,21 +159,13 @@ export default {
     },
   },
 
-  data: () => ({
-    outputDataURL: undefined,
-  }),
-
   computed: {
-    previewDataURL() {
-      return this.run.outputFile.dataURL
-    },
-
     previewStyle() {
-      if (!this.previewDataURL) {
+      if (!this.run.outputFile.exists) {
         return {}
       }
 
-      return { backgroundImage: `url(${this.previewDataURL})` }
+      return { backgroundImage: `url(${this.run.outputFile.path})` }
     },
 
     hasMaskfin() {
@@ -156,15 +173,7 @@ export default {
     },
 
     manualURL() {
-      return nucleus.urls?.docs?.manual || 'https://forum.dreamnet.tech/d/32-dreamtime-manual'
-    },
-  },
-
-  watch: {
-    'run.finished'(value) {
-      if (value) {
-        this.outputDataURL = this.run.outputFile.dataURL
-      }
+      return nucleus.urls?.docs?.manual || 'https://time.dreamnet.tech/docs/guide/upload'
     },
   },
 
@@ -214,19 +223,11 @@ export default {
 
       this.run.maskfinFile.copy(savePath)
     },
-
-    viewPreferences() {
-
-    },
-
-    viewTerminal() {
-
-    },
   },
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .c-photo-run {
   @apply bg-cover bg-center border border-dark-500;
   @apply relative;
@@ -234,17 +235,42 @@ export default {
   height: 512px;
 
   &:hover {
-    .run__content {
+    .run__content,
+    .run__preferences {
       @apply opacity-100;
     }
   }
 }
 
-.run__content {
-  @apply opacity-0 bg-dark-500-90 w-full;
-  @apply absolute bottom-0;
+.run__content,
+.run__preferences {
+  @apply absolute opacity-0 bg-dark-500-80 w-full;
   @apply flex;
+  backdrop-filter: blur(6px);
   transition: all .1s linear;
+}
+
+.run__preferences {
+  @apply flex top-0;
+  height: 80px;
+
+  .preference {
+    @apply flex flex-col flex-1 items-center justify-center;
+
+    span {
+      &:first-child {
+        @apply text-xs;
+      }
+
+      &:last-child {
+        @apply text-sm text-white font-bold;
+      }
+    }
+  }
+}
+
+.run__content {
+  @apply bottom-0;
   height: 100px;
 
   .content__item {
@@ -282,18 +308,6 @@ export default {
 
     p {
       @apply mb-2;
-    }
-  }
-}
-
-.dialog__buttons {
-  @apply flex;
-
-  .button {
-    @apply flex-1;
-
-    &:not(:last-child) {
-      @apply mr-2;
     }
   }
 }

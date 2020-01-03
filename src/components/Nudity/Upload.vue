@@ -1,19 +1,19 @@
 <template>
-  <div class="c-uploader">
-    <div class="uploader__settings box box--items">
+  <div id="uploader" class="c-uploader">
+    <div id="uploader-settings" class="uploader__settings box box--items">
       <div class="box__content">
         <box-item
           label="Upload mode"
           description="What will happen when uploading a photo.">
           <select v-model="$settings.app.uploadMode" class="input">
             <option value="none">
-              Stay
+              Put in Pending
             </option>
             <option value="add-queue">
-              Start transformation
+              Put in Queue
             </option>
             <option value="go-preferences">
-              Change preferences
+              Put in Pending and open preferences
             </option>
           </select>
         </box-item>
@@ -22,6 +22,7 @@
 
     <!-- Dropzone -->
     <div
+      id="uploader-dropzone"
       class="uploader__dropzone"
       :class="{'is-dragging': isDragging}"
       @dragenter="onDragEnter"
@@ -30,11 +31,11 @@
       @drop="openDrop">
       <p class="dropzone-hint">
         <font-awesome-icon icon="camera" />
-        Drop the photo(s)/folder here!
+        Drop the dream here!
       </p>
     </div>
 
-    <div class="uploader__alt">
+    <div id="uploader-alternatives" class="uploader__alt">
       <!-- File -->
       <div class="box">
         <div class="box__header">
@@ -76,7 +77,7 @@
 
         <div class="box__content">
           <button class="button" @click.prevent="openFolder">
-            <span>import folder</span>
+            <span>Open folder</span>
           </button>
         </div>
       </div>
@@ -94,10 +95,10 @@
         </div>
 
         <div class="box__content">
-          <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://">
+          <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://" data-private="lipsum">
 
           <button class="button" @click="openUrl">
-            Go!
+            Submit
           </button>
         </div>
       </div>
@@ -115,10 +116,10 @@
         </div>
 
         <div class="box__content">
-          <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/">
+          <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/" data-private="lipsum">
 
           <button class="button" @click="openInstagramPhoto">
-            Go!
+            Submit
           </button>
         </div>
       </div>
@@ -127,15 +128,17 @@
 </template>
 
 <script>
-/* eslint-disable no-param-reassign */
 import {
   isNil, isEmpty, startsWith,
   map, isArray,
 } from 'lodash'
 import { Nudify } from '~/modules/nudify'
+import { Consola } from '~/modules/consola'
+import { tutorial } from '~/modules'
 
-const { nucleus } = $provider.services
-const { instagram } = $provider.tools
+const consola = Consola.create('upload')
+
+const { instagram } = $provider
 const { dialog } = $provider.api
 
 export default {
@@ -152,8 +155,8 @@ export default {
     isDragging: false,
   }),
 
-  created() {
-
+  mounted() {
+    tutorial.upload()
   },
 
   methods: {
@@ -168,6 +171,9 @@ export default {
       Nudify.addFile(file.path)
     },
 
+    /**
+     *
+     */
     async addFiles(files) {
       if (!isArray(files)) {
         return
@@ -188,7 +194,7 @@ export default {
 
       const paths = map(files, 'path')
 
-      nucleus.track('UPLOAD_FILE')
+      consola.track('FILE')
 
       this.addFiles(paths)
 
@@ -211,12 +217,12 @@ export default {
      */
     openUrl() {
       if (isEmpty(this.webAddress) || (!startsWith(this.webAddress, 'http://') && !startsWith(this.webAddress, 'https://'))) {
-        throw new AppError('Please enter a valid web address.', { title: 'Upload failed.', level: 'warning' })
+        throw new Warning('Upload failed.', 'Please enter a valid web address.')
       }
 
-      nucleus.track('UPLOAD_URL')
-
       Nudify.addUrl(this.webAddress)
+
+      consola.track('URL')
 
       this.webAddress = ''
     },
@@ -226,7 +232,7 @@ export default {
      */
     async openInstagramPhoto() {
       if (isEmpty(this.instagramPhoto)) {
-        throw new AppError('Please enter a valid Instagram photo.', { title: 'Upload failed.', level: 'warning' })
+        throw new Warning('Upload failed.', 'Please enter a valid Instagram photo.')
       }
 
       let post
@@ -234,14 +240,16 @@ export default {
       try {
         post = await instagram.getPost(this.instagramPhoto)
       } catch (error) {
-        throw new AppError('Unable to download the photo, please verify that the address is correct and that you are connected to the Internet.', { title: 'Upload failed.', error, level: 'warning' })
+        throw new Warning('Upload failed.', 'Unable to download the photo, please verify that the address is correct and that you are connected to the Internet.', error)
       }
 
       if (post.isVideo) {
-        throw new AppError('The videos are not supported yet.', { title: 'Upload failed.', level: 'warning' })
+        throw new Warning('Upload failed.', 'Videos are not supported yet.')
       }
 
       Nudify.addUrl(post.downloadUrl)
+
+      consola.track('INSTAGRAM')
 
       this.instagramPhoto = ''
     },
@@ -284,12 +292,12 @@ export default {
       const url = event.dataTransfer.getData('url')
 
       if (url.length > 0) {
-        nucleus.track('UPLOAD_DROP_URL')
         Nudify.addUrl(url)
+        consola.track('DROP_URL')
       } else if (files.length > 0) {
         const paths = map(files, 'path')
         this.addFiles(paths)
-        nucleus.track('UPLOAD_DROP_FILE')
+        consola.track('DROP_FILE')
       }
     },
   },
@@ -332,7 +340,7 @@ export default {
   .uploader__dropzone {
     @apply flex items-center justify-center;
     @apply bg-dark-500 mb-6;
-    @apply rounded border-2 border-dashed border-dark-100;
+    @apply border-2 border-dashed border-dark-100;
     height: 200px;
     transition: all 0.1s linear;
 

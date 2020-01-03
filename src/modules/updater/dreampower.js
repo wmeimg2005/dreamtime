@@ -7,15 +7,15 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isNil, get } from 'lodash'
+import { isNil } from 'lodash'
 import compareVersions from 'compare-versions'
 import { BaseUpdater } from './base'
+import { requirements, settings } from '../system'
+import { nucleus } from '../services'
 
-const { nucleus, settings } = $provider.services
-const { system } = $provider.tools
-const { getVersion } = $provider.tools.power
-const { getPowerPath } = $provider.tools.paths
-const { extractSeven } = $provider.tools.fs
+const { getVersion } = $provider.power
+const { getPowerPath } = $provider.paths
+const { extractSeven } = $provider.fs
 const { activeWindow } = $provider.util
 const { app, Notification } = $provider.api
 
@@ -46,7 +46,7 @@ class DreamPowerUpdater extends BaseUpdater {
    * @return {string}
    */
   async _getCurrentVersion() {
-    if (!system.requirements.power.installed) {
+    if (!requirements.power.installed) {
       return 'v0.0.0'
     }
 
@@ -66,8 +66,8 @@ class DreamPowerUpdater extends BaseUpdater {
   _getLatestCompatible(releases) {
     const currentVersion = process.env.npm_package_version
 
-    const minimum = nucleus.v1 ?.projects ?.dreamtime ?.releases[`v${currentVersion}`] ?.dreampower ?.minimum || 'v0.0.1'
-    const maximum = nucleus.v1 ?.projects ?.dreamtime ?.releases[`v${currentVersion}`] ?.dreampower ?.maximum
+    const minimum = nucleus.v1?.projects?.dreamtime?.releases[`v${currentVersion}`]?.dreampower?.minimum || 'v0.0.1'
+    const maximum = nucleus.v1?.projects?.dreamtime?.releases[`v${currentVersion}`]?.dreampower?.maximum
 
     for (const release of releases) {
       if (compareVersions.compare(release.tag_name, minimum, '<')) {
@@ -111,7 +111,7 @@ class DreamPowerUpdater extends BaseUpdater {
   sendNotification() {
     const notification = new Notification(
       {
-        title: `🎉 DreamPower ${this.latestCompatibleVersion} available!`,
+        title: `🎉 DreamPower ${this.latestCompatibleVersion}`,
         body: 'A new version of DreamPower is available.',
       },
     )
@@ -119,10 +119,13 @@ class DreamPowerUpdater extends BaseUpdater {
     notification.show()
 
     notification.on('click', () => {
-      // window.$redirect('/system/about')
-      activeWindow().focus()
+      window.$redirect('/wizard/power')
+
+      if (activeWindow()) {
+        activeWindow().focus()
+      }
     })
   }
 }
 
-export const dreampower = new DreamPowerUpdater()
+export const dreampower = (new DreamPowerUpdater)

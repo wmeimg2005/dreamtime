@@ -1,13 +1,15 @@
 <template>
   <div class="layout">
-    <layout-topbar />
+    <!-- Window Buttons -->
+    <LayoutTopbar />
 
-    <layout-navbar />
+    <!-- Navigation -->
+    <LayoutNavbar />
 
-    <layout-navigation v-if="false" />
+    <!-- Queue -->
+    <LayoutQueuebar />
 
-    <layout-jobbar />
-
+    <!-- Content -->
     <div id="layout-content" class="layout__content">
       <nuxt />
     </div>
@@ -16,18 +18,18 @@
 
 <script>
 export default {
-  middleware: ['checks'],
+  middleware: ['wizard'],
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .layout {
   @apply h-full;
 
   display: grid;
   grid-template-columns: 200px 1fr 200px;
   grid-template-rows: 30px 50px 1fr;
-  grid-template-areas: "topbar topbar topbar" "jobbar navbar navbar" "jobbar content content";
+  grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "content content jobbar";
 
   .layout__topbar {
     grid-area: topbar;

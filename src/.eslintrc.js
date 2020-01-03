@@ -1,9 +1,7 @@
 module.exports = {
   env: {
     browser: true,
-    es2020: true,
     node: true,
-    "shared-node-browser": true,
     mocha: true
   },
   extends: [
@@ -19,7 +17,11 @@ module.exports = {
   ],
   globals: {
     $provider: false,
-    AppError: false
+    AppError: false,
+    LogEvent: false,
+    Warning: false,
+    Exception: false,
+    consola: false
   },
   parserOptions: {
     parser: "babel-eslint",
@@ -34,19 +36,22 @@ module.exports = {
   ],
   root: true,
   rules: {
+    "no-param-reassign": "off",
     "class-methods-use-this": "off",
+    "no-trailing-spaces": "warn",
     "comma-dangle": "warn",
     "global-require": "off",
-    "import/default": "off",
+    "import/default": "warn",
     "import/no-webpack-loader-syntax": "off",
-    "import/order": "error",
+    "import/order": ['error'],
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
-    "import/named": "off",
+    "import/named": "warn",
     "import/no-cycle": "off",
     "promise/no-callback-in-promise": "off",
     "promise/catch-or-return": "off",
     "linebreak-style": "warn",
+    "new-parens": "off",
     "lodash/import-scope": [
       "off",
       "member"
@@ -57,6 +62,7 @@ module.exports = {
     "lodash/prefer-lodash-method": "off",
     "lodash/prefer-lodash-typecheck": "warn",
     "lodash/prefer-noop": "off",
+    "lodash/prefer-spread": "off",
     "import/extensions": "off",
     "max-len": "off",
     "func-names": "off",
@@ -65,7 +71,6 @@ module.exports = {
     "no-continue": "off",
     "no-debugger": "error",
     "no-lone-blocks": "error",
-    "no-param-reassign": "off",
     "no-restricted-globals": "warn",
     "no-restricted-syntax": "off",
     "no-shadow": "off",
@@ -87,6 +92,7 @@ module.exports = {
       "error",
       "never"
     ],
+    "prefer-spread": "off",
     "quote-props": [
       "error",
       "as-needed"
@@ -116,7 +122,8 @@ module.exports = {
     ],
     "vue/html-self-closing": "error",
     "vue/no-v-html": "off",
-    "vue/singleline-html-element-content-newline": "warn"
+    "vue/singleline-html-element-content-newline": "warn",
+    'nuxt/no-cjs-in-config': 'off'
   },
   settings: {
     "import/resolver": {

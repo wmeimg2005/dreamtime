@@ -1,39 +1,71 @@
-import { isString } from 'lodash'
-import { join } from 'path'
+import { isString, attempt } from 'lodash'
+import path from 'path'
+import slash from 'slash'
+import { Consola } from './consola'
 import { getMetadata } from '~/workers/fs'
 
-const {
-  writeDataURL, downloadAsync,
-  unlinkSync, copySync,
-} = $provider.tools.fs
+const consola = Consola.create('file')
+const { fs } = $provider
+const { getPath } = $provider.paths
 
-
-const { getPath } = $provider.tools.paths
-
+/**
+ * Represents a local file.
+ */
 export class File {
+  /**
+   * File name without extension.
+   * @type {string}
+   */
   name
 
+  /**
+   * Full file name.
+   * @type {string}
+   */
   fullname
 
+  /**
+   * Full file path.
+   * @type {string}
+   */
   path
 
+  /**
+   * File extension.
+   * @type {string}
+   */
   extension
 
+  /**
+   * Directory path.
+   * @type {string}
+   */
   directory
 
+  /**
+   * @type {string}
+   */
   mimetype
 
+  /**
+   * @type {Number}
+   */
   size = -1
 
+  /**
+   * @type {boolean}
+   */
   exists = false
 
+  /**
+   * Hash MD5.
+   * @type {string}
+   */
   md5
 
-  dataURL = ''
-
   /**
-   *
-   * @param {*} filepath
+   * Open a local file.
+   * @param {string} filepath
    */
   static fromPath(filepath) {
     const file = new this()
@@ -41,10 +73,14 @@ export class File {
   }
 
   /**
-   *
+   * Open a file from the Internet.
+   * @param {string} url
    */
   static async fromUrl(url) {
-    const filepath = await downloadAsync(url, {
+    consola.debug(`Downloading ${url}`)
+
+    // Download the file in the temporary folder.
+    const filepath = await fs.downloadAsync(url, {
       directory: getPath('temp'),
     })
 
@@ -55,7 +91,8 @@ export class File {
   }
 
   /**
-   *
+   * Open a file using the metadata.
+   * @param {Object} metadata
    */
   static fromMetadata(metadata) {
     const file = new this()
@@ -64,21 +101,28 @@ export class File {
 
   /**
    *
-   * @param {*} filepath
+   * @param {string} filepath
+   * @param {boolean} create
    */
-  constructor(filepath) {
+  constructor(filepath, create = false) {
     if (isString(filepath)) {
-      this.open(filepath)
+      if (create) {
+        attempt(() => {
+          fs.unlinkSync(filepath)
+          consola.debug(`File deleted: ${filepath}`)
+        })
+      } else {
+        this.open(filepath)
+      }
     }
   }
 
   /**
-   *
    * @param {string} [filepath]
    */
   async open(filepath) {
     if (!isString(filepath)) {
-      // eslint-disable-next-line no-param-reassign
+      // Refreshing information.
       filepath = this.path
     }
 
@@ -87,48 +131,61 @@ export class File {
   }
 
   /**
-   *
    * @param {Object} metadata
    */
   setMetadata(metadata) {
     this.name = metadata.name
     this.extension = metadata.ext
-    this.directory = metadata.dir
+    this.fullname = `${this.name}${this.extension}`
+    this.directory = slash(metadata.dir)
+    this.path = slash(path.join(this.directory, this.fullname))
     this.mimetype = metadata.mimetype
     this.size = metadata.size
     this.exists = metadata.exists
     this.md5 = metadata.md5
-    this.dataURL = metadata.dataURL
-    this.fullname = `${this.name}${this.extension}`
-    this.path = join(this.directory, this.fullname)
+
+    if (this.exists) {
+      consola.debug(`File opened: ${this.path} (${this.md5})`)
+    } else {
+      consola.debug(`File opened: ${this.path} (does not exist)`)
+    }
+
     return this
   }
 
   /**
-   *
+   * Delete the file.
    */
   async unlink() {
     if (!this.exists) {
-      return
+      return this
     }
 
-    unlinkSync(this.path)
+    fs.unlinkSync(this.path)
     await this.open()
+
+    consola.debug(`File deleted: ${this.fullname}`)
+
+    return this
   }
 
   /**
-   *
+   * Write the dataURL as file content.
+   * @param {string} data
    */
   async writeDataURL(data) {
-    writeDataURL(this.path, data)
+    fs.writeDataURL(this.path, data)
     await this.open()
+
+    return this
   }
 
   /**
-   *
-   * @param {*} destination
+   * @param {string} destination
    */
   copy(destination) {
-    return copySync(this.path, destination)
+    fs.copySync(this.path, destination)
+    consola.debug(`File copied: ${this.path} -> ${destination}`)
+    return this
   }
 }

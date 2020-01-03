@@ -10,7 +10,11 @@
 import { Nudify } from './nudify'
 import { events } from '../events'
 
-const Store = {
+/**
+ * Helper to add reactivity to the Nudify class.
+ * TODO: Maybe implement this in a real vue-store.
+ */
+const store = {
   photos: [],
 
   waiting: [],
@@ -29,16 +33,16 @@ const Store = {
   },
 }
 
-export const NudifyStore = new Proxy(Store, {
-  get: (obj, prop) => {
-    if (prop in obj) {
-      return obj[prop]
+export const NudifyStore = new Proxy(store, {
+  get: (target, property, receiver) => {
+    if (property in target) {
+      return target[property]
     }
 
-    if (prop in Nudify) {
-      return Nudify[prop]
+    if (property in Nudify) {
+      return Nudify[property]
     }
 
-    return undefined
+    return Reflect.get(target, property, receiver)
   },
 })

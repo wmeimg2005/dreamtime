@@ -8,19 +8,18 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isNil, isEmpty, truncate, deburr, forIn, cloneDeep,
+  isNil, isEmpty, truncate, deburr, forIn, cloneDeep, random, toString,
 } from 'lodash'
 import deferred from 'deferred'
 import { File } from '../file'
 import { Timer } from '../timer'
-import { rand } from '../helpers'
 import cliErrors from '../config/cli-errors'
 import preferencesConfig from '../config/preferences'
+import { settings, achievements } from '../system'
 
-const { settings, nucleus } = $provider.services
-const { transform } = $provider.tools.power
+const { transform } = $provider.power
 const { activeWindow } = $provider.util
-const { getMasksPath } = $provider.tools.paths
+const { getMasksPath } = $provider.paths
 
 export class PhotoRun {
   /**
@@ -66,7 +65,7 @@ export class PhotoRun {
   /**
    * @type {Timer}
    */
-  timer = new Timer()
+  timer = new Timer
 
   /**
    * @type {Object}
@@ -129,7 +128,7 @@ export class PhotoRun {
     this.status = 'pending'
     this.failed = false
 
-    this.timer = new Timer()
+    this.timer = new Timer
   }
 
   toObject() {
@@ -153,7 +152,7 @@ export class PhotoRun {
     const def = deferred()
 
     const onSpawnError = (error) => {
-      def.reject(new AppError('There was a problem trying to start DreamPower, make sure you have everything set up correctly.', { title: 'DreamPower failed!', error, level: 'warn' }))
+      def.reject(new Warning('Failed to start.', 'There was a problem trying to start DreamPower, make sure the installation is not corrupt.', error))
     }
 
     this.beforeStart()
@@ -165,6 +164,8 @@ export class PhotoRun {
       return def.promise
     }
 
+    const { consola } = this.photo
+
     this.process.on('error', (error) => {
       // spawn error
       onSpawnError(error)
@@ -173,23 +174,31 @@ export class PhotoRun {
     this.process.on('stdout', (output) => {
       // cli output
       output.forEach((text) => {
+        text = toString(text)
+
         this.cli.lines.unshift({
           text,
           css: {},
         })
+
+        consola.debug(text)
       })
     })
 
     this.process.on('stderr', (output) => {
+      const text = toString(output)
+
       // cli error
       this.cli.lines.unshift({
-        text: output,
+        text,
         css: {
           'text-danger': true,
         },
       })
 
-      this.cli.error += `${output}\n`
+      this.cli.error += `${text}\n`
+
+      consola.debug(text)
     })
 
     this.process.on('success', async () => {
@@ -198,17 +207,21 @@ export class PhotoRun {
         this.maskfinFile.open(),
       ])
 
-      nucleus.track('DREAM_COMPLETED')
+      window.consola.track('DREAM_COMPLETED')
 
       def.resolve()
     })
 
     this.process.on('fail', (fileError) => {
       if (fileError) {
-        def.reject(new AppError('DreamPower has transformed the photo but could not save it.', { title: `Run ${this.id} failed!`, level: 'warn' }))
+        def.reject(new Warning(`Run ${this.id} failed!`, 'DreamPower has transformed the photo but could not save it.', fileError))
       } else {
         def.reject(this.getPowerError())
       }
+    })
+
+    this.process.on('cancelled', () => {
+      def.resolve()
     })
 
     return def.promise
@@ -219,21 +232,23 @@ export class PhotoRun {
       return
     }
 
-    this.process.emit('kill')
+    this.process.emit('cancel')
   }
 
   setupPreferences() {
     const preferences = this.preferences.body
 
     if (preferences.randomize) {
-      // randomize
+      // randomize.
       forIn(preferencesConfig, (payload, key) => {
-        if (preferences[key].randomize) {
-          preferences[key].size = rand(payload.min, payload.max)
+        const { enabled, min, max } = preferences[key].randomize
+
+        if (enabled) {
+          preferences[key].size = random(min, max, true)
         }
       })
     } else if (preferences.progressive.enabled) {
-      // progressive
+      // progressive.
       const add = preferences.progressive.rate * (this.id - 1)
 
       forIn(preferencesConfig, (payload, key) => {
@@ -261,8 +276,9 @@ export class PhotoRun {
     this.timer.stop()
 
     this._sendNotification()
-
     this.photo.events.emit('update')
+
+    achievements.probability()
   }
 
   onFail() {
@@ -274,27 +290,25 @@ export class PhotoRun {
   }
 
   getPowerError() {
-    const message = this.cli.error
+    const errorMessage = this.cli.error
 
-    if (isEmpty(message)) {
+    if (isEmpty(errorMessage)) {
       return null
     }
 
+    const title = `Run ${this.id} has failed.`
+
+    const extra = {
+      terminal: this.cli.lines.map((item) => item.text),
+    }
+
     for (const payload of cliErrors) {
-      if (message.includes(payload.error)) {
-        return new AppError(payload.message, {
-          title: `Run ${this.id} has failed.`,
-          level: payload.level,
-          error: new Error(message),
-        })
+      if (errorMessage.toLowerCase().includes(payload.query.toLowerCase())) {
+        return new LogEvent('warn', title, payload.message, new Error(errorMessage), extra)
       }
     }
 
-    return new AppError(`DreamPower has been interrupted by an unknown error, this may be caused by a corrupt installation, please check the console for more information.\n<pre>${message}</pre>`, {
-      title: `Run ${this.id} has failed.`,
-      error: new Error(message),
-      terminal: this.cli.lines,
-    })
+    return new Exception(title, 'The algorithm has been interrupted by an unknown problem.', new Error(errorMessage), extra)
   }
 
   _sendNotification() {

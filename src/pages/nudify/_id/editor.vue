@@ -27,7 +27,7 @@ export default {
       this.photo.editor = new ImageEditor(this.$refs.imageEditor, {
         includeUI: {
           loadImage: {
-            path: this.photo.file.dataURL,
+            path: this.photo.file.path,
             name: this.photo.file.name,
           },
           theme: blackTheme,

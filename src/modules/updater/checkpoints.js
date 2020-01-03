@@ -8,10 +8,10 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import { BaseUpdater } from './base'
+import { requirements } from '../system'
 
-const { system } = $provider.tools
-const { getCheckpointsPath, getPowerPath } = $provider.tools.paths
-const { existsSync, read, extractZip } = $provider.tools.fs
+const { getCheckpointsPath, getPowerPath } = $provider.paths
+const { existsSync, read, extractZip } = $provider.fs
 const { activeWindow } = $provider.util
 const { app, Notification } = $provider.api
 
@@ -27,7 +27,7 @@ class CheckpointsUpdater extends BaseUpdater {
    * @type {string}
    */
   get currentVersion() {
-    if (!system.requirements.power.checkpoints) {
+    if (!requirements.power.checkpoints) {
       return 'v0.0.0'
     }
 
@@ -58,20 +58,27 @@ class CheckpointsUpdater extends BaseUpdater {
    *
    */
   sendNotification() {
+    if (!requirements.power.installed) {
+      return
+    }
+
     const notification = new Notification(
       {
-        title: `🎉 Checkpoints ${this.latestCompatibleVersion} available!`,
-        body: 'A new version of the Checkpoints is available.',
+        title: `🎉 Checkpoints ${this.latestCompatibleVersion}`,
+        body: 'A new version of the checkpoints is available.',
       },
     )
 
     notification.show()
 
     notification.on('click', () => {
-      // window.$redirect('/system/about')
-      activeWindow().focus()
+      window.$redirect('/wizard/checkpoints')
+
+      if (activeWindow()) {
+        activeWindow().focus()
+      }
     })
   }
 }
 
-export const checkpoints = new CheckpointsUpdater()
+export const checkpoints = (new CheckpointsUpdater)

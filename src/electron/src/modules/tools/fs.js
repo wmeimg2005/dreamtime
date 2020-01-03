@@ -1,21 +1,13 @@
+import { attempt } from 'lodash'
 import { basename, join } from 'path'
-import {
-  readFileSync, writeFileSync,
-  existsSync,
-  createWriteStream, createReadStream,
-} from 'fs-extra'
+import fs from 'fs-extra'
 import { app, dialog } from 'electron'
-import { is, platform } from 'electron-util'
-import EventBus from 'js-event-bus'
 import axios from 'axios'
-import unzipper from 'unzipper'
 import deferred from 'deferred'
-import sevenBin from '7zip-bin'
-import { extractFull } from 'node-7z'
 import { getAppResourcesPath } from './paths'
 import { AppError } from '../app-error'
 
-const logger = require('logplease').create('electron:modules:tools:fs')
+const logger = require('@dreamnet/logplease').create('electron:modules:tools:fs')
 
 // eslint-disable-next-line node/no-deprecated-api
 export * from 'fs-extra'
@@ -40,7 +32,7 @@ export function getBase64Data(dataURL) {
  * @param {string} encoding
  */
 export function read(path, encoding = 'utf-8') {
-  return readFileSync(path, { encoding })
+  return fs.readFileSync(path, { encoding })
 }
 
 /**
@@ -50,7 +42,7 @@ export function read(path, encoding = 'utf-8') {
  */
 export function writeDataURL(path, dataURL) {
   const data = this.getBase64Data(dataURL)
-  return writeFileSync(path, data, 'base64')
+  return fs.writeFileSync(path, data, 'base64')
 }
 
 /**
@@ -59,9 +51,11 @@ export function writeDataURL(path, dataURL) {
  * @param {string} destinationPath
  */
 export function extractZip(path, destinationPath) {
+  const unzipper = require('unzipper')
+
   const def = deferred()
 
-  const stream = createReadStream(path).pipe(unzipper.Extract({ path: destinationPath }))
+  const stream = fs.createReadStream(path).pipe(unzipper.Extract({ path: destinationPath }))
 
   stream.on('close', () => {
     def.resolve()
@@ -80,11 +74,15 @@ export function extractZip(path, destinationPath) {
  * @param {string} destinationPath
  */
 export function extractSeven(path, destinationPath) {
+  const { is, platform } = require('electron-util')
+  const { extractFull } = require('node-7z')
+
   const def = deferred()
 
   let pathTo7zip
 
   if (is.development) {
+    const sevenBin = require('7zip-bin')
     pathTo7zip = sevenBin.path7za
   } else {
     const binName = platform({
@@ -118,7 +116,8 @@ export function extractSeven(path, destinationPath) {
  * @param {Object} [options]
  */
 export function download(url, options = {}) {
-  const bus = new EventBus()
+  const EventBus = require('js-event-bus')
+  const bus = new EventBus
 
   // eslint-disable-next-line no-param-reassign
   options = {
@@ -138,7 +137,7 @@ export function download(url, options = {}) {
     })
   }
 
-  const writeStream = createWriteStream(filepath)
+  const writeStream = fs.createWriteStream(filepath)
 
   axios.request({
     url,
@@ -171,7 +170,7 @@ export function download(url, options = {}) {
         return
       }
 
-      if (!existsSync(filepath)) {
+      if (!fs.existsSync(filepath)) {
         throw new AppError('The file was not saved correctly.', { title: 'Download failed.' })
       }
 
@@ -183,18 +182,24 @@ export function download(url, options = {}) {
     bus.on('cancel', () => {
       cancelled = true
 
-      writeStream.destroy()
-      data.destroy()
+      attempt(() => {
+        writeStream.destroy()
+        data.destroy()
+        fs.unlinkSync(filepath)
+      })
 
-      logger.info('Download canceled by user.')
+      logger.info('Download cancelled by user.')
       bus.emit('cancelled')
     })
 
     return true
   }).catch((err) => {
-    writeStream.destroy(err)
+    attempt(() => {
+      writeStream.destroy(err)
+      fs.unlinkSync(filepath)
+    })
 
-    logger.warn('Download canceled due to an error.', err)
+    logger.warn('Download cancelled due to an error.', err)
     bus.emit('error', null, err)
   })
 

@@ -3,7 +3,7 @@
     <div class="nudify__menu">
       <div class="menu__container">
         <div class="mb-6 flex justify-center">
-          <app-photo :src="photo.file.dataURL" :hover="false" />
+          <app-photo :src="photo.file.path" :hover="false" data-private />
         </div>
 
         <!-- Sections -->
@@ -74,7 +74,7 @@
 
 <script>
 import { isNil } from 'lodash'
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2/dist/sweetalert2.js'
 import { Nudify } from '~/modules/nudify'
 
 const { shell } = $provider.api

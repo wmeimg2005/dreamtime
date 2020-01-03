@@ -1,19 +1,16 @@
 const { remote } = require('electron')
-const { makeServiceProxy } = require('./modules/services')
 
 const util = remote.require('electron-util')
-const services = remote.require('./modules/services')
+const { settings } = remote.require('./modules/settings')
 const tools = remote.require('./modules/tools')
+const ngrok = remote.require('./modules/ngrok')
 
 // tools provider
 window.$provider = {
-  services: {
-    nucleus: makeServiceProxy(services.nucleus),
-    rollbar: makeServiceProxy(services.rollbar),
-    settings: makeServiceProxy(services.settings),
-  },
+  ...tools,
 
-  tools,
+  settings,
+  ngrok,
 
   api: util.api,
   util,
