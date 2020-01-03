@@ -327,13 +327,13 @@ class Settings {
     }
 
     // 4 -> 5
-    if (this.payload?.version === 4 && this._default.version === 5) {
+    if (this.payload?.version === 4 && this._default.version >= 5) {
       this.payload.version = 5
       this.payload.preferences.advanced.transformMode = 'normal'
     }
 
     // 5 -> 6
-    if (this.payload?.version === 5 && this._default.version === 6) {
+    if (this.payload?.version === 5 && this._default.version >= 6) {
       this.payload.version = 6
 
       delete this.payload.welcome
@@ -346,7 +346,7 @@ class Settings {
       }
 
       this.payload.telemetry = {
-        bugs: this.payload.enabled,
+        bugs: true,
         dom: true,
       }
 
