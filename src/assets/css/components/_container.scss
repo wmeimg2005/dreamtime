@@ -9,27 +9,16 @@
  * Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
  */
 
-.placeholder-container {
-  @apply h-screen flex flex-col justify-center;
-
-  .container-body {
-    @apply flex-1;
-  }
-
-  .container-footer {
-    @apply flex justify-center items-center border-t border-gray-300;
-    min-height: 80px;
-
-    .button {
-      @apply mx-4;
-    }
-  }
-}
-
-.content-body {
+.content-body,
+.content__body {
   @apply p-6;
 }
 
 .content__body {
   @apply p-6;
+}
+
+.wrapper {
+  @apply ml-auto mr-auto;
+  max-width: 1920px;
 }

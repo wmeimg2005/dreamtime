@@ -17,8 +17,9 @@ import cliErrors from '../config/cli-errors'
 import preferencesConfig from '../config/preferences'
 import { settings, achievements } from '../system'
 
+const { getCurrentWindow } = require('electron').remote
+
 const { transform } = $provider.power
-const { activeWindow } = $provider.util
 const { getMasksPath } = $provider.paths
 
 export class PhotoRun {
@@ -312,29 +313,28 @@ export class PhotoRun {
   }
 
   _sendNotification() {
-    const window = activeWindow()
-
-    if (!isNil(window) && window.isFocused()) {
-      return
-    }
-
     if (!settings.notifications.run) {
       return
     }
 
-    // eslint-disable-next-line no-new
-    new Notification(`📷 ${this.file.fullname} - Run ${this.id} has finished.`)
+    try {
+      const browserWindow = getCurrentWindow()
 
-    /*
-    notification.onclick = () => {
-      const window = activeWindow()
-
-      if (!isNil(window)) {
-        window.focus()
+      if (isNil(browserWindow) || !browserWindow.isMinimized()) {
+        return
       }
 
-      window.$router.push(`/nudify/${this.photo.id}/results`)
+      const notification = new Notification(`📷 Run ${this.id} has finished.`, {
+        icon: this.outputFile.path,
+        body: 'Hopefully it was a good run.',
+      })
+
+      notification.onclick = () => {
+        browserWindow.focus()
+        window.$redirect(`/nudify/${this.photo.id}/results`)
+      }
+    } catch (error) {
+      this.photo.consola.warn('Unable to send a notification.', error).report()
     }
-    */
   }
 }

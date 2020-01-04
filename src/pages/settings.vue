@@ -39,7 +39,9 @@
     </div>
 
     <div class="settings__content">
-      <nuxt-child v-model="settings" keep-alive />
+      <div class="wrapper">
+        <nuxt-child v-model="settings" keep-alive />
+      </div>
     </div>
   </div>
 </template>

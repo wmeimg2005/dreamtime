@@ -66,6 +66,10 @@ export default {
     @screen xl {
       width: calc(1/3*100% - (1 - 1/3)*1rem);
     }
+
+    @media (min-height: 1280px) {
+      height: 1024px;
+    }
   }
 }
 </style>

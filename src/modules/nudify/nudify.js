@@ -162,14 +162,14 @@ export class Nudify {
     }
 
     if (params.isMaskfin) {
-      window.$router.push(`/nudify/${photo.id}/editor`)
+      window.$redirect(`/nudify/${photo.id}/editor`)
     } else {
       const { uploadMode } = settings.app
 
       if (uploadMode === 'add-queue') {
         this.addToQueue(photo)
       } else if (uploadMode === 'go-preferences') {
-        window.$router.push(`/nudify/${photo.id}/preferences`)
+        window.$redirect(`/nudify/${photo.id}/preferences`)
       }
     }
   }
