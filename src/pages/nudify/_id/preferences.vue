@@ -1,5 +1,5 @@
 <template>
-  <div class="nudify-preferences">
+  <div class="nudify-preferences wrapper">
     <settings-preferences v-model="photo.preferences" />
   </div>
 </template>

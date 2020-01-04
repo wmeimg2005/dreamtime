@@ -232,7 +232,7 @@ export default {
   @apply bg-cover bg-center border border-dark-500;
   @apply relative;
   background-image: url('~@/assets/images/background.png');
-  height: 512px;
+  min-height: 512px;
 
   &:hover {
     .run__content,

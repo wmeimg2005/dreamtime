@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  cloneDeep, isNil, merge,
+  cloneDeep, isNil, merge, isError,
 } from 'lodash'
 import Queue from 'better-queue'
 import MemoryStore from 'better-queue-memory'
@@ -20,7 +20,8 @@ import { PhotoRun } from './photo-run'
 import { File } from '../file'
 import { Timer } from '../timer'
 
-const { activeWindow } = $provider.util
+const { getCurrentWindow } = require('electron').remote
+
 const { getModelsPath, getCropPath } = $provider.paths
 
 export class Photo {
@@ -333,7 +334,11 @@ export class Photo {
 
       run.onFail()
 
-      handleError(error)
+      if (isError(error)) {
+        handleError(error)
+      } else {
+        this.consola.warn(`Task failed with unknown error: ${error}`)
+      }
     })
   }
 
@@ -442,31 +447,28 @@ export class Photo {
   }
 
   _sendNotification() {
-    const window = activeWindow()
-
-    if (!isNil(window) && window.isFocused()) {
-      return
-    }
-
     if (!settings.notifications.allRuns) {
       return
     }
 
-    // eslint-disable-next-line no-new
-    new Notification(`📷 ${this.file.fullname} has finished.`, {
-      body: 'The photo has completed the transformation process.',
-    })
+    try {
+      const browserWindow = getCurrentWindow()
 
-    /*
-    notification.onclick = () => {
-      const window = activeWindow()
-
-      if (!isNil(window)) {
-        window.focus()
+      if (isNil(browserWindow) || !browserWindow.isMinimized()) {
+        return
       }
 
-      window.$router.push(`/nudify/${this.id}/results`)
+      const notification = new Notification(`💖 Dream fulfilled!`, {
+        icon: this.file.path,
+        body: 'All runs have finished.',
+      })
+
+      notification.onclick = () => {
+        browserWindow.focus()
+        window.$redirect(`/nudify/${this.id}/results`)
+      }
+    } catch (error) {
+      this.photo.consola.warn('Unable to send a notification.', error).report()
     }
-    */
   }
 }

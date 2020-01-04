@@ -34,5 +34,4 @@ window.Exception = Exception
 
 export default ({ redirect, router }) => {
   window.$redirect = redirect
-  window.$router = router
 }
