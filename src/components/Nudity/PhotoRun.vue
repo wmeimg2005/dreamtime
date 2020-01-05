@@ -1,5 +1,7 @@
 <template>
-  <div class="c-photo-run" :style="previewStyle" data-private>
+  <div class="photo-run" :class="previewClass" data-private>
+    <div class="run__preview" :style="previewStyle" />
+
     <div v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled" class="run__preferences">
       <div class="preference">
         <span>Boobs</span>
@@ -161,11 +163,19 @@ export default {
 
   computed: {
     previewStyle() {
-      if (!this.run.outputFile.exists) {
+      if (!this.run.finished) {
         return {}
       }
 
       return { backgroundImage: `url(${this.run.outputFile.path})` }
+    },
+
+    previewClass() {
+      return {
+        'run--failed': this.run.failed,
+        'run--running': this.run.running,
+        'run--finished': this.run.finished,
+      }
     },
 
     hasMaskfin() {
@@ -196,11 +206,11 @@ export default {
     },
 
     rerun() {
-      this.run.photo.rerun(this.run)
+      this.run.add()
     },
 
     cancel() {
-      this.run.photo.cancelRun(this.run)
+      this.run.cancel()
     },
 
     addMaskToQueue() {
@@ -228,11 +238,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.c-photo-run {
-  @apply bg-cover bg-center border border-dark-500;
+.photo-run {
   @apply relative;
-  background-image: url('~@/assets/images/background.png');
+  @apply bg-cover bg-center border-2 border-dark-100;
+  background-image: url('~@/assets/images/curls.png'); /* Background pattern from Toptal Subtle Patterns */
   min-height: 512px;
+  transition: all .15s linear;
+
+  &.run--failed {
+    @apply border-danger-500;
+  }
+
+  &.run--running {
+    @apply border-primary-500;
+  }
+
+  &.run--finished {
+    .run__preview {
+      @apply opacity-100;
+    }
+  }
 
   &:hover {
     .run__content,
@@ -240,14 +265,19 @@ export default {
       @apply opacity-100;
     }
   }
+
+  .run__preview {
+    @apply absolute opacity-0 left-0 right-0 top-0 bottom-0 z-10;
+    transition: all .3s linear;
+  }
 }
 
 .run__content,
 .run__preferences {
-  @apply absolute opacity-0 bg-dark-500-80 w-full;
-  @apply flex;
+  @apply absolute z-20;
+  @apply flex opacity-0 bg-dark-500-80 w-full;
   backdrop-filter: blur(6px);
-  transition: all .1s linear;
+  transition: all .15s linear;
 }
 
 .run__preferences {

@@ -1,7 +1,7 @@
 module.exports = {
   "default": {
     "SERVER_HOST": "localhost",
-    "SERVER_PORT": 3000,
+    "SERVER_PORT": 4000,
     "NUCLEUS_APPID": "5d353cecbe5ccc0133cf90f4"
   },
   "development": {

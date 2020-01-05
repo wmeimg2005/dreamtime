@@ -1,7 +1,7 @@
 [
   {
     "query": "Found no NVIDIA driver on your system",
-    "message": "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed the latest driver."
+    "message": "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and the latest drivers."
   },
   {
     "query": "The NVIDIA driver on your system is too old",
@@ -9,7 +9,7 @@
   },
   {
     "query": "no longer supports this GPU",
-    "message": "DreamTime no longer supports your GPU."
+    "message": "The algorithm no longer supports your GPU."
   },
   {
     "query": "Buy new RAM!",
@@ -29,7 +29,7 @@
   },
   {
     "query": "Image is not 512 x 512",
-    "message": "It is not possible to transform photos other than 512x512, please resize the photo with any of the DreamTime options or manually before uploading."
+    "message": "Your photo needs to be 512x512 to be transformed, please resize the photo with any of the DreamTime options or manually before uploading."
   },
   {
     "query": "loading Python",
@@ -49,6 +49,10 @@
   },
   {
     "query": "not compiled with CUDA",
-    "message": "You have installed the CPU-only version of DreamPower. Please reinstall DreamPower to obtain GPU support."
+    "message": "You have installed the CPU-only version of DreamPower. Please reinstall DreamPower to get GPU support."
+  },
+  {
+    "query": "file not a supported format",
+    "message": "There was a problem loading the photo, please make sure it is not corrupt and is of a valid format."
   }
 ]

@@ -111,9 +111,9 @@ export class File {
           fs.unlinkSync(filepath)
           consola.debug(`File deleted: ${filepath}`)
         })
-      } else {
-        this.open(filepath)
       }
+
+      this.open(filepath)
     }
   }
 
@@ -174,6 +174,7 @@ export class File {
    * @param {string} data
    */
   async writeDataURL(data) {
+    console.log('writeDataURL', this.path, this)
     fs.writeDataURL(this.path, data)
     await this.open()
 

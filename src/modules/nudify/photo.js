@@ -15,10 +15,12 @@ import MemoryStore from 'better-queue-memory'
 import EventBus from 'js-event-bus'
 import { settings } from '../system'
 import { Consola, handleError } from '../consola'
+import { NudifyQueue } from './queue'
 import { Nudify } from './nudify'
 import { PhotoRun } from './photo-run'
 import { File } from '../file'
 import { Timer } from '../timer'
+import { events } from '../events'
 
 const { getCurrentWindow } = require('electron').remote
 
@@ -66,7 +68,7 @@ export class Photo {
 
   set status(value) {
     this._status = value
-    Nudify.emitUpdate()
+    events.emit('nudify.update')
   }
 
   /**
@@ -88,6 +90,11 @@ export class Photo {
    * @type {Timer}
    */
   timer = new Timer
+
+  /**
+   * @type {boolean}
+   */
+  isMaskfin = false
 
   /**
    * @type {require('cropperjs').default}
@@ -120,19 +127,19 @@ export class Photo {
   }
 
   get running() {
-    return this._status === 'running'
+    return this.status === 'running'
   }
 
   get finished() {
-    return this._status === 'finished'
+    return this.status === 'finished'
   }
 
   get pending() {
-    return this._status === 'pending'
+    return this.status === 'pending'
   }
 
   get waiting() {
-    return this._status === 'waiting'
+    return this.status === 'waiting'
   }
 
   get started() {
@@ -206,13 +213,14 @@ export class Photo {
 
     this.consola = Consola.create(file.fullname)
 
-    this._setupPreferences(isMaskfin)
+    this.isMaskfin = isMaskfin
 
-    this._validate()
-
-    this._setupQueue()
+    this.setup()
   }
 
+  /**
+   *
+   */
   async syncEditor() {
     if (isNil(this.editor)) {
       return
@@ -228,6 +236,9 @@ export class Photo {
     this.consola.debug(`Saved editor changes.`)
   }
 
+  /**
+   *
+   */
   async syncCrop() {
     if (isNil(this.cropper)) {
       return
@@ -251,15 +262,48 @@ export class Photo {
     this.consola.debug(`Saved crop changes.`)
   }
 
+  /**
+   *
+   * @param  {...any} args
+   */
   getFolderPath(...args) {
     return getModelsPath(this.folderName, ...args)
   }
 
-  _setupPreferences(isMaskfin) {
+  /**
+   *
+   */
+  setup() {
+    this.validate()
+
+    this.setupPreferences()
+
+    this.setupQueue()
+  }
+
+  /**
+   *
+   */
+  validate() {
+    const { exists, mimetype, path } = this.file
+
+    if (!exists) {
+      throw new Warning('Upload failed.', `The file "${path}" does not exists.`)
+    }
+
+    if (mimetype !== 'image/jpeg' && mimetype !== 'image/png' && mimetype !== 'image/gif') {
+      throw new Warning('Upload failed.', `The file "${path}" is not a valid photo. Only jpeg, png or gif.`)
+    }
+  }
+
+  /**
+   *
+   */
+  setupPreferences() {
     this.preferences = cloneDeep(settings.payload.preferences)
     let forcedPreferences = {}
 
-    if (isMaskfin) {
+    if (this.isMaskfin) {
       forcedPreferences = {
         body: {
           executions: 1,
@@ -285,26 +329,17 @@ export class Photo {
     this.preferences = merge(this.preferences, forcedPreferences)
   }
 
-  _validate() {
-    const { exists, mimetype, path } = this.file
-
-    if (!exists) {
-      throw new Warning('Upload failed.', `The file "${path}" does not exists.`)
-    }
-
-    if (mimetype !== 'image/jpeg' && mimetype !== 'image/png' && mimetype !== 'image/gif') {
-      throw new Warning('Upload failed.', `The file "${path}" is not a valid photo. Only jpeg, png or gif.`)
-    }
-  }
-
-  _setupQueue() {
+  /**
+   *
+   */
+  setupQueue() {
     let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (20 * 60 * 1000)
 
     if (this.file.mimetype === 'image/gif') {
       maxTimeout += (30 * 60 * 1000)
     }
 
-    this.queue = new Queue(this._run, {
+    this.queue = new Queue(this.queueTicket, {
       maxTimeout,
       afterProcessDelay: 500,
       batchSize: 1,
@@ -313,55 +348,82 @@ export class Photo {
     })
 
     this.queue.on('drain', () => {
-      this.consola.debug('All runs finished.')
-      this._onFinish()
+      this.onFinish()
+      this.consola.debug('Runs finished.')
     })
 
-    this.queue.on('task_started', (runId, run) => {
-      this.consola.debug(`Run #${runId} started!`)
+    this.queue.on('task_queued', (runId) => {
+      const run = this.getRunById(runId)
+      run.onQueue()
+
+      this.onQueueRun()
+
+      this.consola.debug(`Run added: #${runId}`)
+    })
+
+    this.queue.on('task_started', (runId) => {
+      const run = this.getRunById(runId)
       run.onStart()
+
+      this.consola.debug(`Run started: #${runId}`)
     })
 
     this.queue.on('task_finish', (runId) => {
       const run = this.getRunById(runId)
-
-      this.consola.debug(`Run #${runId} finished!`)
       run.onFinish()
+
+      this.consola.debug(`Run finished: #${runId}`)
     })
 
     this.queue.on('task_failed', (runId, error) => {
       const run = this.getRunById(runId)
-
       run.onFail()
+
+      this.consola.warn(`Run failed: #${runId} ${error}`)
 
       if (isError(error)) {
         handleError(error)
-      } else {
-        this.consola.warn(`Task failed with unknown error: ${error}`)
       }
     })
   }
 
+  /**
+   *
+   * @param {*} id
+   */
   getRunById(id) {
     return this.runs[id - 1]
   }
 
-  addToQueue() {
-    Nudify.addToQueue(this)
+  /**
+   * Add this photo to the queue (time to nudify)
+   */
+  add() {
+    NudifyQueue.add(this)
   }
 
-  removeFromQueue() {
-    Nudify.removeFromQueue(this)
+  /**
+   * Cancel the photo runs and remove it from the queue.
+   */
+  cancel() {
+    NudifyQueue.cancel(this)
+
+    if (this.waiting) {
+      this.status = 'pending'
+    }
   }
 
-  reset() {
-    this.status = 'pending'
-
-    this.timer = new Timer
-
-    this.runs = []
+  /**
+   * Remove the photo from the application.
+   */
+  forget() {
+    Nudify.forget(this)
   }
 
+  /**
+   * Nudification start.
+   * This should only be called from the queue.
+   */
   async start() {
     const { executions } = this.preferences.body
 
@@ -372,11 +434,7 @@ export class Photo {
     await this.syncEditor()
     await this.syncCrop()
 
-    this.reset()
-
-    this.consola.debug(`Starting ${executions} runs.`)
-
-    this._onStart()
+    // this.onStart()
 
     for (let it = 1; it <= executions; it += 1) {
       const run = new PhotoRun(it, this)
@@ -386,67 +444,103 @@ export class Photo {
     }
 
     await new Promise((resolve) => {
-      this.events.on('finish', () => {
+      this.queue.on('drain', () => {
         resolve()
       })
     })
   }
 
-  cancel(status = 'finished') {
+  /**
+   * Cancel the photo runs.
+   * This should only be called from the queue.
+   */
+  stop() {
     this.runs.forEach((run) => {
       this.cancelRun(run)
     })
-
-    this._onFinish(status)
   }
 
+  /**
+   *
+   * @param {PhotoRun} run
+   */
+  addRun(run) {
+    this.queue.push(run)
+  }
+
+  /**
+   *
+   * @param {PhotoRun} run
+   */
   cancelRun(run) {
     this.queue.cancel(run.id)
   }
 
-  rerun(run) {
-    run.reset()
-    this.queue.push(run)
-
-    this._onStart()
-  }
-
-  _run(run, cb) {
-    try {
-      run.start().then(() => {
-        cb()
-        return true
-      }).catch((error) => {
-        cb(error)
-      })
-    } catch (error) {
-      cb(error)
-    }
+  /**
+   *
+   * @param {PhotoRun} run
+   * @param {Function} done
+   */
+  queueTicket(run, done) {
+    run.start().then(() => {
+      done()
+      return true
+    }).catch((error) => {
+      done(error)
+    })
 
     return {
       cancel() {
-        run.cancel()
+        run.stop()
       },
     }
   }
 
-  _onStart() {
-    this.status = 'running'
+  /**
+   *
+   */
+  onQueue() {
+    this.runs = []
+
+    this.status = 'waiting'
+  }
+
+  /**
+   *
+   */
+  onStart() {
     this.timer.start()
+
+    this.status = 'running'
 
     this.events.emit('start')
   }
 
-  _onFinish(status = 'finished') {
-    this.status = status
-    this.timer.stop()
+  /**
+   *
+   */
+  onQueueRun() {
+    this.timer.start()
 
-    this.events.emit('finish')
-
-    this._sendNotification()
+    this.status = 'running'
   }
 
-  _sendNotification() {
+  /**
+   *
+   */
+  onFinish() {
+    this.timer.stop()
+    this.status = 'finished'
+
+    this.sendNotification()
+
+    this.events.emit('finish')
+  }
+
+  /**
+   *
+   */
+  sendNotification() {
     if (!settings.notifications.allRuns) {
       return
     }

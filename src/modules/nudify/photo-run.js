@@ -29,7 +29,7 @@ export class PhotoRun {
   id
 
   /**
-   * @type {require('./photo').Photo}
+   * @type {Photo}
    */
   photo
 
@@ -76,20 +76,16 @@ export class PhotoRun {
     error: '',
   }
 
-  get running() {
-    return this.status === 'running'
-  }
-
   get pending() {
     return this.status === 'pending'
   }
 
-  get finished() {
-    return this.status === 'finished'
+  get running() {
+    return this.status === 'running'
   }
 
-  get started() {
-    return this.status !== 'pending'
+  get finished() {
+    return this.status === 'finished'
   }
 
   get outputName() {
@@ -118,20 +114,9 @@ export class PhotoRun {
     this.preferences = cloneDeep(this.photo.preferences)
   }
 
-  reset() {
-    this.cli = {
-      lines: [],
-      error: '',
-    }
-
-    this.preferences = cloneDeep(this.photo.preferences)
-
-    this.status = 'pending'
-    this.failed = false
-
-    this.timer = new Timer
-  }
-
+  /**
+   *
+   */
   toObject() {
     return {
       photo: {
@@ -145,98 +130,11 @@ export class PhotoRun {
     }
   }
 
-  beforeStart() {
-    this.setupPreferences()
-  }
-
-  start() {
-    const def = deferred()
-
-    const onSpawnError = (error) => {
-      def.reject(new Warning('Failed to start.', 'There was a problem trying to start DreamPower, make sure the installation is not corrupt.', error))
-    }
-
-    this.beforeStart()
-
-    try {
-      this.process = transform(this.toObject())
-    } catch (error) {
-      onSpawnError(error)
-      return def.promise
-    }
-
-    const { consola } = this.photo
-
-    this.process.on('error', (error) => {
-      // spawn error
-      onSpawnError(error)
-    })
-
-    this.process.on('stdout', (output) => {
-      // cli output
-      output.forEach((text) => {
-        text = toString(text)
-
-        this.cli.lines.unshift({
-          text,
-          css: {},
-        })
-
-        consola.debug(text)
-      })
-    })
-
-    this.process.on('stderr', (output) => {
-      const text = toString(output)
-
-      // cli error
-      this.cli.lines.unshift({
-        text,
-        css: {
-          'text-danger': true,
-        },
-      })
-
-      this.cli.error += `${text}\n`
-
-      consola.debug(text)
-    })
-
-    this.process.on('success', async () => {
-      await Promise.all([
-        this.outputFile.open(),
-        this.maskfinFile.open(),
-      ])
-
-      window.consola.track('DREAM_COMPLETED')
-
-      def.resolve()
-    })
-
-    this.process.on('fail', (fileError) => {
-      if (fileError) {
-        def.reject(new Warning(`Run ${this.id} failed!`, 'DreamPower has transformed the photo but could not save it.', fileError))
-      } else {
-        def.reject(this.getPowerError())
-      }
-    })
-
-    this.process.on('cancelled', () => {
-      def.resolve()
-    })
-
-    return def.promise
-  }
-
-  cancel() {
-    if (!this.running || isNil(this.process)) {
-      return
-    }
-
-    this.process.emit('cancel')
-  }
-
+  /**
+   *
+   */
   setupPreferences() {
+    this.preferences = cloneDeep(this.photo.preferences)
     const preferences = this.preferences.body
 
     if (preferences.randomize) {
@@ -265,31 +163,164 @@ export class PhotoRun {
     this.preferences.body = preferences
   }
 
-  onStart() {
-    this.status = 'running'
-    this.timer.start()
-
-    this.photo.events.emit('update')
+  /**
+   *
+   */
+  add() {
+    this.photo.addRun(this)
   }
 
+  /**
+   *
+   */
+  cancel() {
+    this.photo.cancelRun(this)
+  }
+
+  /**
+   *
+   */
+  start() {
+    const def = deferred()
+
+    const onSpawnError = (error) => {
+      def.reject(new Warning('Failed to start.', 'There was a problem trying to start DreamPower, make sure the installation is not corrupt.', error))
+    }
+
+    // this.onStart()
+
+    try {
+      this.process = transform(this.toObject())
+    } catch (error) {
+      onSpawnError(error)
+      return def.promise
+    }
+
+    // const { consola } = this.photo
+
+    this.process.on('error', (error) => {
+      // DreamPower could not start.
+      onSpawnError(error)
+    })
+
+    this.process.on('stdout', (output) => {
+      // DreamPower Output.
+      output.forEach((text) => {
+        text = toString(text)
+
+        this.cli.lines.unshift({
+          text,
+          css: {},
+        })
+
+        // consola.debug(text)
+      })
+    })
+
+    this.process.on('stderr', (output) => {
+      const text = toString(output)
+
+      // DreamPower Errors.
+      this.cli.lines.unshift({
+        text,
+        css: {
+          'text-danger': true,
+        },
+      })
+
+      this.cli.error += `${text}\n`
+
+      // consola.debug(text)
+    })
+
+    this.process.on('success', async () => {
+      await Promise.all([
+        this.outputFile.open(),
+        this.maskfinFile.open(),
+      ])
+
+      window.consola.track('DREAM_COMPLETED')
+
+      def.resolve()
+    })
+
+    this.process.on('fail', (fileError) => {
+      if (fileError) {
+        def.reject(new Warning(`Run ${this.id} failed!`, 'DreamPower has transformed the photo but could not save it.', fileError))
+      } else {
+        def.reject(this.getPowerError())
+      }
+    })
+
+    this.process.on('cancelled', () => {
+      def.resolve()
+    })
+
+    return def.promise
+  }
+
+  /**
+   *
+   */
+  stop() {
+    if (isNil(this.process)) {
+      return
+    }
+
+    this.process.emit('cancel')
+  }
+
+  /**
+   *
+   */
+  onQueue() {
+    this.cli = {
+      lines: [],
+      error: '',
+    }
+
+    this.failed = false
+
+    this.status = 'pending'
+  }
+
+  /**
+   *
+   */
+  onStart() {
+    this.setupPreferences()
+
+    this.timer.start()
+
+    this.status = 'running'
+  }
+
+  /**
+   *
+   */
   onFinish() {
-    this.status = 'finished'
     this.timer.stop()
 
-    this._sendNotification()
-    this.photo.events.emit('update')
+    this.status = 'finished'
 
+    this.sendNotification()
     achievements.probability()
   }
 
+  /**
+   *
+   */
   onFail() {
-    this.status = 'finished'
     this.failed = true
+
     this.timer.stop()
 
-    this.photo.events.emit('update')
+    this.status = 'finished'
   }
 
+  /**
+   * @return {Error}
+   */
   getPowerError() {
     const errorMessage = this.cli.error
 
@@ -312,7 +343,10 @@ export class PhotoRun {
     return new Exception(title, 'The algorithm has been interrupted by an unknown problem.', new Error(errorMessage), extra)
   }
 
-  _sendNotification() {
+  /**
+   *
+   */
+  sendNotification() {
     if (!settings.notifications.run) {
       return
     }

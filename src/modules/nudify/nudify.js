@@ -9,13 +9,14 @@
 
 import {
   startsWith, find, isNil,
-  filter, debounce,
+  filter,
   remove, clone,
 } from 'lodash'
 import { basename } from 'path'
-import Queue from 'better-queue'
-import MemoryStore from 'better-queue-memory'
+import delay from 'delay'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
+import { watch } from 'melanke-watchjs'
+import { NudifyQueue } from './queue'
 import { events } from '../events'
 import { Photo } from './photo'
 import { File } from '../file'
@@ -45,116 +46,68 @@ const Toast = Swal.mixin({
 
 /**
  * Entry point for photo nudification.
- * TODO: Refactor. Separate the entry points and the Queue.
  */
-export class Nudify {
-  /**
-   * Queue. Photos that are waiting transformation.
-   * @type {Queue}
-   */
-  static queue
-
+export const Nudify = {
   /**
    * All open photos.
    * @type {Array<Photo>}
    */
-  static photos = []
-
-  /**
-   * @type {Function}
-   */
-  static emitUpdate = debounce(() => {
-    events.emit('nudify.update')
-  }, 300, { leading: true })
+  photos: [],
 
   /**
    * @type {Array<Photo>}
    */
-  static get waiting() {
+  get waiting() {
     return filter(this.photos, (photo) => photo.status === 'waiting' || photo.status === 'running')
-  }
+  },
 
   /**
    * @type {Array<Photo>}
    */
-  static get pending() {
+  get pending() {
     return filter(this.photos, { status: 'pending' })
-  }
+  },
 
   /**
    * @type {Array<Photo>}
    */
-  static get finished() {
+  get finished() {
     return filter(this.photos, { status: 'finished' })
-  }
+  },
 
   /**
    *
    */
-  static setup() {
-    this.queue = new Queue(this._run, {
-      maxTimeout: (3 * 60 * 60 * 1000), // 3 hours.
-      afterProcessDelay: 1000,
-      batchSize: 1,
-      concurrent: 1,
-      store: new MemoryStore,
-    })
+  setup() {
+    NudifyQueue.setup()
 
-    this.queue.on('task_queued', (photoId, photo) => {
-      photo.status = 'waiting'
-    })
-  }
-
-  /**
-   *
-   * @param {Photo} photo
-   * @param {Function} cb
-   */
-  static _run(photo, cb) {
-    try {
-      photo.start().then(() => {
-        cb()
-        return true
-      }).catch((error) => {
-        cb(error)
-      })
-    } catch (error) {
-      cb(error)
-    }
-
-    return {
-      cancel() {
-        photo.cancel('pending')
-      },
-    }
-  }
+    watch(this, 'photos', () => {
+      events.emit('nudify.update')
+    }, 1)
+  },
 
   /**
    *
    * @param {string} id
    */
-  static getPhoto(id) {
+  getPhotoById(id) {
     return find(this.photos, { id })
-  }
+  },
 
   /**
-   * Add a new file to the Queue.
+   * Add a new file.
    * @param {File} input
    */
-  static add(file, params = {}) {
+  add(file, params = {}) {
     const photo = new Photo(file, params)
 
-    const exists = this.getPhoto(photo.id)
+    const exists = this.getPhotoById(photo.id)
 
     if (!isNil(exists)) {
       return
     }
 
     this.photos.unshift(photo)
-
-    consola.debug(`Photo added: ${file.fullname}`)
-
-    this.emitUpdate()
 
     if (this.photos.length > MAX_PHOTOS) {
       // Delete the oldest photo.
@@ -167,26 +120,31 @@ export class Nudify {
       const { uploadMode } = settings.app
 
       if (uploadMode === 'add-queue') {
-        this.addToQueue(photo)
+        photo.add()
       } else if (uploadMode === 'go-preferences') {
         window.$redirect(`/nudify/${photo.id}/preferences`)
       }
     }
-  }
+  },
 
   /**
    *
-   * @param {string} filepath
+   * @param {string} path
    */
-  static async addFile(filepath) {
-    const filesMetadata = await getFilesMetadata(filepath)
-    const multiple = filesMetadata.length > 1
+  async addFile(path) {
+    const metadatas = await getFilesMetadata(path)
+    const multiple = metadatas.length > 1
 
-    filesMetadata.forEach((metadata) => {
+    metadatas.forEach((metadata) => {
       const file = File.fromMetadata(metadata)
 
       try {
         this.add(file)
+
+        Toast.fire({
+          icon: 'success',
+          title: basename(path),
+        })
       } catch (err) {
         if (multiple) {
           consola.warn('Error adding a photo.', err)
@@ -195,18 +153,13 @@ export class Nudify {
         }
       }
     })
-
-    Toast.fire({
-      icon: 'success',
-      title: basename(filepath),
-    })
-  }
+  },
 
   /**
    *
-   * @param {string} paths
+   * @param {Array} paths
    */
-  static async addFiles(paths) {
+  async addFiles(paths) {
     Swal.fire({
       title: 'Importing files...',
       text: 'One moment, please.',
@@ -217,17 +170,19 @@ export class Nudify {
 
     Swal.showLoading()
 
+    await delay(1000)
+
     for (const path of paths) {
       // eslint-disable-next-line no-await-in-loop
       await this.addFile(path)
     }
-  }
+  },
 
   /**
    *
    * @param {string} url
    */
-  static async addUrl(url) {
+  async addUrl(url) {
     if (!startsWith(url, 'http://') && !startsWith(url, 'https://')) {
       throw new Warning('Upload failed.', 'Please enter a valid web address.')
     }
@@ -240,6 +195,8 @@ export class Nudify {
       allowEscapeKey: false,
     })
 
+    await delay(500)
+
     try {
       const file = await File.fromUrl(url)
 
@@ -249,68 +206,56 @@ export class Nudify {
     } catch (error) {
       throw new Warning('Upload failed.', 'Unable to download the photo, please verify that the address is correct and that you are connected to the Internet.', error)
     }
-  }
+  },
+
+  /**
+   *
+   * @param {string} status
+   */
+  addAll(status = 'pending') {
+    this.photos.forEach((photo) => {
+      if (photo.status !== status) {
+        return
+      }
+
+      photo.add()
+    })
+  },
+
+  /**
+   *
+   * @param {string} status
+   */
+  cancelAll(status = 'pending') {
+    this.photos.forEach((photo) => {
+      if (photo.status !== status) {
+        return
+      }
+
+      photo.cancel()
+    })
+  },
 
   /**
    *
    * @param {Photo} photo
    */
-  static addToQueue(photo) {
-    this.queue.push(photo)
-  }
-
-  /**
-   *
-   * @param {Photo} photo
-   */
-  static removeFromQueue(photo) {
-    photo.cancel('pending')
-    this.queue.cancel(photo.id)
-  }
-
-  /**
-   *
-   * @param {Photo} photo
-   */
-  static forget(photo) {
-    this.removeFromQueue(photo)
+  forget(photo) {
+    photo.cancel()
 
     // eslint-disable-next-line lodash/prefer-immutable-method
     remove(this.photos, { id: photo.id })
+
+    events.emit('nudify.update')
+
     consola.debug(`Forgotten: ${photo.file.fullname}`)
-
-    this.emitUpdate()
-  }
+  },
 
   /**
    *
    * @param {string} status
    */
-  static startAll(status = 'pending') {
-    this.photos.forEach((photo) => {
-      if (photo.status !== status) {
-        return
-      }
-
-      this.addToQueue(photo)
-    })
-  }
-
-  /**
-   *
-   * @param {string} status
-   */
-  static stopAll(status = 'pending') {
-    this.photos.forEach((photo) => {
-      if (photo.status !== status) {
-        return
-      }
-
-      this.removeFromQueue(photo)
-    })
-  }
-
-  static async forgetAll(status = 'pending') {
+  async forgetAll(status = 'pending') {
     const response = await Swal.fire({
       title: 'Are you sure?',
       text: 'Forgetting will remove all photos from the queue (it will not delete the files) and free up memory.',
@@ -324,6 +269,8 @@ export class Nudify {
       return
     }
 
+    window.$redirect('/')
+
     const photosCopy = clone(this.photos)
 
     photosCopy.forEach((photo) => {
@@ -331,7 +278,7 @@ export class Nudify {
         return
       }
 
-      this.forget(photo)
+      photo.forget()
     })
-  }
+  },
 }

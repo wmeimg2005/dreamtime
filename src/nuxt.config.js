@@ -1,5 +1,4 @@
 const dev = process.env.NODE_ENV === 'development'
-
 const analyze = false
 const uglify = !dev
 const cache = !uglify && dev

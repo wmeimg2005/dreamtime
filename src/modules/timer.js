@@ -1,32 +1,65 @@
+// DreamTime.
+// Copyright (C) DreamNet. All rights reserved.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License 3.0 as published by
+// the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
+//
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2020.
+
+import { isNil } from 'lodash'
 import dayjs from 'dayjs'
 import { Consola } from './consola'
 
 const consola = Consola.create('timer')
 
 export class Timer {
-  constructor() {
-    this.startTime = undefined
+  startTime
+
+  endTime
+
+  duration = 0
+
+  interval
+
+  free() {
+    clearInterval(this.interval)
+    this.interval = null
+  }
+
+  reset() {
+    this.startTime = null
+
+    this.endTime = null
+
     this.duration = 0
-    this.interval = undefined
+
+    this.free()
   }
 
   start() {
+    this.reset()
+
     this.startTime = dayjs()
-    this.duration = 0
-    this.interval = setInterval(this.handle.bind(this), 1000)
+
+    this.interval = setInterval(this.update.bind(this), 500)
   }
 
-  handle() {
+  update() {
     this.duration = dayjs().diff(this.startTime, 'second')
 
-    if (this.duration > 3600) {
-      // this does not seem normal.
+    if (this.duration > 10800) {
+      // This does not seem normal.
       consola.warn('Timer out of control.').report()
       this.stop()
     }
   }
 
   stop() {
-    clearInterval(this.interval)
+    this.free()
+
+    this.endTime = dayjs()
+
+    this.duration = this.endTime.diff(this.startTime, 'second')
   }
 }

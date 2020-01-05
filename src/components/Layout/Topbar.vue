@@ -16,15 +16,15 @@
     </div>
 
     <div class="topbar__buttons">
-      <button type="button" @click="minimize">
+      <button id="minimize" type="button" @click="minimize">
         <font-awesome-icon icon="minus" />
       </button>
 
-      <button type="button" @click="maximize">
+      <button id="maximize" type="button" @click="maximize">
         <font-awesome-icon :icon="['far', 'square']" />
       </button>
 
-      <button type="button" class="close" @click="close">
+      <button id="close" type="button" class="close" @click="close">
         <font-awesome-icon icon="times" />
       </button>
     </div>
@@ -34,7 +34,9 @@
 <script>
 import dayjs from 'dayjs'
 
-const { activeWindow, api } = $provider.util
+const { getCurrentWindow } = require('electron').remote
+
+const { api } = $provider.util
 
 export default {
   data: () => ({
@@ -75,11 +77,19 @@ export default {
 
   methods: {
     minimize() {
-      activeWindow().minimize()
+      try {
+        getCurrentWindow().minimize()
+      } catch (error) {
+        throw new Exception('There was a problem trying to minimize the window...', error)
+      }
     },
 
     maximize() {
-      activeWindow().maximize()
+      try {
+        getCurrentWindow().maximize()
+      } catch (error) {
+        throw new Exception('There was a problem trying to maximize the window...', error)
+      }
     },
 
     close() {
