@@ -111,9 +111,9 @@ export class File {
           fs.unlinkSync(filepath)
           consola.debug(`File deleted: ${filepath}`)
         })
-      } else {
-        this.open(filepath)
       }
+
+      this.open(filepath)
     }
   }
 
@@ -127,6 +127,7 @@ export class File {
     }
 
     const metadata = await getMetadata(filepath)
+
     return this.setMetadata(metadata)
   }
 

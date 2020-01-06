@@ -14,7 +14,7 @@
 
   <!-- Update available -->
   <box-item
-    v-else-if="!updater.update.active"
+    v-else
     :label="`${projectTitle} ${updater.latest.tag_name} available.`"
     icon="fire-alt"
     class="update-item"

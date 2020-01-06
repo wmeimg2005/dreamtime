@@ -13,10 +13,16 @@ import {
 } from '~/modules/consola'
 
 const { getPath } = $provider.paths
+const { fs } = $provider
 
 // logger setup.
+const logDate = new Date().toJSON().slice(0, 10)
+
+const logDir = getPath('userData', 'logs', logDate)
+fs.ensureDirSync(logDir)
+
 Logger.setOptions({
-  filename: getPath('userData', 'logs', new Date().toJSON().slice(0, 10), 'renderer.log'),
+  filename: getPath('userData', 'logs', logDate, 'renderer.log'),
   logLevel: process.env.LOG || 'debug',
 })
 
@@ -32,6 +38,6 @@ window.LogEvent = LogEvent
 window.Warning = Warning
 window.Exception = Exception
 
-export default ({ redirect, router }) => {
+export default ({ redirect }) => {
   window.$redirect = redirect
 }

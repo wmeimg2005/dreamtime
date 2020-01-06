@@ -40,12 +40,12 @@
         </div>
 
         <!-- Buttons -->
-        <button v-show="!photo.running && !photo.waiting" class="button button--success" @click.prevent="start">
+        <button v-show="!photo.running && !photo.waiting" class="button button--success" @click.prevent="add">
           <span class="icon"><font-awesome-icon icon="play" /></span>
           <span>Add to queue</span>
         </button>
 
-        <button v-show="photo.waiting" class="button button--danger" @click.prevent="removeFromQueue">
+        <button v-show="photo.waiting" class="button button--danger" @click.prevent="cancel">
           <span>Remove from queue</span>
         </button>
 
@@ -74,7 +74,6 @@
 
 <script>
 import { isNil } from 'lodash'
-import Swal from 'sweetalert2/dist/sweetalert2.js'
 import { Nudify } from '~/modules/nudify'
 
 const { shell } = $provider.api
@@ -88,7 +87,7 @@ export default {
       return
     }
 
-    const photo = Nudify.getPhoto(params.id)
+    const photo = Nudify.getPhotoById(params.id)
 
     if (isNil(photo)) {
       redirect('/')
@@ -110,13 +109,17 @@ export default {
 
   created() {
     const { params } = this.$route
-    this.photo = Nudify.getPhoto(params.id)
+    this.photo = Nudify.getPhotoById(params.id)
   },
 
   methods: {
-    start() {
-      this.photo.addToQueue()
+    add() {
+      this.photo.add()
       this.$router.push(`/nudify/${this.photo.id}/results`)
+    },
+
+    cancel() {
+      this.photo.cancel()
     },
 
     stop() {
@@ -127,27 +130,9 @@ export default {
       shell.openItem(this.photo.getFolderPath())
     },
 
-    removeFromQueue() {
-      this.photo.removeFromQueue()
-    },
-
-    async forget() {
-      const response = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'Forgetting the photo will remove it from the queue (but not the files) and free up memory.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#F44336',
-        confirmButtonText: 'Yes, forget it',
-      })
-
-      if (!response.value) {
-        return
-      }
-
-      Nudify.forget(this.photo)
-
+    forget() {
       this.$router.push(`/`)
+      this.photo.forget()
     },
   },
 }

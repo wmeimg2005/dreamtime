@@ -32,24 +32,23 @@ export default ({ app }, inject) => {
   const { Nudify, NudifyStore } = require('~/modules/nudify')
   const { settings } = require('~/modules/system')
 
-  // settings.
+  // User settings.
   app.$settings = settings
   inject('settings', settings)
 
-  // dreamtime.
+  // DreamTime.
   app.$dream = dream
   inject('dream', dream)
 
-  // nudify.
+  // Nudification/Queue.
   Nudify.setup()
 
-  // nudify store.
+  // Nudify store.
   NudifyStore.setup()
   inject('nudify', NudifyStore)
 
-  // achievements!
+  // Achievements.
   achievements.setup()
 
-  // ready
   consola.info('The front-end is ready!')
 }

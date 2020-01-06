@@ -9,16 +9,16 @@
 
         <div v-show="$nudify.waiting.length > 0" class="section__actions">
           <button
-            v-tooltip="{placement: 'bottom', content: 'Forget all'}"
+            v-tooltip="{placement: 'bottom', content: 'Forget waiting'}"
             class="button button--danger button--xs"
             @click.prevent="$nudify.forgetAll('waiting')">
             <font-awesome-icon icon="trash-alt" />
           </button>
 
           <button
-            v-tooltip="{placement: 'bottom', content: 'Stop all' }"
+            v-tooltip="{placement: 'bottom', content: 'Cancel waiting' }"
             class="button button--xs"
-            @click.prevent="$nudify.stopAll('waiting')">
+            @click.prevent="$nudify.cancelAll('waiting')">
             <font-awesome-icon icon="stop" />
           </button>
         </div>
@@ -54,7 +54,7 @@
           <button
             v-tooltip="'Start all'"
             class="button button--xs"
-            @click.prevent="$nudify.startAll()">
+            @click.prevent="$nudify.addAll()">
             <font-awesome-icon icon="play" />
           </button>
         </div>
@@ -87,9 +87,9 @@
           </button>
 
           <button
-            v-tooltip="'Restart all'"
+            v-tooltip="'Rerun all'"
             class="button button--xs"
-            @click.prevent="$nudify.startAll('finished')">
+            @click.prevent="$nudify.addAll('finished')">
             <font-awesome-icon icon="undo" />
           </button>
         </div>

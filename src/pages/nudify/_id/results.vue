@@ -59,7 +59,7 @@ export default {
 .runs {
   @apply flex flex-wrap justify-between;
 
-  .c-photo-run {
+  .photo-run {
     @apply mb-2;
     width: calc(1/2*100% - (1 - 1/2)*1rem);
 

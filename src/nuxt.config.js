@@ -1,5 +1,4 @@
 const dev = process.env.NODE_ENV === 'development'
-
 const analyze = false
 const uglify = !dev
 const cache = !uglify && dev
@@ -107,7 +106,7 @@ module.exports = {
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#fff' },
+  loading: { color: '#D67411' },
 
   /*
    ** Global CSS

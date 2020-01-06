@@ -50,6 +50,7 @@
 
           <div class="box__content">
             <box-item
+              v-if="!isMacOS"
               label="Device."
               description="Device that will be used to transform photos and choose the appropriate version of DreamPower.">
               <select v-model="$settings.processing.device" class="input">
@@ -58,6 +59,17 @@
                 </option>
                 <option value="GPU">
                   NVIDIA GPU
+                </option>
+              </select>
+            </box-item>
+
+            <box-item
+              v-else
+              label="Device."
+              description="GPU is not available in macOS.">
+              <select v-model="$settings.processing.device" class="input" disabled>
+                <option value="CPU">
+                  CPU
                 </option>
               </select>
             </box-item>
@@ -110,6 +122,10 @@ export default {
   }),
 
   computed: {
+    isMacOS() {
+      return process.platform === 'darwin'
+    },
+
     power() {
       return nucleus.v1?.projects?.dreampower.about || {
         title: 'DreamPower',

@@ -43,12 +43,12 @@ export class BaseUpdater {
   /**
    * @type {Consola}
    */
-  _consola
+  consola
 
   /**
    * @type {axios.AxiosInstance}
    */
-  _http
+  http
 
   /**
    * @type {Object}
@@ -63,7 +63,11 @@ export class BaseUpdater {
   /**
    * @type {string}
    */
-  _currentVersion
+  _currentVersion = 'v0.0.0'
+
+  get currentVersion() {
+    return this._currentVersion
+  }
 
   /**
    * @type {Array}
@@ -71,9 +75,9 @@ export class BaseUpdater {
   downloadUrls = []
 
   /**
-   * @type {import('js-event-bus')}
+   * @type {EventEmitter}
    */
-  _downloadBus
+  downloadEvents
 
   /**
    * @type {Object}
@@ -124,16 +128,13 @@ export class BaseUpdater {
   }
 
   /**
-   * @type {string}
-   */
-  get currentVersion() {
-    return this._currentVersion
-  }
-
-  /**
    * @type {boolean}
    */
   get available() {
+    if (!this.enabled) {
+      return false
+    }
+
     return compareVersions.compare(this.latestCompatibleVersion, this.currentVersion, '>')
   }
 
@@ -177,8 +178,11 @@ export class BaseUpdater {
     })
   }
 
+  /**
+   *
+   */
   constructor() {
-    this._consola = Consola.create(`updater:${this.name}`)
+    this.consola = Consola.create(`updater:${this.name}`)
   }
 
   /**
@@ -188,28 +192,28 @@ export class BaseUpdater {
     this.enabled = false
 
     if (!system.online) {
-      this._consola.warn('No internet connection.')
+      this.consola.warn('No internet connection.')
       return
     }
 
     if (!nucleus.enabled) {
-      this._consola.warn('No connection with Nucleus.')
+      this.consola.warn('No connection with Nucleus.')
       return
     }
 
     if (!this.can) {
-      this._consola.warn('Disabled.')
+      this.consola.warn('Disabled.')
       return
     }
 
     try {
-      this._http = axios.create({
+      this.http = axios.create({
         baseURL: `${GITHUB_API}/${this.githubRepo}`,
         timeout: 3000,
       })
 
       await this._fetchReleases()
-      this._consola.info(`Current: ${this.currentVersion} - Latest Compatible: ${this.latestCompatibleVersion}`)
+      this.consola.info(`Current: ${this.currentVersion} - Latest Compatible: ${this.latestCompatibleVersion}`)
 
       this.refresh()
 
@@ -219,7 +223,7 @@ export class BaseUpdater {
         this.sendNotification()
       }
     } catch (err) {
-      this._consola.warn('Unable to fetch the latest version information.', err)
+      this.consola.warn('Unable to fetch the latest version information.', err)
     }
   }
 
@@ -303,7 +307,7 @@ export class BaseUpdater {
    *
    */
   async _fetchReleases() {
-    const response = await this._http.get('/releases')
+    const response = await this.http.get('/releases')
 
     // only final releases
     const releases = filter(response.data, {
@@ -366,7 +370,7 @@ export class BaseUpdater {
 
       await this.install(filepath)
     } catch (err) {
-      throw new Exception('The installation failed.', err)
+      throw new Exception('The installation failed.', 'There was a problem trying to install the downloaded file, please try again.', err)
     }
   }
 
@@ -395,7 +399,7 @@ export class BaseUpdater {
 
         return filepath
       } catch (err) {
-        this._consola.warn(`Unable to download update from: ${url}`, err).report()
+        this.consola.warn(`Unable to download update from: ${url}`, err).report()
         continue
       }
     }
@@ -408,25 +412,25 @@ export class BaseUpdater {
    * @param {string} url
    */
   _downloadFrom(url) {
-    this._consola.info(`Downloading update from: ${url}`)
+    this.consola.info(`Downloading update from: ${url}`)
     const def = deferred()
 
-    this._downloadBus = download(url, {
+    this.downloadEvents = download(url, {
       filename: this.filename,
     })
 
-    this._downloadBus.on('progress', (payload) => {
+    this.downloadEvents.on('progress', (payload) => {
       this.update.progress = (payload.progress * 100).toFixed(2)
       this.update.total = payload.total
       this.update.written = payload.written
     })
 
-    this._downloadBus.on('error', (err) => {
-      this._downloadBus = null
+    this.downloadEvents.on('error', (err) => {
+      this.downloadEvents = null
       def.reject(err)
     })
 
-    this._downloadBus.on('finish', (filepath) => {
+    this.downloadEvents.on('finish', (filepath) => {
       const stats = statSync(filepath)
       const size = filesize(stats.size, { exponent: 2, output: 'object' })
 
@@ -435,12 +439,12 @@ export class BaseUpdater {
         def.reject(new Warning('Unable to download update.', 'The file is corrupt.'))
       }
 
-      this._downloadBus = null
+      this.downloadEvents = null
       def.resolve(filepath)
     })
 
-    this._downloadBus.on('cancelled', () => {
-      this._downloadBus = null
+    this.downloadEvents.on('cancelled', () => {
+      this.downloadEvents = null
       def.resolve()
     })
 
@@ -451,11 +455,11 @@ export class BaseUpdater {
    *
    */
   cancel() {
-    if (isNil(this._downloadBus)) {
+    if (isNil(this.downloadEvents)) {
       return
     }
 
-    this._downloadBus.emit('cancel')
+    this.downloadEvents.emit('cancel')
   }
 
   /**

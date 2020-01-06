@@ -8,4 +8,5 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 export { Nudify } from './nudify'
+export { NudifyQueue } from './queue'
 export { NudifyStore } from './nudify-store'
