@@ -34,7 +34,7 @@ class LogRocketService extends BaseService {
    * @type {boolean}
    */
   get can() {
-    return isString(this.accessToken) && settings.telemetry.dom && process.env.name === 'production'
+    return isString(this.accessToken) && process.env.name === 'production'
   }
 
   /**
@@ -51,7 +51,11 @@ class LogRocketService extends BaseService {
     return {
       release: this.release,
       shouldCaptureIP: false,
+      console: {
+        isEnabled: true,
+      },
       network: {
+        isEnabled: true,
         requestSanitizer(request) {
           // the user does not want to send private dom.
           privateExtensions.forEach((extension) => {
@@ -67,7 +71,8 @@ class LogRocketService extends BaseService {
         },
       },
       dom: {
-        baseHref: $provider.ngrok.getAddress() || nucleus.urls?.internal?.cdn || null,
+        isEnabled: settings.telemetry?.dom || true,
+        baseHref: $provider.ngrok.getAddress() || nucleus.urls?.internal?.cdn,
       },
     }
   }

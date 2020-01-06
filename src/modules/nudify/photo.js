@@ -10,8 +10,7 @@
 import {
   cloneDeep, isNil, merge, isError,
 } from 'lodash'
-import Queue from 'better-queue'
-import MemoryStore from 'better-queue-memory'
+import { Queue } from '@dreamnet/queue'
 import EventBus from 'js-event-bus'
 import { settings } from '../system'
 import { Consola, handleError } from '../consola'
@@ -333,57 +332,61 @@ export class Photo {
    *
    */
   setupQueue() {
+    /*
     let maxTimeout = settings.processing.device === 'GPU' ? (3 * 60 * 1000) : (20 * 60 * 1000)
 
     if (this.file.mimetype === 'image/gif') {
       maxTimeout += (30 * 60 * 1000)
     }
+    */
 
-    this.queue = new Queue(this.queueTicket, {
-      maxTimeout,
-      afterProcessDelay: 500,
-      batchSize: 1,
-      concurrent: 1,
-      store: new MemoryStore,
+    this.queue = new Queue(this.worker)
+
+    this.queue.on('finished', () => {
+      if (this.runs.length === 0) {
+        this.status = 'pending'
+      } else {
+        this.onFinish()
+      }
+
+      this.consola.debug('🏁 Runs finished. 🏁')
     })
 
-    this.queue.on('drain', () => {
-      this.onFinish()
-      this.consola.debug('Runs finished.')
-    })
-
-    this.queue.on('task_queued', (runId) => {
-      const run = this.getRunById(runId)
+    this.queue.on('task_added', (run) => {
       run.onQueue()
 
       this.onQueueRun()
 
-      this.consola.debug(`Run added: #${runId}`)
+      this.consola.debug(`📷 Run added: #${run.id}`)
     })
 
-    this.queue.on('task_started', (runId) => {
-      const run = this.getRunById(runId)
+    this.queue.on('task_started', (run) => {
       run.onStart()
 
-      this.consola.debug(`Run started: #${runId}`)
+      this.consola.debug(`🚗 Run started: #${run.id}`)
     })
 
-    this.queue.on('task_finish', (runId) => {
-      const run = this.getRunById(runId)
+    this.queue.on('task_finished', (run) => {
       run.onFinish()
 
-      this.consola.debug(`Run finished: #${runId}`)
+      this.consola.debug(`🏁 Run finished: #${run.id}`)
     })
 
-    this.queue.on('task_failed', (runId, error) => {
-      const run = this.getRunById(runId)
+    this.queue.on('task_failed', (run, error) => {
       run.onFail()
 
-      this.consola.warn(`Run failed: #${runId} ${error}`)
+      this.consola.warn(`💥 Run failed: #${run.id} ${error}`)
 
       if (isError(error)) {
         handleError(error)
       }
+    })
+
+    this.queue.on('task_dropped', (run) => {
+      run.stop()
+      run.onFinish()
+
+      this.consola.debug(`⛔ Run dropped: ${run.id}`)
     })
   }
 
@@ -407,10 +410,6 @@ export class Photo {
    */
   cancel() {
     NudifyQueue.cancel(this)
-
-    if (this.waiting) {
-      this.status = 'pending'
-    }
   }
 
   /**
@@ -440,11 +439,11 @@ export class Photo {
       const run = new PhotoRun(it, this)
 
       this.runs.push(run)
-      this.queue.push(run)
+      this.queue.add(run)
     }
 
     await new Promise((resolve) => {
-      this.queue.on('drain', () => {
+      this.queue.on('finished', () => {
         resolve()
       })
     })
@@ -455,9 +454,7 @@ export class Photo {
    * This should only be called from the queue.
    */
   stop() {
-    this.runs.forEach((run) => {
-      this.cancelRun(run)
-    })
+    this.queue.clear()
   }
 
   /**
@@ -465,7 +462,7 @@ export class Photo {
    * @param {PhotoRun} run
    */
   addRun(run) {
-    this.queue.push(run)
+    this.queue.add(run)
   }
 
   /**
@@ -473,27 +470,15 @@ export class Photo {
    * @param {PhotoRun} run
    */
   cancelRun(run) {
-    this.queue.cancel(run.id)
+    this.queue.drop(run)
   }
 
   /**
    *
    * @param {PhotoRun} run
-   * @param {Function} done
    */
-  queueTicket(run, done) {
-    run.start().then(() => {
-      done()
-      return true
-    }).catch((error) => {
-      done(error)
-    })
-
-    return {
-      cancel() {
-        run.stop()
-      },
-    }
+  worker(run) {
+    return run.start()
   }
 
   /**

@@ -15,33 +15,42 @@ import { handleError } from '~/modules/consola'
 
 // eslint-disable-next-line no-unused-vars
 export default async ({ app }, inject) => {
-  // catch errors.
+  // Error Handlers.
   window.addEventListener('error', (event) => handleError(event))
 
   window.addEventListener('unhandledrejection', (rejection) => handleError(rejection.reason))
 
   Vue.config.errorHandler = (err) => handleError(err)
 
-  // analytics.
+  // Analytics.
   await nucleus.setup()
 
-  // bug and session tracking.
-  await Promise.all([
+  // Bug/Session tracking.
+  Promise.all([
     rollbar.setup(),
     logrocket.setup(),
   ])
 
-  // app requirements.
+  // Requirements check.
   await requirements.setup()
 
-  // update providers.
-  await Promise.all([
-    dreamtime.setup(),
-    dreampower.setup(),
-    checkpoints.setup(),
-  ])
+  // Update providers.
+  if (!requirements.power.installed || !requirements.power.checkpoints) {
+    // This information is needed for the wizard.
+    await Promise.all([
+      dreamtime.setup(),
+      dreampower.setup(),
+      checkpoints.setup(),
+    ])
+  } else {
+    Promise.all([
+      dreamtime.setup(),
+      dreampower.setup(),
+      checkpoints.setup(),
+    ])
+  }
 
-  // shortcuts.
+  // Shortcuts.
   inject('provider', $provider)
   inject('nucleus', nucleus)
 }

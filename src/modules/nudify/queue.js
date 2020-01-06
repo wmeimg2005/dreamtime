@@ -8,8 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2020.
 
 import { isError } from 'lodash'
-import Queue from 'better-queue'
-import MemoryStore from 'better-queue-memory'
+import { Queue } from '@dreamnet/queue'
 import { Consola, handleError } from '../consola'
 
 const consola = Consola.create('queue')
@@ -28,67 +27,49 @@ export const NudifyQueue = {
    *
    */
   setup() {
-    this.queue = new Queue(this.queueTicket, {
-      maxTimeout: (3 * 60 * 60 * 1000), // 3 hours.
-      afterProcessDelay: 1000,
-      batchSize: 1,
-      concurrent: 1,
-      store: new MemoryStore,
-    })
+    this.queue = new Queue(this.worker)
 
-    const { Nudify } = require('./nudify')
-
-    this.queue.on('task_queued', (photoId) => {
-      const photo = Nudify.getPhotoById(photoId)
+    this.queue.on('task_added', (photo) => {
       photo.onQueue()
 
-      consola.debug(`Photo added: ${photoId}`)
+      consola.debug(`📷 Photo added: ${photo.file.fullname}`)
     })
 
-    this.queue.on('task_started', (photoId) => {
-      const photo = Nudify.getPhotoById(photoId)
+    this.queue.on('task_started', (photo) => {
       photo.onStart()
 
-      consola.debug(`Photo started: #${photoId}`)
+      consola.debug(`🚗 Photo started: ${photo.file.fullname}`)
     })
 
-    this.queue.on('task_finish', (photoId) => {
-      // const photo = Nudify.getPhotoById(photoId)
+    this.queue.on('task_finished', (photo) => {
       // photo.onFinish()
 
-      consola.debug(`Photo transformed: ${photoId}`)
+      consola.debug(`🏁 Photo finished: ${photo.file.fullname}`)
     })
 
-    this.queue.on('task_failed', (photoId, error) => {
-      const photo = Nudify.getPhotoById(photoId)
+    this.queue.on('task_failed', (photo, error) => {
       photo.onFinish()
 
-      consola.debug(`Photo failed: ${photoId} ${error}`)
+      consola.debug(`💥 Photo failed: ${photo.file.fullname} ${error}`)
 
       if (isError(error)) {
         handleError(error)
       }
+    })
+
+    this.queue.on('task_dropped', (photo) => {
+      photo.stop()
+
+      consola.debug(`⛔ Photo dropped: ${photo.id}`)
     })
   },
 
   /**
    *
    * @param {Photo} photo
-   * @param {Function} done
    */
-  queueTicket(photo, done) {
-    photo.start().then(() => {
-      done()
-      return true
-    }).catch((error) => {
-      done(error)
-    })
-
-    return {
-      cancel() {
-        photo.stop()
-      },
-    }
+  worker(photo) {
+    return photo.start()
   },
 
   /**
@@ -96,7 +77,7 @@ export const NudifyQueue = {
    * @param {Photo} photo
    */
   add(photo) {
-    this.queue.push(photo)
+    this.queue.add(photo)
   },
 
   /**
@@ -104,6 +85,6 @@ export const NudifyQueue = {
    * @param {Photo} photo
    */
   cancel(photo) {
-    this.queue.cancel(photo.id)
+    this.queue.drop(photo)
   },
 }

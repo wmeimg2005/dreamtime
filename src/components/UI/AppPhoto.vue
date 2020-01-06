@@ -42,6 +42,7 @@ export default {
   img {
     @apply w-full rounded-t shadow-md;
     height: auto;
+    max-height: 300px;
   }
 
   .photo__label {

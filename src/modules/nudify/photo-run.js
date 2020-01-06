@@ -246,7 +246,7 @@ export class PhotoRun {
 
     this.process.on('fail', (fileError) => {
       if (fileError) {
-        def.reject(new Warning(`Run ${this.id} failed!`, 'DreamPower has transformed the photo but could not save it.', fileError))
+        def.reject(new Warning(`Run ${this.id} has failed!`, 'The photo has been transformed but could not be saved. Please make sure you have enough disk space and that DreamTime can write to it.', fileError))
       } else {
         def.reject(this.getPowerError())
       }
@@ -328,7 +328,7 @@ export class PhotoRun {
       return null
     }
 
-    const title = `Run ${this.id} has failed.`
+    const title = `Run ${this.id} has failed!`
 
     const extra = {
       terminal: this.cli.lines.map((item) => item.text),

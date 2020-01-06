@@ -89,7 +89,7 @@
     </div>
 
     <!-- Maskfin Dialog -->
-    <dialog ref="maskfinDialog">
+    <dialog v-if="hasMaskfin" ref="maskfinDialog">
       <div class="dialog__content dialog__maskfin">
         <div class="maskfin__preview">
           <img :src="run.maskfinFile.path">

@@ -54,5 +54,9 @@
   {
     "query": "file not a supported format",
     "message": "There was a problem loading the photo, please make sure it is not corrupt and is of a valid format."
+  },
+  {
+    "query": "The final result is not a valid image file",
+    "message": "The photo has been transformed but could not be saved. Please make sure you have enough disk space and that DreamTime can write to it."
   }
 ]

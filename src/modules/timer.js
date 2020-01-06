@@ -7,7 +7,6 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2020.
 
-import { isNil } from 'lodash'
 import dayjs from 'dayjs'
 import { Consola } from './consola'
 
