@@ -135,7 +135,7 @@ export default {
       transition: all .1s ease-in-out;
 
       &:hover {
-        @apply bg-dark-600 text-white;
+        @apply bg-dark-700 text-white;
       }
     }
 

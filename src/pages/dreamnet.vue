@@ -106,6 +106,7 @@ export default {
     @apply absolute h-full w-full;
     @apply flex items-center justify-center;
     @apply px-6 bg-black-80 opacity-0;
+    backdrop-filter: blur(6px);
   }
 
   .header__content {

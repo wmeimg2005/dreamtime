@@ -108,12 +108,16 @@ export class Photo {
   /**
    * @type {Object}
    */
-  overlay = {
-    startX: 0,
-    startY: 0,
-    endX: 0,
-    endY: 0,
-  }
+  cropData
+
+  /**
+   * @type {Object}
+   * @property {number} startX
+   * @property {number} startY
+   * @property {number} endX
+   * @property {number} endY
+   */
+  overlay
 
   /**
    * @type {Consola}
@@ -152,14 +156,23 @@ export class Photo {
   get scaleMode() {
     const { scaleMode } = this.preferences.advanced
 
-    if (scaleMode === 'cropjs' && !this.fileCrop.exists) {
-      // no crop, automatically rescale for convenience
-      return 'auto-rescale'
+    if (scaleMode === 'cropjs') {
+      if (!this.canModify) {
+        this.consola.debug('Wanted to use the cropper but we cannot modify.')
+        return 'auto-resize'
+      }
+
+      if (!this.fileCrop.exists) {
+        this.consola.debug('Wanted to use the cropper but the file does not exist.')
+
+        // The Cropper has not been used.
+        return 'auto-resize'
+      }
     }
 
-    if ((scaleMode === 'cropjs' || scaleMode === 'overlay') && !this.canModify) {
-      // this file can't be modified
-      return 'auto-rescale'
+    if (scaleMode === 'overlay' && isNil(this.overlay)) {
+      // The Cropper has not been used.
+      return 'auto-resize'
     }
 
     return scaleMode
