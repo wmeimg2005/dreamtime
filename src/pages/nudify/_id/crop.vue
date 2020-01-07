@@ -68,6 +68,8 @@
 </template>
 
 <script>
+import { clone } from 'lodash'
+
 export default {
   computed: {
     photo() {
@@ -90,9 +92,19 @@ export default {
     async create() {
       const Cropper = require('cropperjs')
 
-      this.photo.cropper = new Cropper(this.$refs.cropCanvas, {
+      const canvas = this.$refs.cropCanvas
+
+      this.photo.cropper = new Cropper(canvas, {
         aspectRatio: 1,
         wheelZoomRatio: 0.05,
+        ready: () => {
+          const { cropper } = this.photo
+          cropper.setCropBoxData(this.photo.cropData)
+
+          canvas.addEventListener('crop', () => {
+            this.photo.cropData = cropper.getCropBoxData()
+          })
+        },
       })
 
       this.reload()

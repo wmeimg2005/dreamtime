@@ -96,21 +96,29 @@ export default {
     async create() {
       const Cropper = require('cropperjs')
 
-      this.$refs.cropCanvas.addEventListener('crop', () => {
-        const data = this.cropper.getData()
+      const canvas = this.$refs.cropCanvas
 
-        this.photo.overlay = {
-          startX: round(data.x),
-          startY: round(data.y),
-          endX: round(data.x) + round(data.width),
-          endY: round(data.y) + round(data.height),
-        }
-      })
-
-      this.cropper = new Cropper(this.$refs.cropCanvas, {
+      this.cropper = new Cropper(canvas, {
         viewMode: 1,
         aspectRatio: 1,
         wheelZoomRatio: 0.05,
+        ready: () => {
+          const { cropper } = this
+          cropper.setCropBoxData(this.photo.cropData)
+
+          canvas.addEventListener('crop', () => {
+            const data = cropper.getData()
+
+            this.photo.cropData = cropper.getCropBoxData()
+
+            this.photo.overlay = {
+              startX: round(data.x),
+              startY: round(data.y),
+              endX: round(data.x) + round(data.width),
+              endY: round(data.y) + round(data.height),
+            }
+          })
+        },
       })
 
       this.reload()
