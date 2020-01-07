@@ -159,6 +159,6 @@ export default {
 }
 
 .nudify__content {
-  @apply flex-1;
+  @apply flex-1 overflow-x-auto;
 }
 </style>

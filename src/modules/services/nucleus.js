@@ -10,7 +10,7 @@
 import { isNil } from 'lodash'
 import axios from 'axios'
 import { BaseService } from './base'
-import { settings } from '../system'
+import { settings } from '../system/settings'
 import { Consola } from '../consola'
 
 const { system } = $provider
@@ -37,6 +37,19 @@ export class NucleusService extends BaseService {
   }
 
   /**
+   * @type {Object}
+   */
+  get config() {
+    return {
+      disableTracking: false,
+      disableErrorReports: true,
+      userId: settings.user,
+      version: process.env.npm_package_version,
+      persist: true,
+    }
+  }
+
+  /**
    * Setup service
    */
   async setup() {
@@ -47,28 +60,19 @@ export class NucleusService extends BaseService {
     try {
       const Nucleus = require('nucleus-nodejs')
 
-      // nucleus configuration
-      const config = {
-        disableTracking: settings.telemetry.enabled === false,
-        disableErrorReports: true,
-        userId: settings.user,
-        version: process.env.npm_package_version,
-        persist: true,
-      }
-
-      Nucleus.init(this.appId, config)
+      Nucleus.init(this.appId, this.config)
 
       Nucleus.appStarted()
 
       this.service = Nucleus
+      this.enabled = true
 
       await this.fetchData()
       setInterval(this.fetchData.bind(this), 15 * 60 * 1000)
 
-      this.enabled = true
-
       consola.info('Nucleus enabled!')
       consola.debug(`App ID: ${this.appId}`)
+      consola.debug(this.config)
     } catch (err) {
       consola.warn('Nucleus setup failed!', err)
     }

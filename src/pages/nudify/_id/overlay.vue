@@ -19,15 +19,11 @@
 
         <div class="box__content">
           <p>
-            This tool allows you to select which area of the photo you want to cut, transform and then restore to the original photo.
+            This tool allows you to manually select the area you want to be cropped, nudified and then restored to the original photo.
           </p>
 
           <p>
             It is perfect for big photos where you just want to transform a specific area but you don't want to lose everything else.
-          </p>
-
-          <p>
-            <font-awesome-icon icon="mouse-pointer" /> Move the photo by dragging it with the mouse, you can zoom in or out using the mouse wheel.
           </p>
         </div>
       </section>
@@ -35,18 +31,39 @@
       <section class="box">
         <div class="box__header">
           <h2 class="title">
-            <font-awesome-icon icon="question-circle" /> How to obtain better results?
+            <font-awesome-icon icon="mouse-pointer" /> Commands
           </h2>
         </div>
 
         <div class="box__content">
           <p>
-            <ul>
-              <li>The person is standing in a straight position without crossing arms or legs.</li>
-              <li>The person is looking towards the camera.</li>
-              <li>The person wears light clothes. Bikinis work better.</li>
-              <li>The person's body is visible and unobstructed.</li>
-            </ul>
+            - Increase or decrease the zoom with the mouse wheel.
+          </p>
+
+          <p>
+            - Click and drag somewhere in the photo to create the crop box.
+          </p>
+
+          <p>
+            - You can move the crop box by dragging it.
+          </p>
+
+          <p>
+            - You can increase or decrease the size of the cropbox by dragging any of the anchor points in the corners.
+          </p>
+        </div>
+      </section>
+
+      <section class="box">
+        <div class="box__header">
+          <h2 class="title">
+            <font-awesome-icon icon="exclamation-triangle" /> Warning.
+          </h2>
+        </div>
+
+        <div class="box__content">
+          <p>
+            This tool can dramatically decrease the quality of some photos. (blurry photos)
           </p>
         </div>
       </section>
@@ -56,7 +73,6 @@
 
 <script>
 import { round } from 'lodash'
-import Cropper from 'cropperjs'
 
 export default {
   data: () => ({
@@ -78,6 +94,8 @@ export default {
      *
      */
     async create() {
+      const Cropper = require('cropperjs')
+
       this.$refs.cropCanvas.addEventListener('crop', () => {
         const data = this.cropper.getData()
 
@@ -91,25 +109,16 @@ export default {
 
       this.cropper = new Cropper(this.$refs.cropCanvas, {
         viewMode: 1,
-        dragMode: 'move',
-        cropBoxMovable: false,
-        cropBoxResizable: false,
-        toggleDragModeOnDblclick: false,
-        minCropBoxWidth: 512,
-        minCropBoxHeight: 512,
-        maxCropBoxWidth: 512,
-        maxCropBoxHeight: 512,
         aspectRatio: 1,
-        modal: true,
-        guides: true,
-        highlight: true,
-        autoCropArea: 1,
         wheelZoomRatio: 0.05,
       })
 
       this.reload()
     },
 
+    /**
+     *
+     */
     async reload() {
       await this.photo.syncEditor()
       this.cropper.replace(this.photo.fileInput.path)

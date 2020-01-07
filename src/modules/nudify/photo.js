@@ -152,14 +152,18 @@ export class Photo {
   get scaleMode() {
     const { scaleMode } = this.preferences.advanced
 
-    if (scaleMode === 'cropjs' && !this.fileCrop.exists) {
-      // no crop, automatically rescale for convenience
-      return 'auto-rescale'
-    }
+    if (scaleMode === 'cropjs') {
+      if (!this.canModify) {
+        this.consola.debug('Wanted to use the cropper but we cannot modify.')
+        return 'auto-rescale'
+      }
 
-    if ((scaleMode === 'cropjs' || scaleMode === 'overlay') && !this.canModify) {
-      // this file can't be modified
-      return 'auto-rescale'
+      if (!this.fileCrop.exists) {
+        this.consola.debug('Wanted to use the cropper but the file does not exist.')
+
+        // no crop, automatically rescale for convenience
+        return 'auto-rescale'
+      }
     }
 
     return scaleMode

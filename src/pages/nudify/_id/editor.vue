@@ -5,8 +5,7 @@
 </template>
 
 <script>
-import ImageEditor from 'tui-image-editor'
-import { blackTheme } from '~/modules/editor.theme'
+
 
 export default {
   computed: {
@@ -24,6 +23,9 @@ export default {
      *
      */
     async create() {
+      const ImageEditor = require('tui-image-editor')
+      const { blackTheme } = require('~/modules/editor.theme')
+
       this.photo.editor = new ImageEditor(this.$refs.imageEditor, {
         includeUI: {
           loadImage: {

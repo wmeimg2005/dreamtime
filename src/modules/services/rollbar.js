@@ -104,6 +104,7 @@ class RollbarService extends BaseService {
 
       consola.info('Rollbar started!')
       consola.debug(`Access Token: ${this.accessToken}`)
+      consola.debug(this.config)
     } catch (err) {
       consola.warn('Rollbar setup failed!', err)
     }
