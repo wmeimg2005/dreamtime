@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - feature/*
+      - release/*
       - hotfix/*
     tags:
       - v*
@@ -17,11 +17,11 @@ on:
 
 jobs:
   build:
-    name: Build (${{ matrix.os-short }})
+    name: Build (${{ matrix.platform }})
     runs-on: ${{ matrix.os }}
 
     # Strategy
-    # or a.k.a variables for multiple platforms
+    # (variables for multiple platforms)
     # https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategy
     strategy:
       fail-fast: false
@@ -33,14 +33,14 @@ jobs:
 
         include:
           - os: ubuntu-latest # Ubuntu
-            os-short: ubuntu
-            os-extension: snap
+            platform: ubuntu
+            extension: snap
           - os: windows-latest # Windows
-            os-short: windows
-            os-extension: exe
+            platform: windows
+            extension: exe
           - os: macOS-latest # macOS
-            os-short: macos
-            os-extension: dmg
+            platform: macos
+            extension: dmg
 
     steps:
       - name: Dump GitHub context
@@ -83,6 +83,12 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
         run: yarn build
 
+      - name: Build (Portable)
+        working-directory: src
+        env:
+          BUILD_PORTABLE: true
+        run: yarn build:electron
+
       - name: Release
         working-directory: src/scripts
         continue-on-error: true
@@ -92,6 +98,6 @@ jobs:
           DREAMLINK_TOKEN: ${{ secrets.DREAMLINK_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
-          BUILD_OS: ${{ matrix.os-short }}
-          BUILD_OS_EXTENSION: ${{ matrix.os-extension }}
+          BUILD_PLATFORM: ${{ matrix.platform }}
+          BUILD_EXTENSION: ${{ matrix.extension }}
         run: node release.js
