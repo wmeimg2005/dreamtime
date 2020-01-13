@@ -2,9 +2,13 @@
 
 const pkg = require('./package.json')
 
+/**
+ * Windows Release
+ */
 const windows = {
   win: {
-    target: 'nsis',
+    target: process.env.BUILD_PORTABLE ? 'zip' : 'nsis',
+    artifactName: '${productName}-v${version}-windows.${ext}',
     extraResources: [
       {
         from: 'node_modules/regedit/vbs',
@@ -24,13 +28,16 @@ const windows = {
     deleteAppDataOnUninstall: true,
     displayLanguageSelector: true,
     menuCategory: true,
-    artifactName: '${productName}-v${version}-windows.${ext}',
   },
 }
 
+/**
+ * Linux Release
+ */
 const linux = {
   linux: {
-    target: 'snap',
+    target: process.env.BUILD_PORTABLE ? 'zip' : 'snap',
+    artifactName: '${productName}-v${version}-ubuntu.${ext}',
     executableName: process.env.npm_package_name,
     synopsis: pkg.description,
     category: 'Graphics',
@@ -41,14 +48,15 @@ const linux = {
       },
     ],
   },
-  snap: {
-    artifactName: '${productName}-v${version}-ubuntu.${ext}',
-  },
 }
 
+/**
+ * MacOS Release
+ */
 const macos = {
   mac: {
-    target: 'dmg',
+    target: process.env.BUILD_PORTABLE ? 'zip' : 'dmg',
+    artifactName: '${productName}-v${version}-macos.${ext}',
     darkModeSupport: true,
     category: 'public.app-category.graphics-design',
     minimumSystemVersion: '10.15.0',
@@ -61,11 +69,13 @@ const macos = {
   },
   dmg: {
     title: '${productName}',
-    artifactName: '${productName}-v${version}-macos.${ext}',
     backgroundColor: '#000',
   },
 }
 
+/**
+ * Electron Builder
+ */
 module.exports = {
   appId: 'com.dreamnet.dreamtime',
   productName: process.env.npm_package_displayName,

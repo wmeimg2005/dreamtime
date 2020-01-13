@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-
 // DreamTime.
 // Copyright (C) DreamNet. All rights reserved.
 //
@@ -7,11 +6,11 @@
 // it under the terms of the GNU General Public License 3.0 as published by
 // the Free Software Foundation. See <https://www.gnu.org/licenses/gpl-3.0.html>
 //
-// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
+// Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2020.
 
 const Octokit = require('@octokit/rest')
 const mime = require('mime-types')
-const _ = require('lodash')
+const { startsWith, truncate } = require('lodash')
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
@@ -19,255 +18,208 @@ const FormData = require('form-data')
 const Cryptr = require('cryptr')
 const pkg = require('../package.json')
 
-const cryptr = new Cryptr(process.env.SECRET_KEY)
+// Settings
 const GITHUB_ORG = 'dreamnettech'
 const GITHUB_REPO = 'dreamtime'
+const VERSION = `v${pkg.version}`
 
-const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
-})
+// Encryption key
+const cryptr = new Cryptr(process.env.SECRET_KEY)
 
-const isTagRelease = _.startsWith(process.env.GITHUB_REF, 'refs/tags')
+// Octokit
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN })
 
-const tagName = isTagRelease
-  ? process.env.GITHUB_REF.split('/')[2]
-  : _.truncate(process.env.GITHUB_SHA, { length: 7, omission: '' })
+/**
+ * GitHub Helper
+ */
+const GitHub = {
+  get isTagRelease() {
+    return startsWith(process.env.GITHUB_REF, 'refs/tags')
+  },
 
-const version = `v${pkg.version}`
+  get tagName() {
+    return this.isTagRelease ? process.env.GITHUB_REF.split('/')[2] : truncate(process.env.GITHUB_SHA, { length: 7, omission: '' })
+  },
 
-const fileName = `DreamTime-${version}-${process.env.BUILD_OS}.${process.env.BUILD_OS_EXTENSION}`
-
-const filePath = path.resolve(__dirname, '../../dist', fileName)
-
-async function getGithubReleaseUrl() {
-  let response
-
-  try {
-    response = await octokit.repos.getReleaseByTag({
-      owner: GITHUB_ORG,
-      repo: GITHUB_REPO,
-      tag: tagName,
-    })
-  } catch (err) {
-    if (err.status !== 404) {
-      throw err
-    }
-
-    console.log(`Creating release for tag: ${tagName}...`)
-
+  async getRelease() {
     try {
-      response = await octokit.repos.createRelease({
+      const response = await octokit.repos.getReleaseByTag({
         owner: GITHUB_ORG,
         repo: GITHUB_REPO,
-        tag_name: tagName,
-        name: version,
+        tag: this.tagName,
+      })
+
+      return response.data.upload_url
+    } catch (error) {
+      if (error.status !== 404) {
+        throw error
+      }
+
+      console.log(`Creating release for tag: ${this.tagName}`)
+      return this.createRelease()
+    }
+  },
+
+  async createRelease() {
+    try {
+      const response = await octokit.repos.createRelease({
+        owner: GITHUB_ORG,
+        repo: GITHUB_REPO,
+        tag_name: this.tagName,
+        name: VERSION,
         prerelease: true,
         draft: false,
       })
-    } catch (err) {
-      console.warn(err)
+
+      return response.data.upload_url
+    } catch (error) {
+      console.warn(error)
       console.log('Retrying...')
 
-      // eslint-disable-next-line no-return-await
-      return await getGithubReleaseUrl()
+      return this.getRelease()
+    }
+  },
+}
+
+function Release(extension) {
+  this.extension = extension
+
+  this.fileName = `DreamTime-${VERSION}-${process.env.BUILD_PLATFORM}.${this.extension}`
+
+  this.filePath = path.resolve(__dirname, '../../dist', this.fileName)
+
+  this.stream = fs.createReadStream(this.filePath)
+
+  this.uploadToGithub = async () => {
+    if (!process.env.GITHUB_TOKEN) {
+      console.warn('No GITHUB_TOKEN!')
+      return null
+    }
+
+    try {
+      console.log(`Uploading ${this.fileName} to Github...`)
+
+      const stats = fs.statSync(this.filePath)
+      const url = await GitHub.getRelease()
+
+      const response = await octokit.repos.uploadReleaseAsset({
+        url,
+        headers: {
+          'content-length': stats.size,
+          'content-type': mime.lookup(this.filePath),
+        },
+        name: this.fileName,
+        file: this.stream,
+      })
+
+      return response
+    } catch (err) {
+      console.warn('Github error', err)
+      return null
     }
   }
 
-  return response.data.upload_url
-}
+  this.uploadTo = async (url, formData, headers = {}) => {
+    try {
+      if (!formData) {
+        formData = new FormData()
+      }
 
-async function uploadToGithub(filePath, fileName) {
-  if (!process.env.GITHUB_TOKEN) {
-    console.warn('No GITHUB_TOKEN')
-    return null
+      formData.append('file', this.stream, { filename: this.fileName })
+
+      console.log(`Uploading to ${url}`)
+
+      let response = await axios.post(url, formData, {
+        headers: {
+          ...formData.getHeaders(),
+          ...headers,
+        },
+        timeout: (5 * 60 * 1000),
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      })
+
+      response = response.data
+
+      const responseUrl = cryptr.encrypt(JSON.stringify(response))
+
+      console.log(`${url}: ${responseUrl}`)
+
+      return response
+    } catch (err) {
+      console.warn(`${url} error`, err.response)
+      return null
+    }
   }
 
-  try {
-    console.log(`Uploading ${fileName} to Github...`)
+  this.uploadToAnonFile = () => this.uploadTo('https://api.anonfile.com/upload')
 
-    const stats = fs.statSync(filePath)
-    const url = await getGithubReleaseUrl()
-
-    const response = await octokit.repos.uploadReleaseAsset({
-      url,
-      headers: {
-        'content-length': stats.size,
-        'content-type': mime.lookup(filePath),
-      },
-      name: fileName,
-      file: fs.createReadStream(filePath),
-    })
-
-    return response
-  } catch (err) {
-    console.warn('Github error', err)
-    return null
-  }
-}
-
-// eslint-disable-next-line no-unused-vars
-async function uploadToAnonFile(filepath, filename) {
-  try {
-    console.log(`Uploading ${fileName} to anonfile.com...`)
-
-    const formData = new FormData
-    formData.append('file', fs.createReadStream(filepath), { filename })
-
-    let response = await axios.post('https://api.anonfile.com/upload', formData, {
-      headers: formData.getHeaders(),
-      timeout: (5 * 60 * 1000),
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    })
-
-    response = response.data
-
-    console.log('anonfile.com:', cryptr.encrypt(_.get(response, 'data.file.url.full', 'null')))
-
-    return response
-  } catch (err) {
-    console.warn('anonfile.com error', err)
-    return null
-  }
-}
-
-async function uploadToAnon(filepath, filename) {
-  try {
-    console.log(`Uploading ${fileName} to anonymousfiles.io...`)
-
-    const formData = new FormData
-    formData.append('file', fs.createReadStream(filepath), { filename })
+  this.uploadToAnon = () => {
+    const formData = new FormData()
     formData.append('expires', '6m')
 
-    let response = await axios.post('https://api.anonymousfiles.io', formData, {
-      headers: formData.getHeaders(),
-      timeout: (5 * 60 * 1000),
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    })
-
-    response = response.data
-
-    console.log('anonymousfiles.io:', cryptr.encrypt(_.get(response, 'url', 'null')))
-
-    return response
-  } catch (err) {
-    console.warn('anonymousfiles.io error', err)
-    return null
+    return this.uploadTo('https://api.anonymousfiles.io', formData)
   }
-}
 
-async function uploadToFileIo(filepath, filename) {
-  try {
-    console.log(`Uploading ${fileName} to file.io...`)
-
-    const formData = new FormData
-    formData.append('file', fs.createReadStream(filepath), { filename })
+  this.uploadToFileIo = () => {
+    const formData = new FormData()
     formData.append('expires', '1y')
 
-    let response = await axios.post('https://file.io', formData, {
-      headers: formData.getHeaders(),
-      timeout: (5 * 60 * 1000),
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    })
-
-    response = response.data
-
-    console.log('file.io:', cryptr.encrypt(_.get(response, 'link', 'null')))
-
-    return response
-  } catch (err) {
-    console.warn('file.io error', err)
-    return null
+    return this.uploadTo('https://file.io', formData)
   }
-}
 
-async function uploadToInfura(filepath, filename) {
-  try {
-    console.log(`Uploading ${fileName} to INFURA...`)
-
-    const formData = new FormData
-    formData.append('file', fs.createReadStream(filepath), { filename })
+  this.uploadToInfura = () => {
+    const formData = new FormData()
     formData.append('pin', 'true')
 
-    let response = await axios.post('https://ipfs.infura.io:5001/api/v0/add', formData, {
-      headers: formData.getHeaders(),
-      timeout: (5 * 60 * 1000),
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    })
-
-    response = response.data
-
-    console.log('INFURA:', cryptr.encrypt(response.Hash || JSON.stringify(response)))
-
-    return response
-  } catch (err) {
-    console.warn('INFURA error', err)
-    return null
-  }
-}
-
-async function uploadToDreamLink(filepath, filename) {
-  try {
-    console.log(`Uploading ${fileName} to DreamLink...`)
-
-    const formData = new FormData
-    formData.append('file', fs.createReadStream(filepath), { filename })
-    formData.append('pin', 'true')
-
-    let response = await axios.post('http://api.catalina.dreamnet.tech/api/v0/add', formData, {
-      headers: {
-        ...formData.getHeaders(),
-        Authorization: `Basic ${process.env.DREAMLINK_TOKEN}`,
-      },
-      timeout: (5 * 60 * 1000),
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    })
-
-    response = response.data
-
-    console.log('DreamLink:', cryptr.encrypt(response.Hash || JSON.stringify(response)))
-
-    return response
-  } catch (err) {
-    console.warn('DreamLink error', err)
-    return null
-  }
-}
-
-async function upload(filePath, fileName) {
-  const promises = []
-
-  if (isTagRelease) {
-    promises.push(uploadToGithub(filePath, fileName))
+    return this.uploadTo('https://ipfs.infura.io:5001/api/v0/add', formData)
   }
 
-  promises.push([
-    uploadToAnon(filePath, fileName),
-    uploadToFileIo(filePath, fileName),
-    uploadToInfura(filePath, fileName),
-    uploadToDreamLink(filePath, fileName),
-  ])
+  this.uploadToDreamLink = () => this.uploadTo('http://api.link.dreamnet.tech/add', null, {
+    Authorization: `Basic ${process.env.DREAMLINK_TOKEN}`,
+  })
 
-  return Promise.all(promises)
-}
+  this.upload = () => {
+    if (!fs.existsSync(this.filePath)) {
+      console.log('No release found!', {
+        filePath: this.filePath,
+        fileName: this.fileName,
+      })
 
-function main() {
-  if (fs.existsSync(filePath)) {
-    upload(filePath, fileName)
-  } else {
-    console.log('No release found!', {
-      filePath,
-      fileName,
-    })
+      return Promise.resolve()
+    }
+
+    const workload = []
+
+    if (GitHub.isTagRelease) {
+      workload.push(this.uploadToGithub())
+      workload.push(this.uploadToDreamLink())
+    }
+
+    if (process.env.TEST) {
+      workload.push(this.uploadToDreamLink())
+    } else {
+      workload.push([
+        this.uploadToAnon(),
+        this.uploadToFileIo(),
+        this.uploadToInfura(),
+      ])
+    }
+
+    return Promise.all(workload)
   }
 }
 
 process.on('unhandledRejection', (err) => {
   throw err
 })
+
+const installer = new Release(process.env.BUILD_EXTENSION)
+const portable = new Release('zip')
+
+async function main() {
+  await installer.upload()
+  await portable.upload()
+}
 
 main()
