@@ -8,25 +8,25 @@
       <div class="box__content">
         <box-item
           label="DreamPower"
-          description="Location of DreamPower (also known as CLI)">
+          description="Algorithm location.">
           <input v-model="currentValue.folders.cli" readonly class="input" title="Change" @click.prevent="changePower">
         </box-item>
 
         <box-item
           label="Models"
-          description="Location where the transformed photos will be saved.">
+          description="Location where all nudified photos will be saved.">
           <input v-model="currentValue.folders.models" class="input" readonly title="Change" @click.prevent="changeModels">
         </box-item>
 
         <box-item
           label="Cropped"
-          description="Location where the cropped photos will be saved. We recommend selecting a temporary folder.">
+          description="Location where the cropped and editor photos will be saved before nudifying.">
           <input v-model="currentValue.folders.cropped" class="input" readonly title="Change" @click.prevent="changeCropped">
         </box-item>
 
         <box-item
           label="Masks"
-          description="Location where the algorithm masks photos will be saved. We recommend selecting a temporary folder.">
+          description="Location where the algorithm masks photos will be saved.">
           <input v-model="currentValue.folders.masks" class="input" readonly title="Change" @click.prevent="changeMasks">
         </box-item>
       </div>

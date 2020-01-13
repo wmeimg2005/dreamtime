@@ -26,6 +26,13 @@ class CheckpointsUpdater extends BaseUpdater {
   /**
    * @type {string}
    */
+  get githubRepo() {
+    return super.githubRepo || 'dreamnettech/dreampower-checkpoints'
+  }
+
+  /**
+   * @type {string}
+   */
   get currentVersion() {
     if (!requirements.power.checkpoints) {
       return 'v0.0.0'

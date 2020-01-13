@@ -5,7 +5,7 @@
         <box-item
           v-if="!isMacOS"
           label="Device."
-          description="Device that will be used to transform photos. GPU is faster.">
+          description="Device that will be used to nudify. GPU is faster.">
           <select v-model="currentValue.processing.device" class="input">
             <option value="CPU">
               CPU
@@ -30,7 +30,7 @@
         <box-item
           v-if="currentValue.processing.device === 'GPU'"
           label="GPU."
-          description="Graphics card that will be used to transform the photos.">
+          description="Graphics card to use.">
           <select v-model="currentValue.processing.gpus[0]" class="input">
             <option v-for="(device, index) in $provider.system.graphics" :key="index" :value="index">
               {{ device.model }}

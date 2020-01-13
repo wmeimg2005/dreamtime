@@ -80,7 +80,7 @@ export default {
       try {
         getCurrentWindow().minimize()
       } catch (error) {
-        throw new Exception('There was a problem trying to minimize the window...', error)
+        throw new Exception('There was a problem trying to minimize the window.', error)
       }
     },
 
@@ -88,7 +88,7 @@ export default {
       try {
         getCurrentWindow().maximize()
       } catch (error) {
-        throw new Exception('There was a problem trying to maximize the window...', error)
+        throw new Exception('There was a problem trying to maximize the window.', error)
       }
     },
 

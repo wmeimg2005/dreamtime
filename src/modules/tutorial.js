@@ -83,4 +83,76 @@ export const tutorial = {
 
     localStorage.setItem('tutorial.upload', 'true')
   },
+
+  badtime() {
+    const seen = localStorage.getItem('tutorial.badtime')
+
+    if (!isNil(seen)) {
+      return
+    }
+
+    const intro = introJs()
+
+    intro.setOptions({
+      showBullets: false,
+      overlayOpacity: 0.7,
+      steps: [
+        {
+          intro: 'You have unlocked the BadTime easter-egg! Use the arrows on your keyboard to play while your photos are nudified in the background. Try to survive as long as possible! 💀🎮',
+        },
+      ],
+    })
+
+    intro.start()
+
+    localStorage.setItem('tutorial.badtime', 'true')
+  },
+
+  preferences() {
+    const seen = localStorage.getItem('tutorial.preferences')
+
+    if (!isNil(seen)) {
+      return
+    }
+
+    const intro = introJs()
+
+    intro.setOptions({
+      showBullets: false,
+      overlayOpacity: 0.7,
+      steps: [
+        {
+          intro: 'Photo preferences are an important part of DreamTime, each photo has its set of preferences with which it works best. Let me give you some information.',
+        },
+
+        {
+          element: '#preferences-runs',
+          intro: 'In this section you can find the options to execute several transformations in the same photo. The best way to take advantage of them is to increase the number of runs and activate the Randomize or Progressive option so that each run has different preferences and you can save the result that you like best.',
+        },
+
+        {
+          element: '#preferences-body',
+          intro: 'In this section you can customize the size of the body parts, this depends entirely on your tastes!',
+        },
+
+        {
+          element: '#preferences-advanced-scale',
+          intro: 'This option can dramatically increase or decrease the quality of the result. If you come from DeepNude, the Manual Crop option will be the one you feel most comfortable with, but we recommend you experiment with the other options and find the ideal one for your photo.',
+        },
+
+        {
+          element: '#preferences-advanced-color',
+          intro: 'Activating this option will apply an algorithm that could restore the original colors of the photo, it does not always work but it is worth trying.',
+        },
+
+        {
+          intro: 'That\'s all for now, as we said before we recommend you experiment with these preferences, with a little practice you will start creating amazing nudes!',
+        },
+      ],
+    })
+
+    intro.start()
+
+    localStorage.setItem('tutorial.preferences', 'true')
+  },
 }

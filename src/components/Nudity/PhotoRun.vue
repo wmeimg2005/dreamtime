@@ -239,8 +239,7 @@ export default {
 
 <style lang="scss" scoped>
 .photo-run {
-  @apply relative;
-  @apply bg-cover bg-center border-2 border-dark-100;
+  @apply relative border-2 border-dark-100;
   background-image: url('~@/assets/images/curls.png'); /* Background pattern from Toptal Subtle Patterns */
   min-height: 512px;
   transition: all .15s linear;
@@ -268,6 +267,7 @@ export default {
 
   .run__preview {
     @apply absolute opacity-0 left-0 right-0 top-0 bottom-0 z-10;
+    @apply bg-cover bg-center;
     transition: all .3s linear;
   }
 }

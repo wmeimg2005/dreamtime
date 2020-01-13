@@ -31,7 +31,7 @@ class RollbarService extends BaseService {
    * @type {string}
    */
   get accessToken() {
-    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys?.rollbarKey
+    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys?.rollbarKey2
   }
 
   /**
@@ -104,6 +104,7 @@ class RollbarService extends BaseService {
 
       consola.info('Rollbar started!')
       consola.debug(`Access Token: ${this.accessToken}`)
+      consola.debug(this.config)
     } catch (err) {
       consola.warn('Rollbar setup failed!', err)
     }

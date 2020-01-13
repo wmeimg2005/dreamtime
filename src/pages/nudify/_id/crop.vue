@@ -1,7 +1,7 @@
 <template>
   <div class="nudify-cropper">
     <div class="cropper__crop">
-      <canvas ref="cropCanvas" />
+      <canvas ref="cropCanvas" data-private />
     </div>
 
     <div class="cropper__help">
@@ -19,11 +19,7 @@
 
         <div class="box__content">
           <p>
-            This tool allows you to manually crop the photo so that the selected area is resized to 512x512
-          </p>
-
-          <p>
-            <font-awesome-icon icon="mouse-pointer" /> Move the photo by dragging it with the mouse, you can zoom in or out using the mouse wheel.
+            This tool allows you to manually select the area you want to be cropped from the photo and resized.
           </p>
         </div>
       </section>
@@ -31,19 +27,17 @@
       <section class="box">
         <div class="box__header">
           <h2 class="title">
-            <font-awesome-icon icon="question-circle" /> How to obtain better results?
+            <font-awesome-icon icon="mouse-pointer" /> Commands
           </h2>
         </div>
 
         <div class="box__content">
           <p>
-            <ul>
-              <li>Only one person should appear in the photo.</li>
-              <li>The person is standing in a straight position without crossing arms or legs.</li>
-              <li>The person is looking towards the camera.</li>
-              <li>The person wears light clothes. Bikinis work better.</li>
-              <li>The person's body is visible and unobstructed.</li>
-            </ul>
+            - Increase or decrease the zoom with the mouse wheel.
+          </p>
+
+          <p>
+            - Move the photo by dragging it with the mouse.
           </p>
         </div>
       </section>
@@ -51,13 +45,13 @@
       <section class="box">
         <div class="box__header">
           <h2 class="title">
-            <font-awesome-icon icon="exclamation-triangle" /> Use at your own risk.
+            <font-awesome-icon icon="exclamation-triangle" /> Warning.
           </h2>
         </div>
 
         <div class="box__content">
           <p>
-            This tool can dramatically decrease the quality of the photo, its use is not recommended.
+            This tool can dramatically decrease the quality of some photos. (blurry photos)
           </p>
         </div>
       </section>

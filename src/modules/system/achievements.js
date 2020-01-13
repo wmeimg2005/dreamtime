@@ -33,7 +33,7 @@ export const achievements = {
         html: 'You\'re gonna have a bad time.',
         toast: true,
         position: 'bottom-end',
-        timer: 6000,
+        timer: 15000,
         timerProgressBar: true,
       })
 
