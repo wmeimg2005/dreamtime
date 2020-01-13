@@ -11,6 +11,7 @@ import {
   isNil, isEmpty, truncate, deburr, forIn, cloneDeep, random, toString,
 } from 'lodash'
 import deferred from 'deferred'
+import Swal from 'sweetalert2/dist/sweetalert2.js'
 import { File } from '../file'
 import { Timer } from '../timer'
 import cliErrors from '../config/cli-errors'
@@ -246,7 +247,7 @@ export class PhotoRun {
 
     this.process.on('fail', (fileError) => {
       if (fileError) {
-        def.reject(new Warning(`Run ${this.id} has failed!`, 'The photo has been transformed but could not be saved. Please make sure you have enough disk space and that DreamTime can write to it.', fileError))
+        def.reject(new Warning('Nudification failed!', 'The photo has been transformed but could not be saved. Please make sure you have enough disk space and that DreamTime can write to it.', fileError))
       } else {
         def.reject(this.getPowerError())
       }
@@ -328,7 +329,13 @@ export class PhotoRun {
       return null
     }
 
-    const title = `Run ${this.id} has failed!`
+    if (Swal.isVisible()) {
+      // There is already an open modal,
+      // we avoid SPAM of errors to the user.
+      return null
+    }
+
+    const title = 'Nudification failed!'
 
     const extra = {
       terminal: this.cli.lines.map((item) => item.text),
@@ -336,7 +343,7 @@ export class PhotoRun {
 
     for (const payload of cliErrors) {
       if (errorMessage.toLowerCase().includes(payload.query.toLowerCase())) {
-        return new LogEvent('warn', title, payload.message, new Error(errorMessage), extra)
+        return new Warning(title, payload.message, new Error(errorMessage), extra)
       }
     }
 

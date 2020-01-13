@@ -98,8 +98,7 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          element: '#badtime',
-          intro: 'You have unlocked the BadTime easter-egg! Use the arrows on your keyboard to play while your photos are nudified in the background.',
+          intro: 'You have unlocked the BadTime easter-egg! Use the arrows on your keyboard to play while your photos are nudified in the background. Try to survive as long as possible! 💀🎮',
         },
       ],
     })

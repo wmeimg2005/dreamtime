@@ -1,6 +1,6 @@
 <template>
   <div class="nudify-editor">
-    <div ref="imageEditor" class="editor" />
+    <div ref="imageEditor" class="editor" data-private />
   </div>
 </template>
 

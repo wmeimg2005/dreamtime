@@ -102,7 +102,7 @@ export class Consola {
     }
 
     if (logrocket.enabled) {
-      logrocket.track(event)
+      logrocket.track(`${category}.${event}`)
     }
 
     return this

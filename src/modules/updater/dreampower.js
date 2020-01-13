@@ -30,6 +30,13 @@ class DreamPowerUpdater extends BaseUpdater {
   /**
    * @type {string}
    */
+  get githubRepo() {
+    return super.githubRepo || 'dreamnettech/dreampower'
+  }
+
+  /**
+   * @type {string}
+   */
   get platform() {
     let platform = super.platform
 
@@ -87,10 +94,10 @@ class DreamPowerUpdater extends BaseUpdater {
   /**
    *
    */
-  async setup() {
+  async setup(required = false) {
     this._currentVersion = await this._getCurrentVersion()
 
-    await super.setup()
+    await super.setup(required)
   }
 
   /**

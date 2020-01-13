@@ -1,7 +1,7 @@
 <template>
   <div class="nudify-cropper">
     <div class="cropper__crop">
-      <canvas ref="cropCanvas" />
+      <canvas ref="cropCanvas" data-private />
     </div>
 
     <div class="cropper__help">
@@ -23,7 +23,21 @@
           </p>
 
           <p>
-            It is perfect for big photos where you just want to transform a specific area but you don't want to lose everything else.
+            It is perfect to preserve the original dimensions of the photo and only nudify a specific area.
+          </p>
+        </div>
+      </section>
+
+      <section class="box">
+        <div class="box__header">
+          <h2 class="title">
+            <font-awesome-icon icon="mouse-pointer" /> Commands
+          </h2>
+        </div>
+
+        <div class="box__content">
+          <p>
+            - Increase or decrease the zoom with the mouse wheel.
           </p>
         </div>
       </section>

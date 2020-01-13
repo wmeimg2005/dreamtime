@@ -31,7 +31,7 @@ class RollbarService extends BaseService {
    * @type {string}
    */
   get accessToken() {
-    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys?.rollbarKey
+    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys?.rollbarKey2
   }
 
   /**

@@ -1,7 +1,7 @@
 [
   {
-    "query": "Found no NVIDIA driver on your system",
-    "message": "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and the latest drivers."
+    "query": "Found no NVIDIA driver",
+    "message": "Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and the latest drivers installed."
   },
   {
     "query": "The NVIDIA driver on your system is too old",
@@ -16,20 +16,28 @@
     "message": "You have run out of RAM on your system! Try a photo of smaller size or close all the programs you can."
   },
   {
+    "query": "Stopped to avoid memory problems",
+    "message": "You have run out of RAM on your system! Try a photo of smaller size or close all the programs you can."
+  },
+  {
     "query": "CUDA out of memory",
     "message": "You have run out of VRAM on your GPU! Try a photo of smaller size or close all the programs you can."
   },
   {
     "query": "codec can't decode byte",
-    "message": "The algorithm had a problem decoding some characters, this may be because one of the folders is in a path with characters that do not belong to the English alphabet. You can change this in the Folders section of Settings."
+    "message": "There was a problem saving the nudified photo. Please make sure the folders in Settings do not have special characters or spaces."
+  },
+  {
+    "query": "The final result is not a valid image file",
+    "message": "There was a problem saving the nudified photo. Please make sure you have enough disk space and the folders in Settings do not have special characters or spaces."
   },
   {
     "query": "invalid device ordinal",
-    "message": "The selected GPU is not a valid device, please make sure that the GPU option in Settings is valid."
+    "message": "The selected GPU is not a valid device. Please make sure that the GPU option in Settings is valid."
   },
   {
     "query": "Image is not 512 x 512",
-    "message": "Your photo needs to be 512x512 to be transformed, please resize the photo with any of the DreamTime options or manually before uploading."
+    "message": "Your photo needs to be 512x512 to be nudified. Please resize the photo with any of the DreamTime options or manually before uploading."
   },
   {
     "query": "loading Python",
@@ -41,22 +49,34 @@
   },
   {
     "query": "file is not valid image",
-    "message": "There was a problem loading the photo, please make sure it is not corrupt."
+    "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
   },
   {
     "query": "cv2.error",
-    "message": "There was a problem loading the photo, please make sure it is not corrupt."
+    "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
+  },
+  {
+    "query": "is not a valid file or directory or url",
+    "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
+  },
+  {
+    "query": "file not a supported format",
+    "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
   },
   {
     "query": "not compiled with CUDA",
     "message": "You have installed the CPU-only version of DreamPower. Please reinstall DreamPower to get GPU support."
   },
   {
-    "query": "file not a supported format",
-    "message": "There was a problem loading the photo, please make sure it is not corrupt and is of a valid format."
+    "query": "float division by zero",
+    "message": "There was a problem cropping the photo. Please make sure you position the cropper correctly."
   },
   {
-    "query": "The final result is not a valid image file",
-    "message": "The photo has been transformed but could not be saved. Please make sure you have enough disk space and that DreamTime can write to it."
+    "query": "Python was not found",
+    "message": "Python is not installed on the system. Please disable the Use Python option if you are not using the algorithm source code."
+  },
+  {
+    "query": "CUDA error",
+    "message": "Your GPU has reported a problem. Please make sure you have the latest drivers installed or reinstall it to fix any errors."
   }
 ]

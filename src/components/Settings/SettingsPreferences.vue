@@ -83,7 +83,7 @@
         <box-item
           id="preferences-advanced-scale"
           label="Scale method."
-          description="Method to scale the photo to 512x512">
+          description="Method that will be used to scale the photo. Each option can offer different results in each photo.">
           <select v-model="currentValue.advanced.scaleMode" class="input">
             <option value="none">
               None

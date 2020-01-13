@@ -1,7 +1,7 @@
 <template>
   <div class="nudify-cropper">
     <div class="cropper__crop">
-      <canvas ref="cropCanvas" />
+      <canvas ref="cropCanvas" data-private />
     </div>
 
     <div class="cropper__help">

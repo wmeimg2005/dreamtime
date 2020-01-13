@@ -26,12 +26,6 @@ const LEVELS = [
   'error',
 ]
 
-/**
- * @typedef {Object} LogOptions
- * @property {string} title
- * @property {boolean} quiet
- */
-
 export class Log {
   /**
    * @type {Logger.Logger}
@@ -151,6 +145,10 @@ export class Log {
       console.warn('Log could not be handled:', err)
     }
 
+    if (this.error instanceof HandledError) {
+      return
+    }
+
     this.handle().catch((err) => {
       // eslint-disable-next-line no-console
       console.warn('Log could not be handled:', err)
@@ -199,9 +197,8 @@ export class Log {
     // bug tracking.
     if (rollbar.enabled) {
       try {
-        rollbarResponse = rollbar[this.level](this.error || this.message, {
+        rollbarResponse = rollbar[this.level](this.title || this.message, this.error, {
           ...this.extra,
-          title: this.title,
           sessionURL: logrocket.sessionURL,
           snapshot: {
             system: system.snapshot,
@@ -245,7 +242,7 @@ export class Log {
 
     if (isError(this.error)) {
       const stack = he.encode(toString(this.error.stack))
-      html = `${html}<br><br><pre>${stack}</pre>`
+      html = `${html}<details><summary>More information</summary><pre>${stack}</pre></details>`
     }
 
     Swal.fire({

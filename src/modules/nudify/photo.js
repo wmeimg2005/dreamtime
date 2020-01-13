@@ -107,11 +107,6 @@ export class Photo {
 
   /**
    * @type {Object}
-   */
-  cropData
-
-  /**
-   * @type {Object}
    * @property {number} startX
    * @property {number} startY
    * @property {number} endX
@@ -158,21 +153,21 @@ export class Photo {
 
     if (scaleMode === 'cropjs') {
       if (!this.canModify) {
-        this.consola.debug('Wanted to use the cropper but we cannot modify.')
-        return 'auto-resize'
+        this.consola.warn('Wanted to use the cropper but we cannot modify.')
+        return 'auto-rescale'
       }
 
       if (!this.fileCrop.exists) {
-        this.consola.debug('Wanted to use the cropper but the file does not exist.')
+        this.consola.warn('Wanted to use the cropper but the file does not exist.')
 
         // The Cropper has not been used.
-        return 'auto-resize'
+        return 'auto-rescale'
       }
     }
 
     if (scaleMode === 'overlay' && isNil(this.overlay)) {
       // The Cropper has not been used.
-      return 'auto-resize'
+      return 'auto-rescale'
     }
 
     return scaleMode

@@ -34,7 +34,7 @@ class LogRocketService extends BaseService {
    * @type {boolean}
    */
   get can() {
-    return isString(this.accessToken) && process.env.name === 'production'
+    return isString(this.accessToken) && settings.telemetry?.dom && process.env.name === 'production'
   }
 
   /**
@@ -71,7 +71,7 @@ class LogRocketService extends BaseService {
         },
       },
       dom: {
-        isEnabled: settings.telemetry?.dom,
+        isEnabled: true,
         baseHref: $provider.ngrok.getAddress() || nucleus.urls?.internal?.cdn,
       },
     }
@@ -94,6 +94,7 @@ class LogRocketService extends BaseService {
 
       consola.info('LogRocket enabled!')
       consola.debug(`Access Token: ${this.accessToken}`)
+      consola.debug(`User: ${settings.user}`)
       consola.debug(this.config)
     } catch (err) {
       consola.warn('LogRocket setup failed!', err)

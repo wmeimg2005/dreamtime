@@ -23,6 +23,7 @@ export default {
 
   methods: {
     unlock() {
+      tutorial.badtime()
       events.emit('achievements.badtime')
     },
   },

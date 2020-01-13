@@ -30,7 +30,7 @@
         <box-item
           v-if="currentValue.processing.device === 'GPU'"
           label="GPU."
-          description="Graphics card used.">
+          description="Graphics card to use.">
           <select v-model="currentValue.processing.gpus[0]" class="input">
             <option v-for="(device, index) in $provider.system.graphics" :key="index" :value="index">
               {{ device.model }}
