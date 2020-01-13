@@ -39,8 +39,8 @@ export default async ({ app }, inject) => {
     // This information is needed for the wizard.
     await Promise.all([
       dreamtime.setup(),
-      dreampower.setup(),
-      checkpoints.setup(),
+      dreampower.setup(true),
+      checkpoints.setup(true),
     ])
   } else {
     Promise.all([

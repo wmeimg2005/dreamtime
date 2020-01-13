@@ -74,14 +74,39 @@
               :version="item.version" />
           </div>
         </section>
+      </div>
+
+      <div class="about__columns">
+        <!-- Sponsors -->
+        <section class="box box--items is-contributors">
+          <div class="box__content">
+            <box-item
+              icon="thumbs-up"
+              label="Sponsors"
+              description="Incredible services that support the project." />
+
+            <box-item
+              v-for="(item, index) in sponsors"
+              :key="index"
+              :label="item.label"
+              :description="item.description"
+              :href="item.href"
+              :icon="item.icon" />
+
+            <box-item
+              label="Become a sponsor"
+              icon="check-circle"
+              href="https://www.patreon.com/join/dreamnet/checkout?rid=4426478" />
+          </div>
+        </section>
 
         <!-- Supporters -->
         <section class="box box--items is-contributors">
           <div class="box__content">
             <box-item
-              icon="grin-hearts"
+              icon="heart"
               label="Supporters"
-              description="Wonderful people who have helped us make this possible." />
+              description="Wonderful people that without them this would not be possible." />
 
             <box-item
               v-for="(item, index) in supporters"
@@ -156,6 +181,10 @@ export default {
 
         ...online,
       }
+    },
+
+    sponsors() {
+      return nucleus.sponsors || []
     },
 
     supporters() {

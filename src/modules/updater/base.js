@@ -23,7 +23,7 @@ import { Consola } from '../consola'
 const { system } = $provider
 const { getPath } = $provider.paths
 const { existsSync, statSync, download } = $provider.fs
-const { dialog } = $provider.api
+const { dialog, app } = $provider.api
 const { platform } = $provider.util
 
 const extRegex = /(?:\.([^.]+))?$/
@@ -188,17 +188,19 @@ export class BaseUpdater {
   /**
    *
    */
-  async setup() {
+  async setup(required = false) {
     this.enabled = false
 
-    if (!system.online) {
-      this.consola.warn('No internet connection.')
-      return
-    }
+    if (!required) {
+      if (!system.online) {
+        this.consola.warn('No internet connection.')
+        return
+      }
 
-    if (!nucleus.enabled) {
-      this.consola.warn('No connection with Nucleus.')
-      return
+      if (!nucleus.enabled) {
+        this.consola.warn('No connection with Nucleus.')
+        return
+      }
     }
 
     if (!this.can) {
@@ -209,11 +211,11 @@ export class BaseUpdater {
     try {
       this.http = axios.create({
         baseURL: `${GITHUB_API}/${this.githubRepo}`,
-        timeout: 3000,
+        timeout: 6000,
       })
 
       await this._fetchReleases()
-      this.consola.info(`Current: ${this.currentVersion} - Latest Compatible: ${this.latestCompatibleVersion}`)
+      this.consola.info(`Current: ${this.currentVersion} - Latest: ${this.latestCompatibleVersion}`)
 
       this.refresh()
 
@@ -223,11 +225,27 @@ export class BaseUpdater {
         this.sendNotification()
       }
     } catch (err) {
-      this.consola.warn('Unable to fetch the latest version information.', err)
+      this.consola.warn('Unable to fetch the latest version!', err)
+
+      if (required) {
+        dialog.showMessageBoxSync({
+          type: 'error',
+          title: 'Connect to Internet.',
+          message: 'There was a problem getting information on some components needed to download. Please make sure you are connected to the Internet just for this time. DreamTime will restart...',
+        })
+
+        // Restart.
+        app.relaunch()
+        app.quit()
+      }
     }
   }
 
   refresh() {
+    if (!this.enabled) {
+      return
+    }
+
     this.downloadUrls = this._getDownloadUrls()
   }
 

@@ -13,7 +13,7 @@
               Put in Queue
             </option>
             <option value="go-preferences">
-              Put in Pending and open preferences
+              Put in Pending and Open preferences
             </option>
           </select>
         </box-item>

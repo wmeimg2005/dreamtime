@@ -1,6 +1,7 @@
 <template>
   <div class="badtime">
     <iframe
+      id="badtime"
       src="https://badtime.dreamnet.tech"
       name="badtime"
       scrolling="no"
@@ -12,7 +13,7 @@
 </template>
 
 <script>
-import { events } from '~/modules'
+import { events, tutorial } from '~/modules'
 
 export default {
   mounted() {
@@ -21,6 +22,7 @@ export default {
 
   methods: {
     unlock() {
+      tutorial.badtime()
       events.emit('achievements.badtime')
     },
   },

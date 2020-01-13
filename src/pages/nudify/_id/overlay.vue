@@ -1,7 +1,7 @@
 <template>
   <div class="nudify-cropper">
     <div class="cropper__crop">
-      <canvas ref="cropCanvas" />
+      <canvas ref="cropCanvas" data-private />
     </div>
 
     <div class="cropper__help">
@@ -19,15 +19,11 @@
 
         <div class="box__content">
           <p>
-            This tool allows you to select which area of the photo you want to cut, transform and then restore to the original photo.
+            This tool allows you to manually select the area you want to be cropped, nudified and then restored to the original photo.
           </p>
 
           <p>
-            It is perfect for big photos where you just want to transform a specific area but you don't want to lose everything else.
-          </p>
-
-          <p>
-            <font-awesome-icon icon="mouse-pointer" /> Move the photo by dragging it with the mouse, you can zoom in or out using the mouse wheel.
+            It is perfect to preserve the original dimensions of the photo and only nudify a specific area.
           </p>
         </div>
       </section>
@@ -35,18 +31,31 @@
       <section class="box">
         <div class="box__header">
           <h2 class="title">
-            <font-awesome-icon icon="question-circle" /> How to obtain better results?
+            <font-awesome-icon icon="mouse-pointer" /> Commands
           </h2>
         </div>
 
         <div class="box__content">
           <p>
-            <ul>
-              <li>The person is standing in a straight position without crossing arms or legs.</li>
-              <li>The person is looking towards the camera.</li>
-              <li>The person wears light clothes. Bikinis work better.</li>
-              <li>The person's body is visible and unobstructed.</li>
-            </ul>
+            - Increase or decrease the zoom with the mouse wheel.
+          </p>
+
+          <p>
+            - Move the photo by dragging it with the mouse.
+          </p>
+        </div>
+      </section>
+
+      <section class="box">
+        <div class="box__header">
+          <h2 class="title">
+            <font-awesome-icon icon="exclamation-triangle" /> Warning.
+          </h2>
+        </div>
+
+        <div class="box__content">
+          <p>
+            This tool can dramatically decrease the quality of some photos. (blurry photos)
           </p>
         </div>
       </section>

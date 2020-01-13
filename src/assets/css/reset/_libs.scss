@@ -22,6 +22,14 @@
 }
 
 .swal2-html-container {
+  details {
+    @apply mt-6;
+
+    summary {
+      @apply mb-2 text-sm font-bold cursor-pointer outline-none;
+    }
+  }
+
   pre {
     @apply text-xs overflow-auto bg-black p-2;
     max-height: 100px;

@@ -2,7 +2,7 @@
   <section class="box box--items">
     <div class="box__content">
       <box-item :description="`Value: ${currentValue.size}`" :label="`${label} size`">
-        <VueSlider v-model="currentValue.size" :min="0.3" :max="2" :interval="0.05" />
+        <VueSlider v-model="currentValue.size" :min="min" :max="max" :interval="0.05" />
       </box-item>
 
       <box-item
@@ -39,8 +39,8 @@
           <VueSlider
             v-model="randomizeRange"
             :min-range="0.05"
-            :min="minRange"
-            :max="maxRange"
+            :min="min"
+            :max="max"
             :interval="0.05" />
         </box-item>
       </div>
@@ -59,11 +59,11 @@ export default {
       type: String,
       required: true,
     },
-    minRange: {
+    min: {
       type: Number,
       default: 0.3,
     },
-    maxRange: {
+    max: {
       type: Number,
       default: 2,
     },

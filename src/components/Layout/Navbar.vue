@@ -9,13 +9,13 @@
         Settings
       </nuxt-link>
 
-      <a id="guide" class="navbar__item" :href="manualURL" target="_blank">
-        Help
-      </a>
-
       <nuxt-link v-if="unlockedBadTime" class="navbar__item" to="/games/badtime">
         Bad Time
       </nuxt-link>
+
+      <a id="guide" class="navbar__item" :href="manualURL" target="_blank">
+        Help
+      </a>
 
       <a v-if="isDev" class="navbar__item" @click.prevent="createError">
         Force Error
