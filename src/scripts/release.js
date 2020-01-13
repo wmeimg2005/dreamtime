@@ -1,3 +1,4 @@
+/* eslint-disable no-return-await */
 /* eslint-disable no-console */
 // DreamTime.
 // Copyright (C) DreamNet. All rights reserved.
@@ -56,7 +57,7 @@ const GitHub = {
       }
 
       console.log(`Creating release for tag: ${this.tagName}`)
-      return this.createRelease()
+      return await this.createRelease()
     }
   },
 
@@ -76,7 +77,7 @@ const GitHub = {
       console.warn(error)
       console.log('Retrying...')
 
-      return this.getRelease()
+      return await this.getRelease()
     }
   },
 }
@@ -179,21 +180,24 @@ function Release(extension) {
     Authorization: `Basic ${process.env.DREAMLINK_TOKEN}`,
   })
 
-  this.upload = () => {
+  this.upload = async () => {
     if (!fs.existsSync(this.filePath)) {
       console.log('No release found!', {
         filePath: this.filePath,
         fileName: this.fileName,
       })
 
-      return Promise.resolve()
+      return
     }
 
-    const workload = []
+    let workload = []
 
     if (GitHub.isTagRelease) {
       workload.push(this.uploadToGithub())
       workload.push(this.uploadToDreamLink())
+
+      await Promise.all(workload)
+      workload = []
     }
 
     if (process.env.TEST) {
@@ -206,7 +210,7 @@ function Release(extension) {
       ])
     }
 
-    return Promise.all(workload)
+    await Promise.all(workload)
   }
 }
 
