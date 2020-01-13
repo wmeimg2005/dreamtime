@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Help us improve by reporting any problem.
+about: Help us improve DreamTime by reporting problems.
 title: ''
 labels: bug
 assignees: ''
@@ -24,9 +24,10 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Enviroment (please complete the following information):**
- - Version [e.g. 1.0.0]
+ - DreamTime Version [e.g. 1.4.0]
  - OS: [e.g. Windows 10 1803]
- - Report URL: [If applicable, e.g. https://rollbar.com/occurrence/...]
+ - RAM: [e.g. 8 GB]
+ - GPU: [e.g. RTX 2070 8 GB VRAM]
 
 **Additional context**
 Add any other context about the problem here.
