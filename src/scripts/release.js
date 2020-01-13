@@ -89,8 +89,6 @@ function Release(extension) {
 
   this.filePath = path.resolve(__dirname, '../../dist', this.fileName)
 
-  this.stream = fs.createReadStream(this.filePath)
-
   this.uploadToGithub = async () => {
     if (!process.env.GITHUB_TOKEN) {
       console.warn('No GITHUB_TOKEN!')
@@ -110,7 +108,7 @@ function Release(extension) {
           'content-type': mime.lookup(this.filePath),
         },
         name: this.fileName,
-        file: this.stream,
+        file: fs.createReadStream(this.filePath),
       })
 
       return response
@@ -126,7 +124,7 @@ function Release(extension) {
         formData = new FormData()
       }
 
-      formData.append('file', this.stream, { filename: this.fileName })
+      formData.append('file', fs.createReadStream(this.filePath), { filename: this.fileName })
 
       console.log(`Uploading to ${url}`)
 
