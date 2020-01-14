@@ -2,11 +2,12 @@
   <div v-if="photo" class="nudify content__body">
     <div class="nudify__menu">
       <div class="menu__container">
+        <!-- Original Preview -->
         <div class="mb-6 flex justify-center">
           <app-photo :src="photo.file.path" :hover="false" data-private />
         </div>
 
-        <!-- Sections -->
+        <!-- Navigation -->
         <div class="box box--items">
           <div class="box__content">
             <box-item
@@ -15,34 +16,43 @@
               :href="`/nudify/${photo.id}/preferences`" />
 
             <box-item
-              v-show="photo.canModify"
-              label="Editor"
-              icon="paint-brush"
-              :href="`/nudify/${photo.id}/editor`" />
-
-            <box-item
-              v-show="photo.canModify && photo.preferences.advanced.scaleMode === 'cropjs'"
-              label="Crop"
-              icon="crop"
-              :href="`/nudify/${photo.id}/crop`" />
-
-            <box-item
-              v-show="photo.canModify && photo.preferences.advanced.scaleMode === 'overlay'"
-              label="Overlay"
-              icon="magic"
-              :href="`/nudify/${photo.id}/overlay`" />
-
-            <box-item
               label="Results"
               icon="heart"
               :href="`/nudify/${photo.id}/results`" />
           </div>
         </div>
 
+        <!-- Tools -->
+        <div v-if="photo.canModify" class="box box--items">
+          <div class="box__content">
+            <box-item
+              label="Editor"
+              icon="paint-brush"
+              :href="`/nudify/${photo.id}/editor`" />
+
+            <box-item
+              v-if="photo.preferences.advanced.scaleMode === 'cropjs'"
+              label="Crop"
+              icon="crop"
+              :href="`/nudify/${photo.id}/crop`" />
+
+            <box-item
+              v-if="photo.preferences.advanced.scaleMode === 'overlay'"
+              label="Overlay"
+              icon="magic"
+              :href="`/nudify/${photo.id}/overlay`" />
+          </div>
+        </div>
+
         <!-- Buttons -->
         <button v-show="!photo.running && !photo.waiting" class="button button--success" @click.prevent="add">
           <span class="icon"><font-awesome-icon icon="play" /></span>
-          <span>Add to queue</span>
+          <span>Add to Queue</span>
+        </button>
+
+        <button v-show="photo.finished && photo.executions > 1" class="button button--info" @click.prevent="saveAll">
+          <span class="icon"><font-awesome-icon icon="save" /></span>
+          <span>Save all</span>
         </button>
 
         <button v-show="photo.waiting" class="button button--danger" @click.prevent="cancel">
@@ -75,8 +85,6 @@
 <script>
 import { isNil } from 'lodash'
 import { Nudify } from '~/modules/nudify'
-
-const { shell } = $provider.api
 
 export default {
   middleware: ({ route, redirect }) => {
@@ -126,8 +134,12 @@ export default {
       this.photo.cancel()
     },
 
+    saveAll() {
+      this.photo.saveAll()
+    },
+
     openFolder() {
-      shell.openItem(this.photo.getFolderPath())
+      this.photo.openFolder()
     },
 
     forget() {
@@ -140,25 +152,20 @@ export default {
 
 <style lang="scss" scoped>
 .nudify {
-  @apply relative flex;
-  min-height: 100%;
+  @apply relative flex pb-0;
+  height: 100%;
 }
 
 .nudify__menu {
-  @apply mr-4 ;
-  width: 200px;
+  @apply mr-4 pr-6 h-full overflow-y-auto;
+  width: 250px;
 
-  .menu__container {
-    @apply sticky;
-    top: 1.5rem;
-  }
-
-  .button {
+.button {
     @apply block w-full mb-6;
   }
 }
 
 .nudify__content {
-  @apply flex-1 overflow-x-auto;
+  @apply flex-1 h-full overflow-auto;
 }
 </style>

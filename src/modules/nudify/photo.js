@@ -10,6 +10,7 @@
 import {
   cloneDeep, isNil, merge, isError,
 } from 'lodash'
+import path from 'path'
 import { Queue } from '@dreamnet/queue'
 import EventBus from 'js-event-bus'
 import { settings } from '../system'
@@ -24,6 +25,8 @@ import { events } from '../events'
 const { getCurrentWindow } = require('electron').remote
 
 const { getModelsPath, getCropPath } = $provider.paths
+const { fs } = $provider
+const { shell, dialog } = $provider.api
 
 export class Photo {
   /**
@@ -142,6 +145,10 @@ export class Photo {
 
   get started() {
     return this.running || this.finished
+  }
+
+  get executions() {
+    return this.preferences.body.executions
   }
 
   get canModify() {
@@ -306,6 +313,37 @@ export class Photo {
   /**
    *
    */
+  saveAll() {
+    const dir = dialog.showOpenDialogSync({
+      // defaultPath: this.getFolderPath(),
+      properties: ['openDirectory'],
+    })
+
+    if (isNil(dir)) {
+      return
+    }
+
+    if (!fs.existsSync(dir[0])) {
+      return
+    }
+
+    this.consola.debug(`Saving all results in ${dir[0]}`)
+
+    this.runs.forEach((photoRun) => {
+      const savePath = path.join(dir[0], photoRun.outputName)
+
+      this.consola.debug(savePath)
+      photoRun.outputFile.copy(savePath)
+    })
+  }
+
+  openFolder() {
+    shell.openItem(this.getFolderPath())
+  }
+
+  /**
+   *
+   */
   setupPreferences() {
     this.preferences = cloneDeep(settings.payload.preferences)
     let forcedPreferences = {}
@@ -432,9 +470,7 @@ export class Photo {
    * This should only be called from the queue.
    */
   async start() {
-    const { executions } = this.preferences.body
-
-    if (executions === 0) {
+    if (this.executions === 0) {
       return
     }
 
@@ -443,7 +479,7 @@ export class Photo {
 
     // this.onStart()
 
-    for (let it = 1; it <= executions; it += 1) {
+    for (let it = 1; it <= this.executions; it += 1) {
       const run = new PhotoRun(it, this)
 
       this.runs.push(run)

@@ -36,7 +36,11 @@
   }
 
   &[disabled] {
-    @apply opacity-75 cursor-not-allowed;
+    @apply opacity-75 text-generic-900 cursor-not-allowed;
+  }
+
+  &.input--sm {
+    @apply text-sm px-2;
   }
 }
 

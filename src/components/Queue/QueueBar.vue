@@ -25,14 +25,11 @@
       </div>
 
       <div class="jobs__list">
-        <figure
+        <QueuePhoto
           v-for="(photo, index) of $nudify.waiting"
           :key="index"
-          class="job"
-          :class="{ 'job--running': photo.running }"
-          @click.prevent="openJob(photo.id)">
-          <img :src="photo.file.path" data-private>
-        </figure>
+          :photo="photo"
+          data-private />
       </div>
     </section>
 
@@ -61,13 +58,11 @@
       </div>
 
       <div class="jobs__list">
-        <figure
+        <QueuePhoto
           v-for="(photo, index) of $nudify.pending"
           :key="index"
-          class="job"
-          @click.prevent="openJob(photo.id)">
-          <img :src="photo.file.path" data-private>
-        </figure>
+          :photo="photo"
+          data-private />
       </div>
     </section>
 
@@ -96,14 +91,11 @@
       </div>
 
       <div class="jobs__list">
-        <figure
+        <QueuePhoto
           v-for="(photo, index) of $nudify.finished"
           :key="index"
-          class="job"
-          :class="{ 'job--failed': photo.failed }"
-          @click.prevent="openJob(photo.id)">
-          <img :src="photo.file.path" data-private>
-        </figure>
+          :photo="photo"
+          data-private />
       </div>
     </section>
   </div>
@@ -111,11 +103,7 @@
 
 <script>
 export default {
-  methods: {
-    openJob(photoId) {
-      this.$router.push(`/nudify/${photoId}`)
-    },
-  },
+
 }
 </script>
 
@@ -177,7 +165,8 @@ section {
 
 .jobs__list {
   @apply flex-1;
-  @apply px-4 py-2 overflow-y-auto max-h-full;
+  @apply py-2 overflow-y-auto max-h-full;
+  will-change: scroll-position;
 
   .job {
     @apply inline-block mb-2 cursor-pointer;

@@ -1,5 +1,6 @@
 <template>
   <div v-if="isVisible" class="box__item" :class="cssClass" @click="click">
+    <!-- Icon -->
     <slot name="icon">
       <div v-if="icon" class="item__icon">
         <img v-if="isImageIcon" :src="icon">
@@ -7,18 +8,18 @@
       </div>
     </slot>
 
-    <div class="item__content">
-      <div class="item__text">
-        <span class="item__label" v-html="label" />
+    <!-- Label & Description -->
+    <div v-if="label" class="item__content">
+      <span class="item__label" v-html="label" />
 
-        <slot name="description">
-          <span v-if="description" class="item__description" v-html="description" />
-        </slot>
-      </div>
+      <slot name="description">
+        <span v-if="description" class="item__description" v-html="description" />
+      </slot>
+    </div>
 
-      <div class="item__action">
-        <slot />
-      </div>
+    <!-- Actions -->
+    <div v-if="$slots.default" class="item__action" :class="{ 'item__action--full': !hasIcon && !label }">
+      <slot />
     </div>
   </div>
 </template>
@@ -39,7 +40,7 @@ export default {
 
     label: {
       type: String,
-      required: true,
+      default: undefined,
     },
 
     description: {
@@ -66,6 +67,10 @@ export default {
   computed: {
     isVisible() {
       return isNil(this.version) || this.version === dream.version
+    },
+
+    hasIcon() {
+      return !isNil(this.icon) || !isNil(this.$slots.icon)
     },
 
     isImageIcon() {
@@ -117,6 +122,17 @@ export default {
 
 <style lang="scss">
 .box.box--items {
+  &.box--items--horizontal {
+    .box__content {
+      @apply flex;
+    }
+
+    .box__item {
+      @apply flex-1;
+      @apply border-none;
+    }
+  }
+
   .box__content {
     @apply px-0;
   }
@@ -124,7 +140,7 @@ export default {
   .box__item {
     @apply flex px-4 py-2;
     min-height: 50px;
-    transition: all .1s ease-in-out;
+    transition: all .2s ease-in-out;
 
     &.box__item--sub {
       @apply pl-8;
@@ -132,7 +148,6 @@ export default {
 
     &.box__item--link {
       @apply cursor-pointer;
-      transition: all .1s ease-in-out;
 
       &:hover {
         @apply bg-dark-700 text-white;
@@ -146,25 +161,34 @@ export default {
     .item__icon {
       @apply mr-4 flex items-center justify-center text-2xl;
       width: 42px;
+      min-width: 42px;
     }
 
     .item__content {
-      @apply flex-1 flex;
+      @apply flex-1 flex flex-col justify-center;
 
-      .item__text {
-        @apply flex-1 flex flex-col justify-center;
-
-        .item__label {
-          @apply block font-semibold text-generic-400;
-        }
-
-        .item__description {
-          @apply block text-sm;
-        }
+      .item__label {
+        @apply block font-semibold text-generic-400;
       }
 
-      .item__action {
-        @apply w-1/3 ml-4 flex items-center justify-center;
+      .item__description {
+        @apply block text-sm;
+      }
+    }
+
+    .item__action {
+      //@apply flex items-center justify-center;
+
+      .item__label {
+        @apply block font-semibold text-sm text-generic-400;
+      }
+
+      &:not(.item__action--full) {
+        @apply w-1/3 ml-4;
+      }
+
+      &.item__action--full {
+        @apply flex-1;
       }
     }
   }

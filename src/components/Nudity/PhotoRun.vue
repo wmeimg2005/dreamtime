@@ -57,9 +57,9 @@
         </p>
       </div>
 
-      <div v-show="run.finished && !run.failed" class="content__item">
+      <div v-show="run.finished && run.outputFile.exists" class="content__item">
         <button v-tooltip="'Save photo'" class="button button--success button--sm" @click.prevent="save">
-          <font-awesome-icon icon="download" />
+          <font-awesome-icon icon="save" />
         </button>
       </div>
 
@@ -242,7 +242,7 @@ export default {
   @apply relative border-2 border-dark-100;
   background-image: url('~@/assets/images/curls.png'); /* Background pattern from Toptal Subtle Patterns */
   min-height: 512px;
-  transition: all .15s linear;
+  transition: border-color .2s linear;
 
   &.run--failed {
     @apply border-danger-500;
@@ -268,7 +268,7 @@ export default {
   .run__preview {
     @apply absolute opacity-0 left-0 right-0 top-0 bottom-0 z-10;
     @apply bg-cover bg-center;
-    transition: all .3s linear;
+    transition: opacity .3s linear;
   }
 }
 
@@ -277,7 +277,7 @@ export default {
   @apply absolute z-20;
   @apply flex opacity-0 bg-dark-500-80 w-full;
   backdrop-filter: blur(6px);
-  transition: all .15s linear;
+  transition: opacity .1s linear;
 }
 
 .run__preferences {

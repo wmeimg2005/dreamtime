@@ -1,5 +1,11 @@
 <template>
-  <div class="layout">
+  <div
+    class="layout"
+    :class="{'layout--dragging': isDragging}"
+    @dragenter="onDragEnter"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+    @drop="onDrop">
     <!-- Window Buttons -->
     <LayoutTopbar />
 
@@ -7,18 +13,27 @@
     <LayoutNavbar />
 
     <!-- Queue -->
-    <LayoutQueuebar />
+    <QueueBar />
 
     <!-- Content -->
     <div id="layout-content" class="layout__content">
       <nuxt />
     </div>
+
+    <!-- Dragging -->
+    <div class="layout__dropzone">
+      <h2>Drop the dream here!</h2>
+    </div>
   </div>
 </template>
 
 <script>
+import { UploadMixin } from '~/mixins'
+
 export default {
   middleware: ['wizard'],
+
+  mixins: [UploadMixin],
 }
 </script>
 
@@ -30,6 +45,12 @@ export default {
   grid-template-columns: 200px 1fr 200px;
   grid-template-rows: 30px 50px 1fr;
   grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "content content jobbar";
+
+  &.layout--dragging {
+    .layout__dropzone {
+      @apply flex opacity-100;
+    }
+  }
 
   .layout__topbar {
     grid-area: topbar;
@@ -47,6 +68,20 @@ export default {
     @apply relative overflow-hidden overflow-y-auto;
     grid-area: content;
     height: calc(100vh - 80px);
+  }
+
+  .layout__dropzone {
+    @apply absolute left-0 right-0 top-0 bottom-0 z-50;
+    @apply hidden opacity-0 pointer-events-none;
+    @apply bg-dark-900-70 items-center justify-center;
+    @apply border-8 border-dotted;
+    backdrop-filter: blur(6px);
+    transition: opacity .2s ease-in-out;
+    will-change: opacity;
+
+    h2 {
+      @apply text-white font-bold text-3xl;
+    }
   }
 }
 </style>

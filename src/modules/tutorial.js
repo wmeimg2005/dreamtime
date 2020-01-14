@@ -25,26 +25,26 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          intro: 'Welcome to DreamTime! Let me give you some information so you don\'t get lost. Let\'s start with the Nudification page.',
+          intro: 'Welcome to DreamTime! Let me give you some information so you don\'t get lost. Let\'s start with the Nudification process.',
         },
 
         {
-          intro: 'From this page you can upload the photos you want to nudify, DreamTime has several ways to obtain the photo.',
+          intro: 'DreamTime has different ways in which you can upload the photo you want to nudify.',
         },
 
         {
-          element: '#uploader-dropzone',
-          intro: 'The easiest one is to drag and drop the photos to this area. Here you can drop entire folders or even photos from a web browser.',
+          element: '#uploader',
+          intro: 'The easiest one is to drag and drop your photos into the application, no matter what section you are in! Just drag and drop, it\'s that easy. You can drag entire folders, photos from the web browser or even web addresses.',
         },
 
         {
           element: '#uploader-alternatives',
-          intro: 'Below are alternative methods, you can upload photos even from the Internet or Instagram.',
+          intro: 'On this page there are alternative ways, you can upload photos even from the Internet or Instagram.',
         },
 
         {
           element: '#uploader-settings',
-          intro: 'What happens when uploading a photo is controlled by this option, initially it is established that the photos are placed in the Pending Queue. Speaking of the queue...',
+          intro: 'What happens when uploading a photo is controlled by this option, initially it is set that the photos are placed in the Pending Queue. Speaking of the queue...',
         },
 
         {
@@ -59,7 +59,7 @@ export const tutorial = {
 
         {
           element: '#queuebar-pending',
-          intro: 'This section shows the photos that are pending, they will not be nudified until you start the process manually. Just click on the photo and you can access the page with all the information you need.',
+          intro: 'This section shows the photos that are pending, they will not be nudified until you start the process manually.',
         },
 
         {
@@ -138,11 +138,6 @@ export const tutorial = {
         {
           element: '#preferences-advanced-scale',
           intro: 'This option can dramatically increase or decrease the quality of the result. If you come from DeepNude, the Manual Crop option will be the one you feel most comfortable with, but we recommend you experiment with the other options and find the ideal one for your photo.',
-        },
-
-        {
-          element: '#preferences-advanced-color',
-          intro: 'Activating this option will apply an algorithm that could restore the original colors of the photo, it does not always work but it is worth trying.',
         },
 
         {

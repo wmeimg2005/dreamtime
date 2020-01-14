@@ -34,7 +34,7 @@ export default {
           },
           theme: blackTheme,
           initMenu: 'draw',
-          menu: ['draw', 'shape', 'flip', 'rotate', 'text', 'mask'],
+          menu: ['draw', 'shape', 'flip', 'rotate', 'filter', 'mask'],
         },
         usageStatistics: false,
       })
