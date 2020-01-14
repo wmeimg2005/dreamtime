@@ -68,8 +68,6 @@
 </template>
 
 <script>
-import { clone } from 'lodash'
-
 export default {
   computed: {
     photo() {

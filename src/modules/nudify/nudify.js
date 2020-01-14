@@ -170,7 +170,7 @@ export const Nudify = {
 
     Swal.showLoading()
 
-    await delay(1000)
+    await delay(500)
 
     for (const path of paths) {
       // eslint-disable-next-line no-await-in-loop

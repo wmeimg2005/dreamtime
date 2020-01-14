@@ -20,21 +20,6 @@
       </div>
     </div>
 
-    <!-- Dropzone -->
-    <div
-      id="uploader-dropzone"
-      class="uploader__dropzone"
-      :class="{'is-dragging': isDragging}"
-      @dragenter="onDragEnter"
-      @dragover="onDragOver"
-      @dragleave="onDragLeave"
-      @drop="openDrop">
-      <p class="dropzone-hint">
-        <font-awesome-icon icon="camera" />
-        Drop the dream here!
-      </p>
-    </div>
-
     <div id="uploader-alternatives" class="uploader__alt">
       <!-- File -->
       <div class="box">
@@ -129,19 +114,17 @@
 
 <script>
 import {
-  isNil, isEmpty, startsWith,
-  map, isArray,
+  isEmpty, startsWith, map,
 } from 'lodash'
 import { Nudify } from '~/modules/nudify'
-import { Consola } from '~/modules/consola'
 import { tutorial } from '~/modules'
-
-const consola = Consola.create('upload')
+import { UploadMixin } from '~/mixins'
 
 const { instagram } = $provider
-const { dialog } = $provider.api
 
 export default {
+  mixins: [UploadMixin],
+
   props: {
     model: {
       type: String,
@@ -152,7 +135,6 @@ export default {
   data: () => ({
     webAddress: '',
     instagramPhoto: '',
-    isDragging: false,
   }),
 
   mounted() {
@@ -160,28 +142,6 @@ export default {
   },
 
   methods: {
-    /**
-     * File selected, start a new transformation process
-     */
-    addFile(file) {
-      if (isNil(file)) {
-        return
-      }
-
-      Nudify.addFile(file.path)
-    },
-
-    /**
-     *
-     */
-    async addFiles(files) {
-      if (!isArray(files)) {
-        return
-      }
-
-      await Nudify.addFiles(files)
-    },
-
     /**
      *
      */
@@ -199,17 +159,6 @@ export default {
       this.addFiles(paths)
 
       event.target.value = ''
-    },
-
-    /**
-     *
-     */
-    openFolder() {
-      const paths = dialog.showOpenDialogSync({
-        properties: ['openDirectory'],
-      })
-
-      this.addFiles(paths)
     },
 
     /**
@@ -252,53 +201,6 @@ export default {
       consola.track('INSTAGRAM')
 
       this.instagramPhoto = ''
-    },
-
-    /**
-     *
-     */
-    onDragEnter(event) {
-      event.dataTransfer.dropEffect = 'copy'
-      this.isDragging = true
-    },
-
-    /**
-     *
-     */
-    onDragLeave() {
-      this.isDragging = false
-    },
-
-    /**
-     *
-     */
-    onDragOver(event) {
-      event.preventDefault()
-      event.stopPropagation()
-      event.dataTransfer.dropEffect = 'copy'
-      this.isDragging = true
-    },
-
-    /**
-     *
-     */
-    openDrop(event) {
-      event.preventDefault()
-      event.stopPropagation()
-
-      this.isDragging = false
-
-      const { files } = event.dataTransfer
-      const url = event.dataTransfer.getData('url')
-
-      if (url.length > 0) {
-        Nudify.addUrl(url)
-        consola.track('DROP_URL')
-      } else if (files.length > 0) {
-        const paths = map(files, 'path')
-        this.addFiles(paths)
-        consola.track('DROP_FILE')
-      }
     },
   },
 }

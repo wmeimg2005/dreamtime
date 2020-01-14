@@ -23,7 +23,7 @@ Vue.mixin(BaseMixin)
 
 // tippyjs
 tippy.setDefaultProps({
-  delay: 100,
+  delay: [500, 0],
   arrow: true,
 })
 

@@ -1,5 +1,5 @@
 <template>
-  <figure class="c-photo" :class="{'photo--hover': hover}">
+  <figure class="photo" :class="{'photo--hover': hover}">
     <img :src="src">
 
     <p v-if="$slots.default" class="photo__label">
@@ -25,11 +25,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.c-photo {
+.photo {
   @apply relative flex flex-col z-50;
   box-sizing: content-box;
   transition: all 0.2s ease-in-out;
-  max-width: 200px;
 
   &.photo--hover:hover {
     transform: scale(1.5);
