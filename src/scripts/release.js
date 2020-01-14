@@ -146,7 +146,7 @@ function Release(extension) {
 
       return response
     } catch (err) {
-      console.warn(`${url} error`, err.response)
+      console.warn(`${url} error`, err)
       return null
     }
   }
@@ -188,25 +188,30 @@ function Release(extension) {
       return
     }
 
-    let workload = []
-
-    if (GitHub.isTagRelease) {
-      workload.push(this.uploadToGithub())
-      workload.push(this.uploadToDreamLink())
-
-      await Promise.all(workload)
-      workload = []
+    if (!GitHub.isTagRelease) {
+      return
     }
 
-    if (process.env.TEST) {
-      workload.push(this.uploadToDreamLink())
-    } else {
-      workload.push([
-        this.uploadToAnon(),
-        this.uploadToFileIo(),
-        this.uploadToInfura(),
-      ])
+    await this.uploadToGithub()
+    await this.uploadToDreamLink()
+  }
+
+  this.uploadOthers = async () => {
+    if (!fs.existsSync(this.filePath)) {
+      console.log('No release found!', {
+        filePath: this.filePath,
+        fileName: this.fileName,
+      })
+
+      return
     }
+
+    const workload = []
+
+    workload.push([
+      this.uploadToAnon(),
+      this.uploadToFileIo(),
+    ])
 
     await Promise.all(workload)
   }
@@ -222,6 +227,9 @@ const portable = new Release('zip')
 async function main() {
   await installer.upload()
   await portable.upload()
+
+  await installer.uploadOthers()
+  await portable.uploadOthers()
 }
 
 main()

@@ -217,9 +217,9 @@ export class BaseUpdater {
       await this._fetchReleases()
       this.consola.info(`Current: ${this.currentVersion} - Latest: ${this.latestCompatibleVersion}`)
 
-      this.refresh()
-
       this.enabled = true
+
+      this.refresh()
 
       if (this.available) {
         this.sendNotification()
