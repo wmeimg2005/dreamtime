@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isNil, isEmpty, truncate, deburr, forIn, cloneDeep, random, toString,
+  isNil, isEmpty, truncate, deburr, forIn, cloneDeep, random, toString, trim, kebabCase,
 } from 'lodash'
 import deferred from 'deferred'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
@@ -93,10 +93,7 @@ export class PhotoRun {
     const now = Date.now()
     const { file } = this.photo
 
-    const originalName = truncate(
-      deburr(file.name),
-      { length: 30, omission: '' },
-    )
+    const originalName = trim(kebabCase(truncate(deburr(file.name), { length: 20, omission: '' })))
 
     return `${originalName}-${this.id}${now}-dreamtime${file.extension}`
   }
