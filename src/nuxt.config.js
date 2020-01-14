@@ -185,7 +185,7 @@ module.exports = {
 
     whitelistPatterns: [
       /(tippy|vue-slider|cropper|tui|color-picker|swal2|introjs|nuxt)/,
-      /(text|top|bottom)/,
+      /(text|top|bottom|editor|only|fixed|filter|apply|tie|triangle)/,
       /(body|html|pre|svg)/,
     ],
   },
