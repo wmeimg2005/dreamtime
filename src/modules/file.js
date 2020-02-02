@@ -1,4 +1,4 @@
-import { isString, attempt } from 'lodash'
+import { isString, attempt, isNil } from 'lodash'
 import path from 'path'
 import slash from 'slash'
 import { Consola } from './consola'
@@ -6,6 +6,7 @@ import { getMetadata } from '~/workers/fs'
 
 const consola = Consola.create('file')
 const { fs } = $provider
+const { dialog } = $provider.api
 const { getPath } = $provider.paths
 
 /**
@@ -185,8 +186,38 @@ export class File {
    * @param {string} destination
    */
   copy(destination) {
+    if (!fs.existsSync(this.path)) {
+      return this
+    }
+
     fs.copySync(this.path, destination)
     consola.debug(`File copied: ${this.path} -> ${destination}`)
+    return this
+  }
+
+  /**
+   *
+   */
+  save(defaultPath) {
+    if (!fs.existsSync(this.path)) {
+      throw new Warning('The photo no longer exists.', 'Could not save the photo because it has been deleted, this could be caused due to cleaning or antivirus programs.')
+    }
+
+    const savePath = dialog.showSaveDialogSync({
+      defaultPath,
+      filters: [
+        { name: 'PNG', extensions: ['png'] },
+        { name: 'JPG', extensions: ['jpg'] },
+        { name: 'GIF', extensions: ['gif'] },
+      ],
+    })
+
+    if (isNil(savePath)) {
+      return this
+    }
+
+    this.copy(savePath)
+
     return this
   }
 }

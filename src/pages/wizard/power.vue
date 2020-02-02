@@ -30,8 +30,10 @@
       <div class="project__description">
         <p>To make your dreams come true it is necessary to install {{ power.title }}, the algorithm that will handle the entire nudification process.</p>
         <p>Approximately <strong>1 GB</strong> will be downloaded. (Depending on your system)</p>
-        <p>If the download fails please click on the "Mirrors" button to see a list of links where you can download it manually.</p>
-        <p>All downloads are saved in the <strong>Downloads</strong> folder of your operating system.</p>
+
+        <p v-if="requirements.power.installed && !requirements.power.compatible" class="text-danger">
+          The installed version of {{ power.title }} is not compatible with this version of {{ $dream.name }}. Please update.
+        </p>
       </div>
     </div>
 
@@ -94,6 +96,13 @@
             </box-item>
           </div>
         </div>
+
+        <div class="text-center">
+          <button class="button" @click="$dream.openAppDataFolder()">
+            <span class="icon"><font-awesome-icon icon="folder-open" /></span>
+            <span>AppData</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -112,13 +121,14 @@ export default {
   layout: 'wizard',
 
   middleware({ redirect }) {
-    if (requirements.power.installed && !dreampower.available) {
+    if (requirements.power.installed && requirements.power.compatible && !dreampower.available) {
       redirect('/wizard/checkpoints')
     }
   },
 
   data: () => ({
     settings: {},
+    requirements,
   }),
 
   computed: {

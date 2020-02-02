@@ -20,14 +20,6 @@
       <a v-if="isDev" class="navbar__item" @click.prevent="createError">
         Force Error
       </a>
-
-      <a v-if="isDev" href="https://google.com" class="navbar__item">
-        External Page
-      </a>
-
-      <a v-if="isDev" href="https://google.com" target="_blank" class="navbar__item">
-        Popup
-      </a>
     </div>
 
     <div class="navbar__right">

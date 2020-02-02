@@ -5,7 +5,7 @@
 </template>
 
 <script>
-
+import { tutorial } from '~/modules'
 
 export default {
   computed: {
@@ -16,6 +16,7 @@ export default {
 
   mounted() {
     this.create()
+    tutorial.editor()
   },
 
   methods: {

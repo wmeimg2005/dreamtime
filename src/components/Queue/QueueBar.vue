@@ -112,7 +112,6 @@ export default {
   @apply relative flex flex-col;
   @apply bg-dark-500 py-2 z-10;
   @apply border-l border-dark-100;
-  width: 200px;
 }
 
 section {
@@ -164,41 +163,8 @@ section {
 }
 
 .jobs__list {
-  @apply flex-1;
+  @apply flex flex-wrap flex-1;
   @apply py-2 overflow-y-auto max-h-full;
   will-change: scroll-position;
-
-  .job {
-    @apply inline-block mb-2 cursor-pointer;
-    width: 47px;
-    height: 47px;
-    transition: all .1s ease-in-out;
-
-    &:not(:nth-child(3n)) {
-      @apply mr-2;
-    }
-
-    &.job--running {
-      img {
-        @apply border-primary-500;
-      }
-    }
-
-    &.job--failed {
-      img {
-        @apply border-danger-500;
-      }
-    }
-
-    &:hover {
-      @apply z-30;
-      transform: scale(1.3)
-    }
-
-    img {
-      @apply border-2 border-transparent rounded-full;
-      @apply w-full h-full;
-    }
-  }
 }
 </style>

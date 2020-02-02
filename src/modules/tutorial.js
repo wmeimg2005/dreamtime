@@ -25,26 +25,21 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          intro: 'Welcome to DreamTime! Let me give you some information so you don\'t get lost. Let\'s start with the Nudification process.',
+          intro: 'Welcome to DreamTime! Let me give you some information so you don\'t get lost. Let\'s start with the upload process. DreamTime has different ways in which you can upload the photo you want to nudify.',
         },
 
         {
-          intro: 'DreamTime has different ways in which you can upload the photo you want to nudify.',
+          intro: 'The easiest one is to drag and drop your photos into the application, no matter what section you are in! You can drag entire folders, photos from the web browser or even web addresses.',
         },
 
         {
-          element: '#uploader',
-          intro: 'The easiest one is to drag and drop your photos into the application, no matter what section you are in! Just drag and drop, it\'s that easy. You can drag entire folders, photos from the web browser or even web addresses.',
-        },
-
-        {
-          element: '#uploader-alternatives',
-          intro: 'On this page there are alternative ways, you can upload photos even from the Internet or Instagram.',
+          element: '#uploader-methods',
+          intro: 'On this section there are alternative upload methods, you can upload photos even from the Internet or Instagram.',
         },
 
         {
           element: '#uploader-settings',
-          intro: 'What happens when uploading a photo is controlled by this option, initially it is set that the photos are placed in the Pending Queue. Speaking of the queue...',
+          intro: 'What happens when uploading a photo is controlled by this option, initially it is set that the photos are placed in the pending queue. Speaking of the queue...',
         },
 
         {
@@ -98,7 +93,7 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          intro: 'You have unlocked the BadTime easter-egg! Use the arrows on your keyboard to play while your photos are nudified in the background. Try to survive as long as possible! 💀🎮',
+          intro: 'You have unlocked the BadTime mini-game! Use the arrows on your keyboard to play while your photos are nudified in the background. Try to survive as long as possible! 🎮💀',
         },
       ],
     })
@@ -149,5 +144,74 @@ export const tutorial = {
     intro.start()
 
     localStorage.setItem('tutorial.preferences', 'true')
+  },
+
+  editor() {
+    const seen = localStorage.getItem('tutorial.editor')
+
+    if (!isNil(seen)) {
+      return
+    }
+
+    const intro = introJs()
+
+    intro.setOptions({
+      showBullets: false,
+      overlayOpacity: 0.7,
+      steps: [
+        {
+          intro: 'Welcome to the photo editor, here you can make some improvements and corrections to the photo before nudifying it. Keep in mind that the editor is very basic and is only recommended for small improvements.',
+        },
+
+        {
+          intro: 'If you are looking for the Crop tool it is in a different area that will be visible when setting the Scale method option to Manual Crop or Overlay.',
+        },
+
+        {
+          intro: 'And although the editor has a tool called "Mask", don\'t get confused, this is not the custom mask for the algorithm. To use a custom mask you must set the transformation method to Nudify & Maskfin or Nudify with Maskfin, these options require more user experience.',
+        },
+      ],
+    })
+
+    intro.start()
+
+    localStorage.setItem('tutorial.editor', 'true')
+  },
+
+  cropper() {
+    const seen = localStorage.getItem('tutorial.cropper')
+
+    if (!isNil(seen)) {
+      return
+    }
+
+    const intro = introJs()
+
+    intro.setOptions({
+      steps: [
+        {
+          intro: 'Welcome to the photo cropper, this tool will allow you to crop the photo for best results.',
+        },
+
+        {
+          element: '#cropper-reload',
+          intro: 'This button will allow you to reload the photo to get the latest changes from the editor, restart the cropper or troubleshoot when the cropper behaves strangely.',
+        },
+
+        {
+          element: '#cropper-about',
+          intro: 'Here you can get more information about what the cropper of the selected scale method does.',
+        },
+
+        {
+          element: '#cropper-help',
+          intro: 'And here you can see the controls to use the cropper.',
+        },
+      ],
+    })
+
+    intro.start()
+
+    localStorage.setItem('tutorial.cropper', 'true')
   },
 }

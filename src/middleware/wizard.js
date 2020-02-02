@@ -28,7 +28,7 @@ export default function ({ route, redirect }) {
     return
   }
 
-  if (!requirements.power.installed) {
+  if (!requirements.power.installed || !requirements.power.compatible) {
     if (route.path !== '/wizard/power') {
       redirect('/wizard/power')
     }

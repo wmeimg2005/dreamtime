@@ -30,10 +30,17 @@ export function exec(args, options = {}) {
       options,
     })
 
-    return spawn('python3', args, {
+    return spawn('python', args, {
       cwd: getPowerPath(),
       ...options,
     })
+
+    /*
+    return spawn('C:\\Users\\koles\\Anaconda3\\envs\\dreampower\\python', args, {
+      cwd: getPowerPath(),
+      ...options,
+    })
+    */
   }
 
   logger.debug('Running:', args)
@@ -129,7 +136,7 @@ export const transform = (run) => {
   }
 
   if (transformMode === 'export-maskfin') {
-    args.push('--export-step', 4, '--export-step-path', run.maskfinFile.path)
+    args.push('--export-step', 3, '--export-step-path', run.maskfinFile.path)
   } else if (transformMode === 'import-maskfin') {
     args.push('--steps', '5:5')
   }
@@ -138,12 +145,14 @@ export const transform = (run) => {
     args.push('--color-transfer')
   }
 
-  // body preferences
-  args.push('--bsize', preferences.body.boobs.size)
-  args.push('--asize', preferences.body.areola.size)
-  args.push('--nsize', preferences.body.nipple.size)
-  args.push('--vsize', preferences.body.vagina.size)
-  args.push('--hsize', preferences.body.pubicHair.size)
+  if (transformMode !== 'import-maskfin') {
+    // body preferences
+    args.push('--bsize', preferences.body.boobs.size)
+    args.push('--asize', preferences.body.areola.size)
+    args.push('--nsize', preferences.body.nipple.size)
+    args.push('--vsize', preferences.body.vagina.size)
+    args.push('--hsize', preferences.body.pubicHair.size)
+  }
 
   const events = (new EventBus)
 
@@ -196,11 +205,16 @@ export const getVersion = () => {
 
     let response = ''
 
-    process.on('error', () => {
+    process.on('error', (error) => {
+      logger.warn(error)
       def.resolve()
     })
 
     process.stdout.on('data', (data) => {
+      response += data
+    })
+
+    process.stderr.on('data', (data) => {
       response += data
     })
 
@@ -210,10 +224,12 @@ export const getVersion = () => {
         response = `v${response[0]}`
         def.resolve(response)
       } catch (err) {
+        logger.warn(err)
         def.resolve()
       }
     })
   } catch (err) {
+    logger.warn(err)
     def.resolve()
   }
 

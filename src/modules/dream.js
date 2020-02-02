@@ -7,6 +7,9 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2020.
 
+const { getAppPath, getPowerPath, getPath } = $provider.paths
+const { shell } = $provider.api
+
 /**
  * $dream.
  * Application information.
@@ -27,4 +30,25 @@ export default {
    * @type {string}
    */
   version: `v${process.env.npm_package_version}`,
+
+  /**
+   *
+   */
+  openAppFolder() {
+    shell.openItem(getAppPath())
+  },
+
+  /**
+   *
+   */
+  openAppDataFolder() {
+    shell.openItem(getPath('userData'))
+  },
+
+  /**
+   *
+   */
+  openPowerFolder() {
+    shell.openItem(getPowerPath())
+  },
 }

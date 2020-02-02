@@ -76,7 +76,7 @@
       </div>
 
       <div v-show="hasMaskfin" class="content__item">
-        <button v-tooltip="'View maskfin'" class="button button--info button--sm" @click.prevent="$refs.maskfinDialog.showModal()">
+        <button v-tooltip="'View Maskfin'" class="button button--info button--sm" @click.prevent="$refs.maskfinDialog.showModal()">
           <font-awesome-icon icon="mask" />
         </button>
       </div>
@@ -97,7 +97,7 @@
 
         <div class="maskfin__description">
           <p>This is the Maskfin, a mask that represents in layers the areas that the algorithm will replace with the fake nude.</p>
-          <p>Click on the "Add to queue" button to add it as an additional photo, edit the layers and continue with the nudification. You can also save it to your computer, edit it with an external program and continue the nudification manually.</p>
+          <p>Click on the "Add to queue" button to add it as an additional photo, edit the layers with the editor and continue with the nudification. You can also save it to your computer, edit it with an external program and continue the nudification manually.</p>
           <p>For more information please consult the <a :href="manualURL" target="_blank">guide</a>.</p>
         </div>
 
@@ -167,7 +167,9 @@ export default {
         return {}
       }
 
-      return { backgroundImage: `url(${this.run.outputFile.path})` }
+      const url = encodeURI(this.run.outputFile.path)
+
+      return { backgroundImage: `url(${url})` }
     },
 
     previewClass() {
@@ -189,20 +191,7 @@ export default {
 
   methods: {
     save() {
-      const savePath = showSaveDialogSync({
-        defaultPath: this.run.outputName,
-        filters: [
-          { name: 'PNG', extensions: ['png'] },
-          { name: 'JPG', extensions: ['jpg'] },
-          { name: 'GIF', extensions: ['gif'] },
-        ],
-      })
-
-      if (isNil(savePath)) {
-        return
-      }
-
-      this.run.outputFile.copy(savePath)
+      this.run.outputFile.save(this.run.outputName)
     },
 
     rerun() {
@@ -218,20 +207,7 @@ export default {
     },
 
     saveMask() {
-      const savePath = showSaveDialogSync({
-        defaultPath: `maskfin-${this.run.outputName}`,
-        filters: [
-          { name: 'PNG', extensions: ['png'] },
-          { name: 'JPG', extensions: ['jpg'] },
-          { name: 'GIF', extensions: ['gif'] },
-        ],
-      })
-
-      if (isNil(savePath)) {
-        return
-      }
-
-      this.run.maskfinFile.copy(savePath)
+      this.run.maskfinFile.save(`maskfin-${this.run.outputName}`)
     },
   },
 }
@@ -267,7 +243,7 @@ export default {
 
   .run__preview {
     @apply absolute opacity-0 left-0 right-0 top-0 bottom-0 z-10;
-    @apply bg-cover bg-center;
+    @apply bg-contain bg-center bg-no-repeat;
     transition: opacity .3s linear;
   }
 }
@@ -330,11 +306,15 @@ export default {
   }
 
   .maskfin__preview {
-    @apply mb-4;
+    @apply mb-4 flex justify-center items-center;
+
+    img {
+      max-height: 350px;
+    }
   }
 
   .maskfin__description {
-    @apply text-sm mb-4;
+    @apply mb-4 text-sm;
 
     p {
       @apply mb-2;

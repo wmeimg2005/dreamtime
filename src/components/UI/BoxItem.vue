@@ -150,8 +150,12 @@ export default {
       @apply cursor-pointer;
 
       &:hover {
-        @apply bg-dark-700 text-white;
+        @apply bg-dark-800 text-white;
       }
+    }
+
+    &.box__item--active {
+      @apply bg-dark-800 text-generic-100;
     }
 
     &:not(:last-child) {

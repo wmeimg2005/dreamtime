@@ -94,8 +94,4 @@ sw.*
 #
 *.tgz
 
-# settings
-settings.json
-nucleus.json
-
 scripts/decrypt.js

@@ -49,6 +49,10 @@
       p {
         @apply text-xl mb-6;
       }
+
+      a {
+        @apply text-white underline;
+      }
     }
   }
 

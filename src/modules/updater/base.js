@@ -231,11 +231,10 @@ export class BaseUpdater {
         dialog.showMessageBoxSync({
           type: 'error',
           title: 'Connect to Internet.',
-          message: 'There was a problem getting information on some components needed to download. Please make sure you are connected to the Internet just for this time. DreamTime will restart...',
+          message: 'There was a problem getting the latest version of the components needed to use DreamTime. Please make sure you are connected to the Internet just for this time and try again.',
         })
 
-        // Restart.
-        app.relaunch()
+        // Close.
         app.quit()
       }
     }

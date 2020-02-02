@@ -57,10 +57,10 @@
     <Preference id="preferences-body" v-model="currentValue.body.boobs" label="Boobs" />
 
     <!-- Areola -->
-    <Preference v-model="currentValue.body.areola" label="Areola" />
+    <Preference v-model="currentValue.body.areola" label="Areola" :min="0" />
 
     <!-- Nipple -->
-    <Preference v-model="currentValue.body.nipple" label="Nipple" />
+    <Preference v-model="currentValue.body.nipple" label="Nipple" :min="0" />
 
     <!-- Vagina -->
     <Preference v-model="currentValue.body.vagina" label="Vagina" :max="1.5" />

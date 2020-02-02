@@ -23,14 +23,18 @@
 
 DreamTime is an open-source and super-improved version of DeepNude to make your dreams come true. 💖
 
-- **Free.** DreamTime is completely free and its source code is available to everyone. No tricks, only the power of AI.
+- **Free.** DreamTime is a free and open-source user interface to nudify photos.
 - **Advanced UI.** DreamTime is a stable and easy to use UI. With several options and tools that will allow you to quickly nudify photos.
-- **Multi platform.** While Deepnude is only available for Windows, DreamTime is available for Windows, Linux and macOS.
-- **It is simply the best.** Install DreamTime and discover why it is better than DeepNude. [Do you want more information?](https://time.dreamnet.tech)
+- **Multi platform.** DreamTime is available for Windows, Linux and macOS.
+- **It is simply the best.** Install DreamTime and discover why it is better than DeepNude. [More information?](https://time.dreamnet.tech)
 
 ## Installation
 
 You can see how easy it is to install DreamTime on our [installation page](https://time.dreamnet.tech/docs/installation).
+
+## Development
+
+Start hacking DreamTime or create PR to improve it. Visit the [Getting Started](https://time.dreamnet.tech/docs/development/getting-started) page for more information.
 
 ## Contact
 
