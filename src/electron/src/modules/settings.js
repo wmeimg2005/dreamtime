@@ -116,7 +116,7 @@ class Settings {
     const cores = round(system.cpu?.cores / 2) || 1
 
     this.payload = {
-      version: 6,
+      version: 7,
       user: uuid(),
 
       wizard: {
@@ -133,6 +133,7 @@ class Settings {
       app: {
         disableHardwareAcceleration: false,
         uploadMode: 'none',
+        queuePosition: 'right',
       },
 
       notifications: {
@@ -218,7 +219,7 @@ class Settings {
         },
 
         advanced: {
-          scaleMode: 'auto-resize',
+          scaleMode: 'overlay',
           transformMode: 'normal',
           useColorTransfer: false,
           useWaifu: false,
@@ -385,6 +386,12 @@ class Settings {
         min: 0,
         max: 2,
       }
+    }
+
+    // 6 -> 7
+    if (this.payload?.version === 6 && this._default.version >= 7) {
+      this.payload.version = 7
+      this.payload.app.queuePosition = 'right'
     }
 
     this.save()

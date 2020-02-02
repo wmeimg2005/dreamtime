@@ -5,12 +5,12 @@
     </div>
 
     <div class="cropper__help">
-      <button v-tooltip="'Get recent changes from the editor.'" class="button" @click.prevent="reload">
+      <button id="cropper-reload" v-tooltip="'Get recent changes from the editor.'" class="button" @click.prevent="reload">
         <span class="icon"><font-awesome-icon icon="sync" /></span>
         <span>Reload</span>
       </button>
 
-      <section class="box">
+      <section id="cropper-about" class="box">
         <div class="box__header">
           <h2 class="title">
             <font-awesome-icon icon="magic" /> Overlay.
@@ -24,20 +24,6 @@
 
           <p>
             It is perfect to preserve the original dimensions of the photo and only nudify a specific area.
-          </p>
-        </div>
-      </section>
-
-      <section class="box">
-        <div class="box__header">
-          <h2 class="title">
-            <font-awesome-icon icon="mouse-pointer" /> Commands
-          </h2>
-        </div>
-
-        <div class="box__content">
-          <p>
-            - Increase or decrease the zoom with the mouse wheel.
           </p>
         </div>
       </section>
@@ -87,6 +73,7 @@
 
 <script>
 import { round } from 'lodash'
+import { tutorial } from '~/modules'
 
 export default {
   data: () => ({
@@ -101,6 +88,7 @@ export default {
 
   mounted() {
     this.create()
+    tutorial.cropper()
   },
 
   methods: {

@@ -116,9 +116,11 @@ export default {
     @apply mb-2;
     width: calc(1/2*100% - (1 - 1/2)*1rem);
 
+    /*
     @screen xl {
       width: calc(1/3*100% - (1 - 1/3)*1rem);
     }
+    */
 
     @media (min-height: 1280px) {
       height: 1024px;

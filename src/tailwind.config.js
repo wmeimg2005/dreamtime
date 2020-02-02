@@ -181,7 +181,6 @@ module.exports = {
   },
   variants: {},
   plugins: [
-    // eslint-disable-next-line global-require
     require('tailwindcss-alpha')({
       modules: {
         borderColor: {

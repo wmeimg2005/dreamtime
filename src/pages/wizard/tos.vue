@@ -6,7 +6,7 @@
       </h1>
 
       <h2 class="subtitle">
-        Important things
+        Important information.
       </h2>
     </div>
 

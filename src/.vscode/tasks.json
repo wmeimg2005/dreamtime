@@ -18,7 +18,7 @@
         "background": {
           "activeOnStart": true,
           "beginsPattern": "Updated",
-          "endsPattern": "Compiled",
+          "endsPattern": "Compiled"
         }
       }
     },
@@ -55,7 +55,8 @@
       "dependsOn": [
         "Build: Electron",
         "Build: Nuxt"
-      ]
+      ],
+      "problemMatcher": []
     }
   ]
 }

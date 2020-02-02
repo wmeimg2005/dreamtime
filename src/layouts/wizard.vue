@@ -5,7 +5,9 @@
 
     <!-- Content -->
     <div id="layout-content" class="layout__content">
-      <nuxt />
+      <div class="container">
+        <nuxt />
+      </div>
     </div>
   </div>
 </template>
@@ -31,9 +33,13 @@ export default {
 
   .layout__content {
     @apply relative overflow-hidden overflow-y-auto;
-    @apply p-6 border-t border-dark-500;
+    @apply border-t border-dark-500;
     grid-area: content;
     height: calc(100vh - 30px);
+
+    .container {
+      @apply h-full m-auto;
+    }
   }
 }
 </style>
@@ -41,8 +47,9 @@ export default {
 <style lang="scss">
 .layout__header {
   @apply flex flex-col justify-center items-center;
-  @apply text-3xl font-semibold mb-8;
-  height: 80px;
+  @apply font-semibold mb-8;
+  @apply border-b border-dark-500;
+  height: 90px;
 
   .title {
     @apply text-xl text-white;

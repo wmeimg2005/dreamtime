@@ -24,16 +24,21 @@
       </div>
 
       <div class="project__description">
-        <p>Now you need the {{ checkpoints.title }}, the data models required by the algorithm to carry out the nudification process.</p>
+        <p>Now you need the data models required by the algorithm to carry out the nudification process.</p>
         <p>Approximately <strong>2 GB</strong> will be downloaded.</p>
-        <p>If the download fails please click on the "Mirrors" button to see a list of links where you can download it manually.</p>
-        <p>All downloads are saved in the <strong>Downloads</strong> folder of your operating system.</p>
       </div>
     </div>
 
     <div class="project__installation">
       <div class="project__update">
         <ProjectUpdate project="checkpoints" />
+      </div>
+
+      <div class="project__settings text-center">
+        <button class="button" @click="$dream.openPowerFolder()">
+          <span class="icon"><font-awesome-icon icon="folder-open" /></span>
+          <span>DreamPower</span>
+        </button>
       </div>
     </div>
   </div>

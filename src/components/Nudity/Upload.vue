@@ -1,39 +1,100 @@
 <template>
-  <div id="uploader" class="c-uploader">
-    <div id="uploader-settings" class="uploader__settings box box--items">
-      <div class="box__content">
-        <box-item
-          label="Upload mode"
-          description="What will happen when uploading a photo.">
-          <select v-model="$settings.app.uploadMode" class="input">
-            <option value="none">
-              Put in Pending
-            </option>
-            <option value="add-queue">
-              Put in Queue
-            </option>
-            <option value="go-preferences">
-              Put in Pending and Open preferences
-            </option>
-          </select>
-        </box-item>
-      </div>
-    </div>
+  <div id="uploader" class="uploader">
+    <!-- Uploader Selection -->
+    <div class="uploader__selection">
+      <div class="selection__menu">
+        <select
+          id="uploader-settings"
+          v-model="$settings.app.uploadMode"
+          v-tooltip="{ content: 'Upload mode. What will happen when uploading a photo.', placement: 'right' }"
+          class="input">
+          <option value="add-queue">
+            Put in Queue
+          </option>
+          <option value="none">
+            Put in Pending
+          </option>
+          <option value="go-preferences">
+            Put in Pending and Open preferences
+          </option>
+        </select>
 
-    <div id="uploader-alternatives" class="uploader__alt">
-      <!-- File -->
-      <div class="box">
-        <div class="box__header">
-          <h2 class="title">
-            <span class="icon"><font-awesome-icon icon="image" /></span>
-            <span>Photo.</span>
-          </h2>
-          <h3 class="subtitle">
-            Select one or more photos from your computer.
-          </h3>
+        <div id="uploader-methods" class="box box--items">
+          <div class="box__content">
+            <box-item
+              label="Web"
+              icon="globe"
+              :is-link="true"
+              :class="{'box__item--active': selectionId === 0}"
+              @click="selectionId = 0" />
+
+            <box-item
+              label="Instagram"
+              :icon="['fab', 'instagram']"
+              :is-link="true"
+              :class="{'box__item--active': selectionId === 1}"
+              @click="selectionId = 1" />
+
+            <box-item
+              label="File"
+              icon="file"
+              :is-link="true"
+              :class="{'box__item--active': selectionId === 2}"
+              @click="selectionId = 2" />
+
+            <box-item
+              label="Folder"
+              icon="folder-open"
+              :is-link="true"
+              :class="{'box__item--active': selectionId === 3}"
+              @click="selectionId = 3" />
+
+            <box-item
+              label="Examples"
+              icon="images"
+              href="https://time.dreamnet.tech/docs/guide/photos" />
+          </div>
         </div>
 
-        <div class="box__content">
+        <div class="box uploader__hint">
+          <div class="box__content">
+            <p>
+              <font-awesome-icon icon="exclamation-circle" />
+              You can drag and drop photos and folders into the application no matter where you are.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection__content">
+        <!-- Web Address -->
+        <div v-show="selectionId === 0" class="selection__content__body">
+          <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://" data-private="lipsum">
+
+          <p class="help">
+            It must end in a valid extension (jpg, png, gif)
+          </p>
+
+          <button class="button" @click="openUrl">
+            Submit
+          </button>
+        </div>
+
+        <!-- Instagram -->
+        <div v-show="selectionId === 1" class="selection__content__body">
+          <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/" data-private="lipsum">
+
+          <p class="help">
+            Enter the web address or Media ID of an Instagram photo.
+          </p>
+
+          <button class="button" @click="openInstagramPhoto">
+            Submit
+          </button>
+        </div>
+
+        <!-- File -->
+        <div v-show="selectionId === 2" class="selection__content__body">
           <input
             v-show="false"
             ref="photo"
@@ -43,69 +104,23 @@
             @change="openFile">
 
           <button class="button" @click.prevent="$refs.photo.click()">
-            <span>open file</span>
+            <span>Open File</span>
           </button>
-        </div>
-      </div>
 
-      <!-- Folder -->
-      <div class="box">
-        <div class="box__header">
-          <h2 class="title">
-            <span class="icon"><font-awesome-icon icon="folder-open" /></span>
-            <span>Folder.</span>
-          </h2>
-          <h3 class="subtitle">
-            Select one or more folders on your computer. All valid photos inside will be uploaded.
-          </h3>
+          <p class="help">
+            Select one or more photos from your computer.
+          </p>
         </div>
 
-        <div class="box__content">
+        <!-- Folder -->
+        <div v-show="selectionId === 3" class="selection__content__body">
           <button class="button" @click.prevent="openFolder">
             <span>Open folder</span>
           </button>
-        </div>
-      </div>
 
-      <!-- Web Address -->
-      <div class="box">
-        <div class="box__header">
-          <h2 class="title">
-            <span class="icon"><font-awesome-icon icon="globe" /></span>
-            <span>Web Address.</span>
-          </h2>
-          <h3 class="subtitle">
-            Enter the web address of a photo. It must end in a valid extension (jpg, png, gif)
-          </h3>
-        </div>
-
-        <div class="box__content">
-          <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://" data-private="lipsum">
-
-          <button class="button" @click="openUrl">
-            Submit
-          </button>
-        </div>
-      </div>
-
-      <!-- Web Address -->
-      <div class="box">
-        <div class="box__header">
-          <h2 class="title">
-            <span class="icon"><font-awesome-icon :icon="['fab', 'instagram']" /></span>
-            <span>Instagram photo.</span>
-          </h2>
-          <h3 class="subtitle">
-            Enter the web address or Media ID of an Instagram photo.
-          </h3>
-        </div>
-
-        <div class="box__content">
-          <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/" data-private="lipsum">
-
-          <button class="button" @click="openInstagramPhoto">
-            Submit
-          </button>
+          <p class="help">
+            Select one or more folders on your computer. All valid photos inside will be uploaded.
+          </p>
         </div>
       </div>
     </div>
@@ -133,6 +148,7 @@ export default {
   },
 
   data: () => ({
+    selectionId: 0,
     webAddress: '',
     instagramPhoto: '',
   }),
@@ -207,82 +223,57 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.c-uploader {
+.uploader {
   @apply w-full relative;
+}
 
-  .uploader__alt {
-    @apply flex flex-wrap justify-between;
+.uploader__selection {
+  @apply flex;
 
-    .box {
-      @apply flex flex-col;
-      width: calc(1/2*100% - (1 - 1/2)*1rem);
-      min-height: 200px;
-
-      .box__header {
-        h2 {
-          @apply text-lg font-bold;
-        }
-
-        h3 {
-          @apply text-sm mb-4 font-light;
-        }
-
-        .help {
-          @apply text-xs align-text-top font-bold underline;
-          cursor: help;
-        }
-      }
-
-      .box__content {
-        @apply flex-1 flex flex-col justify-center items-center;
-      }
-    }
-  }
-
-  .uploader__dropzone {
-    @apply flex items-center justify-center;
-    @apply bg-dark-500 mb-6;
-    @apply border-2 border-dashed border-dark-100;
-    height: 200px;
-    transition: all 0.1s linear;
-
-    &.is-dragging {
-      @apply bg-dark-700 border-dark-200;
-
-      .dropzone-hint {
-        @apply text-white text-xl;
-      }
-    }
-
-    .dropzone-hint {
-      @apply text-generic-300 uppercase;
-      transition: all 0.1s linear;
-    }
-  }
-
-  .upload-url {
-    @apply mb-6 flex;
+  .selection__menu {
+    @apply mr-4;
+    width: 200px;
 
     .input {
-      @apply flex-1 mr-4;
+      @apply mb-6;
     }
   }
 
-  &.is-dragging {
-    @apply border-white border-dotted;
+  .selection__content {
+    @apply flex flex-1 items-center justify-center;
 
-    .dragging-overlay {
-      //display: block;
+    .selection__content__body {
+      @apply text-center;
+      width: 50%;
+    }
+
+    .input {
+      @apply mb-4;
+    }
+
+    .help {
+      @apply text-sm;
+
+      &:not(:last-child) {
+        @apply mb-4;
+      }
+    }
+
+    .button:not(:last-child) {
+      @apply mb-4;
+    }
+
+    .button {
+
     }
   }
+}
 
-  .dragging-overlay {
-    @apply bg-white absolute top-0 left-0 right-0 bottom-0 hidden;
-    opacity: 0.3;
-  }
+.uploader__hint {
+  @apply text-center;
 
-  .fu-hint {
-    @apply text-sm text-gray-600;
+  p {
+    @apply text-sm;
   }
 }
 </style>

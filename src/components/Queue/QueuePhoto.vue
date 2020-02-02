@@ -80,8 +80,8 @@ export default {
 
 <style lang="scss" scoped>
 .photo {
-  @apply mb-2 relative border-2 border-transparent;
-  height: 40px;
+  @apply w-1/2 relative border-2 border-transparent;
+  height: 150px;
   will-change: transform;
 
   &.photo--running {
@@ -93,6 +93,8 @@ export default {
   }
 
   &:hover {
+    @apply bg-dark-900;
+
     .photo__content {
       @apply opacity-100;
     }
@@ -100,7 +102,7 @@ export default {
 
   .photo__preview {
     @apply absolute top-0 bottom-0 left-0 right-0 z-10;
-    @apply bg-cover bg-center;
+    @apply bg-contain bg-no-repeat bg-center;
   }
 
   .photo__content {

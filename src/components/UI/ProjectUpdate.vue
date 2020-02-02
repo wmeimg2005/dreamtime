@@ -30,9 +30,14 @@
         Cancel
       </button>
 
-      <button class="button button--info" @click.prevent="$refs.mirrorsDialog.show()">
+      <button v-tooltip="'Show a list of links to download the update and install it manually.'" class="button button--info" @click.prevent="$refs.mirrorsDialog.show()">
         Mirrors
       </button>
+    </div>
+
+    <!-- Hint -->
+    <div class="update__hint">
+      <p><a href="https://time.dreamnet.tech/docs/guide/updater" target="_blank">More information and troubleshooting</a>.</p>
     </div>
 
     <!-- Mirrors Dialog -->
@@ -138,6 +143,24 @@ export default {
       @apply bg-primary-500;
       border-radius: 9px;
     }
+  }
+}
+
+.update__actions {
+  @apply mb-6 text-sm;
+
+  .button {
+    &:not(:last-child) {
+      @apply mr-4;
+    }
+  }
+}
+
+.update__hint {
+  @apply text-sm;
+
+  a {
+    @apply text-white underline;
   }
 }
 

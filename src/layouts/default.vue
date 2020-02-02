@@ -1,7 +1,10 @@
 <template>
   <div
     class="layout"
-    :class="{'layout--dragging': isDragging}"
+    :class="{
+      'layout--dragging': isDragging,
+      'layout--left-queue': $settings.app.queuePosition === 'left'
+    }"
     @dragenter="onDragEnter"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -42,9 +45,17 @@ export default {
   @apply h-full;
 
   display: grid;
-  grid-template-columns: 200px 1fr 200px;
+  grid-template-columns: 250px 1fr 250px;
   grid-template-rows: 30px 50px 1fr;
-  grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "content content jobbar";
+  grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "content content queuebar";
+
+  &.layout--left-queue {
+    grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "queuebar content content";
+
+    .layout__jobbar {
+      @apply border-l-0 border-r;
+    }
+  }
 
   &.layout--dragging {
     .layout__dropzone {
@@ -61,7 +72,7 @@ export default {
   }
 
   .layout__jobbar {
-    grid-area: jobbar;
+    grid-area: queuebar;
   }
 
   .layout__content {
@@ -74,9 +85,8 @@ export default {
     @apply absolute left-0 right-0 top-0 bottom-0 z-50;
     @apply hidden opacity-0 pointer-events-none;
     @apply bg-dark-900-70 items-center justify-center;
-    @apply border-8 border-dotted;
     backdrop-filter: blur(6px);
-    transition: opacity .2s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
     will-change: opacity;
 
     h2 {

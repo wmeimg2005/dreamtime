@@ -53,7 +53,11 @@
   },
   {
     "query": "cv2.error",
-    "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
+    "message": "There was a problem trying to load the photo. Please ensure that it is a valid photo, that it has not been deleted or that the Cropper/Overlay are well located."
+  },
+  {
+    "query": "OpenCV",
+    "message": "There was a problem trying to load the photo. Please ensure that it is a valid photo, that it has not been deleted or that the Cropper/Overlay are well located."
   },
   {
     "query": "is not a valid file or directory or url",
@@ -61,6 +65,10 @@
   },
   {
     "query": "file not a supported format",
+    "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
+  },
+  {
+    "query": "invalid extension format",
     "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
   },
   {
@@ -72,11 +80,47 @@
     "message": "There was a problem cropping the photo. Please make sure you position the cropper correctly."
   },
   {
-    "query": "Python was not found",
-    "message": "Python is not installed on the system. Please disable the Use Python option if you are not using the algorithm source code."
-  },
-  {
     "query": "CUDA error",
     "message": "Your GPU has reported a problem. Please make sure you have the latest drivers installed or reinstall it to fix any errors."
+  },
+  {
+    "query": "Python was not found",
+    "message": "There was a problem with DreamPower. Python is not installed on the system. Please disable the Use Python option if you are not using the algorithm source code."
+  },
+  {
+    "query": "No module named",
+    "message": "There was a problem with DreamPower. If you are using the algorithm source code please make sure you have installed the necessary modules, if you are not using the source code please disable the Use Python option or update your operating system."
+  },
+  {
+    "query": "can't open file 'main.py'",
+    "message": "There was a problem with DreamPower. If you are using the algorithm source code please make sure you have cloned the repository correctly or have configured the correct location, if you are not using the source code please disable the Use Python option."
+  },
+  {
+    "query": "invalid choice",
+    "message": "There was a problem with DreamPower. The installed version of DreamPower is not compatible with this version of DreamTime, please update the component."
+  },
+  {
+    "query": "unrecognized arguments",
+    "message": "There was a problem with DreamPower. The installed version of DreamPower is not compatible with this version of DreamTime, please update the component."
+  },
+  {
+    "query": "Checkpoints file not found",
+    "message": "There was a problem with DreamPower. The checkpoints could not be loaded, if you have changed the location of DreamPower please be sure to restart DreamTime and install the checkpoints."
+  },
+  {
+    "query": "THCudaCheck FAIL",
+    "message": "There was a problem with CUDA. This version of DreamPower may not be compatible with your operating system and it may be necessary to compile the project in your environment. Please visit our Chat or Forum for technical support."
+  },
+  {
+    "query": "CUDNN_STATUS_ALLOC_FAILED",
+    "message": "There was a problem with CUDA. Apparently there is another program using your GPU, please close that program and try again."
+  },
+  {
+    "query": "CUDNN_STATUS_INTERNAL_ERROR",
+    "message": "There was a problem with CUDA. Please make sure you have the latest drivers installed, that you have available memory and if you have installed CUDA or CUDNN that these are updated and configured."
+  },
+  {
+    "query": "library load disallowed by system policy",
+    "message": "There was a problem with DreamPower. Your operating system is configured to prevent the loading of applications that have not been verified by Apple. Please <a href='https://support.apple.com/en-us/HT202491' target='_blank'>click here</a> for information on how to solve this problem."
   }
 ]

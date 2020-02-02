@@ -30,6 +30,19 @@
             </option>
           </select>
         </box-item>
+
+        <box-item
+          label="Queue position."
+          description="Change the position of the queue bar to the place that is most comfortable for you.">
+          <select v-model="currentValue.app.queuePosition" class="input">
+            <option value="right">
+              Right
+            </option>
+            <option value="left">
+              Left
+            </option>
+          </select>
+        </box-item>
       </div>
     </section>
   </div>

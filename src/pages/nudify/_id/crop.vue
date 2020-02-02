@@ -5,12 +5,16 @@
     </div>
 
     <div class="cropper__help">
-      <button v-tooltip="'Get recent changes from the editor.'" class="button" @click.prevent="reload">
+      <button
+        id="cropper-reload"
+        v-tooltip="'Get recent changes from the editor.'"
+        class="button"
+        @click.prevent="reload">
         <span class="icon"><font-awesome-icon icon="sync" /></span>
         <span>Reload</span>
       </button>
 
-      <section class="box">
+      <section id="cropper-about" class="box">
         <div class="box__header">
           <h2 class="title">
             <font-awesome-icon icon="crop" /> Manual crop.
@@ -24,7 +28,7 @@
         </div>
       </section>
 
-      <section class="box">
+      <section id="cropper-help" class="box">
         <div class="box__header">
           <h2 class="title">
             <font-awesome-icon icon="mouse-pointer" /> Commands
@@ -68,6 +72,8 @@
 </template>
 
 <script>
+import { tutorial } from '~/modules'
+
 export default {
   computed: {
     photo() {
@@ -81,6 +87,7 @@ export default {
 
   mounted() {
     this.create()
+    tutorial.cropper()
   },
 
   methods: {
