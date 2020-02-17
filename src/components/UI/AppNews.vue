@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import { nucleus } from '~/modules/services'
+import { dreamtrack } from '~/modules/services'
 
 export default {
   computed: {
     twitterUrl() {
-      return nucleus.urls?.social?.twitter || 'https://twitter.com/DreamNetTechno'
+      return dreamtrack.get('urls.social.twitter', 'https://twitter.com/DreamNetTechno')
     },
   },
 }

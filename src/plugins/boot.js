@@ -9,9 +9,13 @@
 
 import Vue from 'vue'
 import { dreamtime, dreampower, checkpoints } from '~/modules/updater'
-import { nucleus, logrocket, rollbar } from '~/modules/services'
+import {
+  dreamtrack, logrocket, rollbar,
+} from '~/modules/services'
 import { requirements } from '~/modules/system'
 import { handleError } from '~/modules/consola'
+
+localStorage.debug = ''
 
 // eslint-disable-next-line no-unused-vars
 export default async ({ app }, inject) => {
@@ -22,8 +26,8 @@ export default async ({ app }, inject) => {
 
   Vue.config.errorHandler = (err) => handleError(err)
 
-  // Analytics.
-  await nucleus.setup()
+  // Analytics & Track.
+  await dreamtrack.setup()
 
   // Bug/Session tracking.
   Promise.all([
@@ -52,5 +56,4 @@ export default async ({ app }, inject) => {
 
   // Shortcuts.
   inject('provider', $provider)
-  inject('nucleus', nucleus)
 }

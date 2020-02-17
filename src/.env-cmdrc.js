@@ -1,30 +1,30 @@
+const development = {
+  "LOG": "debug",
+  "DEVTOOLS": true,
+}
+
 module.exports = {
   "default": {
     "SERVER_HOST": "localhost",
-    "SERVER_PORT": 4000,
-    "NUCLEUS_APPID": "5d353cecbe5ccc0133cf90f4"
+    "SERVER_PORT": 4000
   },
   "development": {
-    "name": "development",
     "NODE_ENV": "development",
-    "LOG": "debug",
-    "DEVTOOLS": true,
-    "ROLLBAR_ACCESS_TOKEN": "6ccfcf317ca54e67830b41570ce23d2a",
-    "LOGROCKET_ACCESS_TOKEN": "of2lox/dreamtime"
+    "ROLLBAR_ACCESS_TOKEN": "e62c909ec771492fa7f371dc61eea092",
+    "LOGROCKET_ACCESS_TOKEN": "of2lox/dreamtime",
+    "DREAMTRACK_HOST": "track.dreamnet.tech",
+    ...development
   },
   "production": {
-    "name": "production",
     "NODE_ENV": "production",
-    "LOG": "info"
+    "LOG": "info",
+    "DREAMTRACK_HOST": "track.dreamnet.tech"
   },
   "test": {
-    "name": "test",
     "NODE_ENV": "test",
     "LOG": "debug"
   },
   "preview": {
-    "DEVTOOLS": true,
-    "ROLLBAR_ACCESS_TOKEN": "6ccfcf317ca54e67830b41570ce23d2a",
-    "LOGROCKET_ACCESS_TOKEN": "of2lox/dreamtime"
+    ...development
   }
 }

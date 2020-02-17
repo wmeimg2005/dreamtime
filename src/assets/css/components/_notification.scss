@@ -11,7 +11,7 @@
 
 .notification {
   @apply mb-4 py-2 px-4 border-2 border-dark-100 rounded-sm;
-  @apply bg-transparent text-generic-100;
+  @apply bg-transparent text-generic-500 text-sm;
 
   a {
     @apply underline;
@@ -23,5 +23,13 @@
 
   &.notification--danger {
     @apply text-danger-400 border-danger;
+  }
+
+  &.notification--success {
+    @apply text-success-400 border-success;
+  }
+
+  .icon {
+    @apply mr-2;
   }
 }

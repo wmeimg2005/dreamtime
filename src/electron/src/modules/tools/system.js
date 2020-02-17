@@ -12,6 +12,8 @@ import {
 } from 'lodash'
 import si from 'systeminformation'
 import isOnline from 'is-online'
+import { settings } from '../settings'
+
 
 const logger = require('@dreamnet/logplease').create('system')
 
@@ -91,12 +93,11 @@ class System {
   async takeSnapshot() {
     logger.info('Taking snapshot...')
 
-    const [load, cpuSpeed, cpuTemperature, memory, online] = await Promise.all([
+    const [load, cpuSpeed, cpuTemperature, memory] = await Promise.all([
       si.currentLoad(),
       si.cpuCurrentspeed(),
       si.cpuTemperature(),
       si.mem(),
-      isOnline(),
     ])
 
     this.snapshot = {
@@ -106,14 +107,15 @@ class System {
         temperature: cpuTemperature,
       },
       memory,
-      online,
+      settings: settings.payload,
     }
 
     logger.info(`Current load:`, load)
     logger.info(`CPU Speed:`, cpuSpeed)
     logger.info(`CPU Temperature:`, cpuTemperature)
     logger.info(`Memory:`, memory)
-    logger.info(`Online: ${online}`)
+
+    return this.snapshot
   }
 
   /**

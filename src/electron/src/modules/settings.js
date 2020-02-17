@@ -39,6 +39,10 @@ class Settings {
    * @type {string}
    */
   get path() {
+    if (process.env.BUILD_PORTABLE) {
+      return paths.getAppPath('AppData', 'settings.json')
+    }
+
     return paths.getPath('userData', 'settings.json')
   }
 
@@ -112,7 +116,7 @@ class Settings {
    */
   _loadDefault() {
     const uuid = require('uuid')
-    const hasGPU = system.graphics.length > 0
+    const hasGPU = process.platform === 'darwin' ? false : system.graphics.length > 0
     const cores = round(system.cpu?.cores / 2) || 1
 
     this.payload = {
@@ -144,7 +148,7 @@ class Settings {
 
       folders: {
         cropped: paths.getPath('temp'),
-        models: paths.getPath('pictures', 'DreamTime'),
+        models: paths.getPath('userData', 'Pictures'),
         masks: paths.getPath('temp'),
         cli: paths.getPath('userData', 'dreampower'),
       },
@@ -158,7 +162,7 @@ class Settings {
         device: hasGPU ? 'GPU' : 'CPU',
         gpus: [0],
         cores,
-        usePython: process.env.NODE_ENV === 'development',
+        usePython: false,
       },
 
       preferences: {

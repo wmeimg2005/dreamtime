@@ -8,7 +8,7 @@
         </div>
 
         <!-- Navigation -->
-        <div class="box box--items">
+        <div id="nudify-navigation" class="box box--items">
           <div class="box__content">
             <box-item
               label="Preferences"
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Tools -->
-        <div v-if="photo.canModify" class="box box--items">
+        <div v-if="photo.canModify" id="nudify-tools" class="box box--items">
           <div class="box__content">
             <box-item
               label="Editor"
@@ -45,31 +45,54 @@
         </div>
 
         <!-- Buttons -->
-        <button v-show="!photo.running && !photo.waiting" class="button button--success" @click.prevent="add">
+        <button
+          v-show="!photo.running && !photo.waiting"
+          id="nudify-nudify"
+          v-tooltip="{content: 'Add the photo to the queue to be nudified as soon as it is turn.', placement: 'right', boundary: 'viewport'}"
+          class="button button--success"
+          @click.prevent="add">
           <span class="icon"><font-awesome-icon icon="play" /></span>
-          <span>Add to Queue</span>
+          <span>Nudify</span>
         </button>
 
-        <button v-show="photo.finished && photo.executions > 1" class="button button--info" @click.prevent="saveAll">
+        <button
+          v-show="photo.finished && photo.executions > 1"
+          v-tooltip="{content: 'Save all the photos generated in the location you select.', placement: 'right', boundary: 'viewport'}"
+          class="button button--info"
+          @click.prevent="saveAll">
           <span class="icon"><font-awesome-icon icon="save" /></span>
           <span>Save all</span>
         </button>
 
-        <button v-show="photo.waiting" class="button button--danger" @click.prevent="cancel">
+        <button
+          v-show="photo.waiting"
+          class="button button--danger"
+          @click.prevent="cancel">
           <span>Remove from queue</span>
         </button>
 
-        <button v-show="photo.running" class="button button--danger" @click.prevent="stop">
+        <button
+          v-show="photo.running"
+          class="button button--danger"
+          @click.prevent="stop">
           <span class="icon"><font-awesome-icon icon="stop" /></span>
           <span>Stop</span>
         </button>
 
-        <button class="button" @click.prevent="openFolder">
+        <button
+          id="nudify-folder"
+          v-tooltip="{content: 'Open the folder where all the nudified photos are located.', placement: 'right', boundary: 'viewport'}"
+          class="button"
+          @click.prevent="openFolder">
           <span class="icon"><font-awesome-icon icon="folder-open" /></span>
           <span>Folder</span>
         </button>
 
-        <button class="button button--danger" @click.prevent="forget">
+        <button
+          id="nudify-forget"
+          v-tooltip="{content: 'Free memory by removing the photo from the application. (Nudified photos will not be deleted)', placement: 'right', boundary: 'viewport'}"
+          class="button button--danger"
+          @click.prevent="forget">
           <span class="icon"><font-awesome-icon icon="trash-alt" /></span>
           <span>Forget</span>
         </button>
@@ -85,6 +108,7 @@
 <script>
 import { isNil } from 'lodash'
 import { Nudify } from '~/modules/nudify'
+import { tutorial } from '~/modules'
 
 export default {
   middleware: ({ route, redirect }) => {
@@ -118,6 +142,10 @@ export default {
   created() {
     const { params } = this.$route
     this.photo = Nudify.getPhotoById(params.id)
+  },
+
+  mounted() {
+    tutorial.photo()
   },
 
   methods: {

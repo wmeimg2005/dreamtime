@@ -135,6 +135,11 @@ export default {
     );
 
     background-size: 200% 100%;
+
+    animation-name: bgAnim;
+    animation-iteration-count: infinite;
+    animation-duration: 10s;
+    animation-timing-function: ease-in-out;
   }
 
   .topbar__greetings {

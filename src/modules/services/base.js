@@ -8,7 +8,7 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isEmpty, get,
+  isEmpty, get, cloneDeep,
 } from 'lodash'
 
 export class BaseService {
@@ -58,11 +58,13 @@ export class BaseService {
   /**
    * @param {string} path
    */
-  get(path = '') {
+  get(path = '', defaultValue = null) {
+    const payload = cloneDeep(this.payload)
+
     if (isEmpty(path)) {
-      return this.payload
+      return payload
     }
 
-    return get(this.payload, path)
+    return get(payload, path, defaultValue)
   }
 }

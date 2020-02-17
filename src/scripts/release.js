@@ -11,7 +11,7 @@
 
 const Octokit = require('@octokit/rest')
 const mime = require('mime-types')
-const { startsWith, truncate } = require('lodash')
+const { startsWith, truncate, isPlainObject } = require('lodash')
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
@@ -29,6 +29,19 @@ const cryptr = new Cryptr(process.env.SECRET_KEY)
 
 // Octokit
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN })
+
+// Releases list
+const releases = []
+
+function addRelease(payload) {
+  if (isPlainObject(payload)) {
+    payload = cryptr.encrypt(JSON.stringify(payload))
+  } else {
+    payload = cryptr.encrypt(payload)
+  }
+
+  releases.push(payload)
+}
 
 /**
  * GitHub Helper
@@ -133,16 +146,14 @@ function Release(extension) {
           ...formData.getHeaders(),
           ...headers,
         },
-        timeout: (5 * 60 * 1000),
+        timeout: (10 * 60 * 1000),
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
       })
 
       response = response.data
 
-      const responseUrl = cryptr.encrypt(JSON.stringify(response))
-
-      console.log(`${url}: ${responseUrl}`)
+      addRelease(response)
 
       return response
     } catch (err) {
@@ -230,6 +241,8 @@ async function main() {
 
   await installer.uploadOthers()
   await portable.uploadOthers()
+
+  console.log(releases)
 }
 
 main()

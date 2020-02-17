@@ -4,7 +4,7 @@
   "description": "An open-source and super-improved version of DeepNude.",
   "author": "DreamNet",
   "homepage": "https://time.dreamnet.tech",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "main": "electron/dist/index.js",
   "license": "GPL-3.0-only",
   "private": true,
@@ -29,7 +29,7 @@
     "build:electron": "yarn production electron-builder --publish=never --x64",
     "build": "yarn build:nuxt && yarn build:babel && modclean --run && yarn build:electron",
     "preview:electron": "env-cmd -e default,production,preview --no-override electron .",
-    "preview": "yarn build:nuxt && yarn build:babel && yarn preview:electron"
+    "preview:production": "yarn build:nuxt && yarn build:babel && yarn preview:electron"
   },
   "lint-staged": {
     "*.{js,vue}": "eslint"
@@ -52,6 +52,7 @@
   ],
   "dependencies": {
     "7zip-bin": "^5.0.3",
+    "@adonisjs/websocket-client": "^1.0.9",
     "@dreamnet/logplease": "^1.0.0",
     "@dreamnet/queue": "^0.1.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.26",
@@ -72,6 +73,7 @@
     "delay": "^4.3.0",
     "electron-context-menu": "^0.15.2",
     "electron-util": "^0.13.1",
+    "emoji-strip": "^1.0.1",
     "fabric": "^3.6.0",
     "filesize": "^6.0.1",
     "form-data": "^3.0.0",
@@ -98,6 +100,7 @@
     "rollbar": "^2.14.4",
     "semver-regex": "^3.1.1",
     "slash": "^3.0.0",
+    "sourcemapped-stacktrace": "^1.1.11",
     "sweetalert2": "^9.7.1",
     "systeminformation": "^4.21.0",
     "tippy.js": "^5.1.4",
@@ -112,6 +115,7 @@
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-export-default-from": "^7.8.3",
     "@babel/plugin-proposal-optional-chaining": "^7.8.3",
+    "@babel/plugin-transform-regenerator": "^7.8.3",
     "@nuxtjs/eslint-config": "^2.0.0",
     "@nuxtjs/eslint-module": "^1.1.0",
     "@nuxtjs/tailwindcss": "^1.3.1",

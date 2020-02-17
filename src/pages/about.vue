@@ -4,13 +4,38 @@
       <div v-if="alert" class="notification text-lg" v-html="alert" />
 
       <!-- Offline -->
-      <section v-if="!$provider.system.online" class="box box--items">
-        <div class="box__content">
-          <box-item
-            description="While in offline mode you will not be able to obtain more information about the project or download the latest updates."
-            label="Offline mode." />
-        </div>
-      </section>
+      <div v-if="!$provider.system.online" class="notification notification--warning">
+        <span class="icon"><font-awesome-icon icon="exclamation-triangle" /></span>
+        <span><strong>Offline mode</strong>. You will not be able to install updates and get the latest information.</span>
+      </div>
+
+      <!-- Offline -->
+      <div v-else-if="!dreamtrack.enabled" class="notification notification--warning">
+        <span class="icon"><font-awesome-icon icon="exclamation-triangle" /></span>
+        <span>The connection to the server could not be established. You will not be able to install updates and get the latest information.</span>
+      </div>
+
+      <div v-if="dreamtrack.enabled" class="about__stats">
+        <p>
+          <span class="stats__value">{{ stats | stat('users.realtime') }}</span>
+          <span v-tooltip="{ content: 'Users like you who are using the application right now!', placement: 'bottom' }" class="stats__label">real-time users.</span>
+        </p>
+
+        <p>
+          <span class="stats__value">{{ stats | stat('users.total') }}</span>
+          <span class="stats__label">users.</span>
+        </p>
+
+        <p>
+          <span class="stats__value">{{ stats | stat('sessions.total') }}</span>
+          <span v-tooltip="{ content: 'Number of times the application has been opened.', placement: 'bottom' }" class="stats__label">sessions.</span>
+        </p>
+
+        <p>
+          <span class="stats__value">{{ stats | stat('events.total.DREAM_COMPLETED') }}</span>
+          <span v-tooltip="{ content: 'Amount of photos that have been nudified.', placement: 'bottom' }" class="stats__label">nudifications.</span>
+        </p>
+      </div>
 
       <div class="about__columns">
         <!-- DreamTime -->
@@ -76,7 +101,7 @@
         </section>
       </div>
 
-      <div class="about__columns">
+      <div v-show="dreamtrack.enabled" class="about__columns">
         <!-- Sponsors -->
         <section class="box box--items is-contributors">
           <div class="box__content">
@@ -145,20 +170,32 @@
 </template>
 
 <script>
+import { get } from 'lodash'
 import { requirements } from '~/modules/system'
-import { nucleus } from '~/modules/services'
+import { dreamtrack } from '~/modules/services'
 
 const { getAppPath, getPowerPath } = $provider.paths
 const { shell } = $provider.api
 
 export default {
+  filters: {
+    stat(value, key) {
+      value = get(value, key, 0)
+      return new Intl.NumberFormat('en-us', { }).format(value)
+    },
+  },
+
   data: () => ({
+    channel: null,
+    stats: {},
+
     requirements,
+    dreamtrack,
   }),
 
   computed: {
     dreamtime() {
-      const online = nucleus.v1?.projects?.dreamtime || {}
+      const online = dreamtrack.get('projects.dreamtime', {})
 
       return {
         about: {
@@ -171,10 +208,11 @@ export default {
     },
 
     dreampower() {
-      const online = nucleus.v1?.projects?.dreampower || {}
+      const online = dreamtrack.get('projects.dreampower', {})
 
       return {
         about: {
+          title: 'DreamPower',
           description: 'Deep learning algorithm capable of nudify people photos.',
           navigation: [],
         },
@@ -184,20 +222,28 @@ export default {
     },
 
     sponsors() {
-      return nucleus.sponsors || []
+      return dreamtrack.get('sponsors', [])
     },
 
     supporters() {
-      return nucleus.supporters || []
+      return dreamtrack.get('supporters', [])
     },
 
     developers() {
-      return nucleus.developers || []
+      return dreamtrack.get('developers', [])
     },
 
     alert() {
-      return nucleus.alerts?.about
+      return dreamtrack.get('alerts.about')
     },
+  },
+
+  created() {
+    this.onStats()
+  },
+
+  beforeDestroy() {
+    this.offStats()
   },
 
   methods: {
@@ -208,6 +254,28 @@ export default {
     openPowerPath() {
       shell.openItem(getPowerPath())
     },
+
+    onStats() {
+      if (!dreamtrack.enabled) {
+        return
+      }
+
+      this.channel = dreamtrack.service.subscribe('dreamtime:stats')
+
+      this.channel.on('data', (payload) => {
+        this.stats = payload
+      })
+    },
+
+    offStats() {
+      if (!this.channel) {
+        return
+      }
+
+      this.channel.close()
+
+      this.channel = null
+    },
   },
 }
 </script>
@@ -215,6 +283,22 @@ export default {
 <style lang="scss" scoped>
 .about {
 
+}
+
+.about__stats {
+  @apply flex mb-4;
+
+  p {
+    @apply mr-4 text-sm;
+  }
+
+  .stats__label {
+    cursor: help;
+  }
+
+  .stats__value {
+    @apply text-white font-bold;
+  }
 }
 
 .about__columns {

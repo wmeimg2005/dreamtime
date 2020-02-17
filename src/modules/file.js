@@ -6,7 +6,7 @@ import { getMetadata } from '~/workers/fs'
 
 const consola = Consola.create('file')
 const { fs } = $provider
-const { dialog } = $provider.api
+const { dialog, shell } = $provider.api
 const { getPath } = $provider.paths
 
 /**
@@ -110,7 +110,7 @@ export class File {
       if (create) {
         attempt(() => {
           fs.unlinkSync(filepath)
-          consola.debug(`File deleted: ${filepath}`)
+          consola.debug(`Deleted: ${filepath}`)
         })
       }
 
@@ -147,9 +147,9 @@ export class File {
     this.md5 = metadata.md5
 
     if (this.exists) {
-      consola.debug(`File opened: ${this.path} (${this.md5})`)
+      consola.debug(`Opened: ${this.path} (${this.md5})`)
     } else {
-      consola.debug(`File opened: ${this.path} (does not exist)`)
+      consola.debug(`Opened: ${this.path} (does not exist)`)
     }
 
     return this
@@ -166,7 +166,7 @@ export class File {
     fs.unlinkSync(this.path)
     await this.open()
 
-    consola.debug(`File deleted: ${this.fullname}`)
+    consola.debug(`Deleted: ${this.fullname}`)
 
     return this
   }
@@ -191,7 +191,7 @@ export class File {
     }
 
     fs.copySync(this.path, destination)
-    consola.debug(`File copied: ${this.path} -> ${destination}`)
+    consola.debug(`Copied: ${this.path} -> ${destination}`)
     return this
   }
 
@@ -219,5 +219,13 @@ export class File {
     this.copy(savePath)
 
     return this
+  }
+
+  openItem() {
+    if (!fs.existsSync(this.path)) {
+      throw new Warning('The photo no longer exists.', 'Could not open the photo because it has been deleted, this could be caused due to cleaning or antivirus programs.')
+    }
+
+    shell.openItem(this.path)
   }
 }

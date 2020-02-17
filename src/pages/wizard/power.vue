@@ -11,6 +11,25 @@
     </div>
 
     <div class="project__content">
+      <div class="project__update">
+        <ProjectUpdate project="dreampower" />
+      </div>
+
+      <div class="project__description">
+        <p>{{ power.title }} is the artificial intelligence algorithm necessary to nudify the photos. It is a mandatory component to use {{ $dream.name }}.</p>
+        <p>Click "Start" to start the automatic download and installation. Approximately <strong>1 GB</strong> will be downloaded. (Depending on your system)</p>
+
+        <p v-if="requirements.power.installed">
+          Installed version: <strong>{{ dreampower.currentVersion }}</strong>
+        </p>
+
+        <p v-if="requirements.power.installed && !requirements.power.compatible" class="text-danger">
+          The installed version of {{ power.title }} is not compatible with this version of {{ $dream.name }}. Please update to continue using the application.
+        </p>
+      </div>
+    </div>
+
+    <div class="project__installation">
       <div class="project__overview">
         <figure>
           <img src="~/assets/images/apps/dreampower.png">
@@ -27,21 +46,6 @@
         </div>
       </div>
 
-      <div class="project__description">
-        <p>To make your dreams come true it is necessary to install {{ power.title }}, the algorithm that will handle the entire nudification process.</p>
-        <p>Approximately <strong>1 GB</strong> will be downloaded. (Depending on your system)</p>
-
-        <p v-if="requirements.power.installed && !requirements.power.compatible" class="text-danger">
-          The installed version of {{ power.title }} is not compatible with this version of {{ $dream.name }}. Please update.
-        </p>
-      </div>
-    </div>
-
-    <div class="project__installation">
-      <div class="project__update">
-        <ProjectUpdate project="dreampower" />
-      </div>
-
       <div class="project__settings">
         <div class="box box--items">
           <div class="box__header">
@@ -55,7 +59,7 @@
               v-if="!isMacOS"
               label="Device."
               description="Device that will be used to transform photos and choose the appropriate version of DreamPower.">
-              <select v-model="$settings.processing.device" class="input">
+              <select v-model="$settings.processing.device" :disabled="updating" class="input">
                 <option value="CPU">
                   CPU
                 </option>
@@ -77,15 +81,22 @@
             </box-item>
 
             <box-item
+              v-if="!$dream.isPortable"
               label="Location."
               description="Folder where DreamPower will be installed.">
-              <input v-model="$settings.folders.cli" readonly class="input" title="Change" @click.prevent="changePower">
+              <input
+                v-model="$settings.folders.cli"
+                readonly
+                :disabled="updating"
+                class="input"
+                title="Change"
+                @click.prevent="changePower">
             </box-item>
 
             <box-item
               label="Use Python."
               description="Use DreamPower Python script instead of the executable. Enable this only if you know what are you doing.">
-              <select v-model="$settings.processing.usePython" class="input">
+              <select v-model="$settings.processing.usePython" :disabled="updating" class="input">
                 <option :value="true">
                   Enabled
                 </option>
@@ -110,7 +121,7 @@
 
 <script>
 import { isNil, cloneDeep } from 'lodash'
-import { nucleus } from '~/modules/services'
+import { dreamtrack } from '~/modules/services'
 import { requirements } from '~/modules/system'
 import { dreampower } from '~/modules/updater'
 
@@ -128,6 +139,7 @@ export default {
 
   data: () => ({
     settings: {},
+    dreampower,
     requirements,
   }),
 
@@ -137,7 +149,7 @@ export default {
     },
 
     power() {
-      return nucleus.v1?.projects?.dreampower.about || {
+      return dreamtrack.get('projects.dreampower.about', {
         title: 'DreamPower',
         description: 'Deep Learning algorithm for nudify photos.',
         navigation: [
@@ -154,7 +166,11 @@ export default {
             label: 'Patreon',
           },
         ],
-      }
+      })
+    },
+
+    updating() {
+      return dreampower.update.active
     },
   },
 

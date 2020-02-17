@@ -1,8 +1,11 @@
 <template>
   <div class="project-update">
     <!-- Update available -->
-    <div v-if="!updater.update.active" class="update__status">
-      {{ updater.latest.tag_name }} available:
+    <div
+      v-if="!updater.update.active"
+      v-tooltip="'New version'"
+      class="update__status">
+      <strong>{{ updater.latest.tag_name }}</strong>
     </div>
 
     <!-- Downloading -->
@@ -23,14 +26,14 @@
     <!-- Actions -->
     <div class="update__actions">
       <button v-show="!updater.update.active" class="button button--success" @click.prevent="updater.start()">
-        Download
+        Start
       </button>
 
       <button v-show="updater.update.active" class="button button--danger" @click.prevent="updater.cancel()">
         Cancel
       </button>
 
-      <button v-tooltip="'Show a list of links to download the update and install it manually.'" class="button button--info" @click.prevent="$refs.mirrorsDialog.show()">
+      <button v-tooltip="'Show a list of links to download the update manually.'" class="button button--info" @click.prevent="$refs.mirrorsDialog.show()">
         Mirrors
       </button>
     </div>

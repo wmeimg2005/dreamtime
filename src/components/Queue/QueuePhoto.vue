@@ -9,7 +9,7 @@
         <font-awesome-icon icon="external-link-square-alt" />
       </button>
 
-      <button v-show="!photo.running && !photo.waiting" v-tooltip="'Add to Queue'" @click="add">
+      <button v-show="photo.pending" v-tooltip="'Add to Queue'" @click="add">
         <font-awesome-icon icon="play" />
       </button>
 
@@ -80,7 +80,8 @@ export default {
 
 <style lang="scss" scoped>
 .photo {
-  @apply w-1/2 relative border-2 border-transparent;
+  @apply w-1/2 relative border-2 border-dark-300;
+  background-image: url("~@/assets/images/curls.png");
   height: 150px;
   will-change: transform;
 
@@ -93,8 +94,6 @@ export default {
   }
 
   &:hover {
-    @apply bg-dark-900;
-
     .photo__content {
       @apply opacity-100;
     }

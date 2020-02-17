@@ -53,11 +53,7 @@
   },
   {
     "query": "cv2.error",
-    "message": "There was a problem trying to load the photo. Please ensure that it is a valid photo, that it has not been deleted or that the Cropper/Overlay are well located."
-  },
-  {
-    "query": "OpenCV",
-    "message": "There was a problem trying to load the photo. Please ensure that it is a valid photo, that it has not been deleted or that the Cropper/Overlay are well located."
+    "message": "There was a problem trying to load the photo. Please ensure that it is a valid photo, that it has not been deleted or that the Cropper/Overlay are well positioned."
   },
   {
     "query": "is not a valid file or directory or url",
@@ -69,6 +65,10 @@
   },
   {
     "query": "invalid extension format",
+    "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
+  },
+  {
+    "query": "The file might be corrupted",
     "message": "There was a problem trying to load the photo. Please make sure it is a valid photo and has not been deleted."
   },
   {

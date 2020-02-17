@@ -22,18 +22,18 @@
         <div id="uploader-methods" class="box box--items">
           <div class="box__content">
             <box-item
-              label="Web"
-              icon="globe"
-              :is-link="true"
-              :class="{'box__item--active': selectionId === 0}"
-              @click="selectionId = 0" />
-
-            <box-item
               label="Instagram"
               :icon="['fab', 'instagram']"
               :is-link="true"
               :class="{'box__item--active': selectionId === 1}"
               @click="selectionId = 1" />
+
+            <box-item
+              label="Web"
+              icon="globe"
+              :is-link="true"
+              :class="{'box__item--active': selectionId === 0}"
+              @click="selectionId = 0" />
 
             <box-item
               label="File"
@@ -72,11 +72,12 @@
           <input v-model="webAddress" type="url" class="input mb-2" placeholder="https://" data-private="lipsum">
 
           <p class="help">
-            It must end in a valid extension (jpg, png, gif)
+            Enter the web address of a photo that ends in a valid extension. <i>(jpg, png, gif)</i>
           </p>
 
           <button class="button" @click="openUrl">
-            Submit
+            <span class="icon"><font-awesome-icon icon="globe" /></span>
+            <span>Submit</span>
           </button>
         </div>
 
@@ -85,11 +86,12 @@
           <input v-model="instagramPhoto" type="url" class="input mb-2" placeholder="https://www.instagram.com/p/dU4fHDw-Ho/" data-private="lipsum">
 
           <p class="help">
-            Enter the web address or Media ID of an Instagram photo.
+            Enter the web address or ID of an Instagram photo.
           </p>
 
           <button class="button" @click="openInstagramPhoto">
-            Submit
+            <span class="icon"><font-awesome-icon :icon="['fab', 'instagram']" /></span>
+            <span>Submit</span>
           </button>
         </div>
 
@@ -119,7 +121,7 @@
           </button>
 
           <p class="help">
-            Select one or more folders on your computer. All valid photos inside will be uploaded.
+            Select a folder from your computer. All valid photos inside will be uploaded.
           </p>
         </div>
       </div>
@@ -129,7 +131,7 @@
 
 <script>
 import {
-  isEmpty, startsWith, map,
+  isEmpty, startsWith, map, toNumber,
 } from 'lodash'
 import { Nudify } from '~/modules/nudify'
 import { tutorial } from '~/modules'
@@ -148,10 +150,21 @@ export default {
   },
 
   data: () => ({
-    selectionId: 0,
+    selectionId: 1,
     webAddress: '',
     instagramPhoto: '',
   }),
+
+  watch: {
+    selectionId(value) {
+      localStorage.uploadSelectionId = value
+    },
+  },
+
+  created() {
+    this.selectionId = localStorage.uploadSelectionId || 1
+    this.selectionId = toNumber(this.selectionId)
+  },
 
   mounted() {
     tutorial.upload()
@@ -170,7 +183,7 @@ export default {
 
       const paths = map(files, 'path')
 
-      consola.track('FILE')
+      consola.track('UPLOAD_FILE')
 
       this.addFiles(paths)
 
@@ -187,7 +200,7 @@ export default {
 
       Nudify.addUrl(this.webAddress)
 
-      consola.track('URL')
+      consola.track('UPLOAD_URL')
 
       this.webAddress = ''
     },
@@ -214,7 +227,7 @@ export default {
 
       Nudify.addUrl(post.downloadUrl)
 
-      consola.track('INSTAGRAM')
+      consola.track('UPLOAD_INSTAGRAM')
 
       this.instagramPhoto = ''
     },
@@ -244,7 +257,7 @@ export default {
 
     .selection__content__body {
       @apply text-center;
-      width: 50%;
+      width: 70%;
     }
 
     .input {
@@ -252,7 +265,7 @@ export default {
     }
 
     .help {
-      @apply text-sm;
+      @apply text-sm text-generic-700;
 
       &:not(:last-child) {
         @apply mb-4;

@@ -7,16 +7,20 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
-import { isNil, startsWith, pick } from 'lodash'
+import {
+  isNil, startsWith, pick, clone, deburr,
+} from 'lodash'
 import { remote } from 'electron'
+import emojiStrip from 'emoji-strip'
 import { Consola } from '../consola'
+import { settings } from './settings'
 
 const consola = Consola.create('requirements')
 
 const { system, fs } = $provider
 const { is } = $provider.util
 const { getVersion, isInstalled } = $provider.power
-const { getAppResourcesPath, getCheckpointsPath } = $provider.paths
+const { getAppResourcesPath, getCheckpointsPath, getModelsPath } = $provider.paths
 
 export const requirements = {
   power: {
@@ -34,6 +38,10 @@ export const requirements = {
     vram: false,
   },
 
+  folders: {
+    models: false,
+  },
+
   get values() {
     return pick(this, 'power', 'windows', 'recommended')
   },
@@ -43,6 +51,26 @@ export const requirements = {
    */
   get canNudify() {
     return this.power.installed && this.power.compatible && this.power.checkpoints
+  },
+
+  get hasAlerts() {
+    if (!this.windows.media) {
+      return true
+    }
+
+    if (!this.recommended.ram) {
+      return true
+    }
+
+    if (settings.processing.device === 'GPU' && !this.recommended.vram) {
+      return true
+    }
+
+    if (!this.folders.models) {
+      return true
+    }
+
+    return false
   },
 
   /**
@@ -61,7 +89,23 @@ export const requirements = {
     this.recommended.ram = system.memory.total >= 8589934592 // 8 GB
     this.recommended.vram = system.graphics[0]?.vram >= 4000 // Win32_VideoController does not scan VRAM above 4GB
 
+    // Folders
+    this.folders.models = this.isValidFolder(getModelsPath())
+
     consola.info(this.values)
+  },
+
+  isValidFolder(path) {
+    const original = clone(path)
+
+    let fixed = clone(path)
+    fixed = deburr(fixed)
+    fixed = emojiStrip(fixed)
+
+    // eslint-disable-next-line no-control-regex
+    fixed = fixed.replace(/[^\x00-\x7F]/g, '')
+
+    return original === fixed
   },
 
   /**
@@ -72,7 +116,7 @@ export const requirements = {
       return false
     }
 
-    const { nucleus } = require('../services')
+    const { dreamtrack } = require('../services')
 
     const compareVersions = require('compare-versions')
     let version
@@ -81,8 +125,8 @@ export const requirements = {
       version = await getVersion()
       const currentVersion = `v${process.env.npm_package_version}`
 
-      const minimum = nucleus.v1?.projects?.dreamtime?.releases[currentVersion]?.dreampower?.minimum || 'v0.0.1'
-      const maximum = nucleus.v1?.projects?.dreamtime?.releases[currentVersion]?.dreampower?.maximum
+      const minimum = dreamtrack.get(['projects', 'dreamtime', 'releases', currentVersion, 'dreampower', 'minimum'], 'v0.0.1')
+      const maximum = dreamtrack.get(['projects', 'dreamtime', 'releases', currentVersion, 'dreampower', 'maximum'])
 
       if (compareVersions.compare(version, minimum, '<')) {
         return false
@@ -147,28 +191,33 @@ export const requirements = {
       return true
     }
 
-    const regedit = remote.require('regedit')
+    try {
+      const regedit = remote.require('regedit')
 
-    if (!is.development) {
-      // regedit commands
-      regedit.setExternalVBSLocation(
-        getAppResourcesPath('vbs'),
-      )
-    }
+      if (!is.development) {
+        // regedit commands
+        regedit.setExternalVBSLocation(
+          getAppResourcesPath('vbs'),
+        )
+      }
 
-    const value = await new Promise((resolve) => {
-      const regKey = 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\WindowsFeatures'
+      const value = await new Promise((resolve) => {
+        const regKey = 'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\WindowsFeatures'
 
-      regedit.list(regKey, (err, result) => {
-        if (!isNil(err)) {
-          resolve(false)
-          return
-        }
+        regedit.list(regKey, (err, result) => {
+          if (!isNil(err)) {
+            resolve(false)
+            return
+          }
 
-        resolve(result[regKey].keys.includes('WindowsMediaVersion'))
+          resolve(result[regKey].keys.includes('WindowsMediaVersion'))
+        })
       })
-    })
 
-    return value
+      return value
+    } catch (error) {
+      consola.warn(error)
+      return false
+    }
   },
 }

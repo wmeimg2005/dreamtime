@@ -28,8 +28,6 @@ export function getPath(name, ...args) {
  * @param  {...string} args
  */
 export const getAppPath = (...args) => {
-  // return join(app.getAppPath(), ...args)
-
   if (process.platform === 'darwin') {
     // /Applications/DreamTime.app/Contents/MacOS/DreamTime
     // /Applications/DreamTime.app/Contents
@@ -48,10 +46,12 @@ export const getAppResourcesPath = (...args) => {
 }
 
 export const getPowerPath = (...args) => {
-  let folder = settings.folders.cli
+  let folder
 
-  if (!fs.existsSync(folder)) {
-    folder = getPath('userData', 'dreampower')
+  if (process.env.BUILD_PORTABLE) {
+    folder = getAppPath('AppData', 'dreampower')
+  } else {
+    folder = settings.folders.cli
   }
 
   return join(folder, ...args)
@@ -60,24 +60,40 @@ export const getPowerPath = (...args) => {
 export const getCheckpointsPath = (...args) => getPowerPath('checkpoints', ...args)
 
 export const getCropPath = (...args) => {
-  let folder = settings.folders.cropped
+  let folder
+
+  if (process.env.BUILD_PORTABLE) {
+    folder = getPath('temp')
+
+    if (!fs.existsSync(folder)) {
+      folder = getAppPath('AppData', 'Temp')
+    }
+  } else {
+    folder = settings.folders.cropped
+
+    if (!fs.existsSync(folder)) {
+      folder = getPath('temp')
+    }
+  }
 
   attempt(() => fs.ensureDirSync(folder))
-
-  if (!fs.existsSync(folder)) {
-    folder = getPath('temp')
-  }
 
   return join(folder, ...args)
 }
 
 export const getModelsPath = (...args) => {
-  let folder = settings.folders.models
+  let folder
+
+  if (process.env.BUILD_PORTABLE) {
+    folder = getAppPath('AppData', 'Pictures')
+  } else {
+    folder = settings.folders.models
+  }
 
   attempt(() => fs.ensureDirSync(folder))
 
   if (!fs.existsSync(folder)) {
-    folder = getPath('userData', 'models')
+    folder = getPath('userData', 'Pictures')
   }
 
   if (!fs.existsSync(folder)) {
@@ -88,17 +104,27 @@ export const getModelsPath = (...args) => {
 }
 
 export const getMasksPath = (...args) => {
-  let folder = settings.folders.masks
+  let folder
+
+  if (process.env.BUILD_PORTABLE) {
+    folder = getPath('temp')
+
+    if (!fs.existsSync(folder)) {
+      folder = getAppPath('AppData', 'Temp')
+    }
+  } else {
+    folder = settings.folders.masks
+
+    if (!fs.existsSync(folder)) {
+      folder = getPath('userData', 'masks')
+    }
+
+    if (!fs.existsSync(folder)) {
+      folder = getPath('temp')
+    }
+  }
 
   attempt(() => fs.ensureDirSync(folder))
-
-  if (!fs.existsSync(folder)) {
-    folder = getPath('userData', 'masks')
-  }
-
-  if (!fs.existsSync(folder)) {
-    folder = getPath('temp')
-  }
 
   return join(folder, ...args)
 }

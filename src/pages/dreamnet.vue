@@ -53,16 +53,16 @@
 <script>
 import _ from 'lodash'
 import { tween, styler } from 'popmotion'
-import { nucleus } from '~/modules/services'
+import { dreamtrack } from '~/modules/services'
 
 export default {
   computed: {
     community() {
-      return nucleus.v1?.community || {
+      return dreamtrack.get('community', {
         name: 'DreamNet',
         slogan: 'Adult entertainment and decentralized applications to combat censorship.',
         sections: [],
-      }
+      })
     },
   },
 
