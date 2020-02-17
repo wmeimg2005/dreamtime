@@ -10,9 +10,11 @@
 import { isString, endsWith } from 'lodash'
 import LogRocket from 'logrocket'
 import { BaseService } from './base'
-import { nucleus } from './nucleus'
+import { dreamtrack } from './dreamtrack'
 import { settings } from '../system/settings'
 import { Consola } from '../consola'
+
+const { system } = $provider
 
 const consola = Consola.create('logrocket')
 
@@ -27,14 +29,14 @@ class LogRocketService extends BaseService {
    * @type {string}
    */
   get accessToken() {
-    return process.env.LOGROCKET_ACCESS_TOKEN || nucleus.keys?.logrocket
+    return process.env.LOGROCKET_ACCESS_TOKEN || dreamtrack.get('keys.logrocket')
   }
 
   /**
    * @type {boolean}
    */
   get can() {
-    return isString(this.accessToken) && settings.telemetry?.dom && process.env.name === 'production'
+    return system.online && isString(this.accessToken) && settings.telemetry?.dom // && process.env.NODE_ENV === 'production'
   }
 
   /**
@@ -72,7 +74,7 @@ class LogRocketService extends BaseService {
       },
       dom: {
         isEnabled: true,
-        baseHref: $provider.ngrok.getAddress() || nucleus.urls?.internal?.cdn,
+        baseHref: $provider.ngrok.getAddress() || dreamtrack.get('urls.internal.cdn'),
       },
     }
   }
@@ -92,7 +94,7 @@ class LogRocketService extends BaseService {
       this.service = LogRocket
       this.enabled = true
 
-      consola.info('LogRocket enabled!')
+      consola.info('Recording session.')
       consola.debug(`Access Token: ${this.accessToken}`)
       consola.debug(`User: ${settings.user}`)
       consola.debug(this.config)

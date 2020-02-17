@@ -11,7 +11,7 @@ import { isNil } from 'lodash'
 import compareVersions from 'compare-versions'
 import { BaseUpdater } from './base'
 import { requirements, settings } from '../system'
-import { nucleus } from '../services'
+import { dreamtrack } from '../services'
 
 const { getVersion } = $provider.power
 const { getPowerPath } = $provider.paths
@@ -71,10 +71,14 @@ class DreamPowerUpdater extends BaseUpdater {
    * @param {*} releases
    */
   _getLatestCompatible(releases) {
-    const currentVersion = process.env.npm_package_version
+    const currentVersion = `v${process.env.npm_package_version}`
 
-    const minimum = nucleus.v1?.projects?.dreamtime?.releases[`v${currentVersion}`]?.dreampower?.minimum || 'v0.0.1'
-    const maximum = nucleus.v1?.projects?.dreamtime?.releases[`v${currentVersion}`]?.dreampower?.maximum
+    const minimum = dreamtrack.get(['projects', 'dreamtime', 'releases', currentVersion, 'dreampower', 'minimum'], 'v0.0.1')
+    const maximum = dreamtrack.get(['projects', 'dreamtime', 'releases', currentVersion, 'dreampower', 'maximum'])
+
+    if (!minimum) {
+      return null
+    }
 
     for (const release of releases) {
       if (compareVersions.compare(release.tag_name, minimum, '<')) {

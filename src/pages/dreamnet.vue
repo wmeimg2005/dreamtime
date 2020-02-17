@@ -40,6 +40,10 @@
               :version="item.version" />
           </div>
         </div>
+
+        <p class="secret" @click.prevent="secretError">
+          *
+        </p>
       </div>
 
       <div class="community__content__right">
@@ -53,16 +57,16 @@
 <script>
 import _ from 'lodash'
 import { tween, styler } from 'popmotion'
-import { nucleus } from '~/modules/services'
+import { dreamtrack } from '~/modules/services'
 
 export default {
   computed: {
     community() {
-      return nucleus.v1?.community || {
+      return dreamtrack.get('community', {
         name: 'DreamNet',
         slogan: 'Adult entertainment and decentralized applications to combat censorship.',
         sections: [],
-      }
+      })
     },
   },
 
@@ -80,6 +84,12 @@ export default {
         duration: 1000,
       }).start((v) => intro.set(v))
     }, 1500)
+  },
+
+  methods: {
+    secretError() {
+      throw new Error('SECRET TEST ERROR')
+    },
   },
 }
 </script>
@@ -146,5 +156,9 @@ export default {
   .community__donate-button {
     @apply w-full mb-6;
   }
+}
+
+.secret {
+  @apply text-xs text-black cursor-pointer;
 }
 </style>

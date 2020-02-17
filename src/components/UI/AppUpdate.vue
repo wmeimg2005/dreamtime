@@ -2,15 +2,16 @@
   <!-- Cannot update, only show the version... -->
   <box-item
     v-if="!updater.enabled"
+    v-tooltip="{ content: 'Installed version', placement: 'bottom' }"
     :label="currentVersion"
-    icon="globe" />
+    icon="rocket" />
 
   <!-- Updated! -->
   <box-item
     v-else-if="!updater.available"
     :label="`${projectTitle} is up to date.`"
     :description="currentVersion"
-    icon="globe" />
+    icon="rocket" />
 
   <!-- Update available -->
   <box-item

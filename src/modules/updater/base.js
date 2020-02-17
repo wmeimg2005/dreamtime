@@ -8,8 +8,8 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import {
-  isNil, isArray, isPlainObject, clone, find,
-  startsWith, filter, get, isEmpty,
+  isNil, isArray, isPlainObject, find,
+  startsWith, filter, isEmpty,
 } from 'lodash'
 import axios from 'axios'
 import compareVersions from 'compare-versions'
@@ -17,7 +17,7 @@ import deferred from 'deferred'
 import filesize from 'filesize'
 import delay from 'delay'
 import { basename } from 'path'
-import { nucleus } from '../services'
+import { dreamtrack } from '../services'
 import { Consola } from '../consola'
 
 const { system } = $provider
@@ -108,7 +108,7 @@ export class BaseUpdater {
    * @type {string}
    */
   get displayName() {
-    return nucleus.v1?.projects[this.name]?.about?.title || this.name
+    return dreamtrack.get(`projects.${this.name}.about.title`, this.name)
   }
 
   /**
@@ -142,7 +142,7 @@ export class BaseUpdater {
    * @type {string}
    */
   get githubRepo() {
-    return get(nucleus, `v1.projects.${this.name}.repository.github`)
+    return dreamtrack.get(`projects.${this.name}.repository.github`)
   }
 
   /**
@@ -197,8 +197,8 @@ export class BaseUpdater {
         return
       }
 
-      if (!nucleus.enabled) {
-        this.consola.warn('No connection with Nucleus.')
+      if (!dreamtrack.enabled) {
+        this.consola.warn('No connection with DreamTrack.')
         return
       }
     }
@@ -264,7 +264,7 @@ export class BaseUpdater {
     let asset
 
     try {
-      urls = clone(nucleus.v1.projects[this.name].releases[this.latestVersion].urls)
+      urls = dreamtrack.get(`projects.${this.name}.releases.${this.latestVersion}.urls`)
     } catch (err) {
       // not the best way, but it works
       urls = []
@@ -336,11 +336,12 @@ export class BaseUpdater {
       throw new Exception('Github has returned that there are no releases!')
     }
 
-    [this.latest] = releases
+    // eslint-disable-next-line prefer-destructuring
+    this.latest = releases[0]
     this.latestCompatible = this._getLatestCompatible(releases)
 
     if (isNil(this.latestCompatible)) {
-      throw new Exception('Unable to fetch the latest version information.')
+      throw new Exception('Unable to fetch the latest compatible version.')
     }
   }
 

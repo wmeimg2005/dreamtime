@@ -12,7 +12,7 @@ import { isNil } from 'lodash'
 let address
 
 export async function connect() {
-  if (process.env.name !== 'development') {
+  if (process.env.NODE_ENV !== 'development') {
     return null
   }
 

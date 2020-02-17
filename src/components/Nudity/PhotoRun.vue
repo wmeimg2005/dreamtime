@@ -2,7 +2,9 @@
   <div class="photo-run" :class="previewClass" data-private>
     <div class="run__preview" :style="previewStyle" />
 
-    <div v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled" class="run__preferences">
+    <div
+      v-if="run.preferences.body.randomize || run.preferences.body.progressive.enabled"
+      class="run__preferences">
       <div class="preference">
         <span>Boobs</span>
         <span>{{ run.preferences.body.boobs.size | fixedValue }}</span>
@@ -32,39 +34,59 @@
     <div class="run__content">
       <div v-if="run.running" class="content__item">
         <p class="text-white">
-          <span><font-awesome-icon icon="running" /></span>
+          <span>
+            <font-awesome-icon icon="running" />
+          </span>
           <span>{{ run.timer.duration }}s</span>
         </p>
       </div>
 
       <div v-else-if="run.failed" class="content__item">
         <p class="text-danger-500">
-          <span><font-awesome-icon icon="exclamation-circle" /></span>
+          <span>
+            <font-awesome-icon icon="exclamation-circle" />
+          </span>
           <span>Error!</span>
         </p>
       </div>
 
       <div v-else-if="run.finished" class="content__item">
         <p class="text-white">
-          <span><font-awesome-icon icon="heart" /></span>
+          <span>
+            <font-awesome-icon icon="heart" />
+          </span>
           <span>{{ run.timer.duration }}s</span>
         </p>
       </div>
 
       <div v-else class="content__item">
         <p class="text-white">
-          <span><font-awesome-icon icon="clock" /></span>
+          <span>
+            <font-awesome-icon icon="clock" />
+          </span>
         </p>
       </div>
 
       <div v-show="run.finished && run.outputFile.exists" class="content__item">
-        <button v-tooltip="'Save photo'" class="button button--success button--sm" @click.prevent="save">
+        <button
+          v-tooltip="'Open photo'"
+          class="button button--info button--sm"
+          @click.prevent="open">
+          <font-awesome-icon icon="image" />
+        </button>
+      </div>
+
+      <div v-show="run.finished && run.outputFile.exists" class="content__item">
+        <button
+          v-tooltip="'Save photo'"
+          class="button button--info button--sm"
+          @click.prevent="save">
           <font-awesome-icon icon="save" />
         </button>
       </div>
 
       <div v-show="run.finished" class="content__item">
-        <button v-tooltip="'Rerun'" class="button button--danger button--sm" @click.prevent="rerun">
+        <button v-tooltip="'Rerun'" class="button button--success button--sm" @click.prevent="rerun">
           <font-awesome-icon icon="undo" />
         </button>
       </div>
@@ -76,13 +98,19 @@
       </div>
 
       <div v-show="hasMaskfin" class="content__item">
-        <button v-tooltip="'View Maskfin'" class="button button--info button--sm" @click.prevent="$refs.maskfinDialog.showModal()">
+        <button
+          v-tooltip="'View Maskfin'"
+          class="button button--sm"
+          @click.prevent="$refs.maskfinDialog.showModal()">
           <font-awesome-icon icon="mask" />
         </button>
       </div>
 
       <div class="content__item">
-        <button v-tooltip="'View terminal'" class="button button--sm" @click.prevent="$refs.terminalDialog.showModal()">
+        <button
+          v-tooltip="'View terminal'"
+          class="button button--sm"
+          @click.prevent="$refs.terminalDialog.showModal()">
           <font-awesome-icon icon="terminal" />
         </button>
       </div>
@@ -98,7 +126,10 @@
         <div class="maskfin__description">
           <p>This is the Maskfin, a mask that represents in layers the areas that the algorithm will replace with the fake nude.</p>
           <p>Click on the "Add to queue" button to add it as an additional photo, edit the layers with the editor and continue with the nudification. You can also save it to your computer, edit it with an external program and continue the nudification manually.</p>
-          <p>For more information please consult the <a :href="manualURL" target="_blank">guide</a>.</p>
+          <p>
+            For more information please consult the
+            <a :href="manualURL" target="_blank">guide</a>.
+          </p>
         </div>
 
         <div class="dialog__buttons">
@@ -121,7 +152,10 @@
     <dialog ref="terminalDialog">
       <div class="dialog__content">
         <div class="terminal">
-          <li v-for="(item, index) in run.cli.lines" :key="index" :class="item.css">
+          <li
+            v-for="(item, index) in run.cli.lines"
+            :key="index"
+            :class="item.css">
             > {{ item.text }}
           </li>
         </div>
@@ -137,11 +171,8 @@
 </template>
 
 <script>
-import { isNil } from 'lodash'
-import { nucleus } from '~/modules/services'
+import { dreamtrack } from '~/modules/services'
 import { Nudify } from '~/modules/nudify'
-
-const { showSaveDialogSync } = $provider.api.dialog
 
 export default {
   filters: {
@@ -185,13 +216,20 @@ export default {
     },
 
     manualURL() {
-      return nucleus.urls?.docs?.manual || 'https://time.dreamnet.tech/docs/guide/upload'
+      return dreamtrack.get(
+        'urls.docs.manual',
+        'https://time.dreamnet.tech/docs/guide/upload',
+      )
     },
   },
 
   methods: {
     save() {
       this.run.outputFile.save(this.run.outputName)
+    },
+
+    open() {
+      this.run.outputFile.openItem()
     },
 
     rerun() {
@@ -215,10 +253,10 @@ export default {
 
 <style lang="scss" scoped>
 .photo-run {
-  @apply relative border-2 border-dark-100;
-  background-image: url('~@/assets/images/curls.png'); /* Background pattern from Toptal Subtle Patterns */
+  @apply relative border-2 border-dark-500;
+  background-image: url("~@/assets/images/curls.png"); /* Background pattern from Toptal Subtle Patterns */
   min-height: 512px;
-  transition: border-color .2s linear;
+  transition: border-color 0.2s linear;
 
   &.run--failed {
     @apply border-danger-500;
@@ -235,6 +273,8 @@ export default {
   }
 
   &:hover {
+    @apply border-primary-300;
+
     .run__content,
     .run__preferences {
       @apply opacity-100;
@@ -244,16 +284,16 @@ export default {
   .run__preview {
     @apply absolute opacity-0 left-0 right-0 top-0 bottom-0 z-10;
     @apply bg-contain bg-center bg-no-repeat;
-    transition: opacity .3s linear;
+    transition: opacity 0.3s linear;
   }
 }
 
 .run__content,
 .run__preferences {
   @apply absolute z-20;
-  @apply flex opacity-0 bg-dark-500-80 w-full;
+  @apply flex opacity-0 bg-dark-800-80 w-full;
   backdrop-filter: blur(6px);
-  transition: opacity .1s linear;
+  transition: opacity 0.1s linear;
 }
 
 .run__preferences {

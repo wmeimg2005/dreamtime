@@ -77,7 +77,7 @@ jobs:
         working-directory: src
         run: yarn lint
 
-      - name: Build
+      - name: Build (Installer)
         working-directory: src
         env:
           GITHUB_SHA: ${{ github.sha }}

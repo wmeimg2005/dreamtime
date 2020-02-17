@@ -1,8 +1,9 @@
 <template>
   <div class="settings-fields">
-    <h1 class="title">
-      Default preferences
-    </h1>
+    <div class="notification">
+      <span class="icon"><font-awesome-icon icon="info-circle" /></span>
+      <span>These preferences will be applied by default on new photos.</span>
+    </div>
 
     <settings-preferences v-model="currentValue.preferences" />
   </div>

@@ -14,7 +14,9 @@ import Logger from '@dreamnet/logplease'
 import fs from 'fs-extra'
 import { AppError } from './modules/app-error'
 import { system } from './modules/tools/system'
-import { getPath } from './modules/tools/paths'
+import {
+  getPath, getModelsPath, getMasksPath, getAppPath,
+} from './modules/tools/paths'
 import { settings, ngrok } from './modules'
 import config from '~/nuxt.config'
 
@@ -23,7 +25,7 @@ const logger = Logger.create('electron')
 // NuxtJS root directory
 config.rootDir = dirname(dirname(__dirname))
 
-if (process.env.name === 'production') {
+if (process.env.NODE_ENV === 'production') {
   // make sure that the working directory is where the executable is
   process.chdir(getPath('exe', '..'))
 }
@@ -49,7 +51,8 @@ class DreamApp {
 
     logger.info('Booting...')
 
-    logger.debug(`Enviroment: ${process.env.name}`)
+    logger.debug(`Enviroment: ${process.env.NODE_ENV}`)
+    logger.debug(`Portable: ${process.env.BUILD_PORTABLE}`)
     logger.debug(`App Path: ${app.getAppPath()}`)
     logger.debug(`Exe Path: ${app.getPath('exe')}`)
 
@@ -74,6 +77,10 @@ class DreamApp {
     // https://pracucci.com/electron-slow-background-performances.html
     app.commandLine.appendSwitch('disable-renderer-backgrounding')
 
+    if (process.env.BUILD_PORTABLE) {
+      this.bootPortable()
+    }
+
     // user settings.
     await settings.boot()
 
@@ -81,6 +88,32 @@ class DreamApp {
     if (settings.app?.disableHardwareAcceleration) {
       logger.debug('Hardware Acceleration disabled.')
       app.disableHardwareAcceleration()
+    }
+  }
+
+  /**
+  *
+   */
+  static bootPortable() {
+    // Portable component files
+    fs.ensureDirSync(getAppPath('AppData'))
+
+    const settingsPath = getPath('userData', 'settings.json')
+    const portableSettingsPath = getAppPath('AppData', 'settings.json')
+
+    const powerPath = getPath('userData', 'dreampower')
+    const portablePowerPath = getAppPath('AppData', 'dreampower')
+
+    try {
+      if (fs.existsSync(settingsPath)) {
+        fs.moveSync(settingsPath, portableSettingsPath)
+      }
+
+      if (fs.existsSync(powerPath)) {
+        fs.moveSync(powerPath, portablePowerPath)
+      }
+    } catch (error) {
+      logger.warn('Portable boot fail!', error)
     }
   }
 
@@ -104,6 +137,9 @@ class DreamApp {
 
       // https://github.com/sindresorhus/electron-util#enforcemacosapplocation-macos
       enforceMacOSAppLocation()
+
+      // PyTorch does not have support for GPU in macOS
+      settings.processing.device = 'CPU'
     }
 
     // application exit.
@@ -175,7 +211,7 @@ class DreamApp {
     this.createDirs()
 
     /*
-    if (process.env.name === 'development') {
+    if (process.env.NODE_ENV === 'development') {
       const address = await ngrok.connect()
       logger.debug(`Proxy for debugging: ${address}`)
     }
@@ -189,7 +225,7 @@ class DreamApp {
   static async shutdown() {
     logger.debug('Shutting down services...')
 
-    if (process.env.name === 'development') {
+    if (process.env.NODE_ENV === 'development') {
       await ngrok.disconnect()
     }
   }
@@ -280,8 +316,8 @@ class DreamApp {
    */
   static createDirs() {
     const dirs = [
-      resolve(settings.folders.models, 'Uncategorized'),
-      settings.folders.masks,
+      getModelsPath('Uncategorized'),
+      getMasksPath(),
     ]
 
     dirs.forEach((dir) => {

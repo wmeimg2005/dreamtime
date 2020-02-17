@@ -83,7 +83,7 @@
         <box-item
           id="preferences-advanced-scale"
           label="Scale method."
-          description="Method that will be used to scale the photo. Each option can offer different results in each photo.">
+          description="Indicates how the photo will be scaled, this changes the quality of the result dramatically.">
           <select v-model="currentValue.advanced.scaleMode" class="input">
             <option value="none">
               None
@@ -101,7 +101,7 @@
               Overlay
             </option>
             <option value="cropjs">
-              Manual crop
+              Crop
             </option>
           </select>
         </box-item>

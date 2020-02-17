@@ -8,12 +8,14 @@
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
 
 import { settings, requirements } from '~/modules/system'
+import { consola } from '~/modules/consola'
 
 export default function ({ route, redirect }) {
   const { wizard } = settings
 
   if (!wizard.welcome) {
     if (route.path !== '/wizard/welcome') {
+      consola.track('WELCOME')
       redirect('/wizard/welcome')
     }
 

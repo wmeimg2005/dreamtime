@@ -10,9 +10,9 @@
 import Vue from 'vue'
 import Title from './AppTitle'
 import Update from './AppUpdate'
-import BoxItem from './BoxItem'
 import AppPhoto from './AppPhoto'
 import AppNews from './AppNews'
+import BoxItem from './BoxItem'
 import ProjectUpdate from './ProjectUpdate'
 
 Vue.component('app-title', Title)

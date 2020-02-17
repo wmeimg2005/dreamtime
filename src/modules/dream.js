@@ -7,6 +7,8 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2020.
 
+import { isNil } from 'lodash'
+
 const { getAppPath, getPowerPath, getPath } = $provider.paths
 const { shell } = $provider.api
 
@@ -30,6 +32,11 @@ export default {
    * @type {string}
    */
   version: `v${process.env.npm_package_version}`,
+
+  /**
+   * @type {boolean}
+   */
+  isPortable: !isNil(process.env.BUILD_PORTABLE),
 
   /**
    *

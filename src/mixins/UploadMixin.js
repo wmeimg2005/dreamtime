@@ -61,6 +61,8 @@ export const UploadMixin = {
         properties: ['openDirectory'],
       })
 
+      consola.track('UPLOAD_FOLDER')
+
       this.addFiles(paths)
     },
 
@@ -109,12 +111,6 @@ export const UploadMixin = {
 
       const { files } = event.dataTransfer
       const url = event.dataTransfer.getData('url')
-
-      consola.debug('onDrop', {
-        event,
-        files,
-        url,
-      })
 
       if (url.length > 0) {
         Nudify.addUrl(url)

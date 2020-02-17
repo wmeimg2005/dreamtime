@@ -13,7 +13,7 @@ import {
 import Rollbar from 'rollbar'
 import { remote } from 'electron'
 import { BaseService } from './base'
-import { nucleus } from './nucleus'
+import { dreamtrack } from './dreamtrack'
 import { Consola } from '../consola'
 import { settings } from '../system/settings'
 
@@ -31,14 +31,14 @@ class RollbarService extends BaseService {
    * @type {string}
    */
   get accessToken() {
-    return process.env.ROLLBAR_ACCESS_TOKEN || nucleus.keys?.rollbarKey2
+    return process.env.ROLLBAR_ACCESS_TOKEN || dreamtrack.get('keys.rollbarKey')
   }
 
   /**
    * @type {boolean}
    */
   get can() {
-    return isString(this.accessToken) && settings.telemetry.bugs && process.env.name === 'production'
+    return system.online && isString(this.accessToken) && settings.telemetry.bugs // && process.env.NODE_ENV === 'production'
   }
 
   /**
@@ -62,12 +62,12 @@ class RollbarService extends BaseService {
       captureUnhandledRejections: false,
       captureIp: 'anonymize',
       enabled: settings.telemetry.bugs,
-      verbose: process.env.name === 'development',
+      verbose: process.env.NODE_ENV === 'development',
       logLevel: 'info',
       nodeSourceMaps: true,
       reportLevel: 'warning',
       payload: {
-        environment: process.env.name,
+        environment: process.env.NODE_ENV,
         person: {
           id: settings.user,
         },
@@ -80,11 +80,6 @@ class RollbarService extends BaseService {
             guess_uncaught_frames: true,
             code_version: this.release,
           },
-        },
-        system: {
-          graphics: system.graphics,
-          cpu: system.cpu,
-          os: system.os,
         },
       },
     }
@@ -102,8 +97,7 @@ class RollbarService extends BaseService {
       this.service = new Rollbar(this.config)
       this.enabled = true
 
-      consola.info('Rollbar started!')
-      consola.debug(`Access Token: ${this.accessToken}`)
+      consola.info('Ready to track errors.')
       consola.debug(this.config)
     } catch (err) {
       consola.warn('Rollbar setup failed!', err)

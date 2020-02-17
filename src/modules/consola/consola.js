@@ -93,16 +93,14 @@ export class Consola {
    * @param {Object} payload
    */
   track(event, payload = {}) {
-    const { nucleus, logrocket } = require('../services')
+    const { dreamtrack, logrocket } = require('../services')
 
-    const category = this.category.toUpperCase()
-
-    if (nucleus.enabled) {
-      nucleus.track(`${category}.${event}`, payload)
+    if (dreamtrack.enabled) {
+      dreamtrack.track(`${event}`, payload)
     }
 
     if (logrocket.enabled) {
-      logrocket.track(`${category}.${event}`)
+      logrocket.track(`${event}`)
     }
 
     return this

@@ -155,6 +155,11 @@ export class Photo {
     return this.file.mimetype !== 'image/gif'
   }
 
+  get isScaleModeCorrected() {
+    const { scaleMode } = this.preferences.advanced
+    return scaleMode !== this.scaleMode
+  }
+
   get scaleMode() {
     const { scaleMode } = this.preferences.advanced
 
@@ -165,8 +170,6 @@ export class Photo {
       }
 
       if (!this.fileCrop.exists) {
-        this.consola.warn('Wanted to use the cropper but the file does not exist.')
-
         // The Cropper has not been used.
         return 'auto-rescale'
       }
@@ -269,6 +272,10 @@ export class Photo {
       imageSmoothingEnabled: true,
       imageSmoothingQuality: 'high',
     })
+
+    if (!canvas) {
+      throw new Warning('The cropper has failed.', 'There was a problem executing the cropper, please open the tool and try again.')
+    }
 
     const dataURL = canvas.toDataURL(this.fileCrop.mimetype, 1)
     await this.fileCrop.writeDataURL(dataURL)
@@ -466,6 +473,36 @@ export class Photo {
   }
 
   /**
+   *
+   */
+  track() {
+    const { useColorTransfer, transformMode } = this.preferences.advanced
+    const { randomize, progressive } = this.preferences.body
+
+    consola.track('DREAM_START')
+
+    if (transformMode === 'export-maskfin') {
+      consola.track('DREAM_EXPORT_MASKFIN')
+    }
+
+    if (transformMode === 'import-maskfin') {
+      consola.track('DREAM_IMPORT_MASKFIN')
+    }
+
+    if (useColorTransfer) {
+      consola.track('DREAM_COLOR_TRANSFER')
+    }
+
+    if (randomize) {
+      consola.track('DREAM_RANDOMIZE')
+    }
+
+    if (progressive.enabled) {
+      consola.track('DREAM_PROGRESSIVE')
+    }
+  }
+
+  /**
    * Nudification start.
    * This should only be called from the queue.
    */
@@ -477,7 +514,7 @@ export class Photo {
     await this.syncEditor()
     await this.syncCrop()
 
-    // this.onStart()
+    this.track()
 
     for (let it = 1; it <= this.executions; it += 1) {
       const run = new PhotoRun(it, this)

@@ -36,8 +36,6 @@
             <li>Country.</li>
             <li>Important events.</li>
           </ul>
-
-          <a href="https://i.gyazo.com/1e772f1298772068db782b0c29af4ca1.png" target="_blank" class="button button--info">Example</a>
         </div>
 
         <div class="right">
@@ -118,7 +116,7 @@
             <li>Console log.</li>
           </ul>
 
-          <a href="https://catalina.dreamnet.tech/ipfs/QmQd5LKLVs73et1CvchHkq1J99PssoWfa5zRZD4ayqTrML" target="_blank" class="button button--info">Example</a>
+          <a href="https://link.dreamnet.tech/ipfs/QmQd5LKLVs73et1CvchHkq1J99PssoWfa5zRZD4ayqTrML" target="_blank" class="button button--info">Example</a>
         </div>
 
         <div class="right">

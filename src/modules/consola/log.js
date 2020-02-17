@@ -14,10 +14,8 @@ import he from 'he'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import Logger from '@dreamnet/logplease'
 import isPlainObject from 'lodash/isPlainObject'
+import { mapStackTrace } from 'sourcemapped-stacktrace'
 import { HandledError } from './errors'
-import { settings } from '../system/settings'
-
-const { system } = $provider
 
 const LEVELS = [
   'debug',
@@ -171,11 +169,11 @@ export class Log {
     }
 
     if (this.isError) {
-      await this.report()
-    }
+      this.report()
 
-    if (this.isError && !this.quiet) {
-      this.show()
+      if (!this.quiet) {
+        this.show()
+      }
     }
   }
 
@@ -187,47 +185,79 @@ export class Log {
       return this
     }
 
-    // System snapshot.
-    await system.takeSnapshot()
+    const { rollbar, logrocket, dreamtrack } = require('../services')
 
-    const { rollbar, logrocket } = require('../services')
+    if (!rollbar.enabled) {
+      return this
+    }
 
-    let rollbarResponse
+    const error = await this.getSourceMapError()
 
-    // bug tracking.
-    if (rollbar.enabled) {
+    const snapshotUrl = await dreamtrack.takeSnapshot()
+    const sessionUrl = logrocket.sessionURL
+    let rollbarUrl
+
+    // Bug tracking.
+    try {
+      const response = rollbar[this.level](this.title || this.message, error, {
+        ...this.extra,
+        sessionUrl,
+        snapshotUrl,
+      })
+
+      rollbarUrl = `https://rollbar.com/occurrence/uuid/?uuid=${response?.uuid}`
+
+      this.reported = true
+    } catch (err) {
+      this.logger.warn('Rollbar report fail!', err)
+    }
+
+    // Session tracking.
+    if (logrocket.enabled && isError(error)) {
       try {
-        rollbarResponse = rollbar[this.level](this.title || this.message, this.error, {
-          ...this.extra,
-          sessionURL: logrocket.sessionURL,
-          snapshot: {
-            system: system.snapshot,
-            settings: settings.payload,
+        logrocket.captureException(error, {
+          extra: {
+            rollbarUrl,
+            snapshotUrl,
           },
         })
 
         this.reported = true
       } catch (err) {
-        this.logger.warn('Rollbar report fail!', err)
-      }
-
-      // session tracking.
-      if (logrocket.enabled && isError(this.error)) {
-        try {
-          logrocket.captureException(this.error, {
-            extra: {
-              rollbarURL: `https://rollbar.com/occurrence/uuid/?uuid=${rollbarResponse?.uuid}`,
-            },
-          })
-
-          this.reported = true
-        } catch (err) {
-          this.logger.warn('LogRocket report fail!', err)
-        }
+        this.logger.warn('LogRocket report fail!', err)
       }
     }
 
+    const urls = {
+      snapshotUrl,
+      sessionUrl,
+      rollbarUrl,
+    }
+
+    dreamtrack.track('ERROR', urls)
+
+    consola.debug('The error has been reported.')
+    consola.debug(urls)
+
     return this
+  }
+
+  async getSourceMapError() {
+    if (!isError(this.error)) {
+      return this.error
+    }
+
+    const { error } = this
+
+    const getStack = () => new Promise((resolve) => {
+      mapStackTrace(error.stack, (stack) => {
+        resolve(`${error.message}\n${stack.join('\n')}`)
+      }, { cacheGlobally: true })
+    })
+
+    error.stack = await getStack()
+
+    return error
   }
 
   /**
@@ -249,7 +279,7 @@ export class Log {
       title: title || this.title || 'Unexpected problem!',
       html,
       icon: this.isError ? 'error' : 'warning',
-      footer: this.reported ? `<code>🐞 This problem has been reported to DreamNet.<br>It will be fixed as soon as possible.</code>` : null,
+      // footer: this.reported ? `<code>🐞 This problem has been reported to DreamNet.<br>It will be fixed as soon as possible.</code>` : null,
     })
 
     this.showed = true

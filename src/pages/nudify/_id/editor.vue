@@ -1,5 +1,10 @@
 <template>
   <div class="nudify-editor">
+    <div v-if="photo.scaleMode === 'cropjs' || photo.scaleMode === 'overlay'" class="notification notification--warning">
+      <span class="icon"><font-awesome-icon icon="exclamation-triangle" /></span>
+      <span>The changes you make in the editor will not be reflected in the nudification until you click on the <strong>Reload</strong> button of the Crop/Overlay tool.</span>
+    </div>
+
     <div ref="imageEditor" class="editor" data-private />
   </div>
 </template>
@@ -46,11 +51,11 @@ export default {
 
 <style lang="scss" scoped>
 .nudify-editor {
-  @apply h-full;
+  @apply h-full flex flex-col;
 }
 
 .editor {
-  @apply w-full h-full;
+  @apply w-full flex-1;
 }
 </style>
 

@@ -25,41 +25,31 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          intro: 'Welcome to DreamTime! Let me give you some information so you don\'t get lost. Let\'s start with the upload process. DreamTime has different ways in which you can upload the photo you want to nudify.',
+          intro: 'Welcome to DreamTime! Let me give you some information about the interface.',
         },
 
         {
-          intro: 'The easiest one is to drag and drop your photos into the application, no matter what section you are in! You can drag entire folders, photos from the web browser or even web addresses.',
+          intro: 'The first thing you should know is that you can drag and drop files, folders and web addresses into the application to nudify them.',
         },
 
         {
           element: '#uploader-methods',
-          intro: 'On this section there are alternative upload methods, you can upload photos even from the Internet or Instagram.',
+          intro: 'If you do not like drag and drop here you can find the classic options to upload your photos.',
         },
 
         {
           element: '#uploader-settings',
-          intro: 'What happens when uploading a photo is controlled by this option, initially it is set that the photos are placed in the pending queue. Speaking of the queue...',
+          intro: 'What happens when uploading a photo is controlled by this option, initially it is set that the photos are placed in the pending queue.',
         },
 
         {
           element: '#queuebar',
-          intro: 'This is the Queue bar, here you will find all the photos you have uploaded and it will remain visible no matter what part of the application you are. The best way to take advantage of it is by uploading several photos, you can keep up to 1,000 at the same time!',
+          intro: 'This is the Queuebar, the place where you will find all the photos you upload, you can have up to 1,000 photos here and have DreamTime automatically nudify them.',
         },
 
         {
-          element: '#queuebar-running',
-          intro: 'This section will show the photo that is being nudified and the photos that are waiting.',
-        },
-
-        {
-          element: '#queuebar-pending',
-          intro: 'This section shows the photos that are pending, they will not be nudified until you start the process manually.',
-        },
-
-        {
-          element: '#queuebar-finished',
-          intro: 'This section will show the photos whose nudification has finished whether it was successful or not.',
+          element: '#queuebar',
+          intro: 'As soon as you upload a photo you will see it here and you can put the mouse over it to see some options.',
         },
 
         {
@@ -69,7 +59,7 @@ export const tutorial = {
 
         {
           element: '#guide',
-          intro: 'This is all for now, you can get more information by clicking on the Help link. Now is DreamTime!',
+          intro: 'This is all for now, you can get more information by clicking on this link. Now is DreamTime!',
         },
       ],
     })
@@ -77,6 +67,55 @@ export const tutorial = {
     intro.start()
 
     localStorage.setItem('tutorial.upload', 'true')
+  },
+
+  photo() {
+    const seen = localStorage.getItem('tutorial.photo')
+
+    if (!isNil(seen)) {
+      return
+    }
+
+    const intro = introJs()
+
+    intro.setOptions({
+      showBullets: false,
+      overlayOpacity: 0.7,
+      steps: [
+        {
+          intro: 'Welcome to the photo panel, from here you will have total control over the photo you want to nudify.',
+        },
+
+        {
+          element: '#nudify-navigation',
+          intro: 'Here you can find the main options of the photo, click on Preferences to modify the settings or click on Results to see the progress of the nudification.',
+        },
+
+        {
+          element: '#nudify-tools',
+          intro: 'Here you can find additional tools such as an editor to make adjustments before nudification or the cropper.',
+        },
+
+        {
+          element: '#nudify-nudify',
+          intro: 'All ready? Click on the nudify button to place your photo in the queue and start the nudification.',
+        },
+
+        {
+          element: '#nudify-folder',
+          intro: 'Click on this button to open the folder where all the photos you have nudified are saved.',
+        },
+
+        {
+          element: '#nudify-forget',
+          intro: 'You won\'t work with a photo anymore? Forget it, this will delete it from the application and free memory. Nudified photos will not be deleted.',
+        },
+      ],
+    })
+
+    intro.start()
+
+    localStorage.setItem('tutorial.photo', 'true')
   },
 
   badtime() {
@@ -93,7 +132,7 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          intro: 'You have unlocked the BadTime mini-game! Use the arrows on your keyboard to play while your photos are nudified in the background. Try to survive as long as possible! 🎮💀',
+          intro: 'You have unlocked the BadTime mini-game! Use the arrows on your keyboard to play while your photos are nudified in the background. Can you survive until the end? 🎮💀',
         },
       ],
     })
@@ -117,12 +156,12 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          intro: 'Photo preferences are an important part of DreamTime, each photo has its set of preferences with which it works best. Let me give you some information.',
+          intro: 'Photo preferences are an important part of DreamTime, they allow you to customize the results and can improve quality.',
         },
 
         {
           element: '#preferences-runs',
-          intro: 'In this section you can find the options to execute several transformations in the same photo. The best way to take advantage of them is to increase the number of runs and activate the Randomize or Progressive option so that each run has different preferences and you can save the result that you like best.',
+          intro: 'In this section you can find the options to execute several nudifications in the same photo. The best way to take advantage of them is to increase the number of runs and activate the Randomize or Progressive option so that each run has different preferences.',
         },
 
         {
@@ -132,11 +171,11 @@ export const tutorial = {
 
         {
           element: '#preferences-advanced-scale',
-          intro: 'This option can dramatically increase or decrease the quality of the result. If you come from DeepNude, the Manual Crop option will be the one you feel most comfortable with, but we recommend you experiment with the other options and find the ideal one for your photo.',
+          intro: 'Pay close attention to this option, indicate how your photo will be scaled and each option can produce different results.',
         },
 
         {
-          intro: 'That\'s all for now, as we said before we recommend you experiment with these preferences, with a little practice you will start creating amazing nudes!',
+          intro: 'Our recommendation is that you take some time to experiment with these options in each photo. The same options do not always work for all photos.',
         },
       ],
     })
@@ -160,15 +199,11 @@ export const tutorial = {
       overlayOpacity: 0.7,
       steps: [
         {
-          intro: 'Welcome to the photo editor, here you can make some improvements and corrections to the photo before nudifying it. Keep in mind that the editor is very basic and is only recommended for small improvements.',
+          intro: 'Welcome to the photo editor, here you can make some improvements and corrections to the photo before nudifying it.',
         },
 
         {
-          intro: 'If you are looking for the Crop tool it is in a different area that will be visible when setting the Scale method option to Manual Crop or Overlay.',
-        },
-
-        {
-          intro: 'And although the editor has a tool called "Mask", don\'t get confused, this is not the custom mask for the algorithm. To use a custom mask you must set the transformation method to Nudify & Maskfin or Nudify with Maskfin, these options require more user experience.',
+          intro: 'Note that the editor does not have a crop tool, this is in a different section that will be visible depending on the "Scale method" option in Preferences.',
         },
       ],
     })
@@ -190,7 +225,11 @@ export const tutorial = {
     intro.setOptions({
       steps: [
         {
-          intro: 'Welcome to the photo cropper, this tool will allow you to crop the photo for best results.',
+          intro: 'Welcome to the photo cropper, this tool is important as it allows you to control the area that will be nudified.',
+        },
+
+        {
+          intro: 'On the right side you can find information on how to use the cropper and its function.',
         },
 
         {
@@ -199,13 +238,7 @@ export const tutorial = {
         },
 
         {
-          element: '#cropper-about',
-          intro: 'Here you can get more information about what the cropper of the selected scale method does.',
-        },
-
-        {
-          element: '#cropper-help',
-          intro: 'And here you can see the controls to use the cropper.',
+          intro: 'As in the preferences, we recommend experimenting with the cropper, some users have reported having better results just by moving the cropper by a few centimeters.',
         },
       ],
     })

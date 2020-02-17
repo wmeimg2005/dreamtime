@@ -1,10 +1,16 @@
 <template>
   <!-- Results -->
   <div v-if="photo.started" class="results">
+    <!-- Tool alert -->
+    <div v-if="photo.isScaleModeCorrected" class="notification notification--warning">
+      <span class="icon"><font-awesome-icon icon="exclamation-triangle" /></span>
+      <span>The scale method is set to <strong>Crop/Overlay</strong> but the tool has not been used. The photos will be nudified with <strong>Fixed</strong> instead.</span>
+    </div>
+
     <!-- Quick settings -->
     <div class="box box--items box--items--horizontal">
       <div class="box__content">
-        <box-item v-tooltip="{placement: 'bottom', content: 'Scale method'}">
+        <box-item v-tooltip="{placement: 'bottom', content: 'Scale method. Indicates how the photo will be scaled, this changes the quality of the result dramatically.'}">
           <select
             v-model="photo.preferences.advanced.scaleMode"
             :disabled="photo.running"
@@ -25,12 +31,12 @@
               Overlay
             </option>
             <option value="cropjs">
-              Manual crop
+              Crop
             </option>
           </select>
         </box-item>
 
-        <box-item v-tooltip="{placement: 'bottom', content: 'Color transfer'}">
+        <box-item v-tooltip="{placement: 'bottom', content: 'Color transfer. Use a experimental algorithm to try to recover the original colors of the photo.'}">
           <select
             v-model="photo.preferences.advanced.useColorTransfer"
             :disabled="photo.running"
@@ -110,17 +116,10 @@ export default {
 }
 
 .runs {
-  @apply flex flex-wrap justify-between;
+  @apply flex flex-wrap;
 
   .photo-run {
-    @apply mb-2;
-    width: calc(1/2*100% - (1 - 1/2)*1rem);
-
-    /*
-    @screen xl {
-      width: calc(1/3*100% - (1 - 1/3)*1rem);
-    }
-    */
+    @apply w-1/2;
 
     @media (min-height: 1280px) {
       height: 1024px;
