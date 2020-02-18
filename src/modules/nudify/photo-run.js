@@ -1,3 +1,4 @@
+/* eslint-disable no-control-regex */
 // DreamTime.
 // Copyright (C) DreamNet. All rights reserved.
 //
@@ -13,6 +14,7 @@ import {
 } from 'lodash'
 import deferred from 'deferred'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
+import emojiStrip from 'emoji-strip'
 import { File } from '../file'
 import { Timer } from '../timer'
 import cliErrors from '../config/cli-errors'
@@ -94,9 +96,13 @@ export class PhotoRun {
     const now = Date.now() + random(1, 100)
     const { file } = this.photo
 
-    const originalName = trim(kebabCase(truncate(deburr(file.name), { length: 20, omission: '' })))
+    let name = deburr(file.name)
+    name = emojiStrip(name)
+    name = name.replace(/[^\x00-\x7F]/g, '')
+    name = kebabCase(trim(name))
+    name = truncate(name, { length: 20, omission: '' })
 
-    return `${originalName}-RUN${this.id}-${now}-dreamtime${file.extension}`
+    return `${name}-RUN${this.id}-${now}-dreamtime${file.extension}`
   }
 
   constructor(id, photo) {

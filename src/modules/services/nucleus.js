@@ -58,7 +58,7 @@ export class NucleusService extends BaseService {
     }
 
     try {
-      const Nucleus = require('nucleus-nodejs')
+      const Nucleus = null // require('nucleus-nodejs')
 
       Nucleus.init(this.appId, this.config)
 
