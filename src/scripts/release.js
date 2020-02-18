@@ -9,14 +9,15 @@
 //
 // Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2020.
 
-const Octokit = require('@octokit/rest')
+const { Octokit } = require('@octokit/rest')
 const mime = require('mime-types')
-const { startsWith, truncate, isPlainObject } = require('lodash')
+const { startsWith, truncate, get } = require('lodash')
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 const FormData = require('form-data')
 const Cryptr = require('cryptr')
+const ndjson = require('ndjson-parse')
 const pkg = require('../package.json')
 
 // Settings
@@ -30,17 +31,57 @@ const cryptr = new Cryptr(process.env.SECRET_KEY)
 // Octokit
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN })
 
-// Releases list
-const releases = []
+// Dev Output
+const output = {
+  responses: [],
+  commands: [],
+  urls: {
+    windows: [],
+    ubuntu: [],
+    macos: [],
+  },
+}
 
-function addRelease(payload) {
-  if (isPlainObject(payload)) {
-    payload = cryptr.encrypt(JSON.stringify(payload))
-  } else {
-    payload = cryptr.encrypt(payload)
+/**
+ *
+ * @param {*} payload
+ */
+function addResponse(payload) {
+  output.responses.push(payload)
+}
+
+/**
+ *
+ * @param {string} platform
+ * @param {string} url
+ */
+function addUrl(url, fileName) {
+  let platform
+
+  if (fileName.includes('windows')) {
+    platform = 'windows'
   }
 
-  releases.push(payload)
+  if (fileName.includes('ubuntu')) {
+    platform = 'ubuntu'
+  }
+
+  if (fileName.includes('macos')) {
+    platform = 'macos'
+  }
+
+  output.urls[platform].unshift(url)
+}
+
+/**
+ *
+ * @param {string} hash
+ * @param {string} fileName
+ */
+function addCommand(hash, fileName) {
+  output.commands.push(`ipfs files cp /ipfs/${hash} /DreamNet/Public/Projects/DreamTime/Releases/${VERSION}/${fileName}`)
+
+  addUrl(`https://link.dreamnet.tech/ipfs/CID/${fileName}`, fileName)
 }
 
 /**
@@ -121,7 +162,7 @@ function Release(extension) {
           'content-type': mime.lookup(this.filePath),
         },
         name: this.fileName,
-        file: fs.createReadStream(this.filePath),
+        data: fs.createReadStream(this.filePath),
       })
 
       return response
@@ -131,7 +172,12 @@ function Release(extension) {
     }
   }
 
-  this.uploadTo = async (url, formData, headers = {}) => {
+  /**
+   * @param {string} url
+   * @param {FormData} formData
+   * @param {object} customHeaders
+   */
+  this.uploadTo = async (url, formData, customHeaders = {}) => {
     try {
       if (!formData) {
         formData = new FormData()
@@ -139,55 +185,69 @@ function Release(extension) {
 
       formData.append('file', fs.createReadStream(this.filePath), { filename: this.fileName })
 
-      console.log(`Uploading to ${url}`)
+      const headers = formData.getHeaders(customHeaders)
+
+      console.log(`Uploading ${this.fileName} to ${url}`)
 
       let response = await axios.post(url, formData, {
-        headers: {
-          ...formData.getHeaders(),
-          ...headers,
-        },
-        timeout: (10 * 60 * 1000),
+        headers,
+        timeout: (15 * 60 * 1000),
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
       })
 
       response = response.data
 
-      addRelease(response)
+      addResponse(response)
 
       return response
     } catch (err) {
-      console.warn(`${url} error`, err)
+      console.warn(`${url} error`, {
+        code: err.code,
+        status: get(err, 'response.status'),
+        statusText: get(err, 'response.statusText'),
+      })
+
       return null
     }
   }
 
-  this.uploadToAnonFile = () => this.uploadTo('https://api.anonfile.com/upload')
-
-  this.uploadToAnon = () => {
+  this.uploadToDreamLink = async () => {
     const formData = new FormData()
-    formData.append('expires', '6m')
+    formData.append('pin', 'false')
 
-    return this.uploadTo('https://api.anonymousfiles.io', formData)
+    let response = await this.uploadTo('https://ipfs.valeria.dreamnet.tech/api/v0/add', formData, {
+      Authorization: `Basic ${process.env.DREAMLINK_TOKEN}`,
+    })
+
+    if (response) {
+      response = ndjson(response)
+      addCommand(response[response.length - 1].Hash, this.fileName)
+    }
   }
 
-  this.uploadToFileIo = () => {
-    const formData = new FormData()
-    formData.append('expires', '1y')
-
-    return this.uploadTo('https://file.io', formData)
-  }
-
-  this.uploadToInfura = () => {
+  this.uploadToInfura = async () => {
     const formData = new FormData()
     formData.append('pin', 'true')
 
-    return this.uploadTo('https://ipfs.infura.io:5001/api/v0/add', formData)
+    let response = await this.uploadTo('https://ipfs.infura.io:5001/api/v0/add', formData)
+
+    if (response) {
+      response = ndjson(response)
+      addUrl(`https://ipfs.infura.io/ipfs/${response[response.length - 1].Hash}`, this.fileName)
+    }
   }
 
-  this.uploadToDreamLink = () => this.uploadTo('http://api.link.dreamnet.tech/add', null, {
-    Authorization: `Basic ${process.env.DREAMLINK_TOKEN}`,
-  })
+  this.uploadToPinata = async () => {
+    const response = await this.uploadTo('https://api.pinata.cloud/pinning/pinFileToIPFS', null, {
+      pinata_api_key: process.env.PINATA_KEY,
+      pinata_secret_api_key: process.env.PINATA_SECRET,
+    })
+
+    if (response) {
+      addUrl(`https://gateway.pinata.cloud/ipfs/${response.IpfsHash}`, this.fileName)
+    }
+  }
 
   this.upload = async () => {
     if (!fs.existsSync(this.filePath)) {
@@ -199,32 +259,13 @@ function Release(extension) {
       return
     }
 
-    if (!GitHub.isTagRelease) {
-      return
+    if (GitHub.isTagRelease) {
+      await this.uploadToGithub()
     }
 
-    await this.uploadToGithub()
     await this.uploadToDreamLink()
-  }
-
-  this.uploadOthers = async () => {
-    if (!fs.existsSync(this.filePath)) {
-      console.log('No release found!', {
-        filePath: this.filePath,
-        fileName: this.fileName,
-      })
-
-      return
-    }
-
-    const workload = []
-
-    workload.push([
-      this.uploadToAnon(),
-      this.uploadToFileIo(),
-    ])
-
-    await Promise.all(workload)
+    await this.uploadToPinata()
+    await this.uploadToInfura()
   }
 }
 
@@ -239,10 +280,7 @@ async function main() {
   await installer.upload()
   await portable.upload()
 
-  await installer.uploadOthers()
-  await portable.uploadOthers()
-
-  console.log(releases)
+  console.log(cryptr.encrypt(JSON.stringify(output)))
 }
 
 main()
