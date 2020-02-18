@@ -99,12 +99,12 @@ export class Photo {
   isMaskfin = false
 
   /**
-   * @type {require('cropperjs').default}
+   * @type {import('cropperjs').default}
    */
   cropper
 
   /**
-   * @type {require('tui-image-editor').default}
+   * @type {import('tui-image-editor')}
    */
   editor
 
@@ -525,6 +525,7 @@ export class Photo {
 
     await new Promise((resolve) => {
       this.queue.on('finished', () => {
+        consola.track('DREAM_END')
         resolve()
       })
     })

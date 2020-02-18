@@ -33,7 +33,7 @@
 
         <p>
           <span class="stats__value">{{ stats | stat('events.total.DREAM_COMPLETED') }}</span>
-          <span v-tooltip="{ content: 'Amount of photos that have been nudified.', placement: 'bottom' }" class="stats__label">nudifications.</span>
+          <span v-tooltip="{ content: 'Number of times a successful nudification has been completed.', placement: 'bottom' }" class="stats__label">nudifications.</span>
         </p>
       </div>
 

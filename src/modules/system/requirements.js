@@ -95,6 +95,10 @@ export const requirements = {
     consola.info(this.values)
   },
 
+  /**
+   *
+   * @param {string} path
+   */
   isValidFolder(path) {
     const original = clone(path)
 
