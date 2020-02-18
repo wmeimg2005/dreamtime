@@ -2,9 +2,6 @@ name: CI/CD
 
 on:
   push:
-    branches:
-      - release/*
-      - hotfix/*
     tags:
       - v*
 
@@ -75,19 +72,19 @@ jobs:
 
       - name: Lint
         working-directory: src
-        run: yarn lint
+        run: yarn run lint
 
       - name: Build (Installer)
         working-directory: src
         env:
           GITHUB_SHA: ${{ github.sha }}
-        run: yarn build
+        run: yarn run build
 
       - name: Build (Portable)
         working-directory: src
         env:
           BUILD_PORTABLE: true
-        run: yarn build:electron
+        run: yarn run build
 
       - name: Release
         working-directory: src/scripts
