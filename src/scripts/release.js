@@ -375,12 +375,21 @@ class Release {
     let response = await this.uploadTo('https://ipfs.infura.io:5001/api/v0/add')
 
     if (response && this.extension !== 'zip') {
-      response = ndjson(response)
-      Helper.addUrl(`https://ipfs.infura.io/ipfs/${response[response.length - 1].Hash}`)
+      if (isString(response)) {
+        response = ndjson(response)
+
+        Helper.addCommand(`https://ipfs.infura.io/ipfs/${response[response.length - 1].Hash}`, this.fileName)
+      } else {
+        Helper.addCommand(`https://ipfs.infura.io/ipfs/${response.Hash}`, this.fileName)
+      }
     }
   }
 
   async uploadToPinata() {
+    if (this.extension === 'zip') {
+      return
+    }
+
     if (!process.env.PINATA_KEY || !process.env.PINATA_SECRET) {
       console.warn('No Pinata tokens.')
       return
@@ -391,7 +400,7 @@ class Release {
       pinata_secret_api_key: process.env.PINATA_SECRET,
     })
 
-    if (response && this.extension !== 'zip') {
+    if (response) {
       Helper.addUrl(`https://gateway.pinata.cloud/ipfs/${response.IpfsHash}`)
     }
   }
@@ -438,13 +447,17 @@ const installer = new Release(process.env.BUILD_EXTENSION)
 const portable = new Release('zip')
 
 async function main() {
-  await installer.upload()
-  await portable.upload()
-
-  if (Helper.isEarly) {
-    console.log(cryptr.encrypt(JSON.stringify(Helper.output)))
-  } else {
-    console.log(Helper.output)
+  try {
+    await installer.upload()
+    await portable.upload()
+  } catch (err) {
+    console.error(err)
+  } finally {
+    if (Helper.isEarly) {
+      console.log(cryptr.encrypt(JSON.stringify(Helper.output)))
+    } else {
+      console.log(Helper.output)
+    }
   }
 }
 
