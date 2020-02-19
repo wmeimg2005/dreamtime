@@ -378,9 +378,9 @@ class Release {
       if (isString(response)) {
         response = ndjson(response)
 
-        Helper.addCommand(`https://ipfs.infura.io/ipfs/${response[response.length - 1].Hash}`, this.fileName)
+        Helper.addUrl(`https://ipfs.infura.io/ipfs/${response[response.length - 1].Hash}`)
       } else {
-        Helper.addCommand(`https://ipfs.infura.io/ipfs/${response.Hash}`, this.fileName)
+        Helper.addUrl(`https://ipfs.infura.io/ipfs/${response.Hash}`)
       }
     }
   }

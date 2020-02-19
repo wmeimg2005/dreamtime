@@ -11,6 +11,12 @@
     </div>
 
     <div class="project__content">
+      <div class="project__update">
+        <ProjectUpdate project="dreamtime" />
+      </div>
+    </div>
+
+    <div class="project__installation">
       <div class="project__overview">
         <figure>
           <img src="~/assets/images/apps/dreamtime.png">
@@ -21,12 +27,6 @@
         </h1>
 
         <h2>{{ $dream.description }}</h2>
-      </div>
-    </div>
-
-    <div class="project__installation">
-      <div class="project__update">
-        <ProjectUpdate project="dreamtime" />
       </div>
     </div>
   </div>
