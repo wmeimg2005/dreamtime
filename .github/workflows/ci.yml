@@ -93,6 +93,12 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           DREAMLINK_TOKEN: ${{ secrets.DREAMLINK_TOKEN }}
+          PINATA_KEY: ${{ secrets.PINATA_KEY }}
+          PINATA_SECRET: ${{ secrets.PINATA_SECRET }}
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+          ANTOPIE_TOKEN: ${{ secrets.ANTOPIE_TOKEN }}
+          SPIP_TOKEN: ${{ secrets.SPIP_TOKEN }}
+          TEKNIK_TOKEN: ${{ secrets.TEKNIK_TOKEN }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
           BUILD_PLATFORM: ${{ matrix.platform }}

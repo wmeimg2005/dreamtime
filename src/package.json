@@ -27,7 +27,7 @@
     "build:nuxt": "yarn production nuxt build",
     "build:babel": "yarn production babel electron/src --out-dir electron/dist --minified",
     "build:electron": "yarn production electron-builder --publish=never --x64",
-    "build": "yarn build:nuxt && yarn build:babel && modclean --patterns default:safe,default:caution --run && yarn build:electron",
+    "build": "yarn build:nuxt && yarn build:babel && modclean --patterns default:safe --run && yarn build:electron",
     "preview:electron": "env-cmd -e default,production,preview --no-override electron .",
     "preview:production": "yarn build:nuxt && yarn build:babel && yarn preview:electron"
   },

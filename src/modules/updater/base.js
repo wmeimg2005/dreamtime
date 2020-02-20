@@ -264,7 +264,7 @@ export class BaseUpdater {
     let asset
 
     try {
-      urls = dreamtrack.get(`projects.${this.name}.releases.${this.latestVersion}.urls`)
+      urls = dreamtrack.get(['projects', this.name, 'releases', this.latestVersion, 'urls'])
     } catch (err) {
       // not the best way, but it works
       urls = []
