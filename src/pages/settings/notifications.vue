@@ -1,11 +1,12 @@
 <template>
   <div class="settings-fields">
-    <section class="box box--items">
+    <section class="box">
       <div class="box__content">
-        <box-item
+        <MenuItem
           label="Every Run"
           description="Notify when the program is not in the foreground and a single run have finished.">
-          <select v-model="currentValue.notifications.run" class="input">
+          <select v-model="currentValue.notifications.run"
+                  class="input">
             <option :value="true">
               Enabled
             </option>
@@ -13,12 +14,13 @@
               Disabled
             </option>
           </select>
-        </box-item>
+        </MenuItem>
 
-        <box-item
+        <MenuItem
           label="Every Dream"
           description="Notify when the program is not in the foreground and all the runs have finished.">
-          <select v-model="currentValue.notifications.allRuns" class="input">
+          <select v-model="currentValue.notifications.allRuns"
+                  class="input">
             <option :value="true">
               Enabled
             </option>
@@ -26,12 +28,13 @@
               Disabled
             </option>
           </select>
-        </box-item>
+        </MenuItem>
 
-        <box-item
+        <MenuItem
           :description="`Notify when there is a new version of ${$dream.name}, DreamPower or Checkpoints.`"
           label="Update Available">
-          <select v-model="currentValue.notifications.update" class="input">
+          <select v-model="currentValue.notifications.update"
+                  class="input">
             <option :value="true">
               Enabled
             </option>
@@ -39,7 +42,7 @@
               Disabled
             </option>
           </select>
-        </box-item>
+        </MenuItem>
       </div>
     </section>
   </div>

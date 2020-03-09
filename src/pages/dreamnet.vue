@@ -1,9 +1,13 @@
 <template>
   <div class="community">
     <div class="community__header">
-      <video src="~/assets/videos/dreamnet.mp4" autoplay muted loop />
+      <video src="~/assets/videos/dreamnet.mp4"
+             autoplay
+             muted
+             loop />
 
-      <div ref="intro" class="header__overlay">
+      <div ref="intro"
+           class="header__overlay">
         <div class="header__content">
           <div class="header__content__logo">
             <img src="~/assets/images/dreamnet.png">
@@ -29,7 +33,8 @@
             </h2>
           </div>
 
-          <div v-if="typeof section.content === 'object'" class="box__content">
+          <div v-if="typeof section.content === 'object'"
+               class="box__content">
             <box-item
               v-for="(item, it) in section.content"
               :key="it"
@@ -41,7 +46,8 @@
           </div>
         </div>
 
-        <p class="secret" @click.prevent="secretError">
+        <p class="secret"
+           @click.prevent="secretError">
           *
         </p>
       </div>
@@ -55,7 +61,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import { isNil } from 'lodash'
 import { tween, styler } from 'popmotion'
 import { dreamtrack } from '~/modules/services'
 
@@ -72,7 +78,7 @@ export default {
 
   mounted() {
     setTimeout(() => {
-      if (_.isNil(this.$refs.intro)) {
+      if (isNil(this.$refs.intro)) {
         return
       }
 
@@ -95,10 +101,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.community {
-
-}
-
 .community__header {
   @apply relative overflow-hidden;
   height: 200px;

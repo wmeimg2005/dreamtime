@@ -1,103 +1,62 @@
 <template>
-  <div id="queuebar" class="layout__jobbar">
-    <section id="queuebar-running">
-      <div class="section__header">
-        <div class="section__title">
+  <div id="queuebar"
+       class="queue">
+    <div class="queue__section queue__section--running">
+      <div class="queue__header">
+        <p class="title">
           <span class="icon"><font-awesome-icon icon="running" /></span>
           <span>Queue</span>
-        </div>
-
-        <div v-show="$nudify.waiting.length > 0" class="section__actions">
-          <button
-            v-tooltip="{placement: 'bottom', content: 'Forget waiting'}"
-            class="button button--danger button--xs"
-            @click.prevent="$nudify.forgetAll('waiting')">
-            <font-awesome-icon icon="trash-alt" />
-          </button>
-
-          <button
-            v-tooltip="{placement: 'bottom', content: 'Cancel waiting' }"
-            class="button button--xs"
-            @click.prevent="$nudify.cancelAll('waiting')">
-            <font-awesome-icon icon="stop" />
-          </button>
-        </div>
+          <span class="separator">·</span>
+          <span>{{ $nudify.waiting.length }}</span>
+        </p>
       </div>
 
-      <div class="jobs__list">
+      <div class="queue__content">
         <QueuePhoto
           v-for="(photo, index) of $nudify.waiting"
           :key="index"
           :photo="photo"
           data-private />
       </div>
-    </section>
+    </div>
 
-    <section id="queuebar-pending">
-      <div class="section__header">
-        <div class="section__title">
+    <div class="queue__section queue__section--pending">
+      <div class="queue__header">
+        <p class="title">
           <span class="icon"><font-awesome-icon icon="clipboard-list" /></span>
           <span>Pending</span>
-        </div>
-
-        <div v-show="$nudify.pending.length > 0" class="section__actions">
-          <button
-            v-tooltip="'Forget all'"
-            class="button button--danger button--xs"
-            @click.prevent="$nudify.forgetAll()">
-            <font-awesome-icon icon="trash-alt" />
-          </button>
-
-          <button
-            v-tooltip="'Start all'"
-            class="button button--xs"
-            @click.prevent="$nudify.addAll()">
-            <font-awesome-icon icon="play" />
-          </button>
-        </div>
+          <span class="separator">·</span>
+          <span>{{ $nudify.pending.length }}</span>
+        </p>
       </div>
 
-      <div class="jobs__list">
+      <div class="queue__content">
         <QueuePhoto
           v-for="(photo, index) of $nudify.pending"
           :key="index"
           :photo="photo"
           data-private />
       </div>
-    </section>
+    </div>
 
-    <section id="queuebar-finished">
-      <div class="section__header">
-        <div class="section__title">
+    <div class="queue__section queue__section--finished">
+      <div class="queue__header">
+        <p class="title">
           <span class="icon"><font-awesome-icon icon="clipboard-check" /></span>
           <span>Finished</span>
-        </div>
-
-        <div v-show="$nudify.finished.length > 0" class="section__actions">
-          <button
-            v-tooltip="'Forget all'"
-            class="button button--danger button--xs"
-            @click.prevent="$nudify.forgetAll('finished')">
-            <font-awesome-icon icon="trash-alt" />
-          </button>
-
-          <button
-            v-tooltip="'Rerun all'"
-            class="button button--xs"
-            @click.prevent="$nudify.addAll('finished')">
-            <font-awesome-icon icon="undo" />
-          </button>
-        </div>
+          <span class="separator">·</span>
+          <span>{{ $nudify.finished.length }}</span>
+        </p>
       </div>
 
-      <div class="jobs__list">
+      <div class="queue__content">
         <QueuePhoto
           v-for="(photo, index) of $nudify.finished"
           :key="index"
           :photo="photo"
           data-private />
       </div>
-    </section>
+    </div>
   </div>
 </template>
 
@@ -108,6 +67,51 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.queue {
+  @apply flex flex-col;
+  @apply bg-dark-500;
+  grid-area: queue;
+}
+
+.queue__section {
+  @apply flex-1 flex flex-col;
+
+  &.queue__section--running {
+  }
+
+  &.queue__section--pending {
+  }
+
+  &.queue__section--finished {
+  }
+}
+
+.queue__header {
+  @apply p-3;
+
+  .title {
+    @apply text-sm font-bold;
+  }
+
+  .icon {
+    @apply mr-2;
+  }
+
+  .separator {
+    @apply mx-2;
+  }
+}
+
+.queue__content {
+  @apply flex-1;
+  @apply overflow-hidden overflow-x-auto whitespace-no-wrap;
+
+  .photo {
+    @apply inline-block;
+  }
+}
+
+/*
 .layout__jobbar {
   @apply relative flex flex-col;
   @apply bg-dark-500 py-2 z-10;
@@ -167,4 +171,5 @@ section {
   @apply py-2 overflow-y-auto max-h-full;
   will-change: scroll-position;
 }
+*/
 </style>

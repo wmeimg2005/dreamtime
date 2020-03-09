@@ -11,5 +11,5 @@ import Vue from 'vue'
 import QueueBar from './QueueBar'
 import QueuePhoto from './QueuePhoto'
 
-Vue.component('QueueBar', QueueBar)
+Vue.component('Queuebar', QueueBar)
 Vue.component('QueuePhoto', QueuePhoto)

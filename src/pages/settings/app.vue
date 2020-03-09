@@ -1,27 +1,29 @@
 <template>
   <div class="settings-fields">
-    <section class="box box--items">
+    <section class="box">
       <div class="box__content">
-        <box-item
+        <MenuItem
           label="Upload mode."
           description="What will happen when uploading a photo.">
-          <select v-model="currentValue.app.uploadMode" class="input">
+          <select v-model="currentValue.app.uploadMode"
+                  class="input">
             <option value="none">
-              Put in Pending
+              Add to pending
             </option>
             <option value="add-queue">
-              Put in Queue
+              Add to queue
             </option>
             <option value="go-preferences">
-              Put in Pending and Open preferences
+              Open panel
             </option>
           </select>
-        </box-item>
+        </MenuItem>
 
-        <box-item
-          label="Hardware Acceleration"
+        <MenuItem
+          label="Use hardware acceleration."
           description="It can improve performance on some systems. (Requires restart to take effect)">
-          <select v-model="currentValue.app.disableHardwareAcceleration" class="input">
+          <select v-model="currentValue.app.disableHardwareAcceleration"
+                  class="input">
             <option :value="false">
               Enabled
             </option>
@@ -29,12 +31,13 @@
               Disabled
             </option>
           </select>
-        </box-item>
+        </MenuItem>
 
-        <box-item
+        <MenuItem
           label="Queue position."
           description="Change the position of the queue bar to the place that is most comfortable for you.">
-          <select v-model="currentValue.app.queuePosition" class="input">
+          <select v-model="currentValue.app.queuePosition"
+                  class="input">
             <option value="right">
               Right
             </option>
@@ -42,7 +45,7 @@
               Left
             </option>
           </select>
-        </box-item>
+        </MenuItem>
       </div>
     </section>
   </div>

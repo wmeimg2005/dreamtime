@@ -33,74 +33,16 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      // { 'http-equiv': 'Content-Security-Policy', content: 'default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://cdn.logrocket.io https://cdn.lr-ingest.io; worker-src \'self\' \'unsafe-inline\' data: blob:; object-src \'none\'; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; img-src \'self\' data:; media-src \'self\' data:; frame-src \'self\' https://*.dreamnet.tech; font-src *; connect-src \'self\' http://localhost:* https://*.dreamnet.tech wss://app.nucleus.sh https://nucleus.sh https://*.logrocket.io https://r.lr-ingest.io https://*.github.com' },
     ],
 
     link: [
       {
-        rel: 'preload', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700|Roboto+Slab:300,400,500,600,700', as: 'style', onload: 'this.rel = \'stylesheet\'',
+        rel: 'preload',
+        href: 'https://rsms.me/inter/inter.css',
+        as: 'style',
+        onload: 'this.rel = \'stylesheet\'',
       },
     ],
-  },
-
-  /**
-   *
-   */
-  render: {
-    csp: {
-      hashAlgorithm: 'sha256',
-      policies: {
-        'default-src': [
-          'self',
-        ],
-        'script-src': [
-          'self',
-          'unsafe-inline',
-          'https://cdn.logrocket.io',
-          'https://cdn.lr-ingest.io',
-        ],
-        'worker-src': [
-          'self',
-          'unsafe-inline',
-          'data:',
-          'blob:',
-        ],
-        'object-src': [
-          'none',
-        ],
-        'style-src': [
-          'self',
-          'unsafe-inline',
-          'https://fonts.googleapis.com',
-        ],
-        'img-src': [
-          'self',
-          'data:',
-        ],
-        'media-src': [
-          'self',
-          'data:',
-        ],
-        'frame-src': [
-          'self',
-          'https://*.dreamnet.tech',
-        ],
-        'font-src': [
-          '*',
-        ],
-        'connect-src': [
-          'self',
-          'http://localhost:*',
-          'https://*.dreamnet.tech',
-          'wss://app.nucleus.sh',
-          'https://nucleus.sh',
-          'https://*.logrocket.io',
-          'https://r.lr-ingest.io',
-          'https://*.github.com',
-        ],
-      },
-      addMeta: true,
-    },
   },
 
   /*
@@ -128,7 +70,6 @@ module.exports = {
     '~/assets/css/tailwind.scss',
     '~/assets/css/reset/all.scss',
     '~/assets/css/components/all.scss',
-    '~/assets/css/utilities/all.scss',
   ],
 
   /*
@@ -140,6 +81,7 @@ module.exports = {
     '~/plugins/setup.js',
     '~/plugins/fontawesome.js',
     '~/plugins/vue-slider.js',
+    '~/plugins/vue-portal.js',
     '~/components',
   ],
 
@@ -153,6 +95,8 @@ module.exports = {
     'nuxt-purgecss',
     // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
     '@nuxtjs/tailwindcss',
+    // Doc: https://github.com/nuxt-community/style-resources-module
+    '@nuxtjs/style-resources',
   ],
 
   /*
@@ -165,6 +109,13 @@ module.exports = {
    */
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.scss',
+  },
+
+  /**
+   *
+   */
+  styleResources: {
+    scss: '~/assets/css/utilities/all.scss',
   },
 
   /**
@@ -246,14 +197,8 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            debug: false,
             targets: {
               chrome: '78',
-            },
-            modules: false,
-            useBuiltIns: 'usage',
-            corejs: {
-              version: 3,
             },
           },
         ],
@@ -281,16 +226,8 @@ module.exports = {
      * https://nuxtjs.org/api/configuration-build#loaders
      */
     loaders: {
-      scss: dev ? {
-        implementation: require('sass'),
-      } : {},
-
-      vue: {
-        prettify: false,
-      },
-
       imgUrl: {
-        limit: 10 * 1000,
+        limit: 5 * 1000,
       },
     },
 
@@ -298,7 +235,7 @@ module.exports = {
      * Webpack Optimization.
      * https://nuxtjs.org/api/configuration-build#optimization
      */
-    optimization: {
+    /* optimization: {
       splitChunks: {
         name: false,
         automaticNameMaxLength: 30,
@@ -330,7 +267,7 @@ module.exports = {
           },
         },
       },
-    },
+    }, */
 
     postcss: {
       plugins: {
@@ -341,7 +278,8 @@ module.exports = {
     /*
      ** You can extend webpack config here.
      */
-    extend(config, { isDev }) {
+    extend(config, ctx) {
+      //
       config.target = 'electron-renderer'
 
       // Don't throw warning when asset created is over 250kb
@@ -350,6 +288,7 @@ module.exports = {
       // Disable handling of requires with a single expression.
       config.module.exprContextCritical = false
 
+      //
       config.module.rules.push({
         test: /\.worker\.js$/,
         use: {
@@ -361,6 +300,7 @@ module.exports = {
         exclude: /(node_modules)/,
       })
 
+      //
       config.module.rules.push({
         test: /\.(ogg|mp3|wav|mpe?g)$/i,
         use: {
@@ -371,9 +311,16 @@ module.exports = {
         },
       })
 
+      //
+      config.module.rules.push({
+        test: /\.ya?ml$/,
+        use: ['js-yaml-loader'],
+      })
+
+      //
       config.devtool = 'source-map'
 
-      if (!isDev) {
+      if (!ctx.isDev) {
         config.output.publicPath = './_nuxt/'
       }
     },

@@ -1,74 +1,90 @@
 <template>
-  <div class="layout__navbar">
-    <div class="navbar__left">
-      <nuxt-link v-if="canNudify" to="/" class="navbar__item navbar__item--home">
-        Upload
-      </nuxt-link>
+  <div class="nav">
+    <div class="nav__left">
+      <div v-tooltip="$dream.version"
+           class="nav__item nav__item--logo">
+        <span>{{ $dream.name }}</span>
+      </div>
 
-      <nuxt-link id="settings" class="navbar__item" to="/settings">
-        Settings
-      </nuxt-link>
-
-      <nuxt-link v-if="unlockedBadTime" v-tooltip="{ content: 'Mini-game. Can you survive until the end? 🎮💀', placement: 'bottom' }" class="navbar__item" to="/games/badtime">
-        Bad Time Game
-      </nuxt-link>
-
-      <a v-if="isDev" class="navbar__item" @click.prevent="createError">
-        Force Error
-      </a>
+      <div class="nav__item nav__item--greetings">
+        <span v-if="!isBadTime">{{ greetings }}</span>
+        <span v-else><img src="~/assets/images/games/sans.png"> i don't like what you are doing.</span>
+      </div>
     </div>
 
-    <div class="navbar__right">
-      <nuxt-link v-tooltip="{placement: 'bottom', content: 'Alert Center'}" class="navbar__icon" to="/alerts">
-        <font-awesome-icon v-if="hasAlerts" icon="exclamation-triangle" class="alerts--active" />
-        <font-awesome-icon v-else icon="check-circle" class="alerts--ok" />
+    <div class="nav__center">
+      <nuxt-link v-tooltip="'Upload'"
+                 to="/"
+                 class="nav__item nav__item--link">
+        <font-awesome-icon icon="upload" />
       </nuxt-link>
 
-      <nuxt-link v-tooltip="{placement: 'bottom', content: 'About'}" class="navbar__icon" to="/about">
-        <font-awesome-icon icon="info-circle" />
+      <div v-tooltip="'My panel'"
+           class="nav__item nav__item--link">
+        <img :src="avatar"
+             alt="Me">
+      </div>
+
+      <div v-tooltip="'Advanced Mode'"
+           class="nav__item nav__item--link">
+        <font-awesome-icon icon="mask" />
+      </div>
+    </div>
+
+    <div class="nav__right">
+      <div v-if="isBadTimeAvailable"
+           v-tooltip="'Bad Time Game'"
+           class="nav__item nav__item--button">
+        <img src="~/assets/images/games/sans.png">
+      </div>
+
+      <nuxt-link v-tooltip="'Settings'"
+                 to="/settings"
+                 class="nav__item nav__item--button">
+        <font-awesome-icon icon="cog" />
       </nuxt-link>
-
-      <nuxt-link
-        v-if="$provider.system.online"
-        v-tooltip="{placement: 'bottom', content: 'DreamNet'}"
-        class="navbar__icon"
-        to="/dreamnet">
-        <font-awesome-icon icon="users" />
-      </nuxt-link>
-
-      <a
-        v-if="$provider.system.online"
-        id="guide"
-        v-tooltip="{placement: 'bottom', content: 'User\'s Guide.'}"
-        class="navbar__icon"
-        :href="manualURL"
-        target="_blank">
-        <font-awesome-icon icon="question-circle" />
-      </a>
-
-      <a
-        v-if="$provider.system.online"
-        v-tooltip="{placement: 'bottom', content: 'Donate and get benefits!'}"
-        class="navbar__icon"
-        :href="donateUrl"
-        target="_blank">
-        <font-awesome-icon :icon="['fab', 'patreon']" />
-      </a>
     </div>
   </div>
 </template>
 
 <script>
+import dayjs from 'dayjs'
+import Avatars from '@dicebear/avatars'
+import sprites from '@dicebear/avatars-jdenticon-sprites'
 import { requirements, settings } from '~/modules/system'
 import { dreamtrack } from '~/modules/services'
 import { events } from '~/modules'
 
 export default {
   data: () => ({
-    unlockedBadTime: settings.achievements.badtime,
+    isBadTimeAvailable: settings.achievements.badtime,
+    isBadTime: false,
   }),
 
   computed: {
+    avatar() {
+      const avatars = new Avatars(sprites, { base64: true })
+      return avatars.create(settings.user)
+    },
+
+    greetings() {
+      const hours = dayjs().hour()
+
+      if (hours >= 6 && hours <= 11) {
+        return '☕ Good morning'
+      }
+
+      if (hours >= 12 && hours <= 19) {
+        return '🌞 Good afternoon'
+      }
+
+      if (hours >= 0 && hours <= 5) {
+        return '🐏 Sweet dreams'
+      }
+
+      return '🌛 Good night'
+    },
+
     canNudify() {
       return requirements.canNudify
     },
@@ -92,7 +108,17 @@ export default {
 
   mounted() {
     events.on('achievements.badtime', () => {
-      this.unlockedBadTime = true
+      this.isBadTimeAvailable = true
+    })
+
+    this.$router.afterEach((to) => {
+      if (to.path === '/games/badtime') {
+        this.$dream.name = 'BadDreamTime'
+        this.isBadTime = true
+      } else {
+        this.$dream.name = process.env.npm_package_displayName
+        this.isBadTime = false
+      }
     })
   },
 
@@ -105,6 +131,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@keyframes logoAnim {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
 @keyframes alertAnim {
   0% {
     @apply text-danger-500;
@@ -117,9 +155,90 @@ export default {
   }
 }
 
+.nav {
+  @apply flex z-10;
+  @apply h-full bg-dark-500 border-b-2 border-dark-600 shadow;
+  grid-area: nav;
+
+  .nav__left,
+  .nav__center,
+  .nav__right {
+    @apply flex-1 flex;
+  }
+
+  .nav__left {
+    @apply flex-1;
+  }
+
+  .nav__center {
+    @apply justify-center;
+  }
+
+  .nav__right {
+    @apply justify-end items-center;
+  }
+}
+
+.nav__item {
+  @apply flex items-center;
+
+  img {
+    @apply rounded-full;
+    height: 30px;
+  }
+
+  &.nav__item--link {
+    @apply justify-center;
+    @apply border-b-2 border-transparent text-lg;
+    width: 100px;
+
+    &:hover {
+      @apply text-primary-500 border-primary-500;
+    }
+  }
+
+  &.nav__item--button {
+    @apply justify-center;
+    @apply rounded-full text-lg mr-3;
+    width: 40px;
+    height: 40px;
+
+    &:hover {
+      @apply bg-dark-800;
+    }
+
+    img {
+    height: 20px;
+  }
+  }
+
+  &.nav__item--logo {
+    @apply text-white text-sm font-bold px-6 select-none;
+
+    background: rgb(99, 66, 245);
+    background: linear-gradient(
+      40deg,
+      rgba(99, 66, 245, 1) 0%,
+      rgba(239, 125, 199, 1) 100%
+    );
+    background-size: 200% 100%;
+    background-position: 0% 0%;
+
+    animation-name: logoAnim;
+    animation-iteration-count: infinite;
+    animation-duration: 10s;
+    animation-timing-function: ease-in-out;
+  }
+
+  &.nav__item--greetings {
+    @apply text-white text-sm font-light px-3 select-none;
+  }
+}
+
 .layout__navbar {
   @apply flex bg-dark-500 z-10;
   @apply border-b border-dark-100;
+  grid-area: nav;
   height: 50px;
 
   .navbar__left,

@@ -9,6 +9,7 @@
 
 import Vue from 'vue'
 import tippy from 'tippy.js'
+import { Help } from '~/modules'
 import { Consola } from '~/modules/consola'
 import { achievements } from '~/modules/system'
 import BaseMixin from '~/mixins/BaseMixin'
@@ -39,6 +40,9 @@ export default ({ app }, inject) => {
   // DreamTime.
   app.$dream = dream
   inject('dream', dream)
+
+  // Help
+  Help.load()
 
   // Nudification/Queue.
   Nudify.setup()

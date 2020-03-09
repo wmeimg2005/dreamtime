@@ -4,15 +4,17 @@ module.exports = {
     spacing: {
       px: '1px',
       0: '0',
+      1: '0.25rem',
       2: '0.5rem',
+      3: '0.75rem',
       4: '1rem',
+      5: '1.25rem',
       6: '1.5rem',
       8: '2rem',
+      9: '2.25rem',
       10: '2.5rem',
       12: '3rem',
-      14: '3.5rem',
       16: '4rem',
-      18: '4.5rem',
       20: '5rem',
       24: '6rem',
       32: '8rem',
@@ -25,7 +27,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          'Roboto',
+          'Inter',
           '-apple-system',
           'BlinkMacSystemFont',
           'system-ui',
@@ -45,17 +47,30 @@ module.exports = {
       // https://javisperez.github.io/tailwindcolorshades/
       colors: {
         generic: {
-          100: '#fcfcfc',
-          200: '#efeff0',
-          300: '#e2e2e5',
-          400: '#d5d5d9',
+          100: '#DCDCE0',
+          200: '#D7D7DB',
+          300: '#D2D2D7',
+          400: '#CDCDD2',
           500: '#C8C8CE',
-          600: '#bbbbc3',
-          700: '#aeaeb7',
-          800: '#a1a1ac',
-          900: '#9494a0',
+          600: '#B6B6BB',
+          700: '#A4A4A9',
+          800: '#929296',
+          900: '#808084',
         },
 
+        dark: {
+          100: '#65676A',
+          200: '#505255',
+          300: '#3A3D40',
+          400: '#25272B',
+          500: '#0f1216',
+          600: '#0E1014',
+          700: '#0C0F12',
+          800: '#0B0D10',
+          900: '#0A0C0E',
+        },
+
+        /*
         dark: {
           100: '#232a32',
           200: '#20262d',
@@ -67,6 +82,7 @@ module.exports = {
           800: '#0c0e11',
           900: '#090a0c',
         },
+        */
 
         navbar: {
           100: '#E6E6E7',
@@ -80,7 +96,7 @@ module.exports = {
           900: '#020204',
         },
 
-        background: '#000',
+        background: '#060709',
 
         blue: {
           100: '#EAF8FD',
@@ -158,24 +174,25 @@ module.exports = {
         },
 
         primary: {
-          100: '#FBF1E7',
-          200: '#F5DCC4',
-          300: '#EFC7A0',
-          400: '#E29E58',
+          100: '#E5A667',
+          200: '#E19A51',
+          300: '#DD8D3C',
+          400: '#DA8126',
           500: '#D67411',
           default: '#D67411',
-          600: '#C1680F',
-          700: '#80460A',
-          800: '#603408',
-          900: '#402305',
+          600: '#C36A0F',
+          700: '#AF5F0E',
+          800: '#9C550C',
+          900: '#894A0B',
         },
       },
 
       boxShadow: {
-        'inner-md': 'inset 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        'inner-lg': 'inset 0 10px 15px -3px rgba(0, 0, 0, 0.1), inset 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        'inner-xl': 'inset 0 20px 25px -5px rgba(0, 0, 0, 0.1), inset 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        'inner-2xl': 'inset 0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        default: '0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.56)',
+        md: '0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.56)',
+        lg: '0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.55)',
+        xl: '0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.54)',
+        '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.85)',
       },
     },
   },
@@ -200,4 +217,7 @@ module.exports = {
       },
     }),
   ],
+  corePlugins: {
+    container: false,
+  },
 }

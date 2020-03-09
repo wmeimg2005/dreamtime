@@ -84,9 +84,8 @@ export default {
 
 <style lang="scss" scoped>
 .photo {
-  @apply w-1/2 relative border-2 border-dark-300;
+  @apply w-1/2 h-full relative border-2 border-dark-800;
   background-image: url("~@/assets/images/curls.png");
-  height: 150px;
   will-change: transform;
 
   &.photo--running {

@@ -9,21 +9,17 @@
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @drop="onDrop">
-    <!-- Title bar -->
-    <Titlebar />
+    <!-- Window Buttons -->
+    <LayoutTopbar />
 
     <!-- Navigation -->
-    <Navbar />
-
-    <!-- Menu -->
-    <Menubar />
+    <LayoutNavbar />
 
     <!-- Queue -->
-    <Queuebar />
+    <QueueBar />
 
     <!-- Content -->
-    <div id="layout-content"
-         class="layout__content">
+    <div id="layout-content" class="layout__content">
       <nuxt />
     </div>
 
@@ -51,7 +47,15 @@ export default {
   display: grid;
   grid-template-columns: 250px 1fr 250px;
   grid-template-rows: 30px 50px 1fr;
-  grid-template-areas: "title title title" "nav nav nav" "menu content queue";
+  grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "content content queuebar";
+
+  &.layout--left-queue {
+    grid-template-areas: "topbar topbar topbar" "navbar navbar navbar" "queuebar content content";
+
+    .layout__jobbar {
+      @apply border-l-0 border-r;
+    }
+  }
 
   &.layout--dragging {
     .layout__dropzone {
@@ -60,22 +64,21 @@ export default {
   }
 
   .layout__topbar {
-    height: 30px;
+    grid-area: topbar;
   }
 
   .layout__navbar {
-    height: 50px;
+    grid-area: navbar;
   }
 
   .layout__jobbar {
-
+    grid-area: queuebar;
   }
 
   .layout__content {
     @apply relative overflow-hidden overflow-y-auto;
-    @apply py-6 px-9;
-    height: calc(100vh - 80px);
     grid-area: content;
+    height: calc(100vh - 80px);
   }
 
   .layout__dropzone {

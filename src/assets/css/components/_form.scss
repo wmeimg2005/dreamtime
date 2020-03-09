@@ -22,13 +22,13 @@
 }
 
 .input {
-  @apply border border-dark-300 bg-dark-700; 
-  @apply rounded py-2 px-4 w-full text-generic-300 shadow-inner;
+  @apply border border-dark-400 bg-dark-500 text-generic-500; 
+  @apply py-2 px-3 rounded w-full shadow-inner;
+  @include transition('background-color, color');
   outline: none !important;
-  transition: all .2s ease-in-out;
 
   &:hover, &:focus {
-    @apply text-generic-100 shadow-inner-md;
+    @apply text-white bg-dark-400;
   }
 
   &::placeholder {
@@ -42,8 +42,4 @@
   &.input--sm {
     @apply text-sm px-2;
   }
-}
-
-select.input {
-  @apply cursor-pointer;
 }

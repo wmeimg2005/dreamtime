@@ -33,7 +33,7 @@ export default async ({ app }, inject) => {
   Promise.all([
     rollbar.setup(),
     logrocket.setup(),
-  ])
+  ]).catch(() => {})
 
   // Requirements check.
   await requirements.setup()
@@ -51,7 +51,7 @@ export default async ({ app }, inject) => {
       dreamtime.setup(),
       dreampower.setup(),
       checkpoints.setup(),
-    ])
+    ]).catch(() => {})
   }
 
   // Shortcuts.

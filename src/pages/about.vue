@@ -1,24 +1,38 @@
 <template>
   <div class="about content__body">
     <div class="wrapper">
-      <div v-if="alert" class="notification text-lg" v-html="alert" />
+      <div v-if="alert"
+           class="notification text-lg"
+           v-html="alert" />
 
       <!-- Offline -->
-      <div v-if="!$provider.system.online" class="notification notification--warning">
+      <div v-if="!$provider.system.online"
+           class="notification notification--warning">
         <span class="icon"><font-awesome-icon icon="exclamation-triangle" /></span>
-        <span><strong>Offline mode</strong>. You will not be able to install updates and get the latest information.</span>
+        <span>
+          <strong>Offline mode</strong>.
+          You will not be able to install updates and get the latest information.
+        </span>
       </div>
 
       <!-- Offline -->
-      <div v-else-if="!dreamtrack.enabled" class="notification notification--warning">
+      <div v-else-if="!dreamtrack.enabled"
+           class="notification notification--warning">
         <span class="icon"><font-awesome-icon icon="exclamation-triangle" /></span>
-        <span>The connection to the server could not be established. You will not be able to install updates and get the latest information.</span>
+        <span>
+          The connection to the server could not be established.
+          You will not be able to install updates and get the latest information.
+        </span>
       </div>
 
-      <div v-if="dreamtrack.enabled" class="about__stats">
+      <div v-if="dreamtrack.enabled"
+           class="about__stats">
         <p>
           <span class="stats__value">{{ stats | stat('users.realtime') }}</span>
-          <span v-tooltip="{ content: 'Users like you who are using the application right now!', placement: 'bottom' }" class="stats__label">real-time users.</span>
+          <span v-tippy
+                data-tippy-content="Users like you who are using the application right now!"
+                data-tippy-placement="bottom"
+                class="stats__label">real-time users.</span>
         </p>
 
         <p>
@@ -28,12 +42,18 @@
 
         <p>
           <span class="stats__value">{{ stats | stat('sessions.total') }}</span>
-          <span v-tooltip="{ content: 'Number of times the application has been opened.', placement: 'bottom' }" class="stats__label">sessions.</span>
+          <span v-tippy
+                data-tippy-content="Number of times the application has been opened."
+                data-tippy-placement="bottom"
+                class="stats__label">sessions.</span>
         </p>
 
         <p>
           <span class="stats__value">{{ stats | stat('events.total.DREAM_COMPLETED') }}</span>
-          <span v-tooltip="{ content: 'Number of times a successful nudification has been completed.', placement: 'bottom' }" class="stats__label">nudifications.</span>
+          <span v-tippy
+                data-tippy-content="Number of times a successful nudification has been completed."
+                data-tippy-placement="bottom"
+                class="stats__label">nudifications.</span>
         </p>
       </div>
 
@@ -50,12 +70,16 @@
                 </div>
               </template>
 
-              <button type="button" class="button w-full" @click="openAppPath">
+              <button type="button"
+                      class="button w-full"
+                      @click="openAppPath">
                 App
               </button>
             </box-item>
 
-            <app-update :project-title="$dream.name" project="dreamtime" href="/wizard/dreamtime" />
+            <app-update :project-title="$dream.name"
+                        project="dreamtime"
+                        href="/wizard/dreamtime" />
 
             <box-item
               v-for="(item, index) in dreamtime.about.navigation"
@@ -80,14 +104,20 @@
                 </div>
               </template>
 
-              <button type="button" class="button w-full" @click="openPowerPath">
+              <button type="button"
+                      class="button w-full"
+                      @click="openPowerPath">
                 App
               </button>
             </box-item>
 
-            <app-update project-title="DreamPower" project="dreampower" href="/wizard/power" />
+            <app-update project-title="DreamPower"
+                        project="dreampower"
+                        href="/wizard/power" />
 
-            <app-update project-title="Checkpoints" project="checkpoints" href="/wizard/checkpoints" />
+            <app-update project-title="Checkpoints"
+                        project="checkpoints"
+                        href="/wizard/checkpoints" />
 
             <box-item
               v-for="(item, index) in dreampower.about.navigation"
@@ -101,7 +131,8 @@
         </section>
       </div>
 
-      <div v-show="dreamtrack.enabled" class="about__columns">
+      <div v-show="dreamtrack.enabled"
+           class="about__columns">
         <!-- Sponsors -->
         <section class="box box--items is-contributors">
           <div class="box__content">
@@ -158,7 +189,11 @@
               :description="item.description"
               :icon="item.icon"
               :class="item.role">
-              <a v-for="(link, lindex) in item.links" :key="`link-${lindex}`" :href="link.href" target="_blank" class="button button--sm mr-2">
+              <a v-for="(link, lindex) in item.links"
+                 :key="`link-${lindex}`"
+                 :href="link.href"
+                 target="_blank"
+                 class="button button--sm mr-2">
                 {{ link.name }}
               </a>
             </box-item>
@@ -281,10 +316,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.about {
-
-}
-
 .about__stats {
   @apply flex mb-4;
 
@@ -319,23 +350,19 @@ export default {
   .is-gold {
     .item__label {
       @apply font-bold;
-      color: #d5ad6d;
 
-      background: -webkit-linear-gradient(transparent, transparent),
-        -webkit-linear-gradient(top, rgba(213, 173, 109, 1) 0%, rgba(
-                213,
-                173,
-                109,
-                1
-              )
-              26%, rgba(226, 186, 120, 1) 35%, rgba(163, 126, 67, 1) 45%, rgba(
-                145,
-                112,
-                59,
-                1
-              )
-              61%, rgba(213, 173, 109, 1) 100%);
+      background: linear-gradient(transparent, transparent),
+        linear-gradient(top, rgba(213, 173, 109, 1) 0%, rgba(213,
+        173,
+        109,
+        1)
+        26%, rgba(226, 186, 120, 1) 35%, rgba(163, 126, 67, 1) 45%, rgba(145,
+        112,
+        59,
+        1)
+        61%, rgba(213, 173, 109, 1) 100%);
       background-clip: text;
+      color: #d5ad6d;
       -webkit-text-fill-color: transparent;
     }
   }

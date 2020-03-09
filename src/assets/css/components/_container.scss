@@ -9,16 +9,7 @@
  * Written by Ivan Bravo Bravo <ivan@dreamnet.tech>, 2019.
  */
 
-.content-body,
-.content__body {
-  @apply p-6;
-}
-
-.content__body {
-  @apply p-6;
-}
-
-.wrapper {
-  @apply ml-auto mr-auto;
+.container {
+  @apply p-6 ml-auto mr-auto;
   max-width: 1920px;
 }

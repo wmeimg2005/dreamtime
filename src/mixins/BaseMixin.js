@@ -25,6 +25,20 @@ export default {
         tippy(el, options)
       },
     },
+
+    tippy: {
+      inserted(el, binding) {
+        let options = {}
+
+        if (isString(binding.value)) {
+          options.content = binding.value
+        } else {
+          options = binding.value || {}
+        }
+
+        tippy(el, options)
+      },
+    },
   },
 
   data: () => ({
