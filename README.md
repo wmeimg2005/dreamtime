@@ -13,8 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="https://time.dreamnet.tech"><img src="https://img.shields.io/website?url=https%3A%2F%2Ftime.dreamnet.tech" /></a>
-  <a href="https://chat.dreamnet.tech"><img src="https://img.shields.io/website?url=https%3A%2F%2Fchat.dreamnet.tech&label=chat" /></a>
+  <a href="https://time.dreamnet.tech"><img src="https://img.shields.io/uptimerobot/status/m783500405-1d347e6a5472fdb2035c7003?label=website" /></a>
   <a href="CONTRIBUTING.md#pull-requests"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
 </p>
 
@@ -22,8 +21,8 @@
 
 🙈 With DreamTime you can nudify photos of people easily.
 
-- **Totally free.** DreamTime is a free and open-source user interface to nudify photos.
-- **Cool UI.** Nudify photos easily with a friendly design.
+- **Totally free.** DreamTime is a free and open-source user interface to nudify photos. It is constantly updated and does not need cracks.
+- **Cool UI.** Nudify photos easily with a stable and friendly design.
 - **Multi platform.** Available for Windows, Linux and macOS.
 - **It is simply the best.** Install DreamTime and discover why it is better than DeepNude. [Discover more!](https://time.dreamnet.tech)
 
@@ -31,19 +30,29 @@
 
 💻 Visit the [installation page](https://time.dreamnet.tech/docs/installation) to download and install DreamTime.
 
+You can also visit the [Releases](https://github.com/dreamnettech/dreamtime/releases) section to download DreamTime.
+
 ## Development
 
-👩‍💻 Start hacking DreamTime or create PR to improve it. 
+👩‍💻 Start hacking DreamTime or help us improve it by creating a PR. 
 
 Visit the [Getting Started](https://time.dreamnet.tech/docs/development/getting-started) page for more information.
 
 ## Contact
 
-📧 Stay in touch with the developers and other users:
+📧 Stay in touch with the developers and the community:
 
-- [Chat](https://chat.dreamnet.tech)
-- [Forum](https://forum.dreamnet.tech)
-- [Feedback](https://time.dreamnet.tech/docs/support/feedback)
+- [![](https://img.shields.io/uptimerobot/status/m783500390-1e7fe0c3dd2ccf723a66a1b5?label=Chat&style=flat-square)](https://chat.dreamnet.tech)
+- [![](https://img.shields.io/uptimerobot/status/m783500403-8eacc06341d120efccad2c5a?label=Forum&style=flat-square)](https://forum.dreamnet.tech)
+- [ivan@dreamnet.tech](mailto:ivan@dreamnet.tech)
+
+## Funding
+
+💖 DreamTime will be free and open-source **forever**. You can help us speed up and continue with the development and offer servers for the download:
+
+- [Patreon](https://patreon.com/dreamnet)
+- [Ko-fi](https://ko-fi.com/dreamnet)
+- [Crypto](https://commerce.coinbase.com/checkout/24a8bcb6-22db-4166-9bea-fb24fe78f1cd)
 
 ## Sponsors
 
